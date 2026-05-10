@@ -3,25 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elgato</title>
+    <title>MAKE ME A DREAM</title>
+    <style>
+        .button-random {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh; /* full screen height */
+        }
+        button {
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-
-    <h1>Random Page</h1>
+    <div class="button-random">
+        <button onclick="randomweb()">Random Page</button>
+    </div>
     <script>
-      const list_of_domain_names = [
-        "https://google.com/", 
-        "https://github.com/", 
-        "https://youtube.com", 
-        "https://abc.xyz/"
-      ];
+      function randomweb() 
+      {
+          const list_of_domain_names = [
+            "https://google.com/", 
+            "https://github.com/", 
+            "https://youtube.com", 
+            "https://abc.xyz/"
+          ];
     
-      const randomIndex = Math.floor(Math.random() * list_of_domain_names.length);
-      const domain = list_of_domain_names[randomIndex];
+          const randomIndex = Math.floor(Math.random() * list_of_domain_names.length);
+          const domain = list_of_domain_names[randomIndex];
     
-      setTimeout(() => {
-        window.location.href = domain;
-      }, 1000);
+          setTimeout(() => {
+            window.location.href = domain;
+          }, 1000);
+      }
     </script>
 </body>
 </html>
