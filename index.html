@@ -1,44 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAKE ME A DREAM</title>
-    <style>
-        .button-random {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh; /* full screen height */
-        }
-        button {
-          padding: 10px 20px;
-          font-size: 16px;
-          cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mishan Khanal - Resume</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 36px;
+      color: #38bdf8;
+    }
+
+    .header p {
+      margin: 5px 0;
+      color: #94a3b8;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 12px;
+    }
+
+    h2 {
+      color: #38bdf8;
+      margin-bottom: 10px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #64748b;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="button-random">
-        <button onclick="randomweb()">Random Page</button>
+  <div class="container">
+
+    <div class="header">
+      <h1>Mishan Khanal</h1>
+      <p>Male • Born: 11 June 2015 • Kathmandu, Nepal</p>
+      <p>Email: <a href="mailto:sxcyber17@gmail.com">sxcyber17@gmail.com</a></p>
+      <p>GitHub: <a href="https://github.com/mk-2015" target="_blank">mk-2015</a></p>
     </div>
-    <script>
-      function randomweb() 
-      {
-          const list_of_domain_names = [
-            "https://google.com/", 
-            "https://github.com/", 
-            "https://youtube.com", 
-            "https://abc.xyz/"
-          ];
-    
-          const randomIndex = Math.floor(Math.random() * list_of_domain_names.length);
-          const domain = list_of_domain_names[randomIndex];
-    
-          setTimeout(() => {
-            window.location.href = domain;
-          }, 1000);
-      }
-    </script>
+
+    <div class="card">
+      <h2>Skills</h2>
+      <ul>
+        <li>JavaScript / HTML / CSS</li>
+        <li>Python</li>
+        <li>C / C++</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Experience</h2>
+      <ul>
+        <li>1–2 years experience in JavaScript, HTML, CSS</li>
+        <li>5–6 years experience in Python, C, C++</li>
+        <li>Worked with frontend, backend, and full-stack basics</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Tools & Technologies</h2>
+      <ul>
+        <li>Git & GitHub</li>
+        <li>Python 3</li>
+        <li>WSL (Windows Subsystem for Linux)</li>
+        <li>Windows & Linux systems</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Education</h2>
+      <ul>
+        <li>Grade: 6</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      © 2026 Mishan Khanal | Resume Website
+	  <a href="/hidden/school" style="padding:10px 15px; background:#333; color:white; text-decoration:none; border-radius:5px; display:inline-block;">
+		Dont Click me
+	  </a>
+    </div>
+
+  </div>
 </body>
 </html>
