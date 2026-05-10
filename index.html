@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elgato</title>
+</head>
+<body>
+
+    <h1>Random Page</h1>
+    <script>
+      const list_of_domain_names = [
+        "https://google.com/", 
+        "https://github.com/", 
+        "https://youtube.com", 
+        "https://abc.xyz/"
+      ];
+    
+      const randomIndex = Math.floor(Math.random() * list_of_domain_names.length);
+      const domain = list_of_domain_names[randomIndex];
+    
+      setTimeout(() => {
+        window.location.href = domain;
+      }, 1000);
+    </script>
+</body>
+</html>
