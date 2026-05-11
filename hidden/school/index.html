@@ -4,7 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mishan Khanal - Games</title>
+
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    a {
+      color: #00ff88;
+      font-size: 24px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+<style>
+  .commands {
+    background: #111;
+    color: #00ff88;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: monospace;
+  }
+
+  .commands li {
+    margin: 8px 0;
+  }
+</style>
+</head>
 <body>
-	<a href="/hidden/school/snake.html">Snake</a>
+  <h1>Games</h1>
+
+  <a href="/hidden/school/snake.html">
+    Play Snake
+  </a>
+
+  <div class="commands">
+    <ul>
+      <li><pre><code>python -m http.server 8000 - Start website with python</pre></code></li>
+      <li><pre><code>powershell -Command "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0; Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0; Start-Service sshd; Set-Service -Name sshd -StartupType Automatic; New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22"</code></pre> - Enable SSH</li>
+      <li><pre><code>shutdown /r /t 0 - Reboot instantly</code></pre></li>
+    </ul>
+  </div>
 </body>
 </html>
