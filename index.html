@@ -131,9 +131,45 @@
   .actions{
     display:flex;
     gap: 14px;
-    margin-top: 40px;
+    margin-top: 24px;
     flex-wrap: wrap;
+    align-items: center;
   }
+
+  .set-count-form{
+    display:flex;
+    gap: 10px;
+    margin-top: 30px;
+    max-width: 420px;
+  }
+  .set-count-form input{
+    flex:1;
+    min-width: 0;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--line);
+    color: var(--chalk);
+    font-family:'Barlow', sans-serif;
+    font-size: 18px;
+    padding: 14px 16px;
+    border-radius: 2px;
+  }
+  .set-count-form input:focus{
+    outline:none;
+    border-color: var(--gold);
+  }
+  .set-count-form button{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size: 18px;
+    letter-spacing: 0.03em;
+    background: var(--chalk);
+    color: var(--ink);
+    border:none;
+    padding: 0 24px;
+    border-radius: 2px;
+    cursor:pointer;
+  }
+  .set-count-form button:hover{ background: var(--gold); }
 
   .btn{
     font-family:'Barlow Condensed', sans-serif;
@@ -365,6 +401,11 @@
       <h1 class="count" id="goalCount">0</h1>
       <div class="count-label">GOALS LOGGED</div>
 
+      <div class="set-count-form">
+        <input type="number" id="setCountInput" placeholder="Set number of goals..." min="0" inputmode="numeric">
+        <button type="button" id="setCountOkBtn">OK</button>
+      </div>
+
       <div class="actions">
         <button class="btn btn-goal" id="addGoalBtn">+ 1 GOAL</button>
         <button class="btn btn-ghost" id="undoBtn">UNDO LAST</button>
@@ -376,7 +417,7 @@
     <div class="target-panel">
       <div class="panel-heading">SET SEASON TARGET</div>
       <div class="target-form" id="targetForm">
-        <input type="number" id="targetInput" placeholder="Enter number, e.g. 50" min="1" inputmode="numeric">
+        <input type="number" id="targetInput" placeholder="Set number of goals..." min="1" inputmode="numeric">
         <button type="button" id="targetOkBtn">OK</button>
       </div>
 
@@ -428,7 +469,7 @@
 
   // Paste a direct image URL here to show a player photo (leave as '' for none).
   // Must be a link you have the rights to use, ending in the actual image (e.g. https://example.com/photo.jpg)
-  const PHOTO_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj513JFzAOaz_HCeRDzzYum4UUlJzoamWhu5AtuDo-tA&s';
+  const PHOTO_URL = '';
 
   function load(){
     try{
@@ -460,6 +501,7 @@
   const statRemaining = document.getElementById('statRemaining');
   const logList = document.getElementById('logList');
   const targetInput = document.getElementById('targetInput');
+  const setCountInput = document.getElementById('setCountInput');
 
   function isSameDay(iso){
     const d = new Date(iso);
@@ -507,6 +549,33 @@
     state.history.push(new Date().toISOString());
     save(state);
     render();
+  });
+
+  function applySetCount(){
+    const val = parseInt(setCountInput.value, 10);
+    if(isNaN(val) || val < 0) return;
+    state.count = val;
+    // rebuild history to match the new count: keep existing timestamps where possible,
+    // trim if lower, pad with "now" entries if higher
+    if(val <= state.history.length){
+      state.history = state.history.slice(0, val);
+    } else {
+      const now = new Date().toISOString();
+      while(state.history.length < val){
+        state.history.push(now);
+      }
+    }
+    save(state);
+    setCountInput.value = '';
+    render();
+  }
+
+  document.getElementById('setCountOkBtn').addEventListener('click', applySetCount);
+  setCountInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      applySetCount();
+    }
   });
 
   document.getElementById('undoBtn').addEventListener('click', function(){
