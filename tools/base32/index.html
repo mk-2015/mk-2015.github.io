@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base32 Encoder &amp; Decoder - inetdotlib.ftp.sh</title>
+</head>
+<body>
+    <!-- Site Header & Navigation -->
+    <h1>Base32 Encoder &amp; Decoder</h1>
+    <hr>
+
+    <!-- Section 1: Interactive Base32 Encoder & Decoder -->
+    <h2>1. Interactive Base32 Encoder &amp; Decoder</h2>
+    <p>
+        <label for="variantSelect"><b>Variant:</b></label>
+        <select id="variantSelect">
+            <option value="standard" selected>Standard Base32 (RFC 4648: A-Z, 2-7)</option>
+            <option value="base32hex">Base32hex / Extended Hex (RFC 4648 &sect;7: 0-9, A-V)</option>
+        </select>
+    </p>
+    <p>
+        <input type="checkbox" id="paddingCheckbox" checked>
+        <label for="paddingCheckbox">Include '=' Padding</label>
+        &nbsp;
+        <input type="checkbox" id="liveEncodeCheckbox" checked>
+        <label for="liveEncodeCheckbox">Live Encode on Typing</label>
+        &nbsp;
+        <input type="checkbox" id="caseInsensitiveCheckbox" checked>
+        <label for="caseInsensitiveCheckbox">Case-Insensitive Decode (RFC 4648)</label>
+        &nbsp;
+        <input type="checkbox" id="typoFixCheckbox">
+        <label for="typoFixCheckbox">Normalize 0&rarr;O, 1&rarr;I/L (Standard only)</label>
+    </p>
+
+    <p>
+        <label for="inputBox"><b>Input (Plain UTF-8 Text or Base32 String):</b></label><br>
+        <textarea id="inputBox" rows="6" cols="68" placeholder="Enter UTF-8 text to encode or Base32 string to decode...">Welcome to inetdotlib.ftp.sh! (1995)</textarea>
+    </p>
+
+    <p>
+        <button type="button" id="encodeBtn">Encode to Base32</button>
+        <button type="button" id="decodeBtn">Decode from Base32</button>
+        <button type="button" id="swapBtn">Swap Input &lt;-&gt; Output</button>
+        <button type="button" id="loadSampleBtn">Load Sample</button>
+        <button type="button" id="copyBtn">Copy Output</button>
+        <button type="button" id="clearBtn">Clear All</button>
+    </p>
+
+    <p>
+        <label for="outputBox"><b>Output:</b></label><br>
+        <textarea id="outputBox" rows="6" cols="68" readonly></textarea>
+    </p>
+
+    <p><tt id="statsLine">Stats: Input: 0 bytes | Output: 0 chars | 40-bit Blocks (8/5): 0 | Ratio: 0.00x</tt></p>
+    <p><tt id="statusLine">Status: Ready.</tt></p>
+    <hr>
+
+    <!-- Section 2: Bit-Level 5-Bit Packing Inspector -->
+    <h2>2. Bit-Level 5-Bit Packing Inspector</h2>
+    <p>
+        Base32 packs every 5 input bytes (40 bits) into eight 5-bit indices (0–31). If the final block has fewer than 5 bytes, trailing zero bits pad the last active 5-bit group and <tt>=</tt> characters pad the output to a multiple of 8 characters (6, 4, 3, or 1 <tt>=</tt> chars for 1, 2, 3, or 4 remaining bytes).
+    </p>
+    <pre id="inspectorOutput">Loading bit inspector...</pre>
+    <hr>
+
+    <!-- Section 3: Complete 32-Entry RFC 4648 Base32 Alphabet Reference Table -->
+    <h2>3. Complete 32-Entry RFC 4648 Base32 Alphabet Reference Table</h2>
+    <p>
+        Click any cell below to copy its value to the clipboard. Padding character: <tt>=</tt> (ASCII Dec <tt>61</tt>, Hex <tt>0x3D</tt>).
+    </p>
+
+    <table border="1" cellpadding="4" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Index (0-31)</th>
+                <th>5-Bit Binary</th>
+                <th>Hex</th>
+                <th>Standard Base32 Char (A-Z, 2-7)</th>
+                <th>Base32hex Char (0-9, A-V)</th>
+            </tr>
+        </thead>
+        <tbody id="alphabetTableBody">
+            <!-- Populated by vanilla JavaScript -->
+        </tbody>
+    </table>
+    
+    <script>
+        (function () {
+            // RFC 4648 Base32 Alphabets
+            var STD_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            var HEX_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUV';
+
+            // Sample test strings cycled by "Load Sample"
+            var SAMPLES = [
+                'Welcome to inetdotlib.ftp.sh! (1995)',
+                'foobar',
+                'fooba',
+                'foob',
+                'foo',
+                'fo',
+                'f',
+                'JBSWY3DPEBLW64TMMQQQ====',
+                'UTF-8 test: Café, naïve, résumé ★ 1995'
+            ];
+            var sampleIndex = 0;
+
+            // DOM References
+            var variantSelect = document.getElementById('variantSelect');
+            var paddingCheckbox = document.getElementById('paddingCheckbox');
+            var liveEncodeCheckbox = document.getElementById('liveEncodeCheckbox');
+            var caseInsensitiveCheckbox = document.getElementById('caseInsensitiveCheckbox');
+            var typoFixCheckbox = document.getElementById('typoFixCheckbox');
+
+            var inputBox = document.getElementById('inputBox');
+            var outputBox = document.getElementById('outputBox');
+            var statsLine = document.getElementById('statsLine');
+            var statusLine = document.getElementById('statusLine');
+            var inspectorOutput = document.getElementById('inspectorOutput');
+            var alphabetTableBody = document.getElementById('alphabetTableBody');
+
+            var encodeBtn = document.getElementById('encodeBtn');
+            var decodeBtn = document.getElementById('decodeBtn');
+            var swapBtn = document.getElementById('swapBtn');
+            var loadSampleBtn = document.getElementById('loadSampleBtn');
+            var copyBtn = document.getElementById('copyBtn');
+            var clearBtn = document.getElementById('clearBtn');
+
+            // UTF-8 Encoding / Decoding helpers
+            function stringToUtf8Bytes(str) {
+                if (typeof TextEncoder !== 'undefined') {
+                    return new TextEncoder().encode(str);
+                }
+                var utf8 = unescape(encodeURIComponent(str));
+                var bytes = new Uint8Array(utf8.length);
+                for (var i = 0; i < utf8.length; i++) {
+                    bytes[i] = utf8.charCodeAt(i);
+                }
+                return bytes;
+            }
+
+            function utf8BytesToString(bytes) {
+                if (typeof TextDecoder !== 'undefined') {
+                    try {
+                        return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+                    } catch (err) {
+                        throw new Error('Invalid UTF-8 byte sequence in decoded output.');
+                    }
+                }
+                var binStr = '';
+                for (var i = 0; i < bytes.length; i++) {
+                    binStr += String.fromCharCode(bytes[i]);
+                }
+                try {
+                    return decodeURIComponent(escape(binStr));
+                } catch (err2) {
+                    throw new Error('Invalid UTF-8 byte sequence in decoded output.');
+                }
+            }
+
+            // Encode Uint8Array -> Base32 string (using BigInt-free 8-bit bit-buffer)
+            function encodeBytesToBase32(bytes, isHexVariant, includePadding) {
+                var alphabet = isHexVariant ? HEX_ALPHABET : STD_ALPHABET;
+                var out = '';
+                var buffer = 0;
+                var bitsLeft = 0;
+
+                for (var i = 0; i < bytes.length; i++) {
+                    buffer = (buffer << 8) | (bytes[i] & 0xFF);
+                    bitsLeft += 8;
+                    while (bitsLeft >= 5) {
+                        var index = (buffer >>> (bitsLeft - 5)) & 0x1F;
+                        bitsLeft -= 5;
+                        out += alphabet.charAt(index);
+                    }
+                }
+
+                if (bitsLeft > 0) {
+                    var lastIndex = (buffer << (5 - bitsLeft)) & 0x1F;
+                    out += alphabet.charAt(lastIndex);
+                }
+
+                if (includePadding) {
+                    while (out.length % 8 !== 0) {
+                        out += '=';
+                    }
+                }
+
+                return out;
+            }
+
+            // Decode Base32 string -> Uint8Array (strict RFC 4648 validation)
+            function decodeBase32ToBytes(rawInput, isHexVariant, caseInsensitive, normalizeTypos) {
+                // Strip standard ASCII whitespace
+                var cleaned = rawInput.replace(/[\r\n\t ]+/g, '');
+                if (cleaned.length === 0) {
+                    return new Uint8Array(0);
+                }
+
+                var alphabet = isHexVariant ? HEX_ALPHABET : STD_ALPHABET;
+                var variantLabel = isHexVariant ? 'Base32hex (0-9, A-V)' : 'Standard Base32 (A-Z, 2-7)';
+
+                // Check '=' padding placement and length
+                var firstPad = cleaned.indexOf('=');
+                var padCount = 0;
+                if (firstPad !== -1) {
+                    for (var p = firstPad; p < cleaned.length; p++) {
+                        if (cleaned.charAt(p) !== '=') {
+                            throw new Error('Invalid Base32: "=" padding character found before end of input at position ' + (firstPad + 1) + '.');
+                        }
+                        padCount++;
+                    }
+                    if (cleaned.length % 8 !== 0) {
+                        throw new Error('Invalid Base32: Padded input length (' + cleaned.length + ') must be a multiple of 8.');
+                    }
+                    if (padCount !== 1 && padCount !== 3 && padCount !== 4 && padCount !== 6) {
+                        throw new Error('Invalid Base32: Invalid padding length (' + padCount + ' "=" chars; RFC 4648 allows 1, 3, 4, or 6).');
+                    }
+                }
+
+                var dataLen = firstPad === -1 ? cleaned.length : firstPad;
+                var rem = dataLen % 8;
+                // Valid unpadded Base32 remainder lengths mod 8 are 0, 2, 4, 5, 7 (1, 3, 6 leave incomplete bytes)
+                if (rem === 1 || rem === 3 || rem === 6) {
+                    throw new Error('Invalid Base32: Data length (' + dataLen + ', mod 8 = ' + rem + ') cannot form whole 8-bit bytes.');
+                }
+
+                var byteLen = Math.floor((dataLen * 5) / 8);
+                var out = new Uint8Array(byteLen);
+                var outPos = 0;
+                var buffer = 0;
+                var bitsLeft = 0;
+
+                for (var i = 0; i < dataLen; i++) {
+                    var origCh = cleaned.charAt(i);
+                    var ch = caseInsensitive ? origCh.toUpperCase() : origCh;
+
+                    if (!isHexVariant && normalizeTypos) {
+                        if (ch === '0') ch = 'O';
+                        else if (ch === '1' || ch === 'L') ch = 'I';
+                    }
+
+                    var val = alphabet.indexOf(ch);
+                    if (val === -1) {
+                        throw new Error('Invalid Base32 character "' + origCh + '" at position ' + (i + 1) + ' for ' + variantLabel + '.');
+                    }
+
+                    buffer = (buffer << 5) | val;
+                    bitsLeft += 5;
+
+                    if (bitsLeft >= 8) {
+                        out[outPos++] = (buffer >>> (bitsLeft - 8)) & 0xFF;
+                        bitsLeft -= 8;
+                    }
+                }
+
+                return out;
+            }
+
+            // Formatting helpers
+            function toBinary(num, width) {
+                var s = num.toString(2);
+                while (s.length < width) s = '0' + s;
+                return s;
+            }
+
+            function toHex(num) {
+                var s = num.toString(16).toUpperCase();
+                while (s.length < 2) s = '0' + s;
+                return '0x' + s;
+            }
+
+            function padRight(str, width) {
+                var s = String(str);
+                while (s.length < width) s += ' ';
+                return s;
+            }
+
+            function padLeft(str, width) {
+                var s = String(str);
+                while (s.length < width) s = ' ' + s;
+                return s;
+            }
+
+            // Update byte count & expansion ratio stats line
+            function updateStats(inputByteCount, outputCharCount, mode) {
+                var blocks = inputByteCount === 0 ? 0 : Math.ceil(inputByteCount / 5);
+                var ratio = inputByteCount > 0 ? (outputCharCount / inputByteCount).toFixed(2) : '0.00';
+                if (mode === 'decode') {
+                    statsLine.textContent =
+                        'Stats: Base32 Input: ' + outputCharCount + ' chars | Decoded Output: ' + inputByteCount +
+                        ' bytes | 40-bit Blocks (8/5): ' + blocks + ' | Expansion Ratio: ' + ratio + 'x';
+                } else {
+                    statsLine.textContent =
+                        'Stats: Input: ' + inputByteCount + ' bytes | Output: ' + outputCharCount +
+                        ' chars | 40-bit Blocks (8/5): ' + blocks + ' | Expansion Ratio: ' + ratio + 'x';
+                }
+            }
+
+            // Update Section 2: Bit-Level 5-Bit Packing Inspector (up to first 10 UTF-8 bytes)
+            function updateInspector(plainText) {
+                var isHexVariant = variantSelect.value === 'base32hex';
+                var includePadding = paddingCheckbox.checked;
+                var alphabet = isHexVariant ? HEX_ALPHABET : STD_ALPHABET;
+                var variantLabel = isHexVariant ? 'Base32hex (RFC 4648 §7)' : 'Standard Base32 (RFC 4648)';
+
+                if (!plainText) {
+                    inspectorOutput.textContent = '(Input is empty. Type text above to inspect 40-bit / 5-byte -> eight 5-bit Base32 packing.)';
+                    return;
+                }
+
+                var allBytes = stringToUtf8Bytes(plainText);
+                var maxInspect = Math.min(allBytes.length, 10);
+                var lines = [];
+
+                lines.push('Variant : ' + variantLabel + ' | Padding: ' + (includePadding ? 'Enabled ("=")' : 'Disabled'));
+                lines.push('Inspecting ' + maxInspect + ' of ' + allBytes.length + ' UTF-8 input byte(s) in 5-byte (40-bit) blocks:');
+                lines.push('');
+
+                // Number of active 5-bit symbols produced by N remaining bytes (1..5 -> 2, 4, 5, 7, 8)
+                var activeCharsForBytes = [0, 2, 4, 5, 7, 8];
+
+                for (var start = 0; start < maxInspect; start += 5) {
+                    var blockLen = Math.min(5, maxInspect - start);
+                    var bitStream40 = '';
+                    var byteSummaries = [];
+
+                    for (var b = 0; b < 5; b++) {
+                        if (b < blockLen) {
+                            var byteVal = allBytes[start + b];
+                            var bin8 = toBinary(byteVal, 8);
+                            bitStream40 += bin8;
+                            var chDisp = (byteVal >= 32 && byteVal <= 126) ? ('"' + String.fromCharCode(byteVal) + '"') : toHex(byteVal);
+                            byteSummaries.push(chDisp + '=' + bin8);
+                        } else {
+                            bitStream40 += '00000000';
+                            byteSummaries.push('(pad)=00000000');
+                        }
+                    }
+
+                    var activeCount = activeCharsForBytes[blockLen];
+                    lines.push('--- Block ' + (Math.floor(start / 5) + 1) + ' (Bytes ' + start + '..' + (start + blockLen - 1) + ', ' + (blockLen * 8) + ' input bits -> ' + activeCount + ' Base32 chars) ---');
+                    lines.push('Bytes (8-bit): ' + byteSummaries.join(' | '));
+
+                    var groupRow = '5-Bit Groups : ';
+                    var indexRow = 'Decimal Idx  : ';
+                    var charRow  = 'Base32 Char  : ';
+
+                    for (var g = 0; g < 8; g++) {
+                        var bits5 = bitStream40.slice(g * 5, (g + 1) * 5);
+                        if (g < activeCount) {
+                            var idx = parseInt(bits5, 2);
+                            var outCh = alphabet.charAt(idx);
+                            groupRow += padRight(bits5, 7) + ' ';
+                            indexRow += padRight(idx, 7) + ' ';
+                            charRow  += padRight('"' + outCh + '"', 7) + ' ';
+                        } else {
+                            groupRow += padRight('(pad)', 7) + ' ';
+                            indexRow += padRight('-', 7) + ' ';
+                            charRow  += padRight(includePadding ? '"="' : '(none)', 7) + ' ';
+                        }
+                    }
+
+                    lines.push(groupRow);
+                    lines.push(indexRow);
+                    lines.push(charRow);
+                    lines.push('');
+                }
+
+                if (allBytes.length > maxInspect) {
+                    lines.push('... (' + (allBytes.length - maxInspect) + ' remaining byte(s) packed identically in 5-byte / 40-bit blocks)');
+                }
+
+                inspectorOutput.textContent = lines.join('\n');
+            }
+
+            // Clipboard copy with execCommand fallback
+            function copyToClipboard(text, label) {
+                if (!text) {
+                    statusLine.textContent = 'Status: Nothing to copy.';
+                    return;
+                }
+
+                function onCopied() {
+                    statusLine.textContent = 'Status: Copied ' + label + ' to clipboard.';
+                }
+
+                function fallbackCopy() {
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try {
+                        document.execCommand('copy');
+                        onCopied();
+                    } catch (err) {
+                        statusLine.textContent = 'Status: Copy failed. Value: ' + text;
+                    }
+                    document.body.removeChild(ta);
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(onCopied).catch(fallbackCopy);
+                } else {
+                    fallbackCopy();
+                }
+            }
+
+            // Core Actions
+            function handleEncode() {
+                var raw = inputBox.value;
+                var isHexVariant = variantSelect.value === 'base32hex';
+                var includePadding = paddingCheckbox.checked;
+
+                var bytes = stringToUtf8Bytes(raw);
+                var encoded = encodeBytesToBase32(bytes, isHexVariant, includePadding);
+                outputBox.value = encoded;
+
+                updateStats(bytes.length, encoded.length, 'encode');
+                updateInspector(raw);
+
+                var padCount = (encoded.match(/=/g) || []).length;
+                var padNote = includePadding ? (padCount + ' "=" padding char(s)') : 'padding omitted';
+                statusLine.textContent =
+                    'Status: Encoded ' + bytes.length + ' UTF-8 byte(s) -> ' + encoded.length +
+                    ' Base32 char(s) [' + (isHexVariant ? 'Base32hex' : 'Standard Base32') + ', ' + padNote + '].';
+            }
+
+            function handleDecode() {
+                var raw = inputBox.value;
+                var isHexVariant = variantSelect.value === 'base32hex';
+                var caseInsensitive = caseInsensitiveCheckbox.checked;
+                var normalizeTypos = typoFixCheckbox.checked;
+
+                try {
+                    var bytes = decodeBase32ToBytes(raw, isHexVariant, caseInsensitive, normalizeTypos);
+                    var decoded = utf8BytesToString(bytes);
+                    outputBox.value = decoded;
+
+                    var cleanedLen = raw.replace(/[\r\n\t ]+/g, '').length;
+                    updateStats(bytes.length, cleanedLen, 'decode');
+                    updateInspector(decoded);
+
+                    statusLine.textContent =
+                        'Status: Decoded ' + cleanedLen + ' Base32 char(s) -> ' + bytes.length +
+                        ' UTF-8 byte(s) (' + decoded.length + ' char(s)) [' +
+                        (isHexVariant ? 'Base32hex' : 'Standard Base32') + '].';
+                } catch (err) {
+                    outputBox.value = '';
+                    statusLine.textContent = 'Status: ERROR - ' + err.message;
+                }
+            }
+
+            function handleSwap() {
+                var oldIn = inputBox.value;
+                var oldOut = outputBox.value;
+                inputBox.value = oldOut;
+                outputBox.value = oldIn;
+                updateInspector(inputBox.value);
+                statusLine.textContent = 'Status: Swapped Input and Output (' + inputBox.value.length + ' char(s) now in Input).';
+            }
+
+            function handleLoadSample() {
+                var sample = SAMPLES[sampleIndex % SAMPLES.length];
+                sampleIndex++;
+                inputBox.value = sample;
+                handleEncode();
+            }
+
+            function handleCopyOutput() {
+                copyToClipboard(outputBox.value, 'output (' + outputBox.value.length + ' char(s))');
+            }
+
+            function handleClear() {
+                inputBox.value = '';
+                outputBox.value = '';
+                updateStats(0, 0, 'encode');
+                updateInspector('');
+                statusLine.textContent = 'Status: Cleared Input and Output.';
+                inputBox.focus();
+            }
+
+            // Populate Section 3: Complete 32-Entry RFC 4648 Base32 Alphabet Reference Table
+            function renderAlphabetTable() {
+                while (alphabetTableBody.firstChild) {
+                    alphabetTableBody.removeChild(alphabetTableBody.firstChild);
+                }
+
+                for (var i = 0; i < 32; i++) {
+                    var stdChar = STD_ALPHABET.charAt(i);
+                    var hexChar = HEX_ALPHABET.charAt(i);
+                    var bin5 = toBinary(i, 5);
+                    var hexVal = toHex(i);
+
+                    var tr = document.createElement('tr');
+
+                    function makeCell(text, copyVal, label, isBold) {
+                        var td = document.createElement('td');
+                        td.title = 'Click to copy ' + label;
+                        var tt = document.createElement('tt');
+                        if (isBold) {
+                            var b = document.createElement('b');
+                            b.textContent = text;
+                            tt.appendChild(b);
+                        } else {
+                            tt.textContent = text;
+                        }
+                        td.appendChild(tt);
+
+                        td.addEventListener('click', function () {
+                            copyToClipboard(copyVal, label + ' ("' + copyVal + '")');
+                        });
+
+                        return td;
+                    }
+
+                    tr.appendChild(makeCell(padLeft(i, 2), String(i), 'index ' + i, false));
+                    tr.appendChild(makeCell(bin5, bin5, '5-bit binary ' + bin5, false));
+                    tr.appendChild(makeCell(hexVal, hexVal, 'hex ' + hexVal, false));
+                    tr.appendChild(makeCell(stdChar, stdChar, 'Standard Base32 char', true));
+                    tr.appendChild(makeCell(hexChar, hexChar, 'Base32hex char', true));
+
+                    alphabetTableBody.appendChild(tr);
+                }
+            }
+
+            // Bind Events
+            encodeBtn.addEventListener('click', handleEncode);
+            decodeBtn.addEventListener('click', handleDecode);
+            swapBtn.addEventListener('click', handleSwap);
+            loadSampleBtn.addEventListener('click', handleLoadSample);
+            copyBtn.addEventListener('click', handleCopyOutput);
+            clearBtn.addEventListener('click', handleClear);
+
+            inputBox.addEventListener('input', function () {
+                if (liveEncodeCheckbox.checked) {
+                    handleEncode();
+                } else {
+                    updateInspector(inputBox.value);
+                }
+            });
+
+            variantSelect.addEventListener('change', function () {
+                var isHex = variantSelect.value === 'base32hex';
+                typoFixCheckbox.disabled = isHex;
+                if (liveEncodeCheckbox.checked) {
+                    handleEncode();
+                } else {
+                    updateInspector(inputBox.value);
+                    statusLine.textContent = 'Status: Switched variant to ' + variantSelect.options[variantSelect.selectedIndex].text + '.';
+                }
+            });
+
+            paddingCheckbox.addEventListener('change', function () {
+                if (liveEncodeCheckbox.checked) {
+                    handleEncode();
+                } else {
+                    updateInspector(inputBox.value);
+                    statusLine.textContent = 'Status: Padding ' + (paddingCheckbox.checked ? 'enabled' : 'disabled') + '.';
+                }
+            });
+
+            // Initialize page on load
+            renderAlphabetTable();
+            handleEncode();
+        })();
+    </script>
+</body>
+</html>

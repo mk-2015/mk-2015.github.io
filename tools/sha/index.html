@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHA Hasher (SHA-1, SHA-256, SHA-384, SHA-512) - inetdotlib.ftp.sh</title>
+</head>
+<body>
+    <h1>SHA Hasher</h1>
+    <hr>
+
+    <p><tt id="status">Status: Ready (SHA-1, SHA-256, SHA-384, SHA-512).</tt></p>
+
+    <h2>1. Input &amp; Options</h2>
+    <p>
+        <label for="inputMode">Input Mode:</label>
+        <select id="inputMode">
+            <option value="utf8" selected>UTF-8 Text</option>
+            <option value="hex">Raw Hex Bytes</option>
+        </select>
+        &nbsp;|&nbsp;
+        <label for="caseSelect">Hex Case:</label>
+        <select id="caseSelect">
+            <option value="lower" selected>lowercase</option>
+            <option value="upper">UPPERCASE</option>
+        </select>
+        &nbsp;|&nbsp;
+        <input type="checkbox" id="liveHash" checked>
+        <label for="liveHash">Hash as you type</label>
+        &nbsp;|&nbsp;
+        <input type="checkbox" id="showEncodings">
+        <label for="showEncodings">Show Base32 &amp; Base64</label>
+    </p>
+
+    <p>
+        <label for="inputText">Input Data:</label><br>
+        <textarea id="inputText" rows="5" cols="76">Hello, world!</textarea>
+    </p>
+
+    <p>
+        <button type="button" id="hashBtn">Compute Hashes</button>
+        <button type="button" id="clearBtn">Clear</button>
+        <button type="button" id="sampleHelloBtn">Sample: "Hello, world!"</button>
+        <button type="button" id="sampleEmptyBtn">Sample: Empty ("")</button>
+        <button type="button" id="sampleAbcBtn">Sample: "abc"</button>
+        <button type="button" id="sampleHexBtn">Sample: Hex "deadbeef"</button>
+    </p>
+
+    <hr>
+
+    <h2>2. SHA Digests</h2>
+    <p><tt id="byteSummary">Input bytes: 13 (0x0d)</tt></p>
+
+    <table border="1" cellpadding="4" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Algorithm</th>
+                <th>Bits / Bytes</th>
+                <th>Hex Digest</th>
+                <th class="enc-col" hidden>Base32</th>
+                <th class="enc-col" hidden>Base64</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="digestRows">
+            <tr>
+                <td><b>SHA-1</b></td>
+                <td><tt>160b / 20B</tt></td>
+                <td><tt id="out-SHA-1"></tt></td>
+                <td class="enc-col" hidden><tt id="b32-SHA-1"></tt></td>
+                <td class="enc-col" hidden><tt id="b64-SHA-1"></tt></td>
+                <td><button type="button" data-copy-target="out-SHA-1">Copy</button></td>
+            </tr>
+            <tr>
+                <td><b>SHA-256</b></td>
+                <td><tt>256b / 32B</tt></td>
+                <td><tt id="out-SHA-256"></tt></td>
+                <td class="enc-col" hidden><tt id="b32-SHA-256"></tt></td>
+                <td class="enc-col" hidden><tt id="b64-SHA-256"></tt></td>
+                <td><button type="button" data-copy-target="out-SHA-256">Copy</button></td>
+            </tr>
+            <tr>
+                <td><b>SHA-384</b></td>
+                <td><tt>384b / 48B</tt></td>
+                <td><tt id="out-SHA-384"></tt></td>
+                <td class="enc-col" hidden><tt id="b32-SHA-384"></tt></td>
+                <td class="enc-col" hidden><tt id="b64-SHA-384"></tt></td>
+                <td><button type="button" data-copy-target="out-SHA-384">Copy</button></td>
+            </tr>
+            <tr>
+                <td><b>SHA-512</b></td>
+                <td><tt>512b / 64B</tt></td>
+                <td><tt id="out-SHA-512"></tt></td>
+                <td class="enc-col" hidden><tt id="b32-SHA-512"></tt></td>
+                <td class="enc-col" hidden><tt id="b64-SHA-512"></tt></td>
+                <td><button type="button" data-copy-target="out-SHA-512">Copy</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>3. Checksum Verification</h2>
+    <p>
+        <label for="verifyAlgo">Algorithm:</label>
+        <select id="verifyAlgo">
+            <option value="SHA-1">SHA-1</option>
+            <option value="SHA-256" selected>SHA-256</option>
+            <option value="SHA-384">SHA-384</option>
+            <option value="SHA-512">SHA-512</option>
+        </select>
+        &nbsp;
+        <label for="expectedHash">Expected Digest (Hex):</label>
+        <input type="text" id="expectedHash" size="68" placeholder="Paste expected hex hash here...">
+        <button type="button" id="verifyBtn">Verify</button>
+    </p>
+    <p><tt id="verifyResult">Verification: No expected digest entered.</tt></p>
+
+    <hr>
+
+    <h2>4. Technical Details &amp; Inspector</h2>
+    <pre id="inspector">Waiting for input...</pre>
+
+    <script>
+        (function () {
+            "use strict";
+
+            var ALGOS = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+            var BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            var BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+            var inputTextEl = document.getElementById("inputText");
+            var inputModeEl = document.getElementById("inputMode");
+            var caseSelectEl = document.getElementById("caseSelect");
+            var liveHashEl = document.getElementById("liveHash");
+            var showEncodingsEl = document.getElementById("showEncodings");
+            var hashBtn = document.getElementById("hashBtn");
+            var clearBtn = document.getElementById("clearBtn");
+            var sampleHelloBtn = document.getElementById("sampleHelloBtn");
+            var sampleEmptyBtn = document.getElementById("sampleEmptyBtn");
+            var sampleAbcBtn = document.getElementById("sampleAbcBtn");
+            var sampleHexBtn = document.getElementById("sampleHexBtn");
+            var statusEl = document.getElementById("status");
+            var byteSummaryEl = document.getElementById("byteSummary");
+            var inspectorEl = document.getElementById("inspector");
+            var verifyAlgoEl = document.getElementById("verifyAlgo");
+            var expectedHashEl = document.getElementById("expectedHash");
+            var verifyBtn = document.getElementById("verifyBtn");
+            var verifyResultEl = document.getElementById("verifyResult");
+
+            var currentDigests = {};
+            var hashSeq = 0;
+
+            function setStatus(msg) {
+                statusEl.textContent = "Status: " + msg;
+            }
+
+            function parseInputBytes() {
+                var raw = inputTextEl.value;
+                var mode = inputModeEl.value;
+
+                if (mode === "hex") {
+                    var cleaned = raw.replace(/[^0-9a-fA-F]/g, "");
+                    if (cleaned.length % 2 !== 0) {
+                        return {
+                            error: "Hex input has an odd number of hex digits (" + cleaned.length + "). Pad with a leading 0."
+                        };
+                    }
+                    var hexBytes = new Uint8Array(cleaned.length / 2);
+                    for (var i = 0; i < hexBytes.length; i++) {
+                        hexBytes[i] = parseInt(cleaned.substr(i * 2, 2), 16);
+                    }
+                    return { bytes: hexBytes, hexCount: cleaned.length };
+                }
+
+                if (typeof TextEncoder !== "undefined") {
+                    return { bytes: new TextEncoder().encode(raw) };
+                }
+
+                var utf8 = [];
+                for (var j = 0; j < raw.length; j++) {
+                    var code = raw.charCodeAt(j);
+                    if (code < 0x80) {
+                        utf8.push(code);
+                    } else if (code < 0x800) {
+                        utf8.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
+                    } else if (code >= 0xd800 && code <= 0xdbff && j + 1 < raw.length) {
+                        var next = raw.charCodeAt(++j);
+                        var cp = 0x10000 + ((code & 0x3ff) << 10) + (next & 0x3ff);
+                        utf8.push(
+                            0xf0 | (cp >> 18),
+                            0x80 | ((cp >> 12) & 0x3f),
+                            0x80 | ((cp >> 6) & 0x3f),
+                            0x80 | (cp & 0x3f)
+                        );
+                    } else {
+                        utf8.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
+                    }
+                }
+                return { bytes: new Uint8Array(utf8) };
+            }
+
+            function bytesToHex(bytes, upper) {
+                var out = "";
+                for (var i = 0; i < bytes.length; i++) {
+                    var h = bytes[i].toString(16);
+                    if (h.length < 2) {
+                        h = "0" + h;
+                    }
+                    out += h;
+                }
+                return upper ? out.toUpperCase() : out.toLowerCase();
+            }
+
+            function bytesToBase64(bytes) {
+                var out = "";
+                var i = 0;
+                while (i + 2 < bytes.length) {
+                    var n = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+                    out += BASE64_ALPHABET.charAt((n >>> 18) & 0x3f);
+                    out += BASE64_ALPHABET.charAt((n >>> 12) & 0x3f);
+                    out += BASE64_ALPHABET.charAt((n >>> 6) & 0x3f);
+                    out += BASE64_ALPHABET.charAt(n & 0x3f);
+                    i += 3;
+                }
+                var rem = bytes.length - i;
+                if (rem === 1) {
+                    var n1 = bytes[i] << 16;
+                    out += BASE64_ALPHABET.charAt((n1 >>> 18) & 0x3f);
+                    out += BASE64_ALPHABET.charAt((n1 >>> 12) & 0x3f);
+                    out += "==";
+                } else if (rem === 2) {
+                    var n2 = (bytes[i] << 16) | (bytes[i + 1] << 8);
+                    out += BASE64_ALPHABET.charAt((n2 >>> 18) & 0x3f);
+                    out += BASE64_ALPHABET.charAt((n2 >>> 12) & 0x3f);
+                    out += BASE64_ALPHABET.charAt((n2 >>> 6) & 0x3f);
+                    out += "=";
+                }
+                return out;
+            }
+
+            function bytesToBase32(bytes) {
+                var out = "";
+                var i = 0;
+                while (i + 4 < bytes.length) {
+                    var hi = (bytes[i] * 16777216) + (bytes[i + 1] << 16) + (bytes[i + 2] << 8) + bytes[i + 3];
+                    var lo = bytes[i + 4];
+                    out += BASE32_ALPHABET.charAt((hi / 268435456) & 0x1f);
+                    out += BASE32_ALPHABET.charAt((hi >>> 23) & 0x1f);
+                    out += BASE32_ALPHABET.charAt((hi >>> 18) & 0x1f);
+                    out += BASE32_ALPHABET.charAt((hi >>> 13) & 0x1f);
+                    out += BASE32_ALPHABET.charAt((hi >>> 8) & 0x1f);
+                    out += BASE32_ALPHABET.charAt((hi >>> 3) & 0x1f);
+                    out += BASE32_ALPHABET.charAt(((hi & 0x07) << 2) | ((lo >>> 6) & 0x03));
+                    out += BASE32_ALPHABET.charAt((lo >>> 1) & 0x1f);
+                    void lo;
+                }
+                var rem = bytes.length - i;
+                if (rem > 0) {
+                    var buf = [0, 0, 0, 0, 0];
+                    for (var k = 0; k < rem; k++) {
+                        buf[k] = bytes[i + k];
+                    }
+                    var b0 = buf[0], b1 = buf[1], b2 = buf[2], b3 = buf[3];
+                    var chars = [
+                        (b0 >>> 3) & 0x1f,
+                        ((b0 & 0x07) << 2) | ((b1 >>> 6) & 0x03),
+                        (b1 >>> 1) & 0x1f,
+                        ((b1 & 0x01) << 4) | ((b2 >>> 4) & 0x0f),
+                        ((b2 & 0x0f) << 1) | ((b3 >>> 7) & 0x01),
+                        (b3 >>> 2) & 0x1f,
+                        ((b3 & 0x03) << 3) | ((buf[4] >>> 5) & 0x07),
+                        buf[4] & 0x1f
+                    ];
+                    var emitCount = [0, 2, 4, 5, 7][rem];
+                    for (var c = 0; c < 8; c++) {
+                        out += c < emitCount ? BASE32_ALPHABET.charAt(chars[c]) : "=";
+                    }
+                }
+                return out;
+            }
+
+            // Pure JS SHA-1 fallback (FIPS 180-4)
+            function sha1Js(bytes) {
+                var bitLen = bytes.length * 8;
+                var paddedLen = (((bytes.length + 9 + 63) / 64) | 0) * 64;
+                var m = new Uint8Array(paddedLen);
+                m.set(bytes);
+                m[bytes.length] = 0x80;
+
+                var hiBits = Math.floor(bitLen / 0x100000000);
+                var loBits = bitLen >>> 0;
+                m[paddedLen - 8] = (hiBits >>> 24) & 0xff;
+                m[paddedLen - 7] = (hiBits >>> 16) & 0xff;
+                m[paddedLen - 6] = (hiBits >>> 8) & 0xff;
+                m[paddedLen - 5] = hiBits & 0xff;
+                m[paddedLen - 4] = (loBits >>> 24) & 0xff;
+                m[paddedLen - 3] = (loBits >>> 16) & 0xff;
+                m[paddedLen - 2] = (loBits >>> 8) & 0xff;
+                m[paddedLen - 1] = loBits & 0xff;
+
+                var h0 = 0x67452301;
+                var h1 = 0xefcdab89;
+                var h2 = 0x98badcfe;
+                var h3 = 0x10325476;
+                var h4 = 0xc3d2e1f0;
+                var w = new Uint32Array(80);
+
+                function rotl(v, n) {
+                    return ((v << n) | (v >>> (32 - n))) >>> 0;
+                }
+
+                for (var offset = 0; offset < paddedLen; offset += 64) {
+                    for (var t = 0; t < 16; t++) {
+                        var p = offset + t * 4;
+                        w[t] = ((m[p] << 24) | (m[p + 1] << 16) | (m[p + 2] << 8) | m[p + 3]) >>> 0;
+                    }
+                    for (t = 16; t < 80; t++) {
+                        w[t] = rotl(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16], 1);
+                    }
+
+                    var a = h0, b = h1, c = h2, d = h3, e = h4;
+                    for (t = 0; t < 80; t++) {
+                        var f, k;
+                        if (t < 20) {
+                            f = (b & c) | ((~b) & d);
+                            k = 0x5a827999;
+                        } else if (t < 40) {
+                            f = b ^ c ^ d;
+                            k = 0x6ed9eba1;
+                        } else if (t < 60) {
+                            f = (b & c) | (b & d) | (c & d);
+                            k = 0x8f1bbcdc;
+                        } else {
+                            f = b ^ c ^ d;
+                            k = 0xca62c1d6;
+                        }
+                        var temp = (rotl(a, 5) + f + e + k + w[t]) >>> 0;
+                        e = d;
+                        d = c;
+                        c = rotl(b, 30);
+                        b = a;
+                        a = temp;
+                    }
+
+                    h0 = (h0 + a) >>> 0;
+                    h1 = (h1 + b) >>> 0;
+                    h2 = (h2 + c) >>> 0;
+                    h3 = (h3 + d) >>> 0;
+                    h4 = (h4 + e) >>> 0;
+                }
+
+                var out = new Uint8Array(20);
+                var words = [h0, h1, h2, h3, h4];
+                for (var i = 0; i < 5; i++) {
+                    out[i * 4] = (words[i] >>> 24) & 0xff;
+                    out[i * 4 + 1] = (words[i] >>> 16) & 0xff;
+                    out[i * 4 + 2] = (words[i] >>> 8) & 0xff;
+                    out[i * 4 + 3] = words[i] & 0xff;
+                }
+                return out;
+            }
+
+            // Pure JS SHA-256 fallback (FIPS 180-4)
+            var K256 = new Uint32Array([
+                0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+                0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+                0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+                0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+                0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+                0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+                0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+                0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+            ]);
+
+            function sha256Js(bytes) {
+                var bitLen = bytes.length * 8;
+                var paddedLen = (((bytes.length + 9 + 63) / 64) | 0) * 64;
+                var m = new Uint8Array(paddedLen);
+                m.set(bytes);
+                m[bytes.length] = 0x80;
+
+                var hiBits = Math.floor(bitLen / 0x100000000);
+                var loBits = bitLen >>> 0;
+                m[paddedLen - 8] = (hiBits >>> 24) & 0xff;
+                m[paddedLen - 7] = (hiBits >>> 16) & 0xff;
+                m[paddedLen - 6] = (hiBits >>> 8) & 0xff;
+                m[paddedLen - 5] = hiBits & 0xff;
+                m[paddedLen - 4] = (loBits >>> 24) & 0xff;
+                m[paddedLen - 3] = (loBits >>> 16) & 0xff;
+                m[paddedLen - 2] = (loBits >>> 8) & 0xff;
+                m[paddedLen - 1] = loBits & 0xff;
+
+                var h = new Uint32Array([
+                    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+                    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+                ]);
+                var w = new Uint32Array(64);
+
+                function rotr(v, n) {
+                    return ((v >>> n) | (v << (32 - n))) >>> 0;
+                }
+
+                for (var offset = 0; offset < paddedLen; offset += 64) {
+                    for (var t = 0; t < 16; t++) {
+                        var p = offset + t * 4;
+                        w[t] = ((m[p] << 24) | (m[p + 1] << 16) | (m[p + 2] << 8) | m[p + 3]) >>> 0;
+                    }
+                    for (t = 16; t < 64; t++) {
+                        var s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
+                        var s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
+                        w[t] = (w[t - 16] + s0 + w[t - 7] + s1) >>> 0;
+                    }
+
+                    var a = h[0], b = h[1], c = h[2], d = h[3],
+                        e = h[4], f = h[5], g = h[6], hh = h[7];
+
+                    for (t = 0; t < 64; t++) {
+                        var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+                        var ch = (e & f) ^ ((~e) & g);
+                        var temp1 = (hh + S1 + ch + K256[t] + w[t]) >>> 0;
+                        var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+                        var maj = (a & b) ^ (a & c) ^ (b & c);
+                        var temp2 = (S0 + maj) >>> 0;
+
+                        hh = g;
+                        g = f;
+                        f = e;
+                        e = (d + temp1) >>> 0;
+                        d = c;
+                        c = b;
+                        b = a;
+                        a = (temp1 + temp2) >>> 0;
+                    }
+
+                    h[0] = (h[0] + a) >>> 0;
+                    h[1] = (h[1] + b) >>> 0;
+                    h[2] = (h[2] + c) >>> 0;
+                    h[3] = (h[3] + d) >>> 0;
+                    h[4] = (h[4] + e) >>> 0;
+                    h[5] = (h[5] + f) >>> 0;
+                    h[6] = (h[6] + g) >>> 0;
+                    h[7] = (h[7] + hh) >>> 0;
+                }
+
+                var out = new Uint8Array(32);
+                for (var i = 0; i < 8; i++) {
+                    out[i * 4] = (h[i] >>> 24) & 0xff;
+                    out[i * 4 + 1] = (h[i] >>> 16) & 0xff;
+                    out[i * 4 + 2] = (h[i] >>> 8) & 0xff;
+                    out[i * 4 + 3] = h[i] & 0xff;
+                }
+                return out;
+            }
+
+            // Pure JS SHA-512 / SHA-384 fallback using 64-bit BigInt (FIPS 180-4)
+            var MASK64 = (1n << 64n) - 1n;
+            var K512 = [
+                0x428a2f98d728ae22n, 0x7137449123ef65cdn, 0xb5c0fbcfec4d3b2fn, 0xe9b5dba58189dbbdn,
+                0x3956c25bf348b538n, 0x59f111f1b605d019n, 0x923f82a4af194f9bn, 0xab1c5ed5da6d8118n,
+                0xd807aa98a3030242n, 0x12835b0145706fben, 0x243185be4ee4b28cn, 0x550c7dc3d5ffb4e2n,
+                0x72be5d74f27b896fn, 0x80deb1fe3b1696b1n, 0x9bdc06a725c71235n, 0xc19bf174cf692694n,
+                0xe49b69c19ef14ad2n, 0xefbe4786384f25e3n, 0x0fc19dc68b8cd5b5n, 0x240ca1cc77ac9c65n,
+                0x2de92c6f592b0275n, 0x4a7484aa6ea6e483n, 0x5cb0a9dcbd41fbd4n, 0x76f988da831153b5n,
+                0x983e5152ee66dfabn, 0xa831c66d2db43210n, 0xb00327c898fb213fn, 0xbf597fc7beef0ee4n,
+                0xc6e00bf33da88fc2n, 0xd5a79147930aa725n, 0x06ca6351e003826fn, 0x142929670a0e6e70n,
+                0x27b70a8546d22fc3n, 0x2e1b21385c26c926n, 0x4d2c6dfc5ac42aedn, 0x53380d139d95b3dfn,
+                0x650a73548baf63den, 0x766a0abb3c77b2a8n, 0x81c2c92e47edaee6n, 0x92722c851482353bn,
+                0xa2bfe8a14cf10364n, 0xa81a664bbc423001n, 0xc24b8b70d0f89791n, 0xc76c51a30654be30n,
+                0xd192e819d6ef5218n, 0xd69906245565a910n, 0xf40e35855771202an, 0x106aa07032bbd1b8n,
+                0x19a4c116b8d2d0c8n, 0x1e376c085141ab53n, 0x2748774cdf8eeb99n, 0x34b0bcb5e19b48a8n,
+                0x391c0cb3c5c95a63n, 0x4ed8aa4ae3418acbn, 0x5b9cca4f7763e373n, 0x682e6ff3d6b2b8a3n,
+                0x748f82ee5defb2fcn, 0x78a5636f43172f60n, 0x84c87814a1f0ab72n, 0x8cc702081a6439ecn,
+                0x90befffa23631e28n, 0xa4506cebde82bde9n, 0xbef9a3f7b2c67915n, 0xc67178f2e372532bn,
+                0xca273eceea26619cn, 0xd186b8c721c0c207n, 0xeada7dd6cde0eb1en, 0xf57d4f7fee6ed178n,
+                0x06f067aa72176fbaen, 0x0a637dc5a2c898a6n, 0x113f9804bef90daen, 0x1b710b35131c471bn,
+                0x28db77f523047d84n, 0x32caab7b40c72493n, 0x3c9ebe0a15c9bebcn, 0x431d67c49c100d4cn,
+                0x4cc5d4becb3e42b6n, 0x597f299cfc657e2an, 0x5fcb6fab3ad6faecn, 0x6c44198c4a475817n
+            ];
+            var INIT512 = [
+                0x6a09e667f3bcc908n, 0xbb67ae8584caa73bn, 0x3c6ef372fe94f82bn, 0xa54ff53a5f1d36f1n,
+                0x510e527fade682d1n, 0x9b05688c2b3e6c1fn, 0x1f83d9abfb41bd6bn, 0x5be0cd19137e2179n
+            ];
+            var INIT384 = [
+                0xcbbb9d5dc1059ed8n, 0x629a292a367cd507n, 0x9159015a3070dd17n, 0x152fecd8f70e5939n,
+                0x67332667ffc00b31n, 0x8eb44a8768581511n, 0xdb0c2e0d64f98fa7n, 0x47b5481dbefa4fa4n
+            ];
+
+            function rotr64(x, n) {
+                var bn = BigInt(n);
+                return ((x >> bn) | (x << (64n - bn))) & MASK64;
+            }
+
+            function sha512Or384Js(bytes, is384) {
+                var bitLen = BigInt(bytes.length) * 8n;
+                var paddedLen = Math.floor((bytes.length + 17 + 127) / 128) * 128;
+                var m = new Uint8Array(paddedLen);
+                m.set(bytes);
+                m[bytes.length] = 0x80;
+
+                for (var b = 0; b < 16; b++) {
+                    var shift = BigInt((15 - b) * 8);
+                    m[paddedLen - 16 + b] = Number((bitLen >> shift) & 0xffn);
+                }
+
+                var h = (is384 ? INIT384 : INIT512).slice();
+                var w = new Array(80);
+
+                for (var offset = 0; offset < paddedLen; offset += 128) {
+                    for (var t = 0; t < 16; t++) {
+                        var p = offset + t * 8;
+                        var word = 0n;
+                        for (var k = 0; k < 8; k++) {
+                            word = (word << 8n) | BigInt(m[p + k]);
+                        }
+                        w[t] = word;
+                    }
+                    for (t = 16; t < 80; t++) {
+                        var s0 = rotr64(w[t - 15], 1) ^ rotr64(w[t - 15], 8) ^ (w[t - 15] >> 7n);
+                        var s1 = rotr64(w[t - 2], 19) ^ rotr64(w[t - 2], 61) ^ (w[t - 2] >> 6n);
+                        w[t] = (w[t - 16] + s0 + w[t - 7] + s1) & MASK64;
+                    }
+
+                    var a = h[0], b64 = h[1], c = h[2], d = h[3],
+                        e = h[4], f = h[5], g = h[6], hh = h[7];
+
+                    for (t = 0; t < 80; t++) {
+                        var S1 = rotr64(e, 14) ^ rotr64(e, 18) ^ rotr64(e, 41);
+                        var ch = ((e & f) ^ ((~e) & MASK64 & g)) & MASK64;
+                        var temp1 = (hh + S1 + ch + K512[t] + w[t]) & MASK64;
+                        var S0 = rotr64(a, 28) ^ rotr64(a, 34) ^ rotr64(a, 39);
+                        var maj = ((a & b64) ^ (a & c) ^ (b64 & c)) & MASK64;
+                        var temp2 = (S0 + maj) & MASK64;
+
+                        hh = g;
+                        g = f;
+                        f = e;
+                        e = (d + temp1) & MASK64;
+                        d = c;
+                        c = b64;
+                        b64 = a;
+                        a = (temp1 + temp2) & MASK64;
+                    }
+
+                    h[0] = (h[0] + a) & MASK64;
+                    h[1] = (h[1] + b64) & MASK64;
+                    h[2] = (h[2] + c) & MASK64;
+                    h[3] = (h[3] + d) & MASK64;
+                    h[4] = (h[4] + e) & MASK64;
+                    h[5] = (h[5] + f) & MASK64;
+                    h[6] = (h[6] + g) & MASK64;
+                    h[7] = (h[7] + hh) & MASK64;
+                }
+
+                var outLen = is384 ? 48 : 64;
+                var out = new Uint8Array(outLen);
+                var wordsCount = is384 ? 6 : 8;
+                for (var idx = 0; idx < wordsCount; idx++) {
+                    var val = h[idx];
+                    for (var bytePos = 0; bytePos < 8; bytePos++) {
+                        var sh = BigInt((7 - bytePos) * 8);
+                        out[idx * 8 + bytePos] = Number((val >> sh) & 0xffn);
+                    }
+                }
+                return out;
+            }
+
+            function jsDigest(algo, bytes) {
+                if (algo === "SHA-1") {
+                    return sha1Js(bytes);
+                }
+                if (algo === "SHA-256") {
+                    return sha256Js(bytes);
+                }
+                if (algo === "SHA-384") {
+                    return sha512Or384Js(bytes, true);
+                }
+                return sha512Or384Js(bytes, false);
+            }
+
+            function computeSingleDigest(algo, bytes) {
+                if (typeof crypto !== "undefined" && crypto.subtle && typeof crypto.subtle.digest === "function") {
+                    return crypto.subtle.digest(algo, bytes).then(function (buf) {
+                        return new Uint8Array(buf);
+                    }, function () {
+                        return jsDigest(algo, bytes);
+                    });
+                }
+                return Promise.resolve(jsDigest(algo, bytes));
+            }
+
+            function toggleEncodingColumns() {
+                var show = showEncodingsEl.checked;
+                var cols = document.querySelectorAll(".enc-col");
+                for (var i = 0; i < cols.length; i++) {
+                    cols[i].hidden = !show;
+                }
+            }
+
+            function updateInspector(bytes) {
+                var bitCount = bytes.length * 8;
+                var previewLen = Math.min(bytes.length, 32);
+                var previewHex = [];
+                for (var i = 0; i < previewLen; i++) {
+                    var h = bytes[i].toString(16);
+                    previewHex.push(h.length < 2 ? "0" + h : h);
+                }
+                var lines = [
+                    "Mode          : " + (inputModeEl.value === "hex" ? "Raw Hex Bytes" : "UTF-8 Text"),
+                    "Byte Length   : " + bytes.length + " bytes (" + bitCount + " bits)",
+                    "Hex Preview   : " + (bytes.length > 0 ? previewHex.join(" ") + (bytes.length > 32 ? " ..." : "") : "(empty)"),
+                    "SHA-1 Block   : 512 bits (64 bytes)  -> 160-bit (40 hex chars) digest",
+                    "SHA-256 Block : 512 bits (64 bytes)  -> 256-bit (64 hex chars) digest",
+                    "SHA-384 Block : 1024 bits (128 bytes)-> 384-bit (96 hex chars) digest",
+                    "SHA-512 Block : 1024 bits (128 bytes)-> 512-bit (128 hex chars) digest"
+                ];
+                inspectorEl.textContent = lines.join("\n");
+            }
+
+            function verifyChecksum() {
+                var algo = verifyAlgoEl.value;
+                var expectedRaw = expectedHashEl.value.trim().replace(/\s+/g, "").toLowerCase();
+                if (!expectedRaw) {
+                    verifyResultEl.textContent = "Verification: No expected digest entered.";
+                    return;
+                }
+                var actual = currentDigests[algo];
+                if (!actual) {
+                    verifyResultEl.textContent = "Verification: Compute digests first.";
+                    return;
+                }
+                var actualLower = actual.toLowerCase();
+                if (expectedRaw === actualLower) {
+                    verifyResultEl.textContent = "Verification: MATCH (" + algo + " digest matches expected value).";
+                } else {
+                    verifyResultEl.textContent =
+                        "Verification: MISMATCH (" + algo + " expected " + expectedRaw.length +
+                        " hex chars, actual is " + actualLower.length + " hex chars).";
+                }
+            }
+
+            function runHashes() {
+                var seq = ++hashSeq;
+                var parsed = parseInputBytes();
+                if (parsed.error) {
+                    setStatus(parsed.error);
+                    byteSummaryEl.textContent = "Input bytes: invalid hex";
+                    for (var eIdx = 0; eIdx < ALGOS.length; eIdx++) {
+                        document.getElementById("out-" + ALGOS[eIdx]).textContent = "";
+                        document.getElementById("b32-" + ALGOS[eIdx]).textContent = "";
+                        document.getElementById("b64-" + ALGOS[eIdx]).textContent = "";
+                    }
+                    currentDigests = {};
+                    verifyChecksum();
+                    return;
+                }
+
+                var bytes = parsed.bytes;
+                var upper = caseSelectEl.value === "upper";
+                byteSummaryEl.textContent =
+                    "Input bytes: " + bytes.length + " (0x" + bytes.length.toString(16) +
+                    ", " + (bytes.length * 8) + " bits)";
+                updateInspector(bytes);
+                setStatus("Computing SHA-1, SHA-256, SHA-384, and SHA-512...");
+
+                Promise.all(ALGOS.map(function (algo) {
+                    return computeSingleDigest(algo, bytes).then(function (digestBytes) {
+                        return { algo: algo, digestBytes: digestBytes };
+                    });
+                })).then(function (results) {
+                    if (seq !== hashSeq) {
+                        return;
+                    }
+                    currentDigests = {};
+                    for (var i = 0; i < results.length; i++) {
+                        var item = results[i];
+                        var hexStr = bytesToHex(item.digestBytes, upper);
+                        currentDigests[item.algo] = hexStr;
+                        document.getElementById("out-" + item.algo).textContent = hexStr;
+                        document.getElementById("b32-" + item.algo).textContent = bytesToBase32(item.digestBytes);
+                        document.getElementById("b64-" + item.algo).textContent = bytesToBase64(item.digestBytes);
+                    }
+                    setStatus("Computed SHA-1, SHA-256, SHA-384, and SHA-512 for " + bytes.length + " byte(s).");
+                    verifyChecksum();
+                }).catch(function (err) {
+                    if (seq !== hashSeq) {
+                        return;
+                    }
+                    setStatus("Error computing digest: " + (err && err.message ? err.message : String(err)));
+                });
+            }
+
+            function copyText(text, label) {
+                if (!text) {
+                    setStatus("Nothing to copy for " + label + ".");
+                    return;
+                }
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+                    navigator.clipboard.writeText(text).then(function () {
+                        setStatus("Copied " + label + " to clipboard.");
+                    }, function () {
+                        fallbackCopy(text, label);
+                    });
+                } else {
+                    fallbackCopy(text, label);
+                }
+            }
+
+            function fallbackCopy(text, label) {
+                var helper = document.createElement("textarea");
+                helper.value = text;
+                helper.setAttribute("readonly", "");
+                helper.style.position = "fixed";
+                helper.style.left = "-9999px";
+                document.body.appendChild(helper);
+                helper.select();
+                try {
+                    document.execCommand("copy");
+                    setStatus("Copied " + label + " to clipboard.");
+                } catch (e) {
+                    setStatus("Could not copy automatically. Select and copy manually.");
+                }
+                document.body.removeChild(helper);
+            }
+
+            document.getElementById("digestRows").addEventListener("click", function (ev) {
+                var btn = ev.target.closest("button[data-copy-target]");
+                if (!btn) {
+                    return;
+                }
+                var targetId = btn.getAttribute("data-copy-target");
+                var el = document.getElementById(targetId);
+                copyText(el ? el.textContent : "", targetId.replace("out-", ""));
+            });
+
+            inputTextEl.addEventListener("input", function () {
+                if (liveHashEl.checked) {
+                    runHashes();
+                }
+            });
+
+            inputModeEl.addEventListener("change", runHashes);
+            caseSelectEl.addEventListener("change", runHashes);
+            showEncodingsEl.addEventListener("change", toggleEncodingColumns);
+            hashBtn.addEventListener("click", runHashes);
+
+            clearBtn.addEventListener("click", function () {
+                inputTextEl.value = "";
+                expectedHashEl.value = "";
+                runHashes();
+                inputTextEl.focus();
+            });
+
+            sampleHelloBtn.addEventListener("click", function () {
+                inputModeEl.value = "utf8";
+                inputTextEl.value = "Hello, world!";
+                runHashes();
+            });
+
+            sampleEmptyBtn.addEventListener("click", function () {
+                inputModeEl.value = "utf8";
+                inputTextEl.value = "";
+                runHashes();
+            });
+
+            sampleAbcBtn.addEventListener("click", function () {
+                inputModeEl.value = "utf8";
+                inputTextEl.value = "abc";
+                runHashes();
+            });
+
+            sampleHexBtn.addEventListener("click", function () {
+                inputModeEl.value = "hex";
+                inputTextEl.value = "deadbeef";
+                runHashes();
+            });
+
+            verifyBtn.addEventListener("click", verifyChecksum);
+            verifyAlgoEl.addEventListener("change", verifyChecksum);
+            expectedHashEl.addEventListener("input", verifyChecksum);
+
+            toggleEncodingColumns();
+            runHashes();
+        })();
+    </script>
+</body>
+</html>

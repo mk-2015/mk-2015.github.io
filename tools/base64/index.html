@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder &amp; Decoder - inetdotlib.ftp.sh</title>
+</head>
+<body>
+    <!-- Site Header & Navigation -->
+    <h1>Base64 Encoder &amp; Decoder</h1>
+    <hr>
+
+    <!-- Section 1: Interactive Base64 Encoder & Decoder -->
+    <h2>1. Interactive Base64 Encoder &amp; Decoder</h2>
+    <p>
+        <label for="variantSelect"><b>Variant:</b></label>
+        <select id="variantSelect">
+            <option value="standard" selected>Standard Base64 (RFC 4648: A-Z, a-z, 0-9, +, /, = padding)</option>
+            <option value="urlsafe">URL-Safe Base64 (RFC 4648 &sect;5: A-Z, a-z, 0-9, -, _, optional padding)</option>
+        </select>
+        &nbsp;
+        <input type="checkbox" id="paddingCheckbox" checked>
+        <label for="paddingCheckbox">Include '=' padding</label>
+    </p>
+
+    <p>
+        <label for="inputBox"><b>Input (Plain UTF-8 Text or Base64 String):</b></label><br>
+        <textarea id="inputBox" rows="6" cols="65" placeholder="Enter UTF-8 text to encode or Base64 string to decode...">Welcome to inetdotlib.ftp.sh! (1995)</textarea>
+    </p>
+
+    <p>
+        <button type="button" id="encodeBtn">Encode to Base64</button>
+        <button type="button" id="decodeBtn">Decode from Base64</button>
+        <button type="button" id="swapBtn">Swap Input/Output</button>
+        <button type="button" id="copyBtn">Copy Output</button>
+        <button type="button" id="loadSampleBtn">Load Sample</button>
+        <button type="button" id="clearBtn">Clear</button>
+    </p>
+
+    <p>
+        <label for="outputBox"><b>Output:</b></label><br>
+        <textarea id="outputBox" rows="6" cols="65" readonly></textarea>
+    </p>
+
+    <p><tt id="statusLine">Status: Ready.</tt></p>
+    <hr>
+
+    <!-- Section 2: Bit-Level 6-Bit Packing Inspector -->
+    <h2>2. Bit-Level 6-Bit Packing Inspector</h2>
+    <p>
+        Base64 groups every 3 input bytes (24 bits) into four 6-bit indices (0–63). When input bytes are not a multiple of 3, trailing zero bits are appended to fill the final 6-bit group and <tt>=</tt> padding characters are added (unless padding is disabled).
+    </p>
+    <pre id="inspectorOutput">Loading bit inspector...</pre>
+    <hr>
+
+    <!-- Section 3: Base64 Alphabet Reference Table -->
+    <h2>3. Base64 Alphabet Reference Table (RFC 4648)</h2>
+    <p>
+        Click any cell below to copy its value to the clipboard. Padding character: <tt>=</tt> (ASCII Dec <tt>61</tt>, Hex <tt>0x3D</tt>).
+    </p>
+
+    <table border="1" cellpadding="4" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Index (0-63)</th>
+                <th>6-Bit Binary</th>
+                <th>Standard Base64 Char</th>
+                <th>URL-Safe Base64 Char</th>
+                <th>ASCII Dec (Std / URL)</th>
+                <th>ASCII Hex (Std / URL)</th>
+            </tr>
+        </thead>
+        <tbody id="alphabetTableBody">
+            <!-- Populated by vanilla JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        (function () {
+            // RFC 4648 Standard & URL-Safe Alphabets
+            var STD_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+            var URL_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+            // Sample inputs cycled by "Load Sample"
+            var SAMPLES = [
+                'Welcome to inetdotlib.ftp.sh! (1995)',
+                'Man',
+                'Ma',
+                'M',
+                'Base64 encodes 3 bytes (24 bits) -> 4 chars (6 bits each)!',
+                'UTF-8 test: Café, naïve, résumé, 100% ASCII + Unicode ★'
+            ];
+            var sampleIndex = 0;
+
+            // DOM Elements
+            var variantSelect = document.getElementById('variantSelect');
+            var paddingCheckbox = document.getElementById('paddingCheckbox');
+            var inputBox = document.getElementById('inputBox');
+            var outputBox = document.getElementById('outputBox');
+            var statusLine = document.getElementById('statusLine');
+            var inspectorOutput = document.getElementById('inspectorOutput');
+            var alphabetTableBody = document.getElementById('alphabetTableBody');
+
+            var encodeBtn = document.getElementById('encodeBtn');
+            var decodeBtn = document.getElementById('decodeBtn');
+            var swapBtn = document.getElementById('swapBtn');
+            var copyBtn = document.getElementById('copyBtn');
+            var loadSampleBtn = document.getElementById('loadSampleBtn');
+            var clearBtn = document.getElementById('clearBtn');
+
+            // UTF-8 String <-> Uint8Array helpers (with fallback if TextEncoder/TextDecoder unavailable)
+            function stringToUtf8Bytes(str) {
+                if (typeof TextEncoder !== 'undefined') {
+                    return new TextEncoder().encode(str);
+                }
+                var utf8 = unescape(encodeURIComponent(str));
+                var arr = new Uint8Array(utf8.length);
+                for (var i = 0; i < utf8.length; i++) {
+                    arr[i] = utf8.charCodeAt(i);
+                }
+                return arr;
+            }
+
+            function utf8BytesToString(bytes) {
+                if (typeof TextDecoder !== 'undefined') {
+                    try {
+                        return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+                    } catch (e) {
+                        throw new Error('Decoded bytes do not form valid UTF-8 text.');
+                    }
+                }
+                var binStr = '';
+                for (var i = 0; i < bytes.length; i++) {
+                    binStr += String.fromCharCode(bytes[i]);
+                }
+                try {
+                    return decodeURIComponent(escape(binStr));
+                } catch (e2) {
+                    throw new Error('Decoded bytes do not form valid UTF-8 text.');
+                }
+            }
+
+            // Encode Uint8Array -> Base64 string
+            function encodeBytesToBase64(bytes, isUrlSafe, includePadding) {
+                var alphabet = isUrlSafe ? URL_ALPHABET : STD_ALPHABET;
+                var out = '';
+                var len = bytes.length;
+
+                for (var i = 0; i < len; i += 3) {
+                    var b0 = bytes[i];
+                    var hasB1 = (i + 1) < len;
+                    var hasB2 = (i + 2) < len;
+                    var b1 = hasB1 ? bytes[i + 1] : 0;
+                    var b2 = hasB2 ? bytes[i + 2] : 0;
+
+                    var triple = (b0 << 16) | (b1 << 8) | b2;
+
+                    var c0 = (triple >>> 18) & 0x3F;
+                    var c1 = (triple >>> 12) & 0x3F;
+                    var c2 = (triple >>> 6) & 0x3F;
+                    var c3 = triple & 0x3F;
+
+                    out += alphabet.charAt(c0);
+                    out += alphabet.charAt(c1);
+
+                    if (hasB1) {
+                        out += alphabet.charAt(c2);
+                    } else if (includePadding) {
+                        out += '=';
+                    }
+
+                    if (hasB2) {
+                        out += alphabet.charAt(c3);
+                    } else if (includePadding) {
+                        out += '=';
+                    }
+                }
+
+                return out;
+            }
+
+            // Decode Base64 string -> Uint8Array (strict validation)
+            function decodeBase64ToBytes(rawInput, isUrlSafe) {
+                // Strip ASCII whitespace (spaces, tabs, CR, LF) common in wrapped Base64
+                var cleaned = rawInput.replace(/[\r\n\t ]+/g, '');
+                if (cleaned.length === 0) {
+                    return new Uint8Array(0);
+                }
+
+                var alphabet = isUrlSafe ? URL_ALPHABET : STD_ALPHABET;
+                var variantName = isUrlSafe ? 'URL-Safe Base64' : 'Standard Base64';
+
+                // Check for misplaced '=' padding
+                var firstPad = cleaned.indexOf('=');
+                var padCount = 0;
+                if (firstPad !== -1) {
+                    for (var p = firstPad; p < cleaned.length; p++) {
+                        if (cleaned.charAt(p) !== '=') {
+                            throw new Error('Invalid Base64: "=" padding character found before the end of input (at position ' + (firstPad + 1) + ').');
+                        }
+                        padCount++;
+                    }
+                    if (padCount > 2) {
+                        throw new Error('Invalid Base64: Too many "=" padding characters (' + padCount + '; maximum allowed is 2).');
+                    }
+                    if (cleaned.length % 4 !== 0) {
+                        throw new Error('Invalid Base64: Padded string length (' + cleaned.length + ') must be a multiple of 4.');
+                    }
+                } else {
+                    // Unpadded length mod 4 cannot be 1 (6 bits is not enough for 1 full 8-bit byte)
+                    if (cleaned.length % 4 === 1) {
+                        throw new Error('Invalid Base64: Length modulo 4 cannot be 1 (incomplete single byte).');
+                    }
+                }
+
+                var dataLen = firstPad === -1 ? cleaned.length : firstPad;
+                var totalBlocks = Math.ceil(cleaned.length / 4);
+                var byteLen = Math.floor((dataLen * 6) / 8);
+                var out = new Uint8Array(byteLen);
+                var outPos = 0;
+
+                for (var b = 0; b < totalBlocks; b++) {
+                    var offset = b * 4;
+                    var ch0 = cleaned.charAt(offset);
+                    var ch1 = cleaned.charAt(offset + 1);
+                    var ch2 = (offset + 2 < dataLen) ? cleaned.charAt(offset + 2) : null;
+                    var ch3 = (offset + 3 < dataLen) ? cleaned.charAt(offset + 3) : null;
+
+                    var v0 = alphabet.indexOf(ch0);
+                    var v1 = alphabet.indexOf(ch1);
+                    var v2 = ch2 !== null ? alphabet.indexOf(ch2) : 0;
+                    var v3 = ch3 !== null ? alphabet.indexOf(ch3) : 0;
+
+                    if (v0 === -1) {
+                        throw new Error('Invalid character "' + ch0 + '" at position ' + (offset + 1) + ' for ' + variantName + '.');
+                    }
+                    if (v1 === -1) {
+                        throw new Error('Invalid character "' + ch1 + '" at position ' + (offset + 2) + ' for ' + variantName + '.');
+                    }
+                    if (ch2 !== null && v2 === -1) {
+                        throw new Error('Invalid character "' + ch2 + '" at position ' + (offset + 3) + ' for ' + variantName + '.');
+                    }
+                    if (ch3 !== null && v3 === -1) {
+                        throw new Error('Invalid character "' + ch3 + '" at position ' + (offset + 4) + ' for ' + variantName + '.');
+                    }
+
+                    var triple = (v0 << 18) | (v1 << 12) | (v2 << 6) | v3;
+                    out[outPos++] = (triple >>> 16) & 0xFF;
+                    if (ch2 !== null && outPos < byteLen) {
+                        out[outPos++] = (triple >>> 8) & 0xFF;
+                    }
+                    if (ch3 !== null && outPos < byteLen) {
+                        out[outPos++] = triple & 0xFF;
+                    }
+                }
+
+                return out;
+            }
+
+            // Format helpers
+            function toBinary(num, width) {
+                var s = num.toString(2);
+                while (s.length < width) s = '0' + s;
+                return s;
+            }
+
+            function toHex(num) {
+                var s = num.toString(16).toUpperCase();
+                while (s.length < 2) s = '0' + s;
+                return '0x' + s;
+            }
+
+            function padRight(str, width) {
+                var s = String(str);
+                while (s.length < width) s += ' ';
+                return s;
+            }
+
+            function padLeft(str, width) {
+                var s = String(str);
+                while (s.length < width) s = ' ' + s;
+                return s;
+            }
+
+            // Update Section 2: Bit-Level 6-Bit Packing Inspector
+            function updateInspector(rawText) {
+                var isUrlSafe = variantSelect.value === 'urlsafe';
+                var includePadding = paddingCheckbox.checked;
+                var alphabet = isUrlSafe ? URL_ALPHABET : STD_ALPHABET;
+                var variantLabel = isUrlSafe ? 'URL-Safe Base64 (RFC 4648 §5)' : 'Standard Base64 (RFC 4648)';
+
+                if (!rawText) {
+                    inspectorOutput.textContent = '(Input is empty. Type text above to inspect 8-bit -> 6-bit Base64 packing.)';
+                    return;
+                }
+
+                var allBytes = stringToUtf8Bytes(rawText);
+                // Inspect up to first 6 bytes (two 24-bit blocks) to keep diagram clear and readable
+                var maxInspectBytes = Math.min(allBytes.length, 6);
+                var lines = [];
+
+                lines.push('Variant : ' + variantLabel + ' | Padding: ' + (includePadding ? 'Enabled ("=")' : 'Disabled'));
+                lines.push('Inspecting ' + maxInspectBytes + ' of ' + allBytes.length + ' UTF-8 input byte(s):');
+                lines.push('');
+
+                for (var start = 0; start < maxInspectBytes; start += 3) {
+                    var blockLen = Math.min(3, maxInspectBytes - start);
+                    var b0 = allBytes[start];
+                    var b1 = blockLen > 1 ? allBytes[start + 1] : null;
+                    var b2 = blockLen > 2 ? allBytes[start + 2] : null;
+
+                    var bin0 = toBinary(b0, 8);
+                    var bin1 = b1 !== null ? toBinary(b1, 8) : '00000000';
+                    var bin2 = b2 !== null ? toBinary(b2, 8) : '00000000';
+                    var bitStream24 = bin0 + bin1 + bin2;
+
+                    var c0Label = (b0 >= 32 && b0 <= 126) ? ('"' + String.fromCharCode(b0) + '"') : toHex(b0);
+                    var c1Label = b1 !== null ? ((b1 >= 32 && b1 <= 126) ? ('"' + String.fromCharCode(b1) + '"') : toHex(b1)) : '(pad 0s)';
+                    var c2Label = b2 !== null ? ((b2 >= 32 && b2 <= 126) ? ('"' + String.fromCharCode(b2) + '"') : toHex(b2)) : '(pad 0s)';
+
+                    lines.push('--- Block ' + (Math.floor(start / 3) + 1) + ' (Bytes ' + start + '..' + (start + blockLen - 1) + ') ---');
+                    lines.push(
+                        'Input Bytes (8-bit): ' +
+                        padRight(c0Label + '=' + bin0, 14) + ' | ' +
+                        padRight(c1Label + '=' + bin1, 14) + ' | ' +
+                        padRight(c2Label + '=' + bin2, 14)
+                    );
+
+                    var g0 = bitStream24.slice(0, 6);
+                    var g1 = bitStream24.slice(6, 12);
+                    var g2 = bitStream24.slice(12, 18);
+                    var g3 = bitStream24.slice(18, 24);
+
+                    var idx0 = parseInt(g0, 2);
+                    var idx1 = parseInt(g1, 2);
+                    var idx2 = blockLen > 1 ? parseInt(g2, 2) : null;
+                    var idx3 = blockLen > 2 ? parseInt(g3, 2) : null;
+
+                    var out0 = alphabet.charAt(idx0);
+                    var out1 = alphabet.charAt(idx1);
+                    var out2 = idx2 !== null ? alphabet.charAt(idx2) : (includePadding ? '=' : '(none)');
+                    var out3 = idx3 !== null ? alphabet.charAt(idx3) : (includePadding ? '=' : '(none)');
+
+                    lines.push(
+                        '6-Bit Groups       : ' +
+                        padRight(g0, 14) + ' | ' +
+                        padRight(g1, 14) + ' | ' +
+                        padRight(idx2 !== null ? g2 : (g2 + ' (unused)'), 14) + ' | ' +
+                        padRight(idx3 !== null ? g3 : (g3 + ' (unused)'), 14)
+                    );
+                    lines.push(
+                        'Decimal Index      : ' +
+                        padRight(idx0, 14) + ' | ' +
+                        padRight(idx1, 14) + ' | ' +
+                        padRight(idx2 !== null ? idx2 : '-', 14) + ' | ' +
+                        padRight(idx3 !== null ? idx3 : '-', 14)
+                    );
+                    lines.push(
+                        'Base64 Output      : ' +
+                        padRight('"' + out0 + '"', 14) + ' | ' +
+                        padRight('"' + out1 + '"', 14) + ' | ' +
+                        padRight(idx2 !== null ? ('"' + out2 + '"') : out2, 14) + ' | ' +
+                        padRight(idx3 !== null ? ('"' + out3 + '"') : out3, 14)
+                    );
+                    lines.push('');
+                }
+
+                if (allBytes.length > maxInspectBytes) {
+                    lines.push('... (' + (allBytes.length - maxInspectBytes) + ' remaining byte(s) packed identically in 3-byte / 24-bit blocks)');
+                }
+
+                inspectorOutput.textContent = lines.join('\n');
+            }
+
+            // Clipboard copy with fallback
+            function copyToClipboard(text, description) {
+                if (!text) {
+                    statusLine.textContent = 'Status: Nothing to copy.';
+                    return;
+                }
+
+                function onCopied() {
+                    statusLine.textContent = 'Status: Copied ' + description + ' to clipboard.';
+                }
+
+                function fallbackCopy() {
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try {
+                        document.execCommand('copy');
+                        onCopied();
+                    } catch (err) {
+                        statusLine.textContent = 'Status: Copy failed. Value: ' + text;
+                    }
+                    document.body.removeChild(ta);
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(onCopied).catch(fallbackCopy);
+                } else {
+                    fallbackCopy();
+                }
+            }
+
+            // Action handlers
+            function handleEncode() {
+                var raw = inputBox.value;
+                var isUrlSafe = variantSelect.value === 'urlsafe';
+                var includePadding = paddingCheckbox.checked;
+
+                var bytes = stringToUtf8Bytes(raw);
+                var encoded = encodeBytesToBase64(bytes, isUrlSafe, includePadding);
+                outputBox.value = encoded;
+                updateInspector(raw);
+
+                var padChars = (encoded.match(/=/g) || []).length;
+                var padInfo = includePadding ? (padChars + ' "=" padding char(s)') : 'padding omitted';
+                statusLine.textContent =
+                    'Status: Encoded ' + bytes.length + ' UTF-8 byte(s) (' + raw.length + ' char(s)) -> ' +
+                    encoded.length + ' Base64 char(s) [' + (isUrlSafe ? 'URL-Safe' : 'Standard') + ', ' + padInfo + '].';
+            }
+
+            function handleDecode() {
+                var raw = inputBox.value;
+                var isUrlSafe = variantSelect.value === 'urlsafe';
+
+                try {
+                    var bytes = decodeBase64ToBytes(raw, isUrlSafe);
+                    var decoded = utf8BytesToString(bytes);
+                    outputBox.value = decoded;
+                    updateInspector(decoded);
+
+                    var cleanedLen = raw.replace(/[\r\n\t ]+/g, '').length;
+                    statusLine.textContent =
+                        'Status: Decoded ' + cleanedLen + ' Base64 char(s) -> ' +
+                        bytes.length + ' UTF-8 byte(s) (' + decoded.length + ' char(s)) [' +
+                        (isUrlSafe ? 'URL-Safe' : 'Standard') + '].';
+                } catch (err) {
+                    outputBox.value = '';
+                    statusLine.textContent = 'Status: ERROR - ' + err.message;
+                }
+            }
+
+            function handleSwap() {
+                var prevOut = outputBox.value;
+                var prevIn = inputBox.value;
+                inputBox.value = prevOut;
+                outputBox.value = prevIn;
+                updateInspector(inputBox.value);
+                statusLine.textContent = 'Status: Swapped Input and Output (' + inputBox.value.length + ' char(s) now in Input).';
+            }
+
+            function handleCopyOutput() {
+                copyToClipboard(outputBox.value, 'output (' + outputBox.value.length + ' char(s))');
+            }
+
+            function handleLoadSample() {
+                var sample = SAMPLES[sampleIndex % SAMPLES.length];
+                sampleIndex++;
+                inputBox.value = sample;
+                handleEncode();
+            }
+
+            function handleClear() {
+                inputBox.value = '';
+                outputBox.value = '';
+                updateInspector('');
+                statusLine.textContent = 'Status: Cleared Input and Output.';
+                inputBox.focus();
+            }
+
+            // Populate Section 3: Base64 Alphabet Reference Table (0..63)
+            function renderAlphabetTable() {
+                while (alphabetTableBody.firstChild) {
+                    alphabetTableBody.removeChild(alphabetTableBody.firstChild);
+                }
+
+                for (var i = 0; i < 64; i++) {
+                    var stdChar = STD_ALPHABET.charAt(i);
+                    var urlChar = URL_ALPHABET.charAt(i);
+                    var bin6 = toBinary(i, 6);
+
+                    var stdCode = stdChar.charCodeAt(0);
+                    var urlCode = urlChar.charCodeAt(0);
+
+                    var decText = (stdCode === urlCode) ? String(stdCode) : (stdCode + ' / ' + urlCode);
+                    var hexText = (stdCode === urlCode) ? toHex(stdCode) : (toHex(stdCode) + ' / ' + toHex(urlCode));
+
+                    var tr = document.createElement('tr');
+
+                    function makeCell(text, copyVal, label, isBold) {
+                        var td = document.createElement('td');
+                        td.title = 'Click to copy ' + label;
+                        var tt = document.createElement('tt');
+                        if (isBold) {
+                            var b = document.createElement('b');
+                            b.textContent = text;
+                            tt.appendChild(b);
+                        } else {
+                            tt.textContent = text;
+                        }
+                        td.appendChild(tt);
+
+                        td.addEventListener('click', function () {
+                            copyToClipboard(copyVal, label + ' ("' + copyVal + '")');
+                        });
+
+                        return td;
+                    }
+
+                    tr.appendChild(makeCell(padLeft(i, 2), String(i), 'index ' + i, false));
+                    tr.appendChild(makeCell(bin6, bin6, '6-bit binary ' + bin6, false));
+                    tr.appendChild(makeCell(stdChar, stdChar, 'Standard Base64 char', true));
+                    tr.appendChild(makeCell(urlChar, urlChar, 'URL-Safe Base64 char', true));
+                    tr.appendChild(makeCell(decText, String(stdCode), 'ASCII decimal ' + decText, false));
+                    tr.appendChild(makeCell(hexText, toHex(stdCode), 'ASCII hex ' + hexText, false));
+
+                    alphabetTableBody.appendChild(tr);
+                }
+            }
+
+            // Bind Events
+            encodeBtn.addEventListener('click', handleEncode);
+            decodeBtn.addEventListener('click', handleDecode);
+            swapBtn.addEventListener('click', handleSwap);
+            copyBtn.addEventListener('click', handleCopyOutput);
+            loadSampleBtn.addEventListener('click', handleLoadSample);
+            clearBtn.addEventListener('click', handleClear);
+
+            inputBox.addEventListener('input', function () {
+                updateInspector(inputBox.value);
+            });
+
+            variantSelect.addEventListener('change', function () {
+                updateInspector(inputBox.value);
+                statusLine.textContent = 'Status: Switched variant to ' + variantSelect.options[variantSelect.selectedIndex].text + '.';
+            });
+
+            paddingCheckbox.addEventListener('change', function () {
+                updateInspector(inputBox.value);
+                statusLine.textContent = 'Status: Padding ' + (paddingCheckbox.checked ? 'enabled' : 'disabled') + '.';
+            });
+
+            // Initialize page on load
+            renderAlphabetTable();
+            handleEncode();
+        })();
+    </script>
+</body>
+</html>

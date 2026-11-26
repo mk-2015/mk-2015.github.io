@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII &amp; Extended ASCII Table - inetdotlib.ftp.sh</title>
+</head>
+<body>
+    <!-- Site Header & Navigation -->
+    <h1>ASCII Table</h1>
+    <hr>
+
+    <!-- Code Page / Character Set Selector -->
+    <h2>1. 8-Bit Character Set / Code Page</h2>
+    <p>
+        <label for="charsetSelect"><b>Select Code Page:</b></label>
+        <select id="charsetSelect">
+            <option value="iso8859_1" selected>ISO-8859-1 (Latin-1)</option>
+            <option value="cp437">CP437 (MS-DOS / IBM PC)</option>
+            <option value="windows1252">Windows-1252 (ANSI)</option>
+        </select>
+    </p>
+    <p>
+        <i>Note:</i> Standard 7-bit ASCII (0–127) is universal, whereas <b>Extended ASCII (128–255)</b> depends on the 8-bit code page in use. Switch above between <b>ISO-8859-1</b> (Web/Unix Latin-1), <b>CP437</b> (classic 1995 MS-DOS box-drawing, math, and IBM PC glyphs), and <b>Windows-1252</b> (Windows ANSI with smart quotes and Euro sign).
+    </p>
+    <hr>
+
+    <!-- Tool 2: Live Text to Extended ASCII Converter -->
+    <h2>2. Text to Extended ASCII Converter</h2>
+    <p>
+        <label for="textInput">Type text:</label>
+        <input type="text" id="textInput" size="42" value="Hello! © 1995 ½" placeholder="Enter ASCII or Extended ASCII text...">
+        <button type="button" id="clearTextBtn">Clear</button>
+    </p>
+    <pre id="converterOutput">Loading...</pre>
+    <hr>
+
+    <!-- Tool 3: Filter & Search Controls -->
+    <h2>3. Complete 8-Bit ASCII &amp; Extended ASCII Table (0 - 255)</h2>
+    <p>
+        <label for="searchInput">Filter / Search:</label>
+        <input type="text" id="searchInput" size="30" placeholder="e.g. 169, 0xA9, &copy;, box, e acute">
+        <label for="categorySelect">Range / Category:</label>
+        <select id="categorySelect">
+            <option value="all">All (0-255)</option>
+            <option value="standard">Standard ASCII (0-127)</option>
+            <option value="extended">Extended ASCII (128-255)</option>
+            <option value="control">Control Characters (0-31, 127, and C1 128-159 in Latin-1)</option>
+            <option value="printable">Printable ASCII (32-126)</option>
+            <option value="digits">Digits (48-57)</option>
+            <option value="uppercase">Uppercase Letters (65-90)</option>
+            <option value="lowercase">Lowercase Letters (97-122)</option>
+            <option value="symbols">Symbols &amp; Box Drawing / Accents</option>
+        </select>
+        <button type="button" id="resetFilterBtn">Reset</button>
+    </p>
+    <p>
+        <b>Status:</b> <tt id="copyStatus">Ready. Click any Dec, Hex, Oct, Binary, or Char cell to copy.</tt>
+    </p>
+
+    <!-- Main 1995 HTML Table -->
+    <table border="1" cellpadding="4" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Dec</th>
+                <th>Hex</th>
+                <th>Oct</th>
+                <th>Binary</th>
+                <th>Char / Glyph</th>
+                <th>Range</th>
+                <th>HTML Entity / Name &amp; Description</th>
+            </tr>
+        </thead>
+        <tbody id="asciiTableBody">
+            <!-- Populated by vanilla JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        (function () {
+            // Standard 7-bit control character definitions (0-31 and 127)
+            var CONTROL_INFO = {
+                0:   { abbr: 'NUL', entity: '&#00;',  desc: 'Null character (\\0)' },
+                1:   { abbr: 'SOH', entity: '&#01;',  desc: 'Start of Heading' },
+                2:   { abbr: 'STX', entity: '&#02;',  desc: 'Start of Text' },
+                3:   { abbr: 'ETX', entity: '&#03;',  desc: 'End of Text (Ctrl-C)' },
+                4:   { abbr: 'EOT', entity: '&#04;',  desc: 'End of Transmission (Ctrl-D)' },
+                5:   { abbr: 'ENQ', entity: '&#05;',  desc: 'Enquiry' },
+                6:   { abbr: 'ACK', entity: '&#06;',  desc: 'Acknowledge' },
+                7:   { abbr: 'BEL', entity: '&#07;',  desc: 'Bell / Alert (\\a)' },
+                8:   { abbr: 'BS',  entity: '&#08;',  desc: 'Backspace (\\b)' },
+                9:   { abbr: 'HT',  entity: '&#09;',  desc: 'Horizontal Tab (\\t)' },
+                10:  { abbr: 'LF',  entity: '&#10;',  desc: 'Line Feed / Newline (\\n)' },
+                11:  { abbr: 'VT',  entity: '&#11;',  desc: 'Vertical Tab (\\v)' },
+                12:  { abbr: 'FF',  entity: '&#12;',  desc: 'Form Feed / New Page (\\f)' },
+                13:  { abbr: 'CR',  entity: '&#13;',  desc: 'Carriage Return (\\r)' },
+                14:  { abbr: 'SO',  entity: '&#14;',  desc: 'Shift Out' },
+                15:  { abbr: 'SI',  entity: '&#15;',  desc: 'Shift In' },
+                16:  { abbr: 'DLE', entity: '&#16;',  desc: 'Data Link Escape' },
+                17:  { abbr: 'DC1', entity: '&#17;',  desc: 'Device Control 1 (XON)' },
+                18:  { abbr: 'DC2', entity: '&#18;',  desc: 'Device Control 2' },
+                19:  { abbr: 'DC3', entity: '&#19;',  desc: 'Device Control 3 (XOFF)' },
+                20:  { abbr: 'DC4', entity: '&#20;',  desc: 'Device Control 4' },
+                21:  { abbr: 'NAK', entity: '&#21;',  desc: 'Negative Acknowledge' },
+                22:  { abbr: 'SYN', entity: '&#22;',  desc: 'Synchronous Idle' },
+                23:  { abbr: 'ETB', entity: '&#23;',  desc: 'End of Transmission Block' },
+                24:  { abbr: 'CAN', entity: '&#24;',  desc: 'Cancel' },
+                25:  { abbr: 'EM',  entity: '&#25;',  desc: 'End of Medium' },
+                26:  { abbr: 'SUB', entity: '&#26;',  desc: 'Substitute (Ctrl-Z)' },
+                27:  { abbr: 'ESC', entity: '&#27;',  desc: 'Escape (\\e / \\x1b)' },
+                28:  { abbr: 'FS',  entity: '&#28;',  desc: 'File Separator' },
+                29:  { abbr: 'GS',  entity: '&#29;',  desc: 'Group Separator' },
+                30:  { abbr: 'RS',  entity: '&#30;',  desc: 'Record Separator' },
+                31:  { abbr: 'US',  entity: '&#31;',  desc: 'Unit Separator' },
+                127: { abbr: 'DEL', entity: '&#127;', desc: 'Delete' }
+            };
+
+            // CP437 printable IBM PC DOS glyphs for 1-31 and 127 (0 and 32/255 are spaces)
+            var CP437_LOW_GLYPHS = {
+                1:   { ch: '\u263A', desc: 'White smiling face (DOS 0x01)' },
+                2:   { ch: '\u263B', desc: 'Black smiling face (DOS 0x02)' },
+                3:   { ch: '\u2665', desc: 'Black heart suit (DOS 0x03)' },
+                4:   { ch: '\u2666', desc: 'Black diamond suit (DOS 0x04)' },
+                5:   { ch: '\u2663', desc: 'Black club suit (DOS 0x05)' },
+                6:   { ch: '\u2660', desc: 'Black spade suit (DOS 0x06)' },
+                7:   { ch: '\u2022', desc: 'Bullet (DOS 0x07)' },
+                8:   { ch: '\u25D8', desc: 'Inverse bullet (DOS 0x08)' },
+                9:   { ch: '\u25CB', desc: 'White circle (DOS 0x09)' },
+                10:  { ch: '\u25D9', desc: 'Inverse white circle (DOS 0x0A)' },
+                11:  { ch: '\u2642', desc: 'Male sign / Mars (DOS 0x0B)' },
+                12:  { ch: '\u2640', desc: 'Female sign / Venus (DOS 0x0C)' },
+                13:  { ch: '\u266A', desc: 'Eighth note (DOS 0x0D)' },
+                14:  { ch: '\u266B', desc: 'Beamed eighth notes (DOS 0x0E)' },
+                15:  { ch: '\u263C', desc: 'White sun with rays (DOS 0x0F)' },
+                16:  { ch: '\u25BA', desc: 'Black right-pointing pointer (DOS 0x10)' },
+                17:  { ch: '\u25C4', desc: 'Black left-pointing pointer (DOS 0x11)' },
+                18:  { ch: '\u2195', desc: 'Up down arrow (DOS 0x12)' },
+                19:  { ch: '\u203C', desc: 'Double exclamation mark (DOS 0x13)' },
+                20:  { ch: '\u00B6', desc: 'Pilcrow / Paragraph sign (DOS 0x14)' },
+                21:  { ch: '\u00A7', desc: 'Section sign (DOS 0x15)' },
+                22:  { ch: '\u25AC', desc: 'Black rectangle (DOS 0x16)' },
+                23:  { ch: '\u21A8', desc: 'Up down arrow with base (DOS 0x17)' },
+                24:  { ch: '\u2191', desc: 'Upwards arrow (DOS 0x18)' },
+                25:  { ch: '\u2193', desc: 'Downwards arrow (DOS 0x19)' },
+                26:  { ch: '\u2192', desc: 'Rightwards arrow (DOS 0x1A)' },
+                27:  { ch: '\u2190', desc: 'Leftwards arrow (DOS 0x1B)' },
+                28:  { ch: '\u221F', desc: 'Right angle (DOS 0x1C)' },
+                29:  { ch: '\u2194', desc: 'Left right arrow (DOS 0x1D)' },
+                30:  { ch: '\u25B2', desc: 'Black up-pointing triangle (DOS 0x1E)' },
+                31:  { ch: '\u25BC', desc: 'Black down-pointing triangle (DOS 0x1F)' },
+                127: { ch: '\u2302', desc: 'House / Delta glyph (DOS 0x7F)' }
+            };
+
+            // Printable ASCII symbols (32-126)
+            var SYMBOL_INFO = {
+                32:  { entity: '&#32;',    desc: 'Space (Whitespace)' },
+                33:  { entity: '&excl;',   desc: 'Exclamation mark' },
+                34:  { entity: '&quot;',   desc: 'Double quote' },
+                35:  { entity: '&num;',    desc: 'Number sign / Hash' },
+                36:  { entity: '&dollar;', desc: 'Dollar sign' },
+                37:  { entity: '&percnt;', desc: 'Percent sign' },
+                38:  { entity: '&amp;',    desc: 'Ampersand' },
+                39:  { entity: '&apos;',   desc: 'Single quote / Apostrophe' },
+                40:  { entity: '&lpar;',   desc: 'Left parenthesis' },
+                41:  { entity: '&rpar;',   desc: 'Right parenthesis' },
+                42:  { entity: '&ast;',    desc: 'Asterisk' },
+                43:  { entity: '&plus;',   desc: 'Plus sign' },
+                44:  { entity: '&comma;',  desc: 'Comma' },
+                45:  { entity: '&#45;',    desc: 'Hyphen / Minus' },
+                46:  { entity: '&period;', desc: 'Period / Dot' },
+                47:  { entity: '&sol;',    desc: 'Forward slash' },
+                58:  { entity: '&colon;',  desc: 'Colon' },
+                59:  { entity: '&semi;',   desc: 'Semicolon' },
+                60:  { entity: '&lt;',     desc: 'Less-than sign' },
+                61:  { entity: '&equals;', desc: 'Equals sign' },
+                62:  { entity: '&gt;',     desc: 'Greater-than sign' },
+                63:  { entity: '&quest;',  desc: 'Question mark' },
+                64:  { entity: '&commat;', desc: 'At sign' },
+                91:  { entity: '&lbrack;', desc: 'Left square bracket' },
+                92:  { entity: '&bsol;',   desc: 'Backslash (\\\\)' },
+                93:  { entity: '&rbrack;', desc: 'Right square bracket' },
+                94:  { entity: '&Hat;',    desc: 'Caret / Circumflex' },
+                95:  { entity: '&lowbar;', desc: 'Underscore' },
+                96:  { entity: '&grave;',  desc: 'Grave accent / Backtick' },
+                123: { entity: '&lbrace;', desc: 'Left curly brace' },
+                124: { entity: '&verbar;', desc: 'Vertical bar / Pipe' },
+                125: { entity: '&rbrace;', desc: 'Right curly brace' },
+                126: { entity: '&tilde;',  desc: 'Tilde' }
+            };
+
+            // ISO-8859-1 C1 Control Codes (128-159)
+            var C1_CONTROL_INFO = {
+                128: { abbr: 'PAD', desc: 'Padding Character (C1)' },
+                129: { abbr: 'HOP', desc: 'High Octet Preset (C1)' },
+                130: { abbr: 'BPH', desc: 'Break Permitted Here (C1)' },
+                131: { abbr: 'NBH', desc: 'No Break Here (C1)' },
+                132: { abbr: 'IND', desc: 'Index (C1)' },
+                133: { abbr: 'NEL', desc: 'Next Line (C1)' },
+                134: { abbr: 'SSA', desc: 'Start of Selected Area (C1)' },
+                135: { abbr: 'ESA', desc: 'End of Selected Area (C1)' },
+                136: { abbr: 'HTS', desc: 'Character Tabulation Set (C1)' },
+                137: { abbr: 'HTJ', desc: 'Character Tabulation with Justification (C1)' },
+                138: { abbr: 'VTS', desc: 'Line Tabulation Set (C1)' },
+                139: { abbr: 'PLD', desc: 'Partial Line Forward (C1)' },
+                140: { abbr: 'PLU', desc: 'Partial Line Backward (C1)' },
+                141: { abbr: 'RI',  desc: 'Reverse Line Feed (C1)' },
+                142: { abbr: 'SS2', desc: 'Single Shift Two (C1)' },
+                143: { abbr: 'SS3', desc: 'Single Shift Three (C1)' },
+                144: { abbr: 'DCS', desc: 'Device Control String (C1)' },
+                145: { abbr: 'PU1', desc: 'Private Use One (C1)' },
+                146: { abbr: 'PU2', desc: 'Private Use Two (C1)' },
+                147: { abbr: 'STS', desc: 'Set Transmit State (C1)' },
+                148: { abbr: 'CCH', desc: 'Cancel Character (C1)' },
+                149: { abbr: 'MW',  desc: 'Message Waiting (C1)' },
+                150: { abbr: 'SPA', desc: 'Start of Guarded Area (C1)' },
+                151: { abbr: 'EPA', desc: 'End of Guarded Area (C1)' },
+                152: { abbr: 'SOS', desc: 'Start of String (C1)' },
+                153: { abbr: 'SGCI',desc: 'Single Graphic Character Introducer (C1)' },
+                154: { abbr: 'SCI', desc: 'Single Character Introducer (C1)' },
+                155: { abbr: 'CSI', desc: 'Control Sequence Introducer (C1)' },
+                156: { abbr: 'ST',  desc: 'String Terminator (C1)' },
+                157: { abbr: 'OSC', desc: 'Operating System Command (C1)' },
+                158: { abbr: 'PM',  desc: 'Privacy Message (C1)' },
+                159: { abbr: 'APC', desc: 'Application Program Command (C1)' }
+            };
+
+            // ISO-8859-1 Latin-1 Supplement (160-255)
+            var LATIN1_HIGH = {
+                160: ['\u00A0', '&nbsp;',   'Non-breaking space (NBSP)'],
+                161: ['\u00A1', '&iexcl;',  'Inverted exclamation mark'],
+                162: ['\u00A2', '&cent;',   'Cent sign'],
+                163: ['\u00A3', '&pound;',  'Pound sterling sign'],
+                164: ['\u00A4', '&curren;', 'General currency sign'],
+                165: ['\u00A5', '&yen;',    'Yen sign'],
+                166: ['\u00A6', '&brvbar;', 'Broken vertical bar'],
+                167: ['\u00A7', '&sect;',   'Section sign'],
+                168: ['\u00A8', '&uml;',    'Diaeresis / Umlaut'],
+                169: ['\u00A9', '&copy;',   'Copyright sign'],
+                170: ['\u00AA', '&ordf;',   'Feminine ordinal indicator'],
+                171: ['\u00AB', '&laquo;',  'Left-pointing double angle quotation mark'],
+                172: ['\u00AC', '&not;',    'Not sign'],
+                173: ['\u00AD', '&shy;',    'Soft hyphen (SHY)'],
+                174: ['\u00AE', '&reg;',    'Registered trade mark sign'],
+                175: ['\u00AF', '&macr;',   'Macron / Overline'],
+                176: ['\u00B0', '&deg;',    'Degree sign'],
+                177: ['\u00B1', '&plusmn;', 'Plus-minus sign'],
+                178: ['\u00B2', '&sup2;',   'Superscript two / Squared'],
+                179: ['\u00B3', '&sup3;',   'Superscript three / Cubed'],
+                180: ['\u00B4', '&acute;',  'Acute accent'],
+                181: ['\u00B5', '&micro;',  'Micro sign'],
+                182: ['\u00B6', '&para;',   'Pilcrow / Paragraph sign'],
+                183: ['\u00B7', '&middot;', 'Middle dot'],
+                184: ['\u00B8', '&cedil;',  'Cedilla'],
+                185: ['\u00B9', '&sup1;',   'Superscript one'],
+                186: ['\u00BA', '&ordm;',   'Masculine ordinal indicator'],
+                187: ['\u00BB', '&raquo;',  'Right-pointing double angle quotation mark'],
+                188: ['\u00BC', '&frac14;', 'Vulgar fraction one quarter'],
+                189: ['\u00BD', '&frac12;', 'Vulgar fraction one half'],
+                190: ['\u00BE', '&frac34;', 'Vulgar fraction three quarters'],
+                191: ['\u00BF', '&iquest;', 'Inverted question mark'],
+                192: ['\u00C0', '&Agrave;', 'Latin capital letter A with grave'],
+                193: ['\u00C1', '&Aacute;', 'Latin capital letter A with acute'],
+                194: ['\u00C2', '&Acirc;',  'Latin capital letter A with circumflex'],
+                195: ['\u00C3', '&Atilde;', 'Latin capital letter A with tilde'],
+                196: ['\u00C4', '&Auml;',   'Latin capital letter A with diaeresis'],
+                197: ['\u00C5', '&Aring;',  'Latin capital letter A with ring above'],
+                198: ['\u00C6', '&AElig;',  'Latin capital letter AE'],
+                199: ['\u00C7', '&Ccedil;', 'Latin capital letter C with cedilla'],
+                200: ['\u00C8', '&Egrave;', 'Latin capital letter E with grave'],
+                201: ['\u00C9', '&Eacute;', 'Latin capital letter E with acute'],
+                202: ['\u00CA', '&Ecirc;',  'Latin capital letter E with circumflex'],
+                203: ['\u00CB', '&Euml;',   'Latin capital letter E with diaeresis'],
+                204: ['\u00CC', '&Igrave;', 'Latin capital letter I with grave'],
+                205: ['\u00CD', '&Iacute;', 'Latin capital letter I with acute'],
+                206: ['\u00CE', '&Icirc;',  'Latin capital letter I with circumflex'],
+                207: ['\u00CF', '&Iuml;',   'Latin capital letter I with diaeresis'],
+                208: ['\u00D0', '&ETH;',    'Latin capital letter Eth'],
+                209: ['\u00D1', '&Ntilde;', 'Latin capital letter N with tilde'],
+                210: ['\u00D2', '&Ograve;', 'Latin capital letter O with grave'],
+                211: ['\u00D3', '&Oacute;', 'Latin capital letter O with acute'],
+                212: ['\u00D4', '&Ocirc;',  'Latin capital letter O with circumflex'],
+                213: ['\u00D5', '&Otilde;', 'Latin capital letter O with tilde'],
+                214: ['\u00D6', '&Ouml;',   'Latin capital letter O with diaeresis'],
+                215: ['\u00D7', '&times;',  'Multiplication sign'],
+                216: ['\u00D8', '&Oslash;', 'Latin capital letter O with stroke'],
+                217: ['\u00D9', '&Ugrave;', 'Latin capital letter U with grave'],
+                218: ['\u00DA', '&Uacute;', 'Latin capital letter U with acute'],
+                219: ['\u00DB', '&Ucirc;',  'Latin capital letter U with circumflex'],
+                220: ['\u00DC', '&Uuml;',   'Latin capital letter U with diaeresis'],
+                221: ['\u00DD', '&Yacute;', 'Latin capital letter Y with acute'],
+                222: ['\u00DE', '&THORN;',  'Latin capital letter Thorn'],
+                223: ['\u00DF', '&szlig;',  'Latin small letter sharp s (Eszett)'],
+                224: ['\u00E0', '&agrave;', 'Latin small letter a with grave'],
+                225: ['\u00E1', '&aacute;', 'Latin small letter a with acute'],
+                226: ['\u00E2', '&acirc;',  'Latin small letter a with circumflex'],
+                227: ['\u00E3', '&atilde;', 'Latin small letter a with tilde'],
+                228: ['\u00E4', '&auml;',   'Latin small letter a with diaeresis'],
+                229: ['\u00E5', '&aring;',  'Latin small letter a with ring above'],
+                230: ['\u00E6', '&aelig;',  'Latin small letter ae'],
+                231: ['\u00E7', '&ccedil;', 'Latin small letter c with cedilla'],
+                232: ['\u00E8', '&egrave;', 'Latin small letter e with grave'],
+                233: ['\u00E9', '&eacute;', 'Latin small letter e with acute'],
+                234: ['\u00EA', '&ecirc;',  'Latin small letter e with circumflex'],
+                235: ['\u00EB', '&euml;',   'Latin small letter e with diaeresis'],
+                236: ['\u00EC', '&igrave;', 'Latin small letter i with grave'],
+                237: ['\u00ED', '&iacute;', 'Latin small letter i with acute'],
+                238: ['\u00EE', '&icirc;',  'Latin small letter i with circumflex'],
+                239: ['\u00EF', '&iuml;',   'Latin small letter i with diaeresis'],
+                240: ['\u00F0', '&eth;',    'Latin small letter eth'],
+                241: ['\u00F1', '&ntilde;', 'Latin small letter n with tilde'],
+                242: ['\u00F2', '&ograve;', 'Latin small letter o with grave'],
+                243: ['\u00F3', '&oacute;', 'Latin small letter o with acute'],
+                244: ['\u00F4', '&ocirc;',  'Latin small letter o with circumflex'],
+                245: ['\u00F5', '&otilde;', 'Latin small letter o with tilde'],
+                246: ['\u00F6', '&ouml;',   'Latin small letter o with diaeresis'],
+                247: ['\u00F7', '&divide;', 'Division sign'],
+                248: ['\u00F8', '&oslash;', 'Latin small letter o with stroke'],
+                249: ['\u00F9', '&ugrave;', 'Latin small letter u with grave'],
+                250: ['\u00FA', '&uacute;', 'Latin small letter u with acute'],
+                251: ['\u00FB', '&ucirc;',  'Latin small letter u with circumflex'],
+                252: ['\u00FC', '&uuml;',   'Latin small letter u with diaeresis'],
+                253: ['\u00FD', '&yacute;', 'Latin small letter y with acute'],
+                254: ['\u00FE', '&thorn;',  'Latin small letter thorn'],
+                255: ['\u00FF', '&yuml;',   'Latin small letter y with diaeresis']
+            };
+
+            // Windows-1252 (ANSI) differences in 128-159
+            var WIN1252_128_159 = {
+                128: ['\u20AC', '&euro;',   'Euro sign'],
+                129: [null,     '&#129;',   'Unused / Undefined in Windows-1252'],
+                130: ['\u201A', '&sbquo;',  'Single low-9 quotation mark'],
+                131: ['\u0192', '&fnof;',   'Latin small letter f with hook / Florin'],
+                132: ['\u201E', '&bdquo;',  'Double low-9 quotation mark'],
+                133: ['\u2026', '&hellip;', 'Horizontal ellipsis'],
+                134: ['\u2020', '&dagger;', 'Dagger'],
+                135: ['\u2021', '&Dagger;', 'Double dagger'],
+                136: ['\u02C6', '&circ;',   'Modifier letter circumflex accent'],
+                137: ['\u2030', '&permil;', 'Per mille sign'],
+                138: ['\u0160', '&Scaron;', 'Latin capital letter S with caron'],
+                139: ['\u2039', '&lsaquo;', 'Single left-pointing angle quotation mark'],
+                140: ['\u0152', '&OElig;',  'Latin capital ligature OE'],
+                141: [null,     '&#141;',   'Unused / Undefined in Windows-1252'],
+                142: ['\u017D', '&Zcaron;', 'Latin capital letter Z with caron'],
+                143: [null,     '&#143;',   'Unused / Undefined in Windows-1252'],
+                144: [null,     '&#144;',   'Unused / Undefined in Windows-1252'],
+                145: ['\u2018', '&lsquo;',  'Left single quotation mark'],
+                146: ['\u2019', '&rsquo;',  'Right single quotation mark'],
+                147: ['\u201C', '&ldquo;',  'Left double quotation mark'],
+                148: ['\u201D', '&rdquo;',  'Right double quotation mark'],
+                149: ['\u2022', '&bull;',   'Bullet'],
+                150: ['\u2013', '&ndash;',  'En dash'],
+                151: ['\u2014', '&mdash;',  'Em dash'],
+                152: ['\u02DC', '&tilde;',  'Small tilde'],
+                153: ['\u2122', '&trade;',  'Trade mark sign'],
+                154: ['\u0161', '&scaron;', 'Latin small letter s with caron'],
+                155: ['\u203A', '&rsaquo;', 'Single right-pointing angle quotation mark'],
+                156: ['\u0153', '&oelig;',  'Latin small ligature oe'],
+                157: [null,     '&#157;',   'Unused / Undefined in Windows-1252'],
+                158: ['\u017E', '&zcaron;', 'Latin small letter z with caron'],
+                159: ['\u0178', '&Yuml;',   'Latin capital letter Y with diaeresis']
+            };
+
+            // CP437 (MS-DOS / IBM PC) Extended ASCII (128-255)
+            var CP437_HIGH = {
+                128: ['\u00C7', '&Ccedil;', 'Latin capital letter C with cedilla'],
+                129: ['\u00FC', '&uuml;',   'Latin small letter u with diaeresis'],
+                130: ['\u00E9', '&eacute;', 'Latin small letter e with acute'],
+                131: ['\u00E2', '&acirc;',  'Latin small letter a with circumflex'],
+                132: ['\u00E4', '&auml;',   'Latin small letter a with diaeresis'],
+                133: ['\u00E0', '&agrave;', 'Latin small letter a with grave'],
+                134: ['\u00E5', '&aring;',  'Latin small letter a with ring above'],
+                135: ['\u00E7', '&ccedil;', 'Latin small letter c with cedilla'],
+                136: ['\u00EA', '&ecirc;',  'Latin small letter e with circumflex'],
+                137: ['\u00EB', '&euml;',   'Latin small letter e with diaeresis'],
+                138: ['\u00E8', '&egrave;', 'Latin small letter e with grave'],
+                139: ['\u00EF', '&iuml;',   'Latin small letter i with diaeresis'],
+                140: ['\u00EE', '&icirc;',  'Latin small letter i with circumflex'],
+                141: ['\u00EC', '&igrave;', 'Latin small letter i with grave'],
+                142: ['\u00C4', '&Auml;',   'Latin capital letter A with diaeresis'],
+                143: ['\u00C5', '&Aring;',  'Latin capital letter A with ring above'],
+                144: ['\u00C9', '&Eacute;', 'Latin capital letter E with acute'],
+                145: ['\u00E6', '&aelig;',  'Latin small letter ae'],
+                146: ['\u00C6', '&AElig;',  'Latin capital letter AE'],
+                147: ['\u00F4', '&ocirc;',  'Latin small letter o with circumflex'],
+                148: ['\u00F6', '&ouml;',   'Latin small letter o with diaeresis'],
+                149: ['\u00F2', '&ograve;', 'Latin small letter o with grave'],
+                150: ['\u00FB', '&ucirc;',  'Latin small letter u with circumflex'],
+                151: ['\u00F9', '&ugrave;', 'Latin small letter u with grave'],
+                152: ['\u00FF', '&yuml;',   'Latin small letter y with diaeresis'],
+                153: ['\u00D6', '&Ouml;',   'Latin capital letter O with diaeresis'],
+                154: ['\u00DC', '&Uuml;',   'Latin capital letter U with diaeresis'],
+                155: ['\u00A2', '&cent;',   'Cent sign'],
+                156: ['\u00A3', '&pound;',  'Pound sterling sign'],
+                157: ['\u00A5', '&yen;',    'Yen sign'],
+                158: ['\u20A7', '&#8359;',  'Peseta sign'],
+                159: ['\u0192', '&fnof;',   'Latin small letter f with hook'],
+                160: ['\u00E1', '&aacute;', 'Latin small letter a with acute'],
+                161: ['\u00ED', '&iacute;', 'Latin small letter i with acute'],
+                162: ['\u00F3', '&oacute;', 'Latin small letter o with acute'],
+                163: ['\u00FA', '&uacute;', 'Latin small letter u with acute'],
+                164: ['\u00F1', '&ntilde;', 'Latin small letter n with tilde'],
+                165: ['\u00D1', '&Ntilde;', 'Latin capital letter N with tilde'],
+                166: ['\u00AA', '&ordf;',   'Feminine ordinal indicator'],
+                167: ['\u00BA', '&ordm;',   'Masculine ordinal indicator'],
+                168: ['\u00BF', '&iquest;', 'Inverted question mark'],
+                169: ['\u2310', '&bnot;',   'Reversed not sign'],
+                170: ['\u00AC', '&not;',    'Not sign'],
+                171: ['\u00BD', '&frac12;', 'Vulgar fraction one half'],
+                172: ['\u00BC', '&frac14;', 'Vulgar fraction one quarter'],
+                173: ['\u00A1', '&iexcl;',  'Inverted exclamation mark'],
+                174: ['\u00AB', '&laquo;',  'Left-pointing double angle quotation mark'],
+                175: ['\u00BB', '&raquo;',  'Right-pointing double angle quotation mark'],
+                176: ['\u2591', '&blk14;',  'Light shade block (25%)'],
+                177: ['\u2592', '&blk12;',  'Medium shade block (50%)'],
+                178: ['\u2593', '&blk34;',  'Dark shade block (75%)'],
+                179: ['\u2502', '&boxv;',   'Box drawings light vertical'],
+                180: ['\u2524', '&boxvl;',  'Box drawings light vertical and left'],
+                181: ['\u2561', '&boxvL;',  'Box drawings vertical single and left double'],
+                182: ['\u2562', '&boxVl;',  'Box drawings vertical double and left single'],
+                183: ['\u2556', '&boxDl;',  'Box drawings down double and left single'],
+                184: ['\u2555', '&boxdL;',  'Box drawings down single and left double'],
+                185: ['\u2563', '&boxVL;',  'Box drawings double vertical and left'],
+                186: ['\u2551', '&boxV;',   'Box drawings double vertical'],
+                187: ['\u2557', '&boxDL;',  'Box drawings double down and left'],
+                188: ['\u255D', '&boxUL;',  'Box drawings double up and left'],
+                189: ['\u255C', '&boxUl;',  'Box drawings up double and left single'],
+                190: ['\u255B', '&boxuL;',  'Box drawings up single and left double'],
+                191: ['\u2510', '&boxdl;',  'Box drawings light down and left'],
+                192: ['\u2514', '&boxur;',  'Box drawings light up and right'],
+                193: ['\u2534', '&boxhu;',  'Box drawings light up and horizontal'],
+                194: ['\u252C', '&boxhd;',  'Box drawings light down and horizontal'],
+                195: ['\u251C', '&boxvr;',  'Box drawings light vertical and right'],
+                196: ['\u2500', '&boxh;',   'Box drawings light horizontal'],
+                197: ['\u253C', '&boxvh;',  'Box drawings light vertical and horizontal'],
+                198: ['\u255E', '&boxvR;',  'Box drawings vertical single and right double'],
+                199: ['\u255F', '&boxVr;',  'Box drawings vertical double and right single'],
+                200: ['\u255A', '&boxUR;',  'Box drawings double up and right'],
+                201: ['\u2554', '&boxDR;',  'Box drawings double down and right'],
+                202: ['\u2569', '&boxHU;',  'Box drawings double up and horizontal'],
+                203: ['\u2566', '&boxHD;',  'Box drawings double down and horizontal'],
+                204: ['\u2560', '&boxVR;',  'Box drawings double vertical and right'],
+                205: ['\u2550', '&boxH;',   'Box drawings double horizontal'],
+                206: ['\u256C', '&boxVH;',  'Box drawings double vertical and horizontal'],
+                207: ['\u2567', '&boxhU;',  'Box drawings up single and horizontal double'],
+                208: ['\u2568', '&boxHu;',  'Box drawings up double and horizontal single'],
+                209: ['\u2564', '&boxhD;',  'Box drawings down single and horizontal double'],
+                210: ['\u2565', '&boxHd;',  'Box drawings down double and horizontal single'],
+                211: ['\u2559', '&boxUr;',  'Box drawings up double and right single'],
+                212: ['\u2558', '&boxuR;',  'Box drawings up single and right double'],
+                213: ['\u2552', '&boxdR;',  'Box drawings down single and right double'],
+                214: ['\u2553', '&boxDr;',  'Box drawings down double and right single'],
+                215: ['\u256B', '&boxVh;',  'Box drawings vertical double and horizontal single'],
+                216: ['\u256A', '&boxvH;',  'Box drawings vertical single and horizontal double'],
+                217: ['\u2518', '&boxul;',  'Box drawings light up and left'],
+                218: ['\u250C', '&boxdr;',  'Box drawings light down and right'],
+                219: ['\u2588', '&block;',  'Full block'],
+                220: ['\u2584', '&lhblk;',  'Lower half block'],
+                221: ['\u258C', '&#9612;',  'Left half block'],
+                222: ['\u2590', '&#9616;',  'Right half block'],
+                223: ['\u2580', '&uhblk;',  'Upper half block'],
+                224: ['\u03B1', '&alpha;',  'Greek small letter alpha'],
+                225: ['\u00DF', '&szlig;',  'Latin small letter sharp s / Beta'],
+                226: ['\u0393', '&Gamma;',  'Greek capital letter Gamma'],
+                227: ['\u03C0', '&pi;',     'Greek small letter pi'],
+                228: ['\u03A3', '&Sigma;',  'Greek capital letter Sigma'],
+                229: ['\u03C3', '&sigma;',  'Greek small letter sigma'],
+                230: ['\u00B5', '&micro;',  'Micro sign / Greek small letter mu'],
+                231: ['\u03C4', '&tau;',    'Greek small letter tau'],
+                232: ['\u03A6', '&Phi;',    'Greek capital letter Phi'],
+                233: ['\u0398', '&Theta;',  'Greek capital letter Theta'],
+                234: ['\u03A9', '&Omega;',  'Greek capital letter Omega'],
+                235: ['\u03B4', '&delta;',  'Greek small letter delta'],
+                236: ['\u221E', '&infin;',  'Infinity'],
+                237: ['\u03C6', '&phi;',    'Greek small letter phi'],
+                238: ['\u03B5', '&isin;',   'Greek small letter epsilon / Element of'],
+                239: ['\u2229', '&cap;',    'Intersection'],
+                240: ['\u2261', '&equiv;',  'Identical to'],
+                241: ['\u00B1', '&plusmn;', 'Plus-minus sign'],
+                242: ['\u2265', '&ge;',     'Greater-than or equal to'],
+                243: ['\u2264', '&le;',     'Less-than or equal to'],
+                244: ['\u2320', '&inttop;', 'Top half integral'],
+                245: ['\u2321', '&intbot;', 'Bottom half integral'],
+                246: ['\u00F7', '&divide;', 'Division sign'],
+                247: ['\u2248', '&asymp;',  'Almost equal to'],
+                248: ['\u00B0', '&deg;',    'Degree sign'],
+                249: ['\u2219', '&bull;',   'Bullet operator'],
+                250: ['\u00B7', '&middot;', 'Middle dot'],
+                251: ['\u221A', '&radic;',  'Square root / Radical sign'],
+                252: ['\u207F', '&#8319;',  'Superscript Latin small letter n'],
+                253: ['\u00B2', '&sup2;',   'Superscript two'],
+                254: ['\u25A0', '&squf;',   'Black square'],
+                255: ['\u00A0', '&nbsp;',   'Non-breaking space (NBSP)']
+            };
+
+            // Build 256-entry dataset for the active code page
+            function buildCharsetData(charset) {
+                var list = [];
+                for (var i = 0; i < 256; i++) {
+                    var dec = String(i);
+                    var hexRaw = i.toString(16).toUpperCase();
+                    if (hexRaw.length < 2) hexRaw = '0' + hexRaw;
+                    var hex = '0x' + hexRaw;
+
+                    var oct = i.toString(8);
+                    while (oct.length < 3) oct = '0' + oct;
+
+                    var bin = i.toString(2);
+                    while (bin.length < 8) bin = '0' + bin;
+
+                    var isExtended = i >= 128;
+                    var rangeLabel = isExtended ? 'Extended (8-bit)' : 'Standard (7-bit)';
+                    var isControl = false;
+                    var displayChar = '';
+                    var copyChar = '';
+                    var entity = '&#' + i + ';';
+                    var desc = '';
+                    var category = '';
+                    var charVal = null;
+
+                    if (i <= 31 || i === 127) {
+                        isControl = true;
+                        category = 'control';
+                        entity = CONTROL_INFO[i].entity;
+                        if (charset === 'cp437' && CP437_LOW_GLYPHS[i]) {
+                            displayChar = CP437_LOW_GLYPHS[i].ch + ' (' + CONTROL_INFO[i].abbr + ')';
+                            copyChar = CP437_LOW_GLYPHS[i].ch;
+                            charVal = CP437_LOW_GLYPHS[i].ch;
+                            desc = CONTROL_INFO[i].desc + ' / ' + CP437_LOW_GLYPHS[i].desc;
+                        } else {
+                            displayChar = CONTROL_INFO[i].abbr;
+                            copyChar = CONTROL_INFO[i].abbr;
+                            desc = CONTROL_INFO[i].desc;
+                        }
+                    } else if (i === 32) {
+                        displayChar = 'SPACE';
+                        copyChar = ' ';
+                        charVal = ' ';
+                        entity = SYMBOL_INFO[32].entity;
+                        desc = SYMBOL_INFO[32].desc;
+                        category = 'symbols';
+                    } else if (i >= 33 && i <= 126) {
+                        var ch = String.fromCharCode(i);
+                        displayChar = ch;
+                        copyChar = ch;
+                        charVal = ch;
+                        if (i >= 48 && i <= 57) {
+                            category = 'digits';
+                            entity = '&#' + i + ';';
+                            desc = 'Digit ' + ch;
+                        } else if (i >= 65 && i <= 90) {
+                            category = 'uppercase';
+                            entity = '&#' + i + ';';
+                            desc = 'Uppercase letter ' + ch;
+                        } else if (i >= 97 && i <= 122) {
+                            category = 'lowercase';
+                            entity = '&#' + i + ';';
+                            desc = 'Lowercase letter ' + ch;
+                        } else {
+                            category = 'symbols';
+                            entity = SYMBOL_INFO[i] ? SYMBOL_INFO[i].entity : ('&#' + i + ';');
+                            desc = SYMBOL_INFO[i] ? SYMBOL_INFO[i].desc : ('Symbol ' + ch);
+                        }
+                    } else {
+                        // Extended ASCII (128-255)
+                        if (charset === 'cp437') {
+                            var entry437 = CP437_HIGH[i];
+                            charVal = entry437[0];
+                            entity = entry437[1];
+                            desc = entry437[2];
+                            if (i === 255) {
+                                displayChar = 'NBSP';
+                                copyChar = '\u00A0';
+                            } else {
+                                displayChar = charVal;
+                                copyChar = charVal;
+                            }
+                            category = 'symbols';
+                        } else if (charset === 'windows1252' && i >= 128 && i <= 159) {
+                            var entry1252 = WIN1252_128_159[i];
+                            charVal = entry1252[0];
+                            entity = entry1252[1];
+                            desc = entry1252[2];
+                            if (charVal === null) {
+                                displayChar = 'N/A';
+                                copyChar = '';
+                            } else {
+                                displayChar = charVal;
+                                copyChar = charVal;
+                            }
+                            category = 'symbols';
+                        } else {
+                            // ISO-8859-1 (or Windows-1252 160-255)
+                            if (i >= 128 && i <= 159) {
+                                isControl = true;
+                                category = 'control';
+                                displayChar = C1_CONTROL_INFO[i].abbr;
+                                copyChar = C1_CONTROL_INFO[i].abbr;
+                                entity = '&#' + i + ';';
+                                desc = C1_CONTROL_INFO[i].desc;
+                            } else {
+                                var entryLatin = LATIN1_HIGH[i];
+                                charVal = entryLatin[0];
+                                entity = entryLatin[1];
+                                desc = entryLatin[2];
+                                if (i === 160) {
+                                    displayChar = 'NBSP';
+                                    copyChar = '\u00A0';
+                                } else if (i === 173) {
+                                    displayChar = 'SHY';
+                                    copyChar = '\u00AD';
+                                } else {
+                                    displayChar = charVal;
+                                    copyChar = charVal;
+                                }
+                                category = 'symbols';
+                            }
+                        }
+                    }
+
+                    list.push({
+                        code: i,
+                        dec: dec,
+                        hex: hex,
+                        hexRaw: hexRaw,
+                        oct: oct,
+                        bin: bin,
+                        isExtended: isExtended,
+                        rangeLabel: rangeLabel,
+                        isControl: isControl,
+                        displayChar: displayChar,
+                        copyChar: copyChar,
+                        charVal: charVal,
+                        entity: entity,
+                        desc: desc,
+                        category: category
+                    });
+                }
+                return list;
+            }
+
+            // State & DOM references
+            var currentCharset = 'iso8859_1';
+            var asciiData = buildCharsetData(currentCharset);
+
+            var charsetSelect = document.getElementById('charsetSelect');
+            var textInput = document.getElementById('textInput');
+            var clearTextBtn = document.getElementById('clearTextBtn');
+            var converterOutput = document.getElementById('converterOutput');
+
+            var searchInput = document.getElementById('searchInput');
+            var categorySelect = document.getElementById('categorySelect');
+            var resetFilterBtn = document.getElementById('resetFilterBtn');
+            var copyStatus = document.getElementById('copyStatus');
+            var tableBody = document.getElementById('asciiTableBody');
+
+            // Copy helper with fallback
+            function copyValue(val, displayLabel) {
+                if (!val && val !== ' ') {
+                    copyStatus.textContent = 'Nothing to copy (undefined code point in this code page).';
+                    return;
+                }
+
+                function onSuccess() {
+                    copyStatus.textContent = 'Copied: ' + (displayLabel || val);
+                }
+
+                function fallbackCopy() {
+                    var ta = document.createElement('textarea');
+                    ta.value = val;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try {
+                        document.execCommand('copy');
+                        onSuccess();
+                    } catch (err) {
+                        copyStatus.textContent = 'Copy failed. Value: ' + (displayLabel || val);
+                    }
+                    document.body.removeChild(ta);
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(val).then(onSuccess).catch(fallbackCopy);
+                } else {
+                    fallbackCopy();
+                }
+            }
+
+            // Find byte code in active code page for a given input character
+            function findByteInCharset(ch) {
+                var codePoint = ch.codePointAt ? ch.codePointAt(0) : ch.charCodeAt(0);
+                // Direct match for 0-127 standard ASCII
+                if (codePoint >= 0 && codePoint <= 127) {
+                    return asciiData[codePoint];
+                }
+                // Search 128-255 (and CP437 low glyphs if applicable) for matching Unicode character
+                for (var i = 128; i < 256; i++) {
+                    if (asciiData[i].charVal === ch) {
+                        return asciiData[i];
+                    }
+                }
+                if (currentCharset === 'cp437') {
+                    for (var j = 1; j <= 31; j++) {
+                        if (asciiData[j].charVal === ch) {
+                            return asciiData[j];
+                        }
+                    }
+                    if (asciiData[127].charVal === ch) {
+                        return asciiData[127];
+                    }
+                }
+                return null;
+            }
+
+            // Render live Text -> Extended ASCII breakdown in <pre>
+            function updateConverter() {
+                var str = textInput.value;
+                if (!str) {
+                    converterOutput.textContent = '(Type characters above to see Dec, Hex, Oct, and 8-bit Binary codes)';
+                    return;
+                }
+
+                var charsetLabel = charsetSelect.options[charsetSelect.selectedIndex].text;
+                var lines = [];
+                lines.push('Active Code Page: ' + charsetLabel);
+                lines.push('Char     | Dec | Hex  | Oct | Binary   | Range');
+                lines.push('---------+-----+------+-----+----------+-----------------');
+
+                var chars = Array.from ? Array.from(str) : str.split('');
+                for (var i = 0; i < chars.length; i++) {
+                    var ch = chars[i];
+                    var item = findByteInCharset(ch);
+                    if (item) {
+                        var charLabel = item.displayChar;
+                        while (charLabel.length < 8) charLabel += ' ';
+
+                        var decLabel = item.dec;
+                        while (decLabel.length < 3) decLabel = ' ' + decLabel;
+
+                        lines.push(
+                            charLabel + ' | ' +
+                            decLabel + ' | ' +
+                            item.hex + ' | ' +
+                            item.oct + ' | ' +
+                            item.bin + ' | ' +
+                            item.rangeLabel
+                        );
+                    } else {
+                        var cp = ch.codePointAt ? ch.codePointAt(0) : ch.charCodeAt(0);
+                        var hexCp = cp.toString(16).toUpperCase();
+                        while (hexCp.length < 4) hexCp = '0' + hexCp;
+                        var unmapped = ch;
+                        while (unmapped.length < 8) unmapped += ' ';
+                        lines.push(unmapped + ' | N/A (U+' + hexCp + ' > 255 or unmapped in ' + charsetLabel + ')');
+                    }
+                }
+
+                converterOutput.textContent = lines.join('\n');
+            }
+
+            // Render filtered 0-255 HTML table
+            function renderTable() {
+                var rawQuery = searchInput.value.trim();
+                var query = rawQuery.toLowerCase();
+                var selectedCategory = categorySelect.value;
+
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                }
+
+                var matchCount = 0;
+
+                for (var i = 0; i < asciiData.length; i++) {
+                    var item = asciiData[i];
+
+                    // Range / Category filter
+                    if (selectedCategory !== 'all') {
+                        if (selectedCategory === 'standard') {
+                            if (item.isExtended) continue;
+                        } else if (selectedCategory === 'extended') {
+                            if (!item.isExtended) continue;
+                        } else if (selectedCategory === 'printable') {
+                            if (item.code < 32 || item.code > 126) continue;
+                        } else if (item.category !== selectedCategory) {
+                            continue;
+                        }
+                    }
+
+                    // Search filter
+                    if (query !== '') {
+                        var exactCharMatch = (rawQuery.length === 1 && item.charVal === rawQuery);
+                        var haystack = (
+                            item.dec + ' ' +
+                            item.hex.toLowerCase() + ' ' +
+                            item.hexRaw.toLowerCase() + ' ' +
+                            item.oct + ' ' +
+                            item.bin + ' ' +
+                            item.displayChar.toLowerCase() + ' ' +
+                            item.entity.toLowerCase() + ' ' +
+                            item.rangeLabel.toLowerCase() + ' ' +
+                            item.desc.toLowerCase()
+                        );
+                        if (!exactCharMatch && haystack.indexOf(query) === -1) {
+                            continue;
+                        }
+                    }
+
+                    matchCount++;
+
+                    var tr = document.createElement('tr');
+
+                    function makeCell(text, copyText, copyLabel, isBold) {
+                        var td = document.createElement('td');
+                        if (copyText || copyText === ' ') {
+                            td.style.cursor = 'pointer';
+                            td.title = 'Click to copy ' + (copyLabel || copyText);
+                        }
+
+                        var tt = document.createElement('tt');
+                        if (isBold) {
+                            var b = document.createElement('b');
+                            b.textContent = text;
+                            tt.appendChild(b);
+                        } else {
+                            tt.textContent = text;
+                        }
+                        td.appendChild(tt);
+
+                        td.addEventListener('click', (function (cVal, cLbl) {
+                            return function () {
+                                copyValue(cVal, cLbl);
+                            };
+                        })(copyText, copyLabel));
+
+                        return td;
+                    }
+
+                    tr.appendChild(makeCell(item.dec, item.dec, item.dec, false));
+                    tr.appendChild(makeCell(item.hex, item.hex, item.hex, false));
+                    tr.appendChild(makeCell(item.oct, item.oct, item.oct, false));
+                    tr.appendChild(makeCell(item.bin, item.bin, item.bin, false));
+                    tr.appendChild(makeCell(item.displayChar, item.copyChar, item.displayChar, true));
+
+                    var rangeTd = document.createElement('td');
+                    rangeTd.textContent = item.rangeLabel;
+                    tr.appendChild(rangeTd);
+
+                    var descTd = document.createElement('td');
+                    var entTt = document.createElement('tt');
+                    entTt.textContent = item.entity;
+                    descTd.appendChild(entTt);
+                    descTd.appendChild(document.createTextNode(' - ' + item.desc));
+                    tr.appendChild(descTd);
+
+                    tableBody.appendChild(tr);
+                }
+
+                if (matchCount === 0) {
+                    var emptyTr = document.createElement('tr');
+                    var emptyTd = document.createElement('td');
+                    emptyTd.colSpan = 7;
+                    emptyTd.textContent = 'No matching ASCII or Extended ASCII characters found.';
+                    emptyTr.appendChild(emptyTd);
+                    tableBody.appendChild(emptyTr);
+                }
+
+                copyStatus.textContent = 'Ready (' + matchCount + ' of 256 shown). Click any Dec, Hex, Oct, Binary, or Char cell to copy.';
+            }
+
+            // Event listeners
+            charsetSelect.addEventListener('change', function () {
+                currentCharset = charsetSelect.value;
+                asciiData = buildCharsetData(currentCharset);
+                updateConverter();
+                renderTable();
+            });
+
+            textInput.addEventListener('input', updateConverter);
+            clearTextBtn.addEventListener('click', function () {
+                textInput.value = '';
+                updateConverter();
+                textInput.focus();
+            });
+
+            searchInput.addEventListener('input', renderTable);
+            categorySelect.addEventListener('change', renderTable);
+            resetFilterBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                categorySelect.value = 'all';
+                renderTable();
+                searchInput.focus();
+            });
+
+            // Initialize page
+            updateConverter();
+            renderTable();
+        })();
+    </script>
+</body>
+</html>
