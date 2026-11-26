@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Init in c</title>
+</head>
+<body>
+    <div class="document">
+        <pre>
+        What is an <strong>Init system</strong> anyways?
+         -> An init system is launched by the kernel, like linux.
+            Init prepares mounts, process reaping, configuration
+            services and more. On windows its smss, because microsoft
+            said so, On linux its most popular one its <strong>Systemd</strong>
+
+            For more info go here: <strong><a href="https://en.wikipedia.org/wiki/Init" target="_blank">Wikipage on Init</a></strong>
+        </pre>
+
+        <pre>
+        <pre><code>#define _POSIX_C_SOURCE 200809L
+            #include &lt;signal.h&gt;
+            #include &lt;stdio.h&gt;
+            #include &lt;stdlib.h&gt;
+            #include &lt;sys/mount.h&gt;
+            #include &lt;sys/reboot.h&gt;
+            #include &lt;sys/wait.h&gt;
+            #include &lt;unistd.h&gt;
+
+            int main(void) {
+                if (getpid() != 1) {
+                    fprintf(stderr, "Must be run as PID 1\n");
+                    return 1;
+                }
+
+                // Block signals so they aren't lost and can be handled synchronously
+                sigset_t set;
+                sigemptyset(&amp;set);
+                sigaddset(&amp;set, SIGUSR1);
+                sigaddset(&amp;set, SIGUSR2);
+                sigaddset(&amp;set, SIGCHLD);
+                sigprocmask(SIG_BLOCK, &amp;set, NULL);
+
+                // Mount virtual filesystems
+                mount("proc", "/proc", "proc", 0, NULL);
+                mount("sysfs", "/sys", "sysfs", 0, NULL);
+
+                setenv("PATH", "/bin:/sbin:/usr/bin:/usr/sbin", 1);
+                setenv("TERM", "linux", 1);
+
+                // Spawn shell
+                if (fork() == 0) {
+                    // Unblock signals for the child process
+                    sigprocmask(SIG_UNBLOCK, &amp;set, NULL);
+                    char *argv[] = {"/bin/sh", NULL};
+                    execv(argv[0], argv);
+                    perror("execv failed");
+                    exit(1);
+                }
+
+                // Main event loop: handle signals and reap zombies
+                int sig;
+                while (1) {
+                    sigwait(&amp;set, &amp;sig);
+
+                    if (sig == SIGCHLD) {
+                        // Reap all dead children without blocking
+                        while (waitpid(-1, NULL, WNOHANG) &gt; 0);
+                    } else if (sig == SIGUSR1 || sig == SIGUSR2) {
+                        // Gracefully terminate remaining processes
+                        kill(-1, SIGTERM);
+                        sleep(1);
+                        kill(-1, SIGKILL);
+
+                        // Flush filesystem buffers to disk
+                        sync();
+
+                        // Execute poweroff or reboot
+                        if (sig == SIGUSR1) {
+                            reboot(RB_POWER_OFF);
+                        } else {
+                            reboot(RB_AUTOBOOT);
+                        }
+                    }
+                }
+
+                return 0;
+            }</code></pre>
+        </pre>
+    </div>
+</body>
+</html>

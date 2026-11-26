@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake - inetdotlib.ftp.sh</title>
+  <style>
+    body {
+      background: #c0c0c0;
+      color: #000000;
+      font-family: "Times New Roman", Times, serif;
+      max-width: 480px;
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+    a { color: #0000ee; }
+    a:visited { color: #551a8b; }
+    fieldset {
+      border: 2px groove #ffffff;
+      padding: 10px 14px;
+      background: #d4d0c8;
+    }
+    legend {
+      font-weight: bold;
+      padding: 0 6px;
+    }
+    canvas {
+      background: #111611;
+      border: 2px inset #808080;
+      display: block;
+      margin: 8px 0 4px 0;
+      max-width: 100%;
+      height: auto;
+    }
+    button {
+      background: #c0c0c0;
+      color: #000000;
+      border: 2px outset #ffffff;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 14px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    button:active {
+      border-style: inset;
+    }
+  </style>
+</head>
+<body>
+  <p><a href="/">Home</a></p>
+  <h1>Snake</h1>
+  <hr>
+
+  <fieldset>
+    <legend>Game Screen</legend>
+    <p>Score: <strong id="score">0</strong> | High: <strong id="high">0</strong> | <span id="status">Press Start or Arrow Key</span></p>
+    <canvas id="board" width="400" height="300"></canvas>
+  </fieldset>
+
+  <p>
+    <button type="button" onclick="start()">Start / Restart</button>
+    <button type="button" onclick="dir(0, -1)">Up (W)</button>
+    <button type="button" onclick="dir(0, 1)">Down (S)</button>
+    <button type="button" onclick="dir(-1, 0)">Left (A)</button>
+    <button type="button" onclick="dir(1, 0)">Right (D)</button>
+  </p>
+
+  <script>
+    const TILE = 20;
+    const W = 20, H = 15;
+    let snake, food, dx, dy, nextDx, nextDy, score, high = 0, timer = null;
+
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const highEl = document.getElementById("high");
+    const statusEl = document.getElementById("status");
+
+    function spawnFood() {
+      while (true) {
+        const fx = Math.floor(Math.random() * W);
+        const fy = Math.floor(Math.random() * H);
+        if (!snake.some(s => s.x === fx && s.y === fy)) {
+          food = { x: fx, y: fy };
+          return;
+        }
+      }
+    }
+
+    function draw() {
+      // Background & subtle grid
+      ctx.fillStyle = "#111611";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#1b241b";
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= canvas.width; x += TILE) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= canvas.height; y += TILE) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Draw apple (red circle + green leaf)
+      const ax = food.x * TILE + TILE / 2;
+      const ay = food.y * TILE + TILE / 2;
+      ctx.fillStyle = "#e62e2e";
+      ctx.beginPath();
+      ctx.arc(ax, ay + 1, TILE / 2 - 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#4cd137";
+      ctx.beginPath();
+      ctx.ellipse(ax + 2, ay - 7, 4, 2, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw snake
+      for (let i = snake.length - 1; i >= 0; i--) {
+        const seg = snake[i];
+        const px = seg.x * TILE;
+        const py = seg.y * TILE;
+
+        ctx.fillStyle = i === 0 ? "#44ff44" : (i % 2 === 0 ? "#2ecc71" : "#27ae60");
+        ctx.fillRect(px + 1, py + 1, TILE - 2, TILE - 2);
+
+        ctx.strokeStyle = "#0b3d0b";
+        ctx.strokeRect(px + 1, py + 1, TILE - 2, TILE - 2);
+
+        // Eyes on head
+        if (i === 0) {
+          ctx.fillStyle = "#ffffff";
+          let e1x = px + 5, e1y = py + 5, e2x = px + 12, e2y = py + 5;
+          if (dx === 1) { e1x = px + 12; e1y = py + 4; e2x = px + 12; e2y = py + 12; }
+          else if (dx === -1) { e1x = px + 4; e1y = py + 4; e2x = px + 4; e2y = py + 12; }
+          else if (dy === 1) { e1x = px + 4; e1y = py + 12; e2x = px + 12; e2y = py + 12; }
+
+          ctx.fillRect(e1x, e1y, 4, 4);
+          ctx.fillRect(e2x, e2y, 4, 4);
+
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(e1x + 1, e1y + 1, 2, 2);
+          ctx.fillRect(e2x + 1, e2y + 1, 2, 2);
+        }
+      }
+    }
+
+    function step() {
+      dx = nextDx;
+      dy = nextDy;
+      const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+      if (
+        head.x < 0 || head.x >= W ||
+        head.y < 0 || head.y >= H ||
+        snake.some(s => s.x === head.x && s.y === head.y)
+      ) {
+        clearInterval(timer);
+        timer = null;
+        statusEl.textContent = "GAME OVER! Press Start or R.";
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#ff4444";
+        ctx.font = "bold 28px 'Courier New', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        scoreEl.textContent = score;
+        if (score > high) {
+          high = score;
+          highEl.textContent = high;
+        }
+        spawnFood();
+      } else {
+        snake.pop();
+      }
+      draw();
+    }
+
+    function dir(nx, ny) {
+      if (!timer) start();
+      if (nx === -dx && ny === -dy) return;
+      nextDx = nx;
+      nextDy = ny;
+    }
+
+    function start() {
+      clearInterval(timer);
+      snake = [{ x: 10, y: 7 }, { x: 9, y: 7 }, { x: 8, y: 7 }];
+      dx = nextDx = 1;
+      dy = nextDy = 0;
+      score = 0;
+      scoreEl.textContent = "0";
+      statusEl.textContent = "Playing (Arrows or WASD)";
+      spawnFood();
+      draw();
+      timer = setInterval(step, 115);
+    }
+
+    document.addEventListener("keydown", e => {
+      const k = e.key.toLowerCase();
+      if (["arrowup", "arrowdown", "arrowleft", "arrowright", " "].includes(k)) {
+        e.preventDefault();
+      }
+      if (k === "arrowup" || k === "w") dir(0, -1);
+      else if (k === "arrowdown" || k === "s") dir(0, 1);
+      else if (k === "arrowleft" || k === "a") dir(-1, 0);
+      else if (k === "arrowright" || k === "d") dir(1, 0);
+      else if (k === "r" || k === " ") start();
+    });
+
+    snake = [{ x: 10, y: 7 }, { x: 9, y: 7 }, { x: 8, y: 7 }];
+    food = { x: 15, y: 7 };
+    dx = 1;
+    dy = 0;
+    draw();
+  </script>
+</body>
+</html>
