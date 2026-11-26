@@ -1,0 +1,63 @@
+name: Build and Deploy Manpages
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 3 * * 0'   # Every Sunday at 03:00 UTC
+    - cron: '0 4 * * 3'   # Every Wednesday at 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install groff and system manpages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends groff manpages manpages-dev manpages-posix manpages-posix-dev coreutils
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Restore cached manpages
+        uses: actions/cache@v4
+        with:
+          path: shelf/man
+          key: manpages-${{ runner.os }}-${{ hashFiles('mn/build.py') }}-${{ github.run_id }}
+          restore-keys: |
+            manpages-${{ runner.os }}-${{ hashFiles('mn/build.py') }}-
+
+      - name: Run mn/build.py
+        run: python3 mn/build.py
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
