@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is a TTY in Linux/Unix? - The internet library</title>
+  <style>
+    .answer {
+      margin-left: 40px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>What is a TTY in Linux/Unix?</h1>
+  <hr>
+
+  <h2>1. What does TTY stand for?</h2>
+  <p class="answer">
+    <strong>TTY</strong> stands for <strong>Teletypewriter</strong>. Originally, these were physical electromechanical typewriters wired to mainframes that printed output on paper. Today in Linux and Unix, a TTY is a kernel subsystem that handles text input/output, line discipline (like echoing keys, handling Backspace, and turning <code>Ctrl+C</code> into <code>SIGINT</code>), and terminal sessions.
+  </p>
+  <hr>
+
+  <h2>2. How a TTY Connects to Your Shell</h2>
+  <fieldset>
+    <legend>Terminal Pipeline</legend>
+<pre>
+[ Keyboard / Screen ]  (or Terminal Emulator / SSH)
+         |
+         v
++-------------------+
+
+|  TTY Line         |  &lt;-- Handles echo, Ctrl+C (SIGINT), line buffering
+|  Discipline       |
++-------------------+
+         |
+         v
+[ stdin / stdout / stderr ]  (File Descriptors 0, 1, 2)
+         |
+         v
+[ Shell (bash, zsh, sh) ]
+</pre>
+  </fieldset>
+  <hr>
+
+  <h2>3. Common TTY Device Files in <code>/dev</code></h2>
+  <dl class="answer">
+    <dt><strong><code>/dev/tty1</code> – <code>/dev/tty63</code> (Virtual Consoles)</strong></dt>
+    <dd>Built-in kernel text consoles. You can switch between them on Linux using <code>Ctrl + Alt + F1</code> through <code>F6</code>.</dd>
+
+    <dt><strong><code>/dev/pts/0</code>, <code>/dev/pts/1</code>... (Pseudo-Terminals / PTY)</strong></dt>
+    <dd>Software-emulated terminals created whenever you open a terminal app in a GUI (like Konsole or GNOME Terminal) or connect over <code>ssh</code>.</dd>
+
+    <dt><strong><code>/dev/ttyS0</code> (Serial Console)</strong></dt>
+    <dd>Hardware UART serial ports, commonly used on embedded boards, routers, and QEMU virtual machines.</dd>
+
+    <dt><strong><code>/dev/console</code> (System Console)</strong></dt>
+    <dd>The primary kernel log and emergency boot console used by PID 1 (<code>init</code>) during startup.</dd>
+
+    <dt><strong><code>/dev/tty</code> (Current Controlling Terminal)</strong></dt>
+    <dd>A special alias pointing to whatever terminal the current process is attached to.</dd>
+  </dl>
+  <hr>
+
+  <h2>4. Check Your TTY in C (<code>ttyname.c</code>)</h2>
+  <fieldset>
+    <legend>ttyname.c</legend>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+
+int main(void) {
+  if (isatty(STDIN_FILENO)) {
+    printf("Connected to TTY: %s\n", ttyname(STDIN_FILENO));
+  } else {
+    printf("Not connected to a terminal (piped or redirected).\n");
+  }
+  return 0;
+}</code></pre>
+  </fieldset>
+</body>
+</html>

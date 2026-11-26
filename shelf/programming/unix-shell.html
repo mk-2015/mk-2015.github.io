@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNIX Shell in C</title>
+  <style>
+    .answer {
+      margin-left: 40px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>How to write a unix shell in c</h1>
+  <hr>
+
+  <div class="document">
+    <h2>Full source code</h2>
+    <fieldset>
+      <legend>shell.c</legend>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+#define MAX_LINE 1024
+#define MAX_ARGS 64
+#define DELIMITERS " \t\r\n\a"
+
+void parse_input(char *line, char **args) {
+  int i = 0;
+  char *token = strtok(line, DELIMITERS);
+
+  while (token != NULL &amp;&amp; i &lt; MAX_ARGS - 1) {
+    args[i++] = token;
+    token = strtok(NULL, DELIMITERS);
+  }
+  args[i] = NULL;
+}
+
+int handle_builtin(char **args) {
+  if (strcmp(args, "exit") == 0) {
+    exit(0);
+  }
+
+  if (strcmp(args, "cd") == 0) {
+    const char *target_dir = args ? args : getenv("HOME");
+    if (target_dir == NULL || chdir(target_dir) != 0) {
+      perror("cd");
+    }
+    return 1;
+  }
+
+  return 0;
+}
+
+void execute_command(char **args) {
+  pid_t pid = fork();
+
+  if (pid &lt; 0) {
+    perror("fork");
+  } else if (pid == 0) {
+    if (execvp(args, args) == -1) {
+      perror(args);
+    }
+    exit(EXIT_FAILURE);
+  } else {
+    int status;
+    waitpid(pid, &amp;status, 0);
+  }
+}
+
+int main(void) {
+  char line[MAX_LINE];
+  char *args[MAX_ARGS];
+
+  while (1) {
+    printf("% ");
+    fflush(stdout);
+
+    if (fgets(line, sizeof(line), stdin) == NULL) {
+      printf("\n");
+      break;
+    }
+
+    parse_input(line, args);
+
+    if (args == NULL) {
+      continue;
+    }
+
+    if (!handle_builtin(args)) {
+      execute_command(args);
+    }
+  }
+
+  return 0;
+}</code></pre>
+    </fieldset>
+
+    <hr>
+    <h2>Questions</h2>
+
+    <h3>What is a shell?</h3>
+    <p class="answer">A shell is a command-line interface that lets you interact with your operating system by typing commands.</p>
+    <hr>
+
+    <h3>Why do you need a shell?</h3>
+    <div class="answer">
+      <p>On some systems you may not have a GUI, so you SSH into it and you get a shell. A shell is also used when no X Window System is present.</p>
+      <ul>
+        <li><strong>GUI:</strong> Graphical User Interface</li>
+        <li><strong>CLI:</strong> Command-Line Interface</li>
+        <li><strong>TUI:</strong> Terminal User Interface</li>
+      </ul>
+    </div>
+    <hr>
+
+    <h3>Some common shells</h3>
+    <ol class="answer">
+      <li><a href="#BASH">Bash</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Z_shell" target="_blank">Z-Shell</a></li>
+      <li><a href="https://fishshell.com/" target="_blank">Fish</a></li>
+    </ol>
+
+    <hr>
+    <h2 id="BASH">BASH</h2>
+    <p class="answer">
+      BASH stands for <strong>Bourne-Again SHell</strong>, a free and open-source shell built by the GNU Project as a replacement for the original Bourne shell (<code>sh</code>) on traditional Unix systems. BASH is the default or most common shell on Linux and most Unix-like operating systems.
+    </p>
+  </div>
+</body>
+</html>
