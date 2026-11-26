@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_UNALIGN(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_UNALIGN(2const)                                  PR_SET_UNALIGN(2const)
+
+NAME
+       PR_SET_UNALIGN - set unaligned access control bits
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_UNALIGN, unsigned long flag);
+
+DESCRIPTION
+       Set unaligned access control bits to arg2.
+
+       Pass  PR_UNALIGN_NOPRINT to silently fix up unaligned user accesses, or
+       PR_UNALIGN_SIGBUS to generate SIGBUS on unaligned user access.
+
+       Alpha also supports an additional flag with the value of 4 and no  cor‐
+       responding  named  constant,  which  instructs kernel to not fix up un‐
+       aligned accesses (it is analogous to providing the  UAC_NOFIX  flag  in
+       SSI_NVPAIRS operation of the setsysinfo() system call on Tru64).
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL flag is not a valid value.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Only on:
+
+       •  ia64, since Linux 2.3.48
+       •  parisc, since Linux 2.6.15
+       •  PowerPC, since Linux 2.6.18
+       •  Alpha, since Linux 2.6.22
+       •  sh, since Linux 2.6.34
+       •  tile, since Linux 3.12
+
+SEE ALSO
+       prctl(2), PR_GET_UNALIGN(2const)
+
+Linux man-pages 6.9.1             2024-06-02            PR_SET_UNALIGN(2const)
+</pre></body></html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>tc-ematch(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>ematch(8)                            Linux                           ematch(8)
+
+NAME
+       ematch  -  extended  matches  for use with &quot;basic&quot;, &quot;cgroup&quot;  or &quot;flow&quot;
+       filters
+
+SYNOPSIS
+       tc filter add .. basic match EXPR .. flowid ..
+
+
+       EXPR := TERM [ { and | or } EXPR ]
+
+       TERM := [ not ] { MATCH | &#x27;(&#x27; EXPR &#x27;)&#x27; }
+
+       MATCH := module &#x27;(&#x27; ARGS &#x27;)&#x27;
+
+       ARGS := ARG1 ARG2 ..
+
+
+MATCHES
+   cmp
+       Simple comparison ematch: arithmetic compare of packet data to a given
+       value.
+
+       cmp( ALIGN at OFFSET [ ATTRS ] { eq | lt | gt } VALUE )
+
+       ALIGN := { u8 | u16 | u32 }
+
+       ATTRS := [ layer LAYER ] [ mask MASK ] [ trans ]
+
+       LAYER := { link | network | transport | 0..2 }
+
+
+   meta
+       Metadata ematch
+
+       meta( OBJECT { eq | lt |gt } OBJECT )
+
+       OBJECT := { META_ID |  VALUE }
+
+       META_ID := id [ shift SHIFT ] [ mask MASK ]
+
+
+       meta attributes:
+
+              random 32 bit random value
+
+              loadavg_1 Load average in last 5 minutes
+
+              nf_mark Netfilter mark
+
+              vlan Vlan tag
+
+              sk_rcvbuf Receive buffer size
+
+              sk_snd_queue Send queue length
+
+
+       A full list of meta attributes can be obtained via
+
+       # tc filter add dev eth1 basic match &#x27;meta(list)&#x27;
+
+
+   nbyte
+       match packet data byte sequence
+
+       nbyte( NEEDLE at OFFSET [ layer LAYER ] )
+
+       NEEDLE := { string | c-escape-sequence  }
+
+       OFFSET := int
+
+       LAYER := { link | network | transport | 0..2 }
+
+
+   u32
+       u32 ematch
+
+       u32( ALIGN VALUE MASK at [ nexthdr+ ] OFFSET )
+
+       ALIGN := { u8 | u16 | u32 }
+
+
+   ipset
+       test packet against ipset membership
+
+       ipset( SETNAME FLAGS )
+
+       SETNAME := string
+
+       FLAGS := { FLAG [, FLAGS] }
+
+       The flag options are the same as  those  used  by  the  iptables  &quot;set&quot;
+       match.
+
+       When  using the ipset ematch with the &quot;ip_set_hash:net,iface&quot; set type,
+       the interface can be queried using &quot;src,dst (source ip address,  outgo‐
+       ing  interface)  or  &quot;src,src&quot;  (source ip address, incoming interface)
+       syntax.
+
+
+   ipt
+       test packet against xtables matches
+
+       ipt( [-6] -m MATCH_NAME FLAGS )
+
+       MATCH_NAME := string
+
+       FLAGS := { FLAG [, FLAGS] }
+
+       The flag options are the same as those used by the xtable match used.
+
+
+   canid
+       ematch rule to match CAN frames
+
+       canid( IDLIST )
+
+       IDLIST :=  IDSPEC[IDLIST]
+
+       IDSPEC := { âsffâ CANID | âeffâ CANID }
+
+       CANID := ID[:MASK]
+
+       ID, MASK := hexadecimal number (i.e. 0x123)
+
+
+CAVEATS
+       The ematch syntax uses &#x27;(&#x27; and &#x27;)&#x27; to  group  expressions.  All  braces
+       need  to  be  escaped properly to prevent shell commandline from inter‐
+       preting these directly.
+
+       When using the ipset ematch with the &quot;ifb&quot; device, the outgoing  device
+       will  be  the  ifb  device itself, e.g. &quot;ifb0&quot;.  The original interface
+       (i.e. the device the packet arrived on) is treated as the incoming  in‐
+       terface.
+
+
+EXAMPLE &amp; USAGE
+       # tc filter add .. basic match ...
+
+       # &#x27;cmp(u16 at 3 layer 2 mask 0xff00 gt 20)&#x27;
+
+       # &#x27;meta(nfmark gt 24)&#x27; and &#x27;meta(tcindex mask 0xf0 eq 0xf0)&#x27;
+
+       # &#x27;nbyte(&quot;ababa&quot; at 12 layer 1)&#x27;
+
+       # &#x27;u32(u16 0x1122 0xffff at nexthdr+4)&#x27;
+
+       Check if packet source ip address is member of set named bulk:
+
+       # &#x27;ipset(bulk src)&#x27;
+
+       Check  if  packet  source ip and the interface the packet arrived on is
+       member of &quot;hash:net,iface&quot; set named interactive:
+
+       # &#x27;ipset(interactive src,src)&#x27;
+
+       Check if packet matches an IPSec state with reqid 1:
+
+       # &#x27;ipt(-m policy --dir in --pol ipsec --reqid 1)&#x27;
+
+
+AUTHOR
+       The extended match infrastructure was added by Thomas Graf.
+
+iproute2                         6 August 2012                       ematch(8)
+</pre></body></html>

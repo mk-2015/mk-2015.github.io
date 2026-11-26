@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_MAC-HMAC(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_MAC-HMAC(7SSL)                  OpenSSL                 EVP_MAC-HMAC(7SSL)
+
+NAME
+       EVP_MAC-HMAC - The HMAC EVP_MAC implementation
+
+DESCRIPTION
+       Support for computing HMAC MACs through the EVP_MAC API.
+
+       This implementation uses EVP_MD functions to get access to the
+       underlying digest.
+
+   Identity
+       This implementation is identified with this name and properties, to be
+       used with EVP_MAC_fetch():
+
+       &quot;HMAC&quot;, &quot;provider=default&quot; or &quot;provider=fips&quot;
+
+   Supported parameters
+       The   general   description   of  these  parameters  can  be  found  in
+       &quot;PARAMETERS&quot; in EVP_MAC(3).
+
+       The following parameters can be set with EVP_MAC_CTX_set_params():
+
+       &quot;key&quot; (OSSL_MAC_PARAM_KEY) &lt;octet string&gt;
+           Sets the MAC key.  Setting this parameter is identical to passing a
+           key to EVP_MAC_init(3).
+
+       &quot;digest&quot; (OSSL_MAC_PARAM_DIGEST) &lt;UTF8 string&gt;
+           Sets the name of the underlying digest to be used.
+
+       &quot;properties&quot; (OSSL_MAC_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+           Sets the  properties  to  be  queried  when  trying  to  fetch  the
+           underlying  digest.   This  must  be given together with the digest
+           naming  parameter  (&quot;digest&quot;,  or  OSSL_MAC_PARAM_DIGEST)   to   be
+           considered valid.
+
+       &quot;digest-noinit&quot; (OSSL_MAC_PARAM_DIGEST_NOINIT) &lt;integer&gt;
+           A  flag  to set the MAC digest to not initialise the implementation
+           specific data.  The value 0 or  1  is  expected.   This  option  is
+           deprecated  and will be removed in a future release.  It may be set
+           but is currently ignored
+
+       &quot;digest-oneshot&quot; (OSSL_MAC_PARAM_DIGEST_ONESHOT) &lt;integer&gt;
+           A flag to set the MAC digest to be a one-shot operation.  The value
+           0 or 1 is expected.  This option is deprecated and will be  removed
+           in a future release.  It may be set but is currently ignored.
+
+       &quot;tls-data-size&quot; (OSSL_MAC_PARAM_TLS_DATA_SIZE) &lt;unsigned integer&gt;
+       &quot;key-check&quot; (OSSL_MAC_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           See &quot;Mac Parameters&quot; in provider-mac(7).
+
+       The      following     parameters     can     be     retrieved     with
+       EVP_MAC_CTX_get_params():
+
+       &quot;size&quot; (OSSL_MAC_PARAM_SIZE) &lt;unsigned integer&gt;
+           The   &quot;size&quot;    parameter    can    also    be    retrieved    with
+           EVP_MAC_CTX_get_mac_size().   The length of the &quot;size&quot; parameter is
+           equal to that of an unsigned int.
+
+       &quot;block-size&quot; (OSSL_MAC_PARAM_BLOCK_SIZE) &lt;unsigned integer&gt;
+           Gets the MAC block size.  The &quot;block-size&quot; parameter  can  also  be
+           retrieved with EVP_MAC_CTX_get_block_size().
+
+       &quot;fips-indicator&quot; (OSSL_KDF_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           See &quot;Mac Parameters&quot; in provider-mac(7).
+
+SEE ALSO
+       EVP_MAC_CTX_get_params(3),  EVP_MAC_CTX_set_params(3),  &quot;PARAMETERS&quot; in
+       EVP_MAC(3), OSSL_PARAM(3), HMAC(3)
+
+COPYRIGHT
+       Copyright 2018-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                EVP_MAC-HMAC(7SSL)
+</pre></body></html>

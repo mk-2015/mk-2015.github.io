@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>lsirq(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>LSIRQ(1)                         User Commands                        LSIRQ(1)
+
+NAME
+       lsirq - utility to display kernel interrupt information
+
+SYNOPSIS
+       lsirq [options]
+
+DESCRIPTION
+       Display kernel interrupt counter information.
+
+       The default output is subject to change. So whenever possible, you
+       should avoid using default outputs in your scripts. Always explicitly
+       define expected columns by using --output.
+
+OPTIONS
+       -n, --noheadings
+           Don’t print headings.
+
+       -o, --output list
+           Specify which output columns to print. Use --help to get a list of
+           all supported columns. The default list of columns may be extended
+           if list is specified in the format +list.
+
+       -s, --sort column
+           Specify sort criteria by column name. See --help output to get
+           column names.
+
+       -J, --json
+           Use JSON output format.
+
+       -P, --pairs
+           Produce output in the form of key=&quot;value&quot; pairs. All potentially
+           unsafe characters are hex-escaped (\x&lt;code&gt;).
+
+       -S, --softirq
+           Show softirqs information.
+
+       -t, --threshold min
+           Only show IRQs with counters above the specified threshold. Human
+           readable values are supported (e.g. 1.2K).
+
+       -C, --cpu-list list
+           Only show interrupt counters on the specified CPU list.
+
+       -h, --help
+           Display help text and exit.
+
+       -V, --version
+           Display version and exit.
+
+AUTHORS
+       Zhenwei Pi &lt;pizhenwei@bytedance.com&gt;, Sami Kerola &lt;kerolasa@iki.fi&gt;,
+       Karel Zak &lt;kzak@redhat.com&gt; Robin Jarry &lt;robin@jarry.cc&gt;
+
+REPORTING BUGS
+       For bug reports, use the issue tracker
+       &lt;https://github.com/util-linux/util-linux/issues&gt;.
+
+AVAILABILITY
+       The lsirq command is part of the util-linux package which can be
+       downloaded from Linux Kernel Archive
+       &lt;https://www.kernel.org/pub/linux/utils/util-linux/&gt;.
+
+util-linux 2.41.5                 2026-06-16                          LSIRQ(1)
+</pre></body></html>

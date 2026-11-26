@@ -1,0 +1,77 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Optionmenu(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Optionmenu(3pm)       User Contributed Perl Documentation      Optionmenu(3pm)
+
+NAME
+       Tk::Optionmenu - Let the user select one of some predefined options
+       values
+
+SYNOPSIS
+           use Tk::Optionmenu;
+
+           $opt = $w-&gt;Optionmenu(
+                               -options =&gt; REFERENCE_to_OPTIONLIST,
+                               -command =&gt; CALLBACK,
+                               -variable =&gt; SCALAR_REF,
+                               );
+
+           $opt-&gt;addOptions( OPTIONLIST );
+
+           # OPTION LIST is
+           #   a)  $val1, $val2, $val3,...
+           #   b)  [ $lab1=&gt;$val1], [$lab2=&gt;val2], ... ]
+           #   c)  combination of a) and b), e.g.,
+           #       val1, [$lab2=&gt;val2], val3, val4, [...], ...
+
+DESCRIPTION
+       The Optionmenu widget allows the user chose between a given set of
+       options.
+
+       If the user should be able to change the available option have a look
+       at Tk::BrowseEntry.
+
+OPTIONS
+       -options
+           (Re)sets the list of options presented.
+
+       -command
+           Defines the callback that is invokes when a new option is selected.
+
+       -variable
+           Reference  to  a  scalar  that  contains  the  current value of the
+           selected option.
+
+       -textvariable
+           Reference to a scalar that contains the text label of  the  current
+           value of the selected option.
+
+METHODS
+       addOptions
+           Adds OPTION_LIST to the already available options.
+
+EXAMPLE
+        use Tk;
+        my $mw = MainWindow-&gt;new();
+
+        my ($var, $tvar);
+        my $opt = $mw-&gt;Optionmenu(
+               -options =&gt; [[jan=&gt;1], [feb=&gt;2], [mar=&gt;3], [apr=&gt;4]],
+               -command =&gt; sub { print &quot;got: &quot;, shift, &quot;\n&quot; },
+               -variable =&gt; \$var,
+               -textvariable =&gt; \$tvar
+              )-&gt;pack;
+
+        $opt-&gt;addOptions([may=&gt;5],[jun=&gt;6],[jul=&gt;7],[aug=&gt;8]);
+
+        my $f = $mw-&gt;Frame(-relief=&gt;&#x27;groove&#x27;, -borderwidth =&gt; 2)-&gt;pack;
+        $f-&gt;Label(-textvariable=&gt;\$tvar)-&gt;pack(-side =&gt; &#x27;left&#x27;);
+        $f-&gt;Label(-text =&gt; &quot; -&gt; &quot;)-&gt;pack(-side =&gt; &#x27;left&#x27;);
+        $f-&gt;Label(-textvariable=&gt;\$var)-&gt;pack(-side =&gt; &#x27;left&#x27;);
+
+        $mw-&gt;Button(-text=&gt;&#x27;Exit&#x27;, -command=&gt;sub{$mw-&gt;destroy})-&gt;pack;
+
+        MainLoop;
+
+SEE ALSO
+       Tk::Menubutton, Tk::BrowseEntry
+
+perl v5.40.1                      2025-04-13                   Optionmenu(3pm)
+</pre></body></html>

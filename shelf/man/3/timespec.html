@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>timespec(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>timespec(3type)                                                timespec(3type)
+
+NAME
+       timespec - time in seconds and nanoseconds
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;time.h&gt;
+
+       struct timespec {
+           time_t     tv_sec;   /* Seconds */
+           /* ... */  tv_nsec;  /* Nanoseconds [0, 999&#x27;999&#x27;999] */
+       };
+
+DESCRIPTION
+       Describes times in seconds and nanoseconds.
+
+       tv_nsec  is of an implementation-defined signed type capable of holding
+       the specified range.  Under glibc, this is usually long, and long  long
+       on X32.  It can be safely down-cast to any concrete 32-bit integer type
+       for processing.
+
+VERSIONS
+       Prior to C23, tv_nsec was long.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001.
+
+NOTES
+       The  following  headers  also  provide  this type: &lt;aio.h&gt;, &lt;mqueue.h&gt;,
+       &lt;sched.h&gt;, &lt;signal.h&gt;, &lt;sys/select.h&gt;, and &lt;sys/stat.h&gt;.
+
+SEE ALSO
+       clock_gettime(2), clock_nanosleep(2), nanosleep(2), timerfd_gettime(2),
+       timer_gettime(2), time_t(3type), timeval(3type)
+
+Linux man-pages 6.9.1             2024-05-02                   timespec(3type)
+</pre></body></html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Authen::SASL::Perl::GSSAPI(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Authen...GSSAPI(3pm)  User Contributed Perl Documentation Authen...GSSAPI(3pm)
+
+NAME
+       Authen::SASL::Perl::GSSAPI - GSSAPI (Kerberosv5) Authentication class
+
+VERSION
+       version 2.1700
+
+SYNOPSIS
+         use Authen::SASL qw(Perl);
+
+         $sasl = Authen::SASL-&gt;new( mechanism =&gt; &#x27;GSSAPI&#x27; );
+
+         $sasl = Authen::SASL-&gt;new( mechanism =&gt; &#x27;GSSAPI&#x27;,
+                                    callback =&gt; { pass =&gt; $mycred });
+
+         $sasl-&gt;client_start( $service, $host );
+
+DESCRIPTION
+       This method implements the client part of the GSSAPI SASL algorithm, as
+       described in RFC 2222 section 7.2.1 resp.
+       draft-ietf-sasl-gssapi-XX.txt.
+
+       With a valid Kerberos 5 credentials cache (aka TGT) it allows to
+       connect to service@host given as the first two parameters to
+       Authen::SASL&#x27;s client_start() method.  Alternatively, a GSSAPI::Cred
+       object can be passed in via the Authen::SASL callback hash using the
+       `pass&#x27; key.
+
+       Please note that this module does not currently implement a SASL
+       security layer following authentication. Unless the connection is
+       protected by other means, such as TLS, it will be vulnerable to man-in-
+       the-middle attacks. If security layers are required, then the
+       Authen::SASL::XS GSSAPI module should be used instead.
+
+   CALLBACK
+       The callbacks used are:
+
+       authname
+           The authorization identity to be used in SASL exchange
+
+       gssmech
+           The GSS mechanism to be used in the connection
+
+       pass
+           The GSS credentials to be used in the connection (optional)
+
+EXAMPLE
+        #! /usr/bin/perl -w
+
+        use strict;
+       use warnings;
+
+        use Net::LDAP 0.33;
+        use Authen::SASL 2.10;
+
+        # -------- Adjust to your environment --------
+        my $adhost      = &#x27;theserver.bla.net&#x27;;
+        my $ldap_base   = &#x27;dc=bla,dc=net&#x27;;
+        my $ldap_filter = &#x27;(&amp;(sAMAccountName=BLAAGROL))&#x27;;
+
+        my $sasl = Authen::SASL-&gt;new(mechanism =&gt; &#x27;GSSAPI&#x27;);
+        my $ldap;
+
+        eval {
+            $ldap = Net::LDAP-&gt;new($adhost,
+                                   onerror =&gt; &#x27;die&#x27;)
+              or  die &quot;Cannot connect to LDAP host &#x27;$adhost&#x27;: &#x27;$@&#x27;&quot;;
+            $ldap-&gt;bind(sasl =&gt; $sasl);
+        };
+
+        if ($@) {
+            chomp $@;
+            die   &quot;\nBind error         : $@&quot;,
+                  &quot;\nDetailed SASL error: &quot;, $sasl-&gt;error,
+                  &quot;\nTerminated&quot;;
+        }
+
+        print &quot;\nLDAP bind() succeeded, working in authenticated state&quot;;
+
+        my $mesg = $ldap-&gt;search(base   =&gt; $ldap_base,
+                                 filter =&gt; $ldap_filter);
+
+        # -------- evaluate $mesg
+
+   PROPERTIES
+       The properties used are:
+
+       maxbuf
+           The maximum buffer size for receiving cipher text
+
+       minssf
+           The  minimum SSF value that should be provided by the SASL security
+           layer.  The default is 0
+
+       maxssf
+           The maximum SSF value that should be provided by the SASL  security
+           layer.  The default is 2**31
+
+       externalssf
+           The  SSF  value  provided by an underlying external security layer.
+           The default is 0
+
+       ssf The actual SSF value provided by the SASL security layer after  the
+           SASL  authentication  phase has been completed. This value is read-
+           only and set by the implementation after  the  SASL  authentication
+           phase has been completed.
+
+       maxout
+           The  maximum  plaintext  buffer  size for sending data to the peer.
+           This  value  is  set  by  the   implementation   after   the   SASL
+           authentication  phase  has been completed and a SASL security layer
+           is in effect.
+
+SEE ALSO
+       Authen::SASL, Authen::SASL::Perl
+
+AUTHORS
+       Written by Simon Wilkinson, with patches and extensions by Achim Grolms
+       and Peter Marschall.
+
+       Please report any bugs, or  post  any  suggestions,  to  the  perl-ldap
+       mailing list &lt;perl-ldap@perl.org&gt;
+
+COPYRIGHT
+       Copyright  (c)  2006 Simon Wilkinson, Achim Grolms and Peter Marschall.
+       All  rights  reserved.  This  program  is  free   software;   you   can
+       redistribute it and/or modify it under the same terms as Perl itself.
+
+perl v5.36.0                      2023-09-24              Authen...GSSAPI(3pm)
+</pre></body></html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.obex.PhonebookAccess(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ...OOKACCESS(5)  Linux System Administration ORG.BLUEZ...OOKACCESS(5)
+
+NAME
+       org.bluez.obex.PhonebookAccess  -  BlueZ D-Bus OBEX PhonebookAccess API
+       documentation
+
+INTERFACE
+       Service
+              org.bluez.obex
+
+       Interface
+              org.bluez.obex.PhonebookAccess1
+
+       Object path
+              [Session object path]
+
+   Methods
+   void Select(string location, string phonebook)
+          Selects the phonebook object for other operations.  Should  be  call
+          before all the other operations.
+
+          Possible location values:
+
+          &quot;int&quot;, &quot;internal&quot; (default)
+                 Store in the Internal memory.
+
+          &quot;sim{#}&quot;
+                 Store in the sim number.
+
+          Possible phonebook values:
+
+          &quot;pb&quot;   Store as contact.
+
+          &quot;ich&quot;  Store as incoming call.
+
+          &quot;och&quot;  Store as outgoing call.
+
+          &quot;mch&quot;  Store as missing call.
+
+          &quot;cch&quot;  Store  as  a  combination  of  incoming, outgoing and missing
+                 call.
+
+          &quot;spd&quot;:
+              Store as speed dials entry ( only for &quot;internal&quot; )
+
+          &quot;fav&quot;:
+              Store as favorites entry ( only for &quot;internal&quot; )
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Failed
+
+   object, dict PullAll(string targetfile, dict filters)
+          Returns the entire phonebook object from the  PSE  server  in  plain
+          string with vcard format, and store it in a local file.
+
+          If  an empty target file is given, a name will be automatically gen‐
+          erated for the temporary file.
+
+          The returned path  represents  the  newly  created  transfer,  which
+          should  be  used  to  find  out if the content has been successfully
+          transferred or if the operation fails.
+
+          The properties of this transfer are also returned along with the ob‐
+          ject   path,   to   avoid   a    call    to    GetProperties,    see
+          org.bluez.obex.Transfer(5) for the possible list of properties.
+
+          Possible filters:
+
+          string Format
+                 Items vcard format.
+
+                 Possible values:
+
+                 &quot;vcard21&quot; (default)
+
+                 &quot;vcard30&quot;
+
+          string Order
+                 Items order.
+
+                 Possible values:
+
+                 &quot;&quot;
+
+                 &quot;indexed&quot;
+
+                 &quot;alphanumeric&quot;
+
+                 &quot;phonetic&quot;
+
+          uint16 Offset (default 0)
+                 Offset of the first item.
+
+          uint16 MaxCount (default 65535)
+                 Maximum number of items.
+
+          array{string} Fields (default all fields)
+                 Item vcard fields.
+
+                 See ListFilterFields() for possible values.
+
+          array{string} FilterAll
+                 Filter  items  by  fields using AND logic, cannot be used to‐
+                 gether with FilterAny.
+
+                 See ListFilterFields() for possible values.
+
+          array{string} FilterAny
+                 Filter items by fields using OR logic,  cannot  be  used  to‐
+                 gether with FilterAll.
+
+                 See ListFilterFields() for possible values.
+
+          bool ResetNewMissedCalls
+                 Reset  new  the  missed  calls  items, shall only be used for
+                 folders mch and cch.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Forbidden
+
+   array{string vcard, string name} List(dict filters)
+          Returns array of vcard-listing data where every entry consists of  a
+          pair  of  strings  containing the vcard handle and the contact name.
+          For example:
+
+          &quot;1.vcf&quot;
+                 &quot;John&quot;
+
+          Possible filters:
+
+          string Order
+                 Contact order.
+
+                 Possible values:
+
+                 &quot;&quot;
+
+                 &quot;indexed&quot;
+
+                 &quot;alphanumeric&quot;
+
+                 &quot;phonetic&quot;
+
+          uint16 Offset
+                 Start offset.
+
+          uint16 MaxCount
+                 Maximum number of contacts.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Forbidden
+
+   object, dict Pull(string vcard, string targetfile, dict filters)
+          Retrieves the vcard in the current phonebook object and store it  in
+          a local file.
+
+          If  an empty target file is given, a name will be automatically gen‐
+          erated for the temporary file.
+
+          The returned path  represents  the  newly  created  transfer,  which
+          should  be  used  to  find  out if the content has been successfully
+          transferred or if the operation fails.
+
+          The properties of this transfer are also returned along with the ob‐
+          ject   path,   to   avoid   a    call    to    GetProperties,    see
+          org.bluez.obex.Transfer(5) for the possible list of properties.
+
+          Possible filters:
+
+          string Format
+                 Contact data format.
+
+                 Possible values:
+
+                 &quot;&quot;
+
+                 &quot;vcard21&quot;
+
+                 &quot;vcard30&quot;
+
+          array{string} Fields
+                 See ListFilterFields() for possible values.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Forbidden
+
+          org.bluez.obex.Error.Failed
+
+   array{string  vcard,  string  name} Search(string field, string value, dict
+       filters)
+          Searches for entries matching the given condition and return an  ar‐
+          ray  of  vcard-listing  data where every entry consists of a pair of
+          strings containing the vcard handle and the contact name.
+
+          Possible field values:
+
+              &quot;name&quot; (default)
+                     Search by name.
+
+              &quot;number&quot;
+                     Search by number.
+
+              &quot;sound&quot;
+                     Search by sound.
+
+          value: the string value to search for
+
+          Possible filters:
+
+          string Order
+                 Contact order.
+
+                 Possible values:
+
+                 &quot;&quot;
+
+                 &quot;indexed&quot;
+
+                 &quot;alphanumeric&quot;
+
+                 &quot;phonetic&quot;
+
+          uint16 Offset
+                 Start offset.
+
+          uint16 MaxCount
+                 Maximum number of contacts.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Forbidden
+
+          org.bluez.obex.Error.Failed
+
+   uint16 GetSize()
+          Returns the number of entries in the selected phonebook object  that
+          are  actually  used  (i.e.  indexes  that correspond to non-NULL en‐
+          tries).
+
+          Possible errors:
+
+          org.bluez.obex.Error.Forbidden
+
+          org.bluez.obex.Error.Failed
+
+   void UpdateVersion()
+          Attempts to update PrimaryCounter and SecondaryCounter.
+
+          Possible errors:
+
+          org.bluez.obex.Error.NotSupported
+
+          org.bluez.obex.Error.Forbidden
+
+          org.bluez.obex.Error.Failed
+
+   array{string} ListFilterFields()
+          Returns all Available fields that can be used in Fields filter.
+
+          Possible return:
+
+          &quot;VERSION&quot;
+
+          &quot;FN&quot;
+
+          &quot;N&quot;
+
+          &quot;PHOTO&quot;
+
+          &quot;BDAY&quot;
+
+          &quot;ADR&quot;
+
+          &quot;LABEL&quot;
+
+          &quot;TEL&quot;
+
+          &quot;EMAIL&quot;
+
+          &quot;MAILER&quot;
+
+          &quot;TZ&quot;
+
+          &quot;GEO&quot;
+
+          &quot;TITLE&quot;
+
+          &quot;ROLE&quot;
+
+          &quot;LOGO&quot;
+
+          &quot;AGENT&quot;
+
+          &quot;ORG&quot;
+
+          &quot;NOTE&quot;
+
+          &quot;REV&quot;
+
+          &quot;SOUND&quot;
+
+          &quot;URL&quot;
+
+          &quot;UID&quot;
+
+          &quot;KEY&quot;
+
+          &quot;NICKNAME&quot;
+
+          &quot;CATEGORIES&quot;
+
+          &quot;PROID&quot;
+
+          &quot;CLASS&quot;
+
+          &quot;SORT-STRING&quot;
+
+          &quot;X-IRMC-CALL-DATETIME&quot;
+
+          &quot;X-BT-SPEEDDIALKEY&quot;
+
+          &quot;X-BT-UCI&quot;
+
+          &quot;X-BT-UID&quot;
+
+          &quot;BIT-{#}&quot;
+
+          Possible errors: None
+
+   Properties
+   string Folder [readonly]
+          Current folder.
+
+   string DatabaseIdentifier [readonly, optional]
+          128 bits persistent database identifier.
+
+          Possible values:
+              32-character           hexadecimal            such            as
+              A1A2A3A4B1B2C1C2D1D2E1E2E3E4E5E6
+
+   string PrimaryCounter [readonly, optional]
+          128 bits primary version counter.
+
+          Possible values:
+              32-character            hexadecimal            such           as
+              A1A2A3A4B1B2C1C2D1D2E1E2E3E4E5E6
+
+   string SecondaryCounter [readonly, optional]
+          128 bits secondary version counter.
+
+          Possible values:
+              32-character           hexadecimal            such            as
+              A1A2A3A4B1B2C1C2D1D2E1E2E3E4E5E6
+
+   bool FixedImageSize [readonly, optional]
+          Indicate support for fixed image size.
+
+          Possible values:
+              True if image is JPEG 300x300 pixels otherwise False.
+
+BlueZ                            October 2023         ORG.BLUEZ...OOKACCESS(5)
+</pre></body></html>

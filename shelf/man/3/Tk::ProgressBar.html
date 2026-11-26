@@ -1,0 +1,129 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::ProgressBar(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Tk::ProgressBar(3pm)         perl/Tk Documentation        Tk::ProgressBar(3pm)
+
+NAME
+       Tk::ProgressBar - A graphical progress bar
+
+SYNOPSIS
+           use Tk::ProgressBar;
+
+           $progress = $parent-&gt;ProgressBar(
+               -width =&gt; 20,
+               -length =&gt; 200,
+               -anchor =&gt; &#x27;s&#x27;,
+               -from =&gt; 0,
+               -to =&gt; 100,
+               -blocks =&gt; 10,
+               -colors =&gt; [0, &#x27;green&#x27;, 50, &#x27;yellow&#x27; , 80, &#x27;red&#x27;],
+               -variable =&gt; \$percent_done
+           );
+
+           $progress-&gt;value($position);
+
+DESCRIPTION
+       Tk::ProgressBar provides a widget which will show a graphical
+       representation of a value, given maximum and minimum reference values.
+
+STANDARD OPTIONS
+       The following standard widget options are supported:
+
+       -borderwidth
+       -highlightthickness
+           Defaults to 0.
+
+       -padx
+           Defaults to 0.
+
+       -pady
+           Defaults to 0.
+
+       -relief
+           Defaults to &quot;sunken&quot;
+
+       -troughcolor
+           The  color  to  be used for the background (trough) of the progress
+           bar.  Default is to use grey55.
+
+WIDGET-SPECIFIC OPTIONS
+       -anchor
+           This can be used to position the start point of the bar. Default is
+           &#x27;w&#x27; (horizontal bar starting from the left). A vertical bar can  be
+           configured by using either &#x27;s&#x27; or &#x27;n&#x27;.
+
+       -blocks
+           This  controls  the  number  of  blocks to be used to construct the
+           progress bar. The default is to break the bar into 10 blocks.
+
+       -colors
+           Controls the colors to be  used  for  different  positions  of  the
+           progress  bar.   The colors should be supplied as a reference to an
+           array containing pairs of positions and colors.
+
+             -colors =&gt; [ 0, &#x27;green&#x27;, 50, &#x27;red&#x27; ]
+
+           means that for the range 0 to 50 the progress bar should  be  green
+           and for higher values it should be red.
+
+       -from
+           This  sets  the lower limit of the progress bar.  If the bar is set
+           to a value below the lower limt no bar will be displayed.  Defaults
+           to 0.  See the &quot;-to&quot; description for more information.
+
+       -gap
+           This  is the spacing (in pixels) between each block. Defaults to 1.
+           Use 0 to get a continuous bar.
+
+       -length
+           Specifies the desired long dimension of the ProgressBar  in  screen
+           units  (i.e.  any  of  the  forms  acceptable to Tk_GetPixels). For
+           vertical  ProgressBars  this  is  the  ProgressBars   height;   for
+           horizontal scales it is the ProgressBars width.  The default length
+           is   calculated   from   the  values  of  &quot;-padx&quot;,  &quot;-borderwidth&quot;,
+           &quot;-highlightthickness&quot; and the difference between &quot;-from&quot; and &quot;-to&quot;.
+
+       -resolution
+           A real value specifying the resolution for the scale. If this value
+           is greater than zero then the scale&#x27;s value will always be  rounded
+           to  an  even  multiple  of  this  value, as will tick marks and the
+           endpoints of the scale. If the value is  less  than  zero  then  no
+           rounding occurs. Defaults to 1 (i.e., the value will be integral).
+
+       -to This  sets  the  upper  limit  of  the  progress bar. If a value is
+           specified (for example, using the &quot;value&quot; method) that  lies  above
+           this  value  the  full  progress bar will be displayed. Defaults to
+           100.
+
+       -variable
+           Specifies the reference  to  a  scalar  variable  to  link  to  the
+           ProgressBar.   Whenever  the  value  of  the  variable changes, the
+           ProgressBar will update to reflect this value. (See also the  value
+           method below.)
+
+       -value
+           This  can  be  used to set the current position of the progress bar
+           when used in conjunction  with  the  standard  &quot;configure&quot;.  It  is
+           usually recommended to use the value method instead.
+
+       -width
+           Specifies the desired narrow dimension of the ProgressBar in screen
+           units  (i.e.   any  of  the  forms acceptable to Tk_GetPixels). For
+           vertical  ProgressBars  this  is  the   ProgressBars   width;   for
+           horizontal bars this is the ProgressBars height.  The default width
+           is  derived  from  the  values  of  &quot;-borderwidth&quot;  and &quot;-pady&quot; and
+           &quot;-highlightthickness&quot;.
+
+WIDGET METHODS
+       $ProgressBar-&gt;value(?value?)
+           If value is omitted, returns the current value of the  ProgressBar.
+           If  value  is given, the value of the ProgressBar is set. If $value
+           is given but undefined the value of the option -from is used.
+
+AUTHOR
+       Graham Barr &lt;gbarr@pobox.com&gt;
+
+COPYRIGHT
+       Copyright (c) 1997-1998 Graham Barr. All rights reserved.  This program
+       is free software; you can redistribute it and/or modify  it  under  the
+       same terms as Perl itself.
+
+Tk804.036                         2025-04-13              Tk::ProgressBar(3pm)
+</pre></body></html>

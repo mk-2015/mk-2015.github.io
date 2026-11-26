@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_CHILD_SUBREAPER(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_CHILD_SUBREAPER(2const)                  PR_SET_CHILD_SUBREAPER(2const)
+
+NAME
+       PR_SET_CHILD_SUBREAPER  -  set/unset the &quot;child subreaper&quot; attribute of
+       the calling process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_CHILD_SUBREAPER, long set);
+
+DESCRIPTION
+       If set is nonzero, set the &quot;child subreaper&quot; attribute of  the  calling
+       process; if set is zero, unset the attribute.
+
+       A  subreaper fulfills the role of init(1) for its descendant processes.
+       When a process becomes orphaned  (i.e.,  its  immediate  parent  termi‐
+       nates),  then that process will be reparented to the nearest still liv‐
+       ing ancestor subreaper.  Subsequently, calls to getppid(2) in  the  or‐
+       phaned  process  will  now return the PID of the subreaper process, and
+       when the orphan terminates, it is the subreaper process that  will  re‐
+       ceive  a  SIGCHLD  signal and will be able to wait(2) on the process to
+       discover its termination status.
+
+       The setting of the &quot;child subreaper&quot;  attribute  is  not  inherited  by
+       children  created  by  fork(2)  and clone(2).  The setting is preserved
+       across execve(2).
+
+       Establishing a subreaper process is useful in session management frame‐
+       works where a hierarchical group of processes is managed by a subreaper
+       process that needs to be informed when one of the  processes—for  exam‐
+       ple,  a double-forked daemon—terminates (perhaps so that it can restart
+       that process).  Some init(1) frameworks  (e.g.,  systemd(1))  employ  a
+       subreaper process for similar reasons.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.4.
+
+SEE ALSO
+       prctl(2), PR_GET_CHILD_SUBREAPER(2const)
+
+Linux man-pages 6.9.1             2024-06-02    PR_SET_CHILD_SUBREAPER(2const)
+</pre></body></html>

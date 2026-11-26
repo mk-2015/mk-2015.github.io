@@ -1,0 +1,114 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-rtp-session(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...-session(7) Miscellaneous Information Manual libpipew...-session(7)
+
+NAME
+       libpipewire-module-rtp-session - RTP session
+
+DESCRIPTION
+       The rtp-session module creates a media session that is announced with
+       avahi/mDNS/Bonjour.
+
+       Other machines on the network that run a compatible session will see
+       each other and will be able to send audio/midi between each other.
+
+       The session setup is based on apple-midi and is compatible with apple-
+       midi when the session is using midi.
+
+MODULE NAME
+       libpipewire-module-rtp-session
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • local.ifname = &lt;str&gt;: interface name to use
+
+       • control.ip =&lt;str&gt;: control IP address, default &#x27;0.0.0.0&#x27;
+
+       • control.port =&lt;int&gt;: control port, default &#x27;0&#x27;
+
+       • net.mtu = &lt;int&gt;: MTU to use, default 1280
+
+       • net.ttl = &lt;int&gt;: TTL to use, default 1
+
+       • net.loop  =  &lt;bool&gt;: loopback multicast, default false sess.discover-
+         local: discover local services as well, default false
+
+       • sess.min-ptime = &lt;int&gt;: minimum packet time in milliseconds,  default
+         2
+
+       • sess.max-ptime  = &lt;int&gt;: maximum packet time in milliseconds, default
+         20
+
+       • sess.latency.msec = &lt;int&gt;: receiver latency in milliseconds,  default
+         100
+
+       • sess.name = &lt;str&gt;: a session name
+
+       • sess.ts-offset  = &lt;int&gt;: an offset to apply to the timestamp, default
+         -1 = random offset
+
+       • sess.ts-refclk = &lt;string&gt;: the name of a reference clock
+
+       • sess.media = &lt;string&gt;: the media type audio|midi|opus, default midi
+
+       • stream.props = {}: properties to be passed to the stream
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • node.name
+
+       • node.description
+
+       • media.name
+
+       • node.group
+
+       • node.latency
+
+       • node.virtual
+
+       • media.class
+
+EXAMPLE CONFIGURATION
+        # ~/.config/pipewire/pipewire.conf.d/my-rtp-session.conf
+
+        context.modules = [
+        {   name = libpipewire-module-rtp-session
+            args = {
+                #local.ifname = &quot;eth0&quot;
+                #control.ip = &quot;0.0.0.0&quot;
+                #control.port = 0
+                #net.mtu = 1280
+                #net.ttl = 1
+                #net.loop = false
+                #sess.discover-local = false
+                #sess.min-ptime = 2
+                #sess.max-ptime = 20
+                #sess.name = &quot;PipeWire RTP stream&quot;
+                #sess.media = &quot;audio&quot;
+                stream.props = {
+                    node.name = &quot;rtp-sink&quot;
+                    #audio.format = &quot;S16BE&quot;
+                    #audio.rate = 48000
+                    #audio.channels = 2
+                    #audio.position = [ FL FR ]
+                }
+            }
+       }
+       ]
+
+       Since
+           0.3.60
+
+PipeWire                             1.4.2              libpipew...-session(7)
+</pre></body></html>

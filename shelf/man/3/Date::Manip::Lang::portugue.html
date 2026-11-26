@@ -1,0 +1,673 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Date::Manip::Lang::portugue(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Date::...ortugue(3pm) User Contributed Perl DocumentationDate::...ortugue(3pm)
+
+NAME
+       Date::Manip::Lang::portugue - Portuguese language support.
+
+SYNOPSIS
+       This module contains a list of words and expressions supporting the
+       language. It is not intended to be used directly (other Date::Manip
+       modules will load it as needed).
+
+LANGUAGE EXPRESSIONS
+       The following is a list of all language words and expressions used to
+       write times and/or dates.
+
+       All strings are case insensitive.
+
+       Month names and abbreviations
+           When   writing  out  the  name  of  the  month,  several  different
+           variations may exist including full names and abbreviations.
+
+           The following month names may be used:
+
+              Janeiro
+
+              Fevereiro
+
+              MarÃ§o
+              Marco
+
+              Abril
+
+              Maio
+
+              Junho
+
+              Julho
+
+              Agosto
+
+              Setembro
+
+              Outubro
+
+              Novembro
+
+              Dezembro
+
+           The following abbreviations may be used:
+
+              Jan
+
+              Fev
+
+              Mar
+
+              Abr
+
+              Mai
+
+              Jun
+
+              Jul
+
+              Ago
+
+              Set
+
+              Out
+
+              Nov
+
+              Dez
+
+       Day names and abbreviations
+           When writing out the name of the day, several different  variations
+           may exist including full names and abbreviations.
+
+           The following day names may be used:
+
+              segunda
+              segunda-feira
+              segunda feira
+
+              terÃ§a
+              terca
+              terÃ§a-feira
+              terca-feira
+              terÃ§a feira
+              terca feira
+
+              quarta
+              quarta-feira
+              quarta feira
+
+              quinta
+              quinta-feira
+              quinta feira
+
+              sexta
+              sexta-feira
+              sexta feira
+
+              sÃ¡bado
+              sabado
+
+              domingo
+
+           The following abbreviations may be used:
+
+              seg
+
+              ter
+
+              qua
+
+              qui
+
+              sex
+
+              sÃ¡b
+              sab
+
+              dom
+
+           The following short (1-2 characters) abbreviations may be used:
+
+              Sg
+
+              T
+
+              Qa
+
+              Qi
+
+              Sx
+
+              Sb
+
+              D
+
+       Delta field names
+           These  are the names (and abbreviations) for the fields in a delta.
+           There are 7 fields: years, months,  weeks,  days,  hours,  minutes,
+           seconds.
+
+           The names and abbreviations for these fields are:
+
+              anos
+              ano
+              ans
+              an
+              a
+
+              meses
+              mÃªs
+              mes
+              m
+
+              semanas
+              semana
+              sem
+              sems
+              s
+
+              dias
+              dia
+              d
+
+              horas
+              hora
+              hr
+              hrs
+
+              minutos
+              minuto
+              min
+              mn
+
+              segundos
+              segundo
+              seg
+              sg
+
+       Morning/afternoon times
+           This is a list of expressions use to designate morning or afternoon
+           time when a time is entered as a 12-hour time rather than a 24-hour
+           time.  For example, in English, the time &quot;17:00&quot; could be specified
+           as &quot;5:00 PM&quot;.
+
+           Morning  and afternoon time may be designated by the following sets
+           of words:
+
+              AM
+              A.M.
+
+              PM
+              P.M.
+
+       Each or every
+           There are  a  list  of  words  that  specify  every  occurrence  of
+           something.  These are used in the following phrases:
+
+              EACH Monday
+              EVERY Monday
+              EVERY month
+
+           The following words may be used:
+
+              cada
+
+       Next/Previous/Last occurrence
+           There  are  a  list  of words that may be used to specify the next,
+           previous, or last occurrence of something.  These  words  could  be
+           used in the following phrases:
+
+              NEXT week
+
+              LAST Tuesday
+              PREVIOUS Tuesday
+
+              LAST day of the month
+
+           The following words may be used:
+
+           Next occurrence:
+
+              proxima
+              prÃ³xima
+              proximo
+              prÃ³ximo
+
+           Previous occurrence:
+
+              ultima
+              Ãºltima
+              ultimo
+              Ãºltimo
+
+           Last occurrence:
+
+              ultimo
+              Ãºltimo
+
+       Delta words for going forward/backward in time
+           When  parsing  deltas,  there are words that may be used to specify
+           the the delta will refer to a time in the future or to  a  time  in
+           the  past  (relative  to  some date).  In English, for example, you
+           might say:
+
+              IN 5 days
+              5 days AGO
+
+           The following words may be used to specify  deltas  that  refer  to
+           dates in the past or future respectively:
+
+              a
+              Ã
+
+              em
+              passadas
+              passados
+
+       Business mode
+           This  contains  two  lists  of words which can be used to specify a
+           standard (i.e. non-business) delta or a business delta.
+
+           Previously, it was used to tell whether the delta  was  approximate
+           or  exact,  but now this list is not used except to force the delta
+           to be standard.
+
+           The following words may be used:
+
+              exactamente
+              aproximadamente
+
+           The following words may be used to specify a business delta:
+
+              util
+              uteis
+
+       Numbers
+           Numbers may be spelled out in a variety  of  ways.   The  following
+           sets correspond to the numbers from 1 to 53:
+
+              1Âº
+              um
+              primeiro
+
+              2Âº
+              dois
+              segundo
+
+              3Âº
+              trÃªs
+              tres
+              terceiro
+
+              4Âº
+              quatro
+              quarto
+
+              5Âº
+              cinco
+              quinto
+
+              6Âº
+              seis
+              sexto
+
+              7Âº
+              sete
+              setimo
+              sÃ©timo
+
+              8Âº
+              oito
+              oitavo
+
+              9Âº
+              nove
+              nono
+
+              10Âº
+              dez
+              decimo
+              dÃ©cimo
+
+
+              11Âº
+              onze
+              decimo primeiro
+              dÃ©cimo primeiro
+
+              12Âº
+              doze
+              decimo segundo
+              dÃ©cimo segundo
+
+              13Âº
+              treze
+              decimo terceiro
+              dÃ©cimo terceiro
+
+              14Âº
+              quatorze
+              decimo quarto
+              dÃ©cimo quarto
+
+              15Âº
+              quinze
+              decimo quinto
+              dÃ©cimo quinto
+
+              16Âº
+              dezasseis
+              decimo sexto
+              dÃ©cimo sexto
+
+              17Âº
+              dezessete
+              decimo setimo
+              dÃ©cimo sÃ©timo
+
+              18Âº
+              dezoito
+              decimo oitavo
+              dÃ©cimo oitavo
+
+              19Âº
+              dezanove
+              decimo nono
+              dÃ©cimo nono
+
+              20Âº
+              vinte
+              vigesimo
+              vigÃ©simo
+
+
+              21Âº
+              vinte e um
+              vigesimo primeiro
+              vigÃ©simo primeiro
+
+              22Âº
+              vinte e dois
+              vigesimo segundo
+              vigÃ©simo segundo
+
+              23Âº
+              vinte e trÃªs
+              vinte e tres
+              vigesimo terceiro
+              vigÃ©simo terceiro
+
+              24Âº
+              vinte e quatro
+              vigesimo quarto
+              vigÃ©simo quarto
+
+              25Âº
+              vinte cinco
+              vigesimo quinto
+              vigÃ©simo quinto
+
+              26Âº
+              vinte seis
+              vigesimo sexto
+              vigÃ©simo sexto
+
+              27Âº
+              vinte sete
+              vigesimo setimo
+              vigÃ©simo sÃ©timo
+
+              28Âº
+              vinte e oito
+              vigesimo oitavo
+              vigÃ©simo oitavo
+
+              29Âº
+              vinte e nove
+              vigesimo nono
+              vigÃ©simo nono
+
+              30Âº
+              trinta
+              trigesimo
+              trigÃ©simo
+
+
+              31Âº
+              trinta e um
+              trigesimo primeiro
+              trigÃ©simo primeiro
+
+              32Âº
+              trinta e dois
+              trigÃ©simo segundo
+              trigesimo segundo
+
+              33Âº
+              trinta e trÃªs
+              trinta e tres
+              trigÃ©simo terceiro
+              trigesimo terceiro
+
+              34Âº
+              trinta e quatro
+              trigÃ©simo quarto
+              trigesimo quarto
+
+              35Âº
+              trinta e cinco
+              trigÃ©simo quinto
+              trigesimo quinto
+
+              36Âº
+              trinta e seis
+              trigÃ©simo sexto
+              trigesimo sexto
+
+              37Âº
+              trinta e sete
+              trigÃ©simo sÃ©timo
+              trigesimo setimo
+
+              38Âº
+              trinta e oito
+              trigÃ©simo oitavo
+              trigesimo oitavo
+
+              39Âº
+              trinta e nove
+              trigÃ©simo nono
+              trigesimo nono
+
+              40Âº
+              quarenta
+              quadragÃ©simo
+              quadragesimo
+
+
+              41Âº
+              quarenta e um
+              quadragÃ©simo primeiro
+              quadragesimo primeiro
+
+              42Âº
+              quarenta e dois
+              quadragÃ©simo segundo
+              quadragesimo segundo
+
+              43Âº
+              quarenta e trÃªs
+              quarenta e tres
+              quadragÃ©simo terceiro
+              quadragesimo terceiro
+
+              44Âº
+              quarenta e quatro
+              quadragÃ©simo quarto
+              quadragesimo quarto
+
+              45Âº
+              quarenta e cinco
+              quadragÃ©simo quinto
+              quadragesimo quinto
+
+              46Âº
+              quarenta e seis
+              quadragÃ©simo sexto
+              quadragesimo sexto
+
+              47Âº
+              quarenta e sete
+              quadragÃ©simo sÃ©timo
+              quadragesimo setimo
+
+              48Âº
+              quarenta e oito
+              quadragÃ©simo oitavo
+              quadragesimo oitavo
+
+              49Âº
+              quarenta e nove
+              quadragÃ©simo nono
+              quadragesimo nono
+
+              50Âº
+              cinquenta
+              quinquagÃ©simo
+              quinquagesimo
+
+
+              51Âº
+              cinquenta e um
+              quinquagÃ©simo primeiro
+              quinquagesimo primeiro
+
+              52Âº
+              cinquenta e dois
+              quinquagÃ©simo segundo
+              quinquagesimo segundo
+
+              53Âº
+              cinqÃ¼enta e trÃªs anos
+              cinquenta e tres anos
+              quinquagÃ©simo terceiro
+              quinquagesimo terceiro
+
+       Ignored words
+           In  writing  out dates in common forms, there are a number of words
+           that are typically not important.
+
+           There is frequently a word that appears in a  phrase  to  designate
+           that  a  time is going to be specified next.  In English, you would
+           use the word AT in the example:
+
+              December 3 at 12:00
+
+           The following words may be used:
+
+              as
+              Ã s
+
+           Another word is used to designate one member of a set.  In English,
+           you would use the words IN or OF:
+
+              1st day OF December
+              1st day IN December
+
+           The following words may be used:
+
+              da
+              do
+
+           Another word is use to specify that something is on a certain date.
+           In English, you would use ON:
+
+              ON July 5th
+
+           The following words may be used:
+
+              na
+              no
+
+       Words that set the date, time, or both
+           There are some words that can be used to specify a date, a time, or
+           both relative to now.
+
+           Words  that  set  the  date  are  similar  to  the  English   words
+           &#x27;yesterday&#x27; or &#x27;tomorrow&#x27;.  These are specified as a delta which is
+           added  to  the  current  time  to  get a date.  The time is NOT set
+           however, so the delta  is  only  partially  used  (it  should  only
+           include year, month, week, and day fields).
+
+           The following words may be used:
+
+              amanha               +0:0:0:1:0:0:0
+              amanhÃ£               +0:0:0:1:0:0:0
+              hoje                 0:0:0:0:0:0:0
+              ontem                -0:0:0:1:0:0:0
+
+           Words  that  set  only  the  time of day are similar to the English
+           words &#x27;noon&#x27; or &#x27;midnight&#x27;.
+
+           The following words may be used:
+
+              meia-noite           00:00:00
+              meio-dia             12:00:00
+
+           Words that set the entire time and date (relative  to  the  current
+           time and date) are also available.
+
+           In English, the word &#x27;now&#x27; is one of these.
+
+           The following words may be used:
+
+              agora                0:0:0:0:0:0:0
+
+       Hour/Minute/Second separators
+           When  specifying  the  time  of day, the most common separator is a
+           colon (:) which can be used for both separators.
+
+           Some languages use different pairs.  For example, French allows you
+           to specify the time as 13h30:20, so  it  would  use  the  following
+           pairs:
+
+              : :
+              h :
+
+           The first column is the hour-minute separator and the second column
+           is the minute-second separator.  Both are perl regular expressions.
+           When  creating a new translation, be aware that regular expressions
+           with utf-8 characters may be tricky.  For  example,  don&#x27;t  include
+           the expression &#x27;[x]&#x27; where &#x27;x&#x27; is a utf-8 character.
+
+           A  pair  of  colons  is  ALWAYS  allowed  for  all languages.  If a
+           language allows additional pairs, they are listed here:
+
+              Not defined in this language
+
+       Fractional second separator
+           When specifying fractional seconds, the most common way is to use a
+           decimal  point  (.).   Some  languages  may  specify  a   different
+           separator  that  might  be  used.  If this is done, it is a regular
+           expression.
+
+           The decimal point is  ALWAYS  allowed  for  all  languages.   If  a
+           language allows another separator, it is listed here:
+
+              Not defined in this language
+
+KNOWN BUGS
+       None known.
+
+BUGS AND QUESTIONS
+       Please refer to the Date::Manip::Problems documentation for information
+       on submitting bug reports or questions to the author.
+
+SEE ALSO
+       Date::Manip       - main module documentation
+
+LICENSE
+       This  script is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+AUTHOR
+       Sullivan Beck (sbeck@cpan.org)
+
+perl v5.40.1                      2025-06-08             Date::...ortugue(3pm)
+</pre></body></html>

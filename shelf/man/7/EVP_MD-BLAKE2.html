@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_MD-BLAKE2(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_MD-BLAKE2(7SSL)                 OpenSSL                EVP_MD-BLAKE2(7SSL)
+
+NAME
+       EVP_MD-BLAKE2 - The BLAKE2 EVP_MD implementation
+
+DESCRIPTION
+       Support for computing BLAKE2 digests through the EVP_MD API.
+
+   Identities
+       This implementation is only available with the default provider, and
+       includes the following varieties:
+
+       BLAKE2S-256
+           Known names are &quot;BLAKE2S-256&quot; and &quot;BLAKE2s256&quot;.
+
+       BLAKE2B-512
+           Known names are &quot;BLAKE2B-512&quot; and &quot;BLAKE2b512&quot;.
+
+   Settable Parameters
+       &quot;BLAKE2B-512&quot;   supports   the  following  EVP_MD_CTX_set_params()  key
+       described in &quot;PARAMETERS&quot; in EVP_DigestInit(3).
+
+       &quot;size&quot; (OSSL_DIGEST_PARAM_SIZE) &lt;unsigned integer&gt;
+
+   Gettable Parameters
+       This implementation supports the common gettable  parameters  described
+       in EVP_MD-common(7).
+
+   Settable Context Parameters
+       The  implementation  supports the following OSSL_PARAM(3) entries which
+       are  settable  for  an   EVP_MD_CTX   with   EVP_DigestInit_ex2(3)   or
+       EVP_MD_CTX_set_params(3):
+
+       &quot;size&quot; (OSSL_DIGEST_PARAM_SIZE) &lt;unsigned integer&gt;
+           Sets  a  different digest length for the EVP_DigestFinal(3) output.
+           The value of the &quot;size&quot;  parameter  must  not  exceed  the  default
+           digest  length  of the respective BLAKE2 algorithm variants, 64 for
+           BLAKE2B-512 and 32 for BLAKE2S-256. The parameter must be set  with
+           the  EVP_DigestInit_ex2(3)  call  to have an immediate effect. When
+           set with EVP_MD_CTX_set_params(3) it will have an  effect  only  if
+           the EVP_MD_CTX context is reinitialized.
+
+SEE ALSO
+       provider-digest(7), OSSL_PROVIDER-default(7)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+       The  variable size support was added in OpenSSL 3.2 for BLAKE2B-512 and
+       in OpenSSL 3.3 for BLAKE2S-256.
+
+COPYRIGHT
+       Copyright 2020-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09               EVP_MD-BLAKE2(7SSL)
+</pre></body></html>

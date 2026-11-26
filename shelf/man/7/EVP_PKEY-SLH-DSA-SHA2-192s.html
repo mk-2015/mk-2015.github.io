@@ -1,0 +1,133 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_PKEY-SLH-DSA-SHA2-192s(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_PKEY-SLH-DSA(7SSL)              OpenSSL             EVP_PKEY-SLH-DSA(7SSL)
+
+NAME
+       EVP_PKEY-SLH-DSA, EVP_KEYMGMT-SLH-DSA, EVP_PKEY-SLH-DSA-SHA2-128s,
+       EVP_PKEY-SLH-DSA-SHA2-128f, EVP_PKEY-SLH-DSA-SHA2-192s,
+       EVP_PKEY-SLH-DSA-SHA2-192f, EVP_PKEY-SLH-DSA-SHA2-256s,
+       EVP_PKEY-SLH-DSA-SHA2-256f, EVP_PKEY-SLH-DSA-SHAKE-128s,
+       EVP_PKEY-SLH-DSA-SHAKE-128f, EVP_PKEY-SLH-DSA-SHAKE-192s,
+       EVP_PKEY-SLH-DSA-SHAKE-192f, EVP_PKEY-SLH-DSA-SHAKE-256s,
+       EVP_PKEY-SLH-DSA-SHAKE-256f - EVP_PKEY SLH-DSA keytype and algorithm
+       support
+
+DESCRIPTION
+       The SLH-DSA-SHA2-128s, EVP_PKEY-SLH-DSA-SHA2-128f, SLH-DSA-SHA2-192s,
+       EVP_PKEY-SLH-DSA-SHA2-192f, SLH-DSA-SHA2-256s,
+       EVP_PKEY-SLH-DSA-SHA2-256f, SLH-DSA-SHAKE-128s,
+       EVP_PKEY-SLH-DSA-SHAKE-128f, SLH-DSA-SHAKE-192s,
+       EVP_PKEY-SLH-DSA-SHAKE-192f, SLH-DSA-SHAKE-256s and
+       EVP_PKEY-SLH-DSA-SHAKE-256f key types are implemented in OpenSSL&#x27;s
+       default and FIPS providers.  These implementations support the
+       associated key, containing the public key pub and the private key priv.
+
+       SLH-DSA (Stateless Hash-based Digital Signature Standard) uses small
+       keys, but has relatively large signatures and is relatively slow
+       performing all operations compared to ML-DSA. It does however have
+       proven security proofs, since it relies only on hash functions.
+
+       Each of the different key types has an associated security parameter n.
+       This value is one of 16, 24 or 32 for key types SLH-DSA*128*,
+       SLH-DSA*192* and SLH-DSA*256*, respectively.
+
+       Both the public and private key components contain 2 elements of size
+       n.  Key generation generates the private key elements and one of the
+       public key elements randomly, and the final public key element is
+       computed from these values.
+
+       The public key has relatively small sizes of 32, 48 or 64 bytes,
+       corresponding to the algorithm names of 128, 192 and 256 respectively.
+
+       The algorithms ending with s produce smaller signatures, but are much
+       slower than the faster f variants.
+
+       The signature sizes for the s algorithm variants are 7856, 16224 and
+       29792 which correspond to the algorithm names of 128s, 192s and 256s
+       respectively.  The signature sizes for the f algorithm variants are
+       17088, 35664 and 49856 which correspond to the algorithm names
+       containing 128f, 192f and 256f respectively.
+
+       Internally there are 7 hash related functions that are used for each
+       algorithm.  For algorithms containing SHAKE in their name SHAKE-256 is
+       used for all functions.  For the &lt;SHA2-128&gt; algorithms the functions
+       use &lt;MGF1-SHA-256&gt;, &lt;HMAC-SHA-256&gt; and &lt;SHA-256&gt;.  The remaining &lt;SHA2&gt;
+       algorithms use &lt;MGF1-SHA-512&gt;, &lt;HMAC-SHA-512&gt;, &lt;SHA-256&gt; and &lt;SHA-512&gt;.
+       See FIPS 205 Section 11.1 and 11.2 for more information.
+
+   Keygen Parameters
+       &quot;seed&quot; (OSSL_PKEY_PARAM_SLH_DSA_SEED) &lt;octet string&gt;
+           Supplies values to use for the private seed, private prf and public
+           seed  instead of generating random values. This is used for testing
+           purposes only. The length of the value supplied must be 3 * n.
+
+       &quot;properties&quot; (OSSL_PKEY_PARAM_PROPERTIES) &lt;utf8_string&gt;
+           Sets properties to be used when fetching algorithm  implementations
+           used for SLH-DSA hashing operations.
+
+       Use EVP_PKEY_CTX_set_params() after calling EVP_PKEY_keygen_init().
+
+   Common SLH-DSA parameters
+       In  addition  to the common parameters that all keytypes should support
+       (see  &quot;Common  Information  Parameters&quot;  in  provider-keymgmt(7)),  the
+       implementation of these key types support the following.
+
+       The       following       parameters       are      gettable      using
+       EVP_PKEY_get_octet_string_param(),    and    settable    when     using
+       EVP_PKEY_fromdata().
+
+       &quot;pub&quot; (OSSL_PKEY_PARAM_PUB_KEY) &lt;octet string&gt;
+           The  public key has a size of 2 * n bytes.  i.e. It consists of the
+           concatenation of PK.seed and PK.root as defined by FIPS 205  Figure
+           16.
+
+       &quot;priv&quot; (OSSL_PKEY_PARAM_PRIV_KEY) &lt;octet string&gt;
+           The  private  key  has  a  size  of 4 * n bytes, which includes the
+           public key components.  i.e. It consists of  the  concatenation  of
+           SK.seed,  SK.prf, PK.seed and PF.root as defined by FIPS 205 Figure
+           15.
+
+       &quot;mandatory-digest&quot; (OSSL_PKEY_PARAM_MANDATORY_DIGEST) &lt;UTF8 string&gt;
+           The empty string, signifying that no digest may be specified.
+
+CONFORMING TO
+       FIPS 205
+
+EXAMPLES
+       An EVP_PKEY context can be obtained by calling:
+
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;SLH-DSA-SHA2-128f&quot;, NULL);
+
+       An SLH-DSA key can be generated like this:
+
+           pkey = EVP_PKEY_Q_keygen(NULL, NULL, &quot;SLH-DSA-SHA2-128f&quot;);
+
+       The key pair components can be extracted from a key by calling:
+
+           uint8_t priv[64], pub[32];
+           size_t priv_len, pub_len;
+
+           EVP_PKEY_get_octet_string_param(pkey, OSSL_PKEY_PARAM_PRIV_KEY,
+                                           priv, sizeof(priv), &amp;priv_len);
+           EVP_PKEY_get_octet_string_param(pkey, OSSL_PKEY_PARAM_PUB_KEY,
+                                           pub, sizeof(pub), &amp;pub_len));
+
+       Similar  code  can  be  used  for  the  other   key   types   such   as
+       &quot;SLH-DSA-SHAKE-256f&quot;.
+
+SEE ALSO
+       EVP_KEYMGMT(3),            EVP_PKEY(3),            provider-keymgmt(7),
+       EVP_SIGNATURE-SLH-DSA(7)
+
+HISTORY
+       This functionality was added in OpenSSL 3.5.
+
+COPYRIGHT
+       Copyright 2024-2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09            EVP_PKEY-SLH-DSA(7SSL)
+</pre></body></html>

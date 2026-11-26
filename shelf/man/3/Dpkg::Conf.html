@@ -1,0 +1,102 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Conf(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Conf(3perl)                libdpkg-perl                Dpkg::Conf(3perl)
+
+NAME
+       Dpkg::Conf - parse dpkg configuration files
+
+DESCRIPTION
+       The Dpkg::Conf object can be used to read options from a configuration
+       file. It can export an array that can then be parsed exactly like
+       @ARGV.
+
+METHODS
+       $conf = Dpkg::Conf-&gt;new(%opts)
+           Create a new Dpkg::Conf object.
+
+           Options:
+
+           allow_short
+               If  set  to true (it defaults to false), then short options are
+               allowed in the configuration file,  they  should  be  prepended
+               with a single hyphen.
+
+       @$conf
+       @options = $conf-&gt;get_options()
+           Returns the list of options that can be parsed like @ARGV.
+
+       $conf-&gt;load($file)
+           Read options from a file. Return the number of options parsed.
+
+       $conf-&gt;load_system_config($file)
+           Read options from a system configuration file.
+
+           Return the number of options parsed.
+
+       $conf-&gt;load_user_config($file)
+           Read options from a user configuration file. It will try to use the
+           XDG      directory,      either      $XDG_CONFIG_HOME/dpkg/      or
+           $HOME/.config/dpkg/.
+
+           Return the number of options parsed.
+
+       $conf-&gt;load_config($file)
+           Read options from system and user configuration files.
+
+           Return the number of options parsed.
+
+       $conf-&gt;parse($fh)
+           Parse options from a file handle. When called multiple  times,  the
+           parsed options are accumulated.
+
+           Return the number of options parsed.
+
+       $conf-&gt;filter(%opts)
+           Filter the list of configuration options.
+
+           Options:
+
+           remove
+               A  function  returning  a  boolean,  used  to decide whether to
+               remove    the     configuration     option,     executed     as
+               $opts{remove}-&gt;($option).
+
+           keep
+               A  function returning a boolean, used to decide whether to keep
+               the configuration option, executed as $opts{keep}-&gt;($option).
+
+       $string = $conf-&gt;output([$fh])
+           Write the options in the given filehandle (if defined) and return a
+           string representation of the content (that would be) written.
+
+       &quot;$conf&quot;
+           Return a string representation of the content.
+
+       $conf-&gt;save($file)
+           Save the options in a file.
+
+CHANGES
+   Version 1.04 (dpkg 1.20.0)
+       Remove croak: For &#x27;format_argv&#x27; in $conf-&gt;filter().
+
+       Remove methods: $conf-&gt;get(), $conf-&gt;set().
+
+   Version 1.03 (dpkg 1.18.8)
+       Obsolete option: &#x27;format_argv&#x27; in $conf-&gt;filter().
+
+       Obsolete methods: $conf-&gt;get(), $conf-&gt;set().
+
+       New  methods:  $conf-&gt;load_system_config(),  $conf-&gt;load_system_user(),
+       $conf-&gt;load_config().
+
+   Version 1.02 (dpkg 1.18.5)
+       New option: Accept new option &#x27;format_argv&#x27; in $conf-&gt;filter().
+
+       New methods: $conf-&gt;get(), $conf-&gt;set().
+
+   Version 1.01 (dpkg 1.15.8)
+       New method: $conf-&gt;filter()
+
+   Version 1.00 (dpkg 1.15.6)
+       Mark the module as public.
+
+1.22.22                           2026-03-06                 Dpkg::Conf(3perl)
+</pre></body></html>

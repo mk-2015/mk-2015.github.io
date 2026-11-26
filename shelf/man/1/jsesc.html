@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>jsesc(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>escapes  strings for use in JavaScript string literals while gen‐
+erating the shortest possible valid  ASCII-only  output.   Escape
+any  occurrences of &#x27; in the input string as \&#x27;, so that the out‐
+put can be used in a JavaScript string literal wrapped in  single
+quotes.   Escape  any occurrences of &quot; in the input string as \&quot;,
+so that the output can be used in  a  JavaScript  string  literal
+wrapped  in  double  quotes.   Make  sure  the  output is a valid
+JavaScript string literal wrapped in quotes. The type  of  quotes
+can  be  specified using the or settings.  Escape any astral Uni‐
+code symbols using ECMAScript 6 Unicode  code  point  escape  se‐
+quences.   Escape  all  the symbols in the output, even printable
+ASCII symbols.  Make sure the output is valid  JSON.  Hexadecimal
+character escape sequences and the \v or \0 escape sequences will
+not  be  used. Setting this flag enables the and settings.  Treat
+the input as a JavaScript object rather than a  string.  Accepted
+values  are  flat  arrays containing only string values, and flat
+objects containing only string values.  Pretty-print  the  output
+for  objects,  using whitespace to make it more readable. Setting
+this flag enables the Use lowercase for alphabetical  hexadecimal
+digits  in  escape  sequences.   setting.  Print jsesc&#x27;s version.
+Show the help screen.  The utility exits with one of the  follow‐
+ing values: successfully escaped the given string and printed the
+result.   wasn&#x27;t  instructed to escape anything (for example, the
+flag was set); or, an error occurred.  Print an  escaped  version
+of the given string.  Print an escaped version of the string that
+gets   piped   in.    jsesc&#x27;s   bug   tracker   is   located   at
+&lt;https://github.com/mathiasbynens/jsesc/issues&gt;.  Mathias  Bynens
+&lt;https://mathiasbynens.be/&gt; &lt;https://mths.be/jsesc&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Date::Manip::Examples(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Date::...xamples(3pm) User Contributed Perl DocumentationDate::...xamples(3pm)
+
+NAME
+       Date::Manip::Examples - examples of how to use Date::Manip
+
+DESCRIPTION
+       This document includes a number of examples on how to do common
+       Date::Manip operations.  I will be happy to add new examples over time,
+       and welcome suggestions and examples to include.
+
+       In most cases, an example will include two different ways of getting
+       the answer.  The first way will be using the new (as of 6.00) OO
+       modules. The second will be using the old-style functional interface.
+
+       It should be noted that any time you want to work with alternate time
+       zones, the OO interface is STRONGLY recommended since the functional
+       interface does not preserve time zone information with the date, and
+       may therefore give incorrect results in some cases. However, working in
+       the time zone of the system should give correct results.
+
+       It should be noted that, in the examples below, it appears that the OO
+       method often requires more lines of code than the functional interface.
+       There are a number of ways to shorten the OO method, but for the
+       examples, I wanted to include all the steps explicitly.
+
+PARSING A DATE
+       Dates can be parsed in practically any form in common usage:
+
+       OO method
+              $date = new Date::Manip::Date;
+              $err = $date-&gt;parse(&quot;today&quot;);
+              $err = $date-&gt;parse(&quot;1st Thursday in June 1992&quot;);
+              $err = $date-&gt;parse(&quot;05/10/93&quot;);
+              $err = $date-&gt;parse(&quot;12:30 Dec 12th 1880&quot;);
+              $err = $date-&gt;parse(&quot;8:00pm December tenth&quot;);
+
+       Functional
+              $date = ParseDate(&quot;today&quot;);
+              $date = ParseDate(&quot;1st Thursday in June 1992&quot;);
+              $date = ParseDate(&quot;05/10/93&quot;);
+              $date = ParseDate(&quot;12:30 Dec 12th 1880&quot;);
+              $date = ParseDate(&quot;8:00pm December tenth&quot;);
+
+       The Date::Manip::Date manual has a list of all valid formats.
+
+PARSING AN AMOUNT OF TIME
+       Amounts of time (referred to as deltas) can also be parsed:
+
+       OO method
+              $delta = new Date::Manip::Delta;
+              $err = $delta-&gt;parse(&quot;in 12 hours&quot;);
+              $err = $delta-&gt;parse(&quot;-1:30:0&quot;);
+              $err = $delta-&gt;parse(&quot;4 business days later&quot;);
+
+       Functional
+              $delta = ParseDateDelta(&quot;in 12 hours&quot;);
+              $delta = ParseDateDelta(&quot;-1:30:0&quot;);
+              $delta = ParseDateDelta(&quot;4 business days later&quot;);
+
+TO CALCULATE THE AMOUNT OF TIME BETWEEN TWO DATES
+          $datestr1 = &quot;Jan 30 1999 13:00 EST&quot;;
+          $datestr2 = &quot;2/Mar/1999 15:30:00 +0500&quot;;
+
+       OO method
+              $date1 = new Date::Manip::Date;
+              $date2 = $date1-&gt;new_date();
+              $err = $date1-&gt;parse($datestr1);
+              $err = $date2-&gt;parse($datestr2);
+
+           To  get  an  exact  amount of time between the two dates (expressed
+           only in terms of hours, minutes, seconds), use:
+
+              $delta = $date1-&gt;calc($date2);
+
+           To get an approximate amount of time (expressed in terms of  years,
+           months,  weeks,  etc.  in  terms that a human would typically think
+           of), use:
+
+              $delta = $date1-&gt;calc($date2,&quot;approx&quot;);
+
+       Functional
+              $date1 = ParseDate($string1);
+              $date2 = ParseDate($string2);
+
+           To get an exact amount:
+
+              $delta = DateCalc($date1,$date2);
+
+           and the approximate amount:
+
+              $delta = DateCalc($date1,$date2,1);
+
+       The Date::Manip::Calc manual has information  about  these,  and  other
+       types of calculations.
+
+TO ADD AN AMOUNT OF TIME TO A DATE
+       To  find  a  second date a given amount of time before or after a first
+       date, use the following:
+
+          $datestr  = &quot;Jan 30 1999 13:00 EST&quot;;
+          $deltastr = &quot;12 hours ago&quot;;
+          $deltastr = &quot;in 3 business days&quot;;
+
+       OO method
+              $date = new Date::Manip::Date;
+              $delta = $date-&gt;new_delta();
+              $date-&gt;parse($datestr);
+              $delta-&gt;parse($deltastr);
+
+              $d = $date-&gt;calc($delta);
+
+       Functional
+              $date = DateCalc($datestr,$deltastr);
+
+       If the  delta  is  a  business  delta,  it  will  do  a  business  mode
+       calculation.
+
+       The  Date::Manip::Calc  manual  has  information about these, and other
+       types of calculations.
+
+COMPARE TWO DATES
+       To take two different dates and see which is earlier, do the following:
+
+          $datestr1 = &quot;Jan 30 1999 13:00 EST&quot;;
+          $datestr2 = &quot;2/Mar/1999 15:30:00 +0500&quot;;
+
+       OO method
+              $date1 = new Date::Manip::Date;
+              $date2 = $date1-&gt;new_date;
+              $date1-&gt;parse($datestr1);
+              $date2-&gt;parse($datestr2);
+
+              $date1-&gt;cmp($date2);
+                 =&gt; -1, 0, 1
+
+       Functional
+              $date1 = ParseDate($datestr1);
+              $date2 = ParseDate($datestr2);
+
+              Date_Cmp($date1,$date2);
+                 =&gt; -1, 0, 1
+
+TO EXTRACT INFORMATION ABOUT A DATE OR DELTA
+       If you have a date or a delta, you can extract information  about  them
+       as follows:
+
+          $datestr  = &quot;1:24:08 PM EST Feb 3, 1996&quot;;
+          $deltastr = &quot;12 hours ago&quot;;
+
+       OO method
+              $date = new Date::Manip::Date;
+              $delta = $date-&gt;new_delta();
+              $date-&gt;parse($datestr);
+              $delta-&gt;parse($deltastr);
+
+              $str = $date-&gt;printf(&quot;It is now %T on %b %e, %Y.&quot;);
+                =&gt;  &quot;It is now 13:24:08 on Feb  3, 1996.&quot;
+
+              $str = $delta-&gt;printf(&quot;In %hv hours, %mv minutes, %sv seconds&quot;);
+                =&gt; &quot;In -12 hours, 0 minutes, 0 seconds&quot;;
+
+       Functional
+              $str = UnixDate($datestr,&quot;It is now %T on %b %e, %Y.&quot;);
+                =&gt;  &quot;It is now 13:24:08 on Feb  3, 1996.&quot;
+
+              $str = Delta_Format($deltastr,&quot;In %hv hours, %mv minutes, %sv seconds&quot;);
+                =&gt; &quot;In -12 hours, 0 minutes, 0 seconds&quot;;
+
+       The  Date::Manip::Date manual contains all of the format codes that can
+       be used to extract information  from  a  date.  The  Date::Manip::Delta
+       manual contains the codes for a delta.
+
+WORKING WITH EPOCH
+       Date::Manip can easily be used to work with the number of seconds since
+       the epoch (Jan 1, 1970 00:00:00 UTC).
+
+       If  you  have  a  date, and you want to find out how many seconds it is
+       after the epoch, you can do it in the following ways:
+
+          $datestr  = &quot;1999-04-30-15:30:00 EDT&quot;;
+          $secs  = 1234567;
+
+       OO method
+           To find out how many seconds have elapsed on a  certain  date,  you
+           can do the following:
+
+              $date     = new Date::Manip::Date;
+              $err      = $date-&gt;parse($datestr);
+
+              $str      = $date-&gt;printf(&#x27;%s&#x27;);
+                 =&gt; number of seconds
+
+           To  find out the date that is a certain number of seconds since the
+           epoch, you can use the following:
+
+              $date  = new Date::Manip::Date;
+              $err   = $date-&gt;parse(&quot;epoch $secs&quot;);
+
+           $date now contains the date wanted (in the local time zone)
+
+       Functional
+           To find out how many seconds have elapsed:
+
+              $str = UnixDate($datestr,&#x27;%s&#x27;);
+                =&gt; number of seconds
+
+           To find the date that is a number of seconds since the epoch:
+
+              $date = ParseDateString(&quot;epoch $secs&quot;);
+
+       Note that Date::Manip will work with both positive seconds  (for  dates
+       that  have  come  since the epoch) and negative seconds (for dates that
+       occurred before the epoch).
+
+RECURRING EVENTS
+       To find a list of dates where a  recurring  event  happens  (even  very
+       complex recurrences), do the following:
+
+       OO method
+             # To find the 2nd Tuesday of every month from Jan 1 1999 to Apr 30 1999
+
+             $recur = new Date::Manip::Recur;
+             $start = $recur-&gt;new_date();
+             $end   = $recur-&gt;new_date();
+             $start-&gt;parse(&quot;Jan 1 1999&quot;);
+             $end-&gt;parse(&quot;Apr 30 1999&quot;);
+
+             $recur-&gt;parse(&quot;0:1*2:2:0:0:0&quot;,$start,$end);
+             @date = $recur-&gt;dates();
+
+             # To find the Monday after Easter in 1997-1999
+
+             $recur = new Date::Manip::Recur;
+             $recur-&gt;parse(&quot;*1997-1999:0:0:0:0:0:0*EASTER,ND1&quot;);
+             @date = $recur-&gt;dates();
+
+       Functional
+             # To find the 2nd Tuesday of every month from Jan 1 1999 to Apr 30 1999
+             @date = ParseRecur(&quot;0:1*2:2:0:0:0&quot;,&quot;&quot;,&quot;Jan 1 1999&quot;,&quot;Apr 30 1999&quot;);
+
+             # To find the Monday after Easter in 1997-1999.
+             @date = ParseRecur(&quot;*1997-1999:0:0:0:0:0:0*EASTER,ND1&quot;);
+
+       The  Date::Manip::Recur  manual  contains  information  about recurring
+       events.
+
+WORKING WITH DATES IN ANOTHER LANGUAGE
+       If you want to work with dates in a language other  than  English  (but
+       you are only working with a single language), do the following:
+
+       OO method
+              $date = new Date::Manip::Date;
+              $date-&gt;config(&quot;Language&quot;,&quot;French&quot;,&quot;DateFormat&quot;,&quot;non-US&quot;);
+              $date-&gt;parse(&quot;1er decembre 1990&quot;);
+
+       Functional
+              Date_Init(&quot;Language=French&quot;,&quot;DateFormat=non-US&quot;);
+              $date = ParseDate(&quot;1er decembre 1990&quot;);
+
+       The  Date::Manip::Config  manual  has a list of all supported languages
+       (in the section on the Language config variable). The  meaning  of  the
+       DateFormat config variable is also included.
+
+WORKING WITH TWO DIFFERENT LANGUAGES
+       If  you  want  to  work  with  dates  in two (or more) languages, it is
+       STRONGLY recommended that you use  the  OO  interface.  The  functional
+       interface  will  be  much slower since it has to re-initialize a lot of
+       language-specific stuff every time you switch back  and  forth  between
+       languages.
+
+       OO method
+              $date_eng = new Date::Manip::Date;
+              $date_eng-&gt;config(&quot;Language&quot;,&quot;English&quot;,&quot;DateFormat&quot;,&quot;US&quot;);
+
+              $date_fre = new Date::Manip::Date;
+              $date_fre-&gt;config(&quot;Language&quot;,&quot;French&quot;,&quot;DateFormat&quot;,&quot;non-US&quot;);
+
+           Use  the  $date_eng  object to do English operations, the $date_fre
+           object to do French operations.
+
+       Functional
+           If you are working with both French and English dates, you can call
+           the following to switch between them:
+
+              Date_Init(&quot;Language=French&quot;,&quot;DateFormat=non-US&quot;);
+              Date_Init(&quot;Language=English&quot;,&quot;DateFormat=US&quot;);
+
+           This is NOT recommended. Use the OO method instead.
+
+BUGS AND QUESTIONS
+       Please refer to the Date::Manip::Problems documentation for information
+       on submitting bug reports or questions to the author.
+
+SEE ALSO
+       Date::Manip        - main module documentation
+
+LICENSE
+       This script is free software; you can redistribute it and/or modify  it
+       under the same terms as Perl itself.
+
+AUTHOR
+       Sullivan Beck (sbeck@cpan.org)
+
+perl v5.40.1                      2025-06-08             Date::...xamples(3pm)
+</pre></body></html>

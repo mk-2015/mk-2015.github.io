@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pthread_setattr_default_np(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>pthread_ge...default_np(3) Library Functions Manual pthread_ge...default_np(3)
+
+NAME
+       pthread_getattr_default_np,  pthread_setattr_default_np,  -  get or set
+       default thread-creation attributes
+
+LIBRARY
+       POSIX threads library (libpthread, -lpthread)
+
+SYNOPSIS
+       #define _GNU_SOURCE             /* See feature_test_macros(7) */
+       #include &lt;pthread.h&gt;
+
+       int pthread_getattr_default_np(pthread_attr_t *attr);
+       int pthread_setattr_default_np(const pthread_attr_t *attr);
+
+DESCRIPTION
+       The pthread_setattr_default_np() function sets the  default  attributes
+       used for creation of a new thread—that is, the attributes that are used
+       when  pthread_create(3)  is called with a second argument that is NULL.
+       The default attributes are set using the attributes supplied in  *attr,
+       a  previously initialized thread attributes object.  Note the following
+       details about the supplied attributes object:
+
+       •  The attribute settings in the object must be valid.
+
+       •  The stack address attribute must not be set in the object.
+
+       •  Setting the stack size attribute to zero  means  leave  the  default
+          stack size unchanged.
+
+       The  pthread_getattr_default_np()  function  initializes the thread at‐
+       tributes object referred to by attr so that it contains the default at‐
+       tributes used for thread creation.
+
+ERRORS
+       EINVAL (pthread_setattr_default_np()) One of the attribute settings  in
+              attr is invalid, or the stack address attribute is set in attr.
+
+       ENOMEM (pthread_setattr_default_np()) Insufficient memory.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       pthread_getattr_default_np(), pthread_setattr_default_np() T}   Thread
+       safety  MT-Safe
+
+STANDARDS
+       GNU; hence the suffix &quot;_np&quot; (nonportable) in their names.
+
+HISTORY
+       glibc 2.18.
+
+EXAMPLES
+       The program below uses pthread_getattr_default_np() to fetch the
+       default thread-creation attributes and then displays various settings
+       from the returned thread attributes object.  When running the program,
+       we see the following output:
+
+           $ ./a.out
+           Stack size:          8388608
+           Guard size:          4096
+           Scheduling policy:   SCHED_OTHER
+           Scheduling priority: 0
+           Detach state:        JOINABLE
+           Inherit scheduler:   INHERIT
+
+   Program source
+
+       #define _GNU_SOURCE
+       #include &lt;err.h&gt;
+       #include &lt;errno.h&gt;
+       #include &lt;pthread.h&gt;
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+
+       static void
+       display_pthread_attr(pthread_attr_t *attr)
+       {
+           int s;
+           size_t stacksize;
+           size_t guardsize;
+           int policy;
+           struct sched_param schedparam;
+           int detachstate;
+           int inheritsched;
+
+           s = pthread_attr_getstacksize(attr, &amp;stacksize);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_attr_getstacksize&quot;);
+           printf(&quot;Stack size:          %zu\n&quot;, stacksize);
+
+           s = pthread_attr_getguardsize(attr, &amp;guardsize);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_attr_getguardsize&quot;);
+           printf(&quot;Guard size:          %zu\n&quot;, guardsize);
+
+           s = pthread_attr_getschedpolicy(attr, &amp;policy);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_attr_getschedpolicy&quot;);
+           printf(&quot;Scheduling policy:   %s\n&quot;,
+                  (policy == SCHED_FIFO) ? &quot;SCHED_FIFO&quot; :
+                  (policy == SCHED_RR) ? &quot;SCHED_RR&quot; :
+                  (policy == SCHED_OTHER) ? &quot;SCHED_OTHER&quot; : &quot;[unknown]&quot;);
+
+           s = pthread_attr_getschedparam(attr, &amp;schedparam);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_attr_getschedparam&quot;);
+           printf(&quot;Scheduling priority: %d\n&quot;, schedparam.sched_priority);
+
+           s = pthread_attr_getdetachstate(attr, &amp;detachstate);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_attr_getdetachstate&quot;);
+           printf(&quot;Detach state:        %s\n&quot;,
+                  (detachstate == PTHREAD_CREATE_DETACHED) ? &quot;DETACHED&quot; :
+                  (detachstate == PTHREAD_CREATE_JOINABLE) ? &quot;JOINABLE&quot; :
+                  &quot;???&quot;);
+
+           s = pthread_attr_getinheritsched(attr, &amp;inheritsched);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_attr_getinheritsched&quot;);
+           printf(&quot;Inherit scheduler:   %s\n&quot;,
+                  (inheritsched == PTHREAD_INHERIT_SCHED) ? &quot;INHERIT&quot; :
+                  (inheritsched == PTHREAD_EXPLICIT_SCHED) ? &quot;EXPLICIT&quot; :
+                  &quot;???&quot;);
+       }
+
+       int
+       main(void)
+       {
+           int s;
+           pthread_attr_t attr;
+
+           s = pthread_getattr_default_np(&amp;attr);
+           if (s != 0)
+               errc(EXIT_FAILURE, s, &quot;pthread_getattr_default_np&quot;);
+
+           display_pthread_attr(&amp;attr);
+
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       pthread_attr_getaffinity_np(3), pthread_attr_getdetachstate(3),
+       pthread_attr_getguardsize(3), pthread_attr_getinheritsched(3),
+       pthread_attr_getschedparam(3), pthread_attr_getschedpolicy(3),
+       pthread_attr_getscope(3), pthread_attr_getstack(3),
+       pthread_attr_getstackaddr(3), pthread_attr_getstacksize(3),
+       pthread_attr_init(3), pthread_create(3), pthreads(7)
+
+Linux man-pages 6.9.1             2024-06-15        pthread_ge...default_np(3)
+</pre></body></html>

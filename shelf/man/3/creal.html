@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>creal(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>creal(3)                   Library Functions Manual                   creal(3)
+
+NAME
+       creal, crealf, creall - get real part of a complex number
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double creal(double complex z);
+       float crealf(float complex z);
+       long double creall(long double complex z);
+
+DESCRIPTION
+       These functions return the real part of the complex number z.
+
+       One has:
+
+           z = creal(z) + I * cimag(z)
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       creal(), crealf(), creall() T}   Thread safety  MT-Safe
+
+VERSIONS
+       GCC supports also __real__.  That is a GNU extension.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       cabs(3), cimag(3), complex(7)
+
+Linux man-pages 6.9.1             2024-05-02                          creal(3)
+</pre></body></html>

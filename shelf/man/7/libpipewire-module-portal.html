@@ -1,0 +1,37 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-portal(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...e-portal(7)  Miscellaneous Information Manual  libpipe...e-portal(7)
+
+NAME
+       libpipewire-module-portal - Portal
+
+DESCRIPTION
+       The portal module performs access control management for clients
+       started inside an XDG portal.
+
+       The module connects to the session DBus and subscribes to
+       NameOwnerChanged signals for the org.freedesktop.portal.Desktop name.
+       The PID of the DBus name owner is the portal.
+
+       A client connection from the portal PID to PipeWire gets assigned a
+       pipewire.access of &#x27;portal&#x27; and set to permissions ALL - it is the
+       responsibility of the portal to limit the permissions before passing
+       the connection on to the client. See Access Control for details on
+       permissions.
+
+       Clients connecting from other PIDs are ignored by this module.
+
+MODULE NAME
+       libpipewire-module-portal
+
+MODULE OPTIONS
+       There are no module-specific options.
+
+GENERAL OPTIONS
+       There are no general options for this module.
+
+EXAMPLE CONFIGURATION
+       context.modules = [
+        {   name = libpipewire-module-portal }
+       ]
+
+PipeWire                             1.4.2               libpipe...e-portal(7)
+</pre></body></html>

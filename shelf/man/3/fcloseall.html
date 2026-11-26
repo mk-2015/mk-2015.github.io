@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>fcloseall(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>fcloseall(3)               Library Functions Manual               fcloseall(3)
+
+NAME
+       fcloseall - close all open streams
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #define _GNU_SOURCE         /* See feature_test_macros(7) */
+       #include &lt;stdio.h&gt;
+
+       int fcloseall(void);
+
+DESCRIPTION
+       The  fcloseall()  function  closes  all  of  the calling process&#x27;s open
+       streams.  Buffered output for each  stream  is  written  before  it  is
+       closed (as for fflush(3)); buffered input is discarded.
+
+       The standard streams, stdin, stdout, and stderr are also closed.
+
+RETURN VALUE
+       This  function  returns 0 if all files were successfully closed; on er‐
+       ror, EOF is returned.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       fcloseall() T}   Thread safety  MT-Unsafe race:streams
+
+       The fcloseall() function does not lock the streams, so it is not
+       thread-safe.
+
+STANDARDS
+       GNU.
+
+SEE ALSO
+       close(2), fclose(3), fflush(3), fopen(3), setbuf(3)
+
+Linux man-pages 6.9.1             2024-05-02                      fcloseall(3)
+</pre></body></html>

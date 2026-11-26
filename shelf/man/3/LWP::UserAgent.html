@@ -1,0 +1,972 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>LWP::UserAgent(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>LWP::UserAgent(3pm)   User Contributed Perl Documentation  LWP::UserAgent(3pm)
+
+NAME
+       LWP::UserAgent - Web user agent class
+
+SYNOPSIS
+           use strict;
+           use warnings;
+
+           use LWP::UserAgent ();
+
+           my $ua = LWP::UserAgent-&gt;new(timeout =&gt; 10);
+           $ua-&gt;env_proxy;
+
+           my $response = $ua-&gt;get(&#x27;http://example.com&#x27;);
+
+           if ($response-&gt;is_success) {
+               print $response-&gt;decoded_content;
+           }
+           else {
+               die $response-&gt;status_line;
+           }
+
+       Extra layers of security (note the &quot;cookie_jar&quot; and
+       &quot;protocols_allowed&quot;):
+
+           use strict;
+           use warnings;
+
+           use HTTP::CookieJar::LWP ();
+           use LWP::UserAgent       ();
+
+           my $jar = HTTP::CookieJar::LWP-&gt;new;
+           my $ua  = LWP::UserAgent-&gt;new(
+               cookie_jar        =&gt; $jar,
+               protocols_allowed =&gt; [&#x27;http&#x27;, &#x27;https&#x27;],
+               timeout           =&gt; 10,
+           );
+
+           $ua-&gt;env_proxy;
+
+           my $response = $ua-&gt;get(&#x27;http://example.com&#x27;);
+
+           if ($response-&gt;is_success) {
+               print $response-&gt;decoded_content;
+           }
+           else {
+               die $response-&gt;status_line;
+           }
+
+DESCRIPTION
+       The LWP::UserAgent is a class implementing a web user agent.
+       LWP::UserAgent objects can be used to dispatch web requests.
+
+       In normal use the application creates an LWP::UserAgent object, and
+       then configures it with values for timeouts, proxies, name, etc. It
+       then creates an instance of HTTP::Request for the request that needs to
+       be performed. This request is then passed to one of the request method
+       the UserAgent, which dispatches it using the relevant protocol, and
+       returns a HTTP::Response object.  There are convenience methods for
+       sending the most common request types: &quot;get&quot; in LWP::UserAgent, &quot;head&quot;
+       in LWP::UserAgent, &quot;post&quot; in LWP::UserAgent, &quot;put&quot; in LWP::UserAgent
+       and &quot;delete&quot; in LWP::UserAgent.  When using these methods, the creation
+       of the request object is hidden as shown in the synopsis above.
+
+       The basic approach of the library is to use HTTP-style communication
+       for all protocol schemes.  This means that you will construct
+       HTTP::Request objects and receive HTTP::Response objects even for non-
+       HTTP resources like gopher and ftp.  In order to achieve even more
+       similarity to HTTP-style communications, gopher menus and file
+       directories are converted to HTML documents.
+
+CONSTRUCTOR METHODS
+       The following constructor methods are available:
+
+   clone
+           my $ua2 = $ua-&gt;clone;
+
+       Returns a copy of the LWP::UserAgent object.
+
+       CAVEAT: Please be aware that the clone method does not copy or clone
+       your &quot;cookie_jar&quot; attribute. Due to the limited restrictions on what
+       can be used for your cookie jar, there is no way to clone the
+       attribute. The &quot;cookie_jar&quot; attribute will be &quot;undef&quot; in the new object
+       instance.
+
+   new
+           my $ua = LWP::UserAgent-&gt;new( %options )
+
+       This method constructs a new LWP::UserAgent object and returns it.
+       Key/value pair arguments may be provided to set up the initial state.
+       The following options correspond to attribute methods described below:
+
+          KEY                     DEFAULT
+          -----------             --------------------
+          agent                   &quot;libwww-perl/#.###&quot;
+          conn_cache              undef
+          cookie_jar              undef
+          cookie_jar_class        HTTP::Cookies
+          default_headers         HTTP::Headers-&gt;new
+          from                    undef
+          local_address           undef
+          max_redirect            7
+          max_size                undef
+          no_proxy                []
+          parse_head              1
+          protocols_allowed       undef
+          protocols_forbidden     undef
+          proxy                   {}
+          requests_redirectable   [&#x27;GET&#x27;, &#x27;HEAD&#x27;]
+          send_te                 1
+          show_progress           undef
+          ssl_opts                { verify_hostname =&gt; 1 }
+          timeout                 180
+
+       The following additional options are also accepted: If the &quot;env_proxy&quot;
+       option is passed in with a true value, then proxy settings are read
+       from environment variables (see &quot;env_proxy&quot; in LWP::UserAgent). If
+       &quot;env_proxy&quot; isn&#x27;t provided, the &quot;PERL_LWP_ENV_PROXY&quot; environment
+       variable controls if &quot;env_proxy&quot; in LWP::UserAgent is called during
+       initialization.  If the &quot;keep_alive&quot; option value is defined and non-
+       zero, then an &quot;LWP::ConnCache&quot; is set up (see &quot;conn_cache&quot; in
+       LWP::UserAgent).  The &quot;keep_alive&quot; value is passed on as the
+       &quot;total_capacity&quot; for the connection cache.
+
+       &quot;proxy&quot; must be set as an arrayref of key/value pairs. &quot;no_proxy&quot; takes
+       an arrayref of domains.
+
+ATTRIBUTES
+       The settings of the configuration attributes modify the behaviour of
+       the LWP::UserAgent when it dispatches requests.  Most of these can also
+       be initialized by options passed to the constructor method.
+
+       The following attribute methods are provided.  The attribute value is
+       left unchanged if no argument is given.  The return value from each
+       method is the old attribute value.
+
+   agent
+           my $agent = $ua-&gt;agent;
+           $ua-&gt;agent(&#x27;Checkbot/0.4 &#x27;);    # append the default to the end
+           $ua-&gt;agent(&#x27;Mozilla/5.0&#x27;);
+           $ua-&gt;agent(&quot;&quot;);                 # don&#x27;t identify
+
+       Get/set the product token that is used to identify the user agent on
+       the network. The agent value is sent as the &quot;User-Agent&quot; header in the
+       requests.
+
+       The default is a string of the form &quot;libwww-perl/#.###&quot;, where &quot;#.###&quot;
+       is substituted with the version number of this library.
+
+       If the provided string ends with space, the default &quot;libwww-perl/#.###&quot;
+       string is appended to it.
+
+       The user agent string should be one or more simple product identifiers
+       with an optional version number separated by the &quot;/&quot; character.
+
+   conn_cache
+           my $cache_obj = $ua-&gt;conn_cache;
+           $ua-&gt;conn_cache( $cache_obj );
+
+       Get/set the LWP::ConnCache object to use.  See LWP::ConnCache for
+       details.
+
+   cookie_jar
+           my $jar = $ua-&gt;cookie_jar;
+           $ua-&gt;cookie_jar( $cookie_jar_obj );
+
+       Get/set the cookie jar object to use.  The only requirement is that the
+       cookie jar object must implement the extract_cookies($response) and
+       add_cookie_header($request) methods.  These methods will then be
+       invoked by the user agent as requests are sent and responses are
+       received.  Normally this will be a HTTP::Cookies object or some
+       subclass.  You are, however, encouraged to use HTTP::CookieJar::LWP
+       instead.  See &quot;BEST PRACTICES&quot; for more information.
+
+           use HTTP::CookieJar::LWP ();
+
+           my $jar = HTTP::CookieJar::LWP-&gt;new;
+           my $ua = LWP::UserAgent-&gt;new( cookie_jar =&gt; $jar );
+
+           # or after object creation
+           $ua-&gt;cookie_jar( $cookie_jar );
+
+       The default is to have no cookie jar, i.e. never automatically add
+       &quot;Cookie&quot; headers to the requests.
+
+       If $jar contains an unblessed hash reference, a new cookie jar object
+       is created for you automatically. The object is of the class set with
+       the &quot;cookie_jar_class&quot; constructor argument, which defaults to
+       HTTP::Cookies.
+
+         $ua-&gt;cookie_jar({ file =&gt; &quot;$ENV{HOME}/.cookies.txt&quot; });
+
+       is really just a shortcut for:
+
+         require HTTP::Cookies;
+         $ua-&gt;cookie_jar(HTTP::Cookies-&gt;new(file =&gt; &quot;$ENV{HOME}/.cookies.txt&quot;));
+
+       As described above and in &quot;BEST PRACTICES&quot;, you should set
+       &quot;cookie_jar_class&quot; to &quot;HTTP::CookieJar::LWP&quot; to get a safer cookie jar.
+
+         my $ua = LWP::UserAgent-&gt;new( cookie_jar_class =&gt; &#x27;HTTP::CookieJar::LWP&#x27; );
+         $ua-&gt;cookie_jar({}); # HTTP::CookieJar::LWP takes no args
+
+       These can also be combined into the constructor, so a jar is created at
+       instantiation.
+
+         my $ua = LWP::UserAgent-&gt;new(
+           cookie_jar_class =&gt; &#x27;HTTP::CookieJar::LWP&#x27;,
+           cookie_jar       =&gt;  {},
+         );
+
+   credentials
+           my $creds = $ua-&gt;credentials();
+           $ua-&gt;credentials( $netloc, $realm );
+           $ua-&gt;credentials( $netloc, $realm, $uname, $pass );
+           $ua-&gt;credentials(&quot;www.example.com:80&quot;, &quot;Some Realm&quot;, &quot;foo&quot;, &quot;secret&quot;);
+
+       Get/set the user name and password to be used for a realm.
+
+       The $netloc is a string of the form &quot;&lt;host&gt;:&lt;port&gt;&quot;.  The username and
+       password will only be passed to this server.
+
+   default_header
+           $ua-&gt;default_header( $field );
+           $ua-&gt;default_header( $field =&gt; $value );
+           $ua-&gt;default_header(&#x27;Accept-Encoding&#x27; =&gt; scalar HTTP::Message::decodable());
+           $ua-&gt;default_header(&#x27;Accept-Language&#x27; =&gt; &quot;no, en&quot;);
+
+       This is just a shortcut for &quot;$ua-&gt;default_headers-&gt;header( $field =&gt;
+       $value )&quot;.
+
+   default_headers
+           my $headers = $ua-&gt;default_headers;
+           $ua-&gt;default_headers( $headers_obj );
+
+       Get/set the headers object that will provide default header values for
+       any requests sent.  By default this will be an empty HTTP::Headers
+       object.
+
+   from
+           my $from = $ua-&gt;from;
+           $ua-&gt;from(&#x27;foo@bar.com&#x27;);
+
+       Get/set the email address for the human user who controls the
+       requesting user agent.  The address should be machine-usable, as
+       defined in RFC2822 &lt;https://tools.ietf.org/html/rfc2822&gt;. The &quot;from&quot;
+       value is sent as the &quot;From&quot; header in the requests.
+
+       The default is to not send a &quot;From&quot; header.  See &quot;default_headers&quot; in
+       LWP::UserAgent for the more general interface that allow any header to
+       be defaulted.
+
+   local_address
+           my $address = $ua-&gt;local_address;
+           $ua-&gt;local_address( $address );
+
+       Get/set the local interface to bind to for network connections.  The
+       interface can be specified as a hostname or an IP address.  This value
+       is passed as the &quot;LocalAddr&quot; argument to IO::Socket::INET.
+
+   max_redirect
+           my $max = $ua-&gt;max_redirect;
+           $ua-&gt;max_redirect( $n );
+
+       This reads or sets the object&#x27;s limit of how many times it will obey
+       redirection responses in a given request cycle.
+
+       By default, the value is 7. This means that if you call &quot;request&quot; in
+       LWP::UserAgent and the response is a redirect elsewhere which is in
+       turn a redirect, and so on seven times, then LWP gives up after that
+       seventh request.
+
+   max_size
+           my $size = $ua-&gt;max_size;
+           $ua-&gt;max_size( $bytes );
+
+       Get/set the size limit for response content.  The default is &quot;undef&quot;,
+       which means that there is no limit.  If the returned response content
+       is only partial, because the size limit was exceeded, then a
+       &quot;Client-Aborted&quot; header will be added to the response.  The content
+       might end up longer than &quot;max_size&quot; as we abort once appending a chunk
+       of data makes the length exceed the limit.  The &quot;Content-Length&quot;
+       header, if present, will indicate the length of the full content and
+       will normally not be the same as length($res-&gt;content).
+
+   parse_head
+           my $bool = $ua-&gt;parse_head;
+           $ua-&gt;parse_head( $boolean );
+
+       Get/set a value indicating whether we should initialize response
+       headers from the &lt;head&gt; section of HTML documents. The default is true.
+       Do not turn this off unless you know what you are doing.
+
+   protocols_allowed
+           my $aref = $ua-&gt;protocols_allowed;      # get allowed protocols
+           $ua-&gt;protocols_allowed( \@protocols );  # allow ONLY these
+           $ua-&gt;protocols_allowed(undef);          # delete the list
+           $ua-&gt;protocols_allowed([&#x27;http&#x27;,]);      # ONLY allow http
+
+       By default, an object has neither a &quot;protocols_allowed&quot; list, nor a
+       &quot;protocols_forbidden&quot; in LWP::UserAgent list.
+
+       This reads (or sets) this user agent&#x27;s list of protocols that the
+       request methods will exclusively allow.  The protocol names are case
+       insensitive.
+
+       For example: &quot;$ua-&gt;protocols_allowed( [ &#x27;http&#x27;, &#x27;https&#x27;] );&quot; means that
+       this user agent will allow only those protocols, and attempts to use
+       this user agent to access URLs with any other schemes (like
+       &quot;ftp://...&quot;) will result in a 500 error.
+
+       Note that having a &quot;protocols_allowed&quot; list causes any
+       &quot;protocols_forbidden&quot; in LWP::UserAgent list to be ignored.
+
+   protocols_forbidden
+           my $aref = $ua-&gt;protocols_forbidden;    # get the forbidden list
+           $ua-&gt;protocols_forbidden(\@protocols);  # do not allow these
+           $ua-&gt;protocols_forbidden([&#x27;http&#x27;,]);    # All http reqs get a 500
+           $ua-&gt;protocols_forbidden(undef);        # delete the list
+
+       This reads (or sets) this user agent&#x27;s list of protocols that the
+       request method will not allow. The protocol names are case insensitive.
+
+       For example: &quot;$ua-&gt;protocols_forbidden( [ &#x27;file&#x27;, &#x27;mailto&#x27;] );&quot; means
+       that this user agent will not allow those protocols, and attempts to
+       use this user agent to access URLs with those schemes will result in a
+       500 error.
+
+   requests_redirectable
+           my $aref = $ua-&gt;requests_redirectable;
+           $ua-&gt;requests_redirectable( \@requests );
+           $ua-&gt;requests_redirectable([&#x27;GET&#x27;, &#x27;HEAD&#x27;,]); # the default
+
+       This reads or sets the object&#x27;s list of request names that
+       &quot;redirect_ok&quot; in LWP::UserAgent will allow redirection for. By default,
+       this is &quot;[&#x27;GET&#x27;, &#x27;HEAD&#x27;]&quot;, as per RFC 2616
+       &lt;https://tools.ietf.org/html/rfc2616&gt;.  To change to include &quot;POST&quot;,
+       consider:
+
+          push @{ $ua-&gt;requests_redirectable }, &#x27;POST&#x27;;
+
+   send_te
+           my $bool = $ua-&gt;send_te;
+           $ua-&gt;send_te( $boolean );
+
+       If true, will send a &quot;TE&quot; header along with the request. The default is
+       true. Set it to false to disable the &quot;TE&quot; header for systems who can&#x27;t
+       handle it.
+
+   show_progress
+           my $bool = $ua-&gt;show_progress;
+           $ua-&gt;show_progress( $boolean );
+
+       Get/set a value indicating whether a progress bar should be displayed
+       on the terminal as requests are processed. The default is false.
+
+   ssl_opts
+           my @keys = $ua-&gt;ssl_opts;
+           my $val = $ua-&gt;ssl_opts( $key );
+           $ua-&gt;ssl_opts( $key =&gt; $value );
+
+       Get/set the options for SSL connections.  Without argument return the
+       list of options keys currently set.  With a single argument return the
+       current value for the given option.  With 2 arguments set the option
+       value and return the old.  Setting an option to the value &quot;undef&quot;
+       removes this option.
+
+       The options that LWP relates to are:
+
+       &quot;verify_hostname&quot; =&gt; $bool
+           When  TRUE  LWP will for secure protocol schemes ensure it connects
+           to servers that have a  valid  certificate  matching  the  expected
+           hostname.   If  FALSE no checks are made and you can&#x27;t be sure that
+           you communicate with the expected peer.  The  no  checks  behaviour
+           was the default for libwww-perl-5.837 and earlier releases.
+
+           This  option is initialized from the &quot;PERL_LWP_SSL_VERIFY_HOSTNAME&quot;
+           environment variable.  If this environment variable isn&#x27;t set; then
+           &quot;verify_hostname&quot; defaults to 1.
+
+           Please note that recently the overall effect of  this  option  with
+           regards  to  SSL  handling  has  changed.  As  of  version  6.11 of
+           LWP::Protocol::https, which is an external module, SSL  certificate
+           verification was harmonized to behave in sync with IO::Socket::SSL.
+           With  this  change,  setting this option no longer disables all SSL
+           certificate verification, only the hostname checks. To disable  all
+           verification,  use  the  &quot;SSL_verify_mode&quot; option in the &quot;ssl_opts&quot;
+           attribute.   For   example:    &quot;$ua-&quot;ssl_opts(SSL_verify_mode    =&gt;
+           IO::Socket::SSL::SSL_VERIFY_NONE);&gt;
+
+       &quot;SSL_ca_file&quot; =&gt; $path
+           The  path  to a file containing Certificate Authority certificates.
+           A default setting for this  option  is  provided  by  checking  the
+           environment variables &quot;PERL_LWP_SSL_CA_FILE&quot; and &quot;HTTPS_CA_FILE&quot; in
+           order.
+
+       &quot;SSL_ca_path&quot; =&gt; $path
+           The  path  to  a  directory containing files containing Certificate
+           Authority certificates.  A  default  setting  for  this  option  is
+           provided      by     checking     the     environment     variables
+           &quot;PERL_LWP_SSL_CA_PATH&quot; and &quot;HTTPS_CA_DIR&quot; in order.
+
+       Other options can be set and are processed directly by the  SSL  Socket
+       implementation in use.  See IO::Socket::SSL or Net::SSL for details.
+
+       The  libwww-perl  core no longer bundles protocol plugins for SSL.  You
+       will need to install LWP::Protocol::https separately to enable  support
+       for processing https-URLs.
+
+   timeout
+           my $secs = $ua-&gt;timeout;
+           $ua-&gt;timeout( $secs );
+
+       Get/set the timeout value in seconds. The default value is 180 seconds,
+       i.e. 3 minutes.
+
+       The  request  is aborted if no activity on the connection to the server
+       is observed for &quot;timeout&quot; seconds.  This means that the time  it  takes
+       for the complete transaction and the &quot;request&quot; in LWP::UserAgent method
+       to actually return might be longer.
+
+       When  a  request  times  out, a response object is still returned.  The
+       response will have a standard HTTP Status Code  (500).   This  response
+       will  have  the  &quot;Client-Warning&quot;  header set to the value of &quot;Internal
+       response&quot;.  See the &quot;get&quot; in LWP::UserAgent  method  description  below
+       for further details.
+
+       Disabling  the  timeout  is  not  supported,  but  it  can be set to an
+       arbitrarily large value.
+
+PROXY ATTRIBUTES
+       The following methods set up when requests should be passed via a proxy
+       server.
+
+   env_proxy
+           $ua-&gt;env_proxy;
+
+       Load proxy settings from  *_proxy  environment  variables.   You  might
+       specify proxies like this (sh-syntax):
+
+         gopher_proxy=http://proxy.my.place/
+         wais_proxy=http://proxy.my.place/
+         no_proxy=&quot;localhost,example.com&quot;
+         export gopher_proxy wais_proxy no_proxy
+
+       csh  or  tcsh  users  should  use  the &quot;setenv&quot; command to define these
+       environment variables.
+
+       On systems with case insensitive environment variables there  exists  a
+       name  clash  between the CGI environment variables and the &quot;HTTP_PROXY&quot;
+       environment variable normally picked up  by  &quot;env_proxy&quot;.   Because  of
+       this &quot;HTTP_PROXY&quot; is not honored for CGI scripts.  The &quot;CGI_HTTP_PROXY&quot;
+       environment variable can be used instead.
+
+   no_proxy
+           $ua-&gt;no_proxy( @domains );
+           $ua-&gt;no_proxy(&#x27;localhost&#x27;, &#x27;example.com&#x27;);
+           $ua-&gt;no_proxy(); # clear the list
+
+       Do  not  proxy  requests  to  the  given domains, including subdomains.
+       Calling &quot;no_proxy&quot; without any domains clears the list of domains.
+
+   proxy
+           $ua-&gt;proxy(\@schemes, $proxy_url)
+           $ua-&gt;proxy([&#x27;http&#x27;, &#x27;ftp&#x27;], &#x27;http://proxy.sn.no:8001/&#x27;);
+
+           # For a single scheme:
+           $ua-&gt;proxy($scheme, $proxy_url)
+           $ua-&gt;proxy(&#x27;gopher&#x27;, &#x27;http://proxy.sn.no:8001/&#x27;);
+
+           # To set multiple proxies at once:
+           $ua-&gt;proxy([
+               ftp =&gt; &#x27;http://ftp.example.com:8001/&#x27;,
+               [ &#x27;http&#x27;, &#x27;https&#x27; ] =&gt; &#x27;http://http.example.com:8001/&#x27;,
+           ]);
+
+       Set/retrieve proxy URL for a scheme.
+
+       The first form specifies that the URL is to be  used  as  a  proxy  for
+       access  methods  listed  in the list in the first method argument, i.e.
+       &quot;http&quot; and &quot;ftp&quot;.
+
+       The second form shows a shorthand form for specifying proxy URL  for  a
+       single access scheme.
+
+       The  third  form demonstrates setting multiple proxies at once. This is
+       also the only form accepted by the constructor.
+
+HANDLERS
+       Handlers are code that injected at various phases during the processing
+       of requests.  The following methods are provided to manage  the  active
+       handlers:
+
+   add_handler
+           $ua-&gt;add_handler( $phase =&gt; \&amp;cb, %matchspec )
+
+       Add  handler  to  be invoked in the given processing phase.  For how to
+       specify %matchspec see &quot;Matching&quot; in HTTP::Config.
+
+       The possible values $phase and the  corresponding  callback  signatures
+       are  as follows.  Note that the handlers are documented in the order in
+       which they will be run, which is:
+
+           request_preprepare
+           request_prepare
+           request_send
+           response_header
+           response_data
+           response_done
+           response_redirect
+
+       request_preprepare =&gt; sub { my($request, $ua, $handler) = @_; ... }
+           The handler  is  called  before  the  &quot;request_prepare&quot;  and  other
+           standard initialization of the request.  This can be used to set up
+           headers  and  attributes that the &quot;request_prepare&quot; handler depends
+           on.  Proxy initialization should take place here;  but  in  general
+           don&#x27;t register handlers for this phase.
+
+       request_prepare =&gt; sub { my($request, $ua, $handler) = @_; ... }
+           The handler is called before the request is sent and can modify the
+           request  any  way it see fit.  This can for instance be used to add
+           certain headers to specific requests.
+
+           The method can assign a new request object to $_[0] to replace  the
+           request that is sent fully.
+
+           The  return value from the callback is ignored.  If an exception is
+           raised it will abort the request and make the request method return
+           a &quot;400 Bad request&quot; response.
+
+       request_send =&gt; sub { my($request, $ua, $handler) = @_; ... }
+           This handler gets a chance of handling requests before they&#x27;re sent
+           to the protocol  handlers.   It  should  return  an  HTTP::Response
+           object  if  it  wishes  to  terminate  the processing; otherwise it
+           should return nothing.
+
+           The &quot;response_header&quot; and  &quot;response_data&quot;  handlers  will  not  be
+           invoked for this response, but the &quot;response_done&quot; will be.
+
+       response_header =&gt; sub { my($response, $ua, $handler) = @_; ... }
+           This  handler  is called right after the response headers have been
+           received, but before any content data.  The handler  might  set  up
+           handlers for data and might croak to abort the request.
+
+           The  handler might set the &quot;$response-&gt;{default_add_content}&quot; value
+           to control if any received data should be  added  to  the  response
+           object   directly.    This   will   initially   be   false  if  the
+           &quot;$ua-&gt;request()&quot;  method  was  called  with  a   $content_file   or
+           &quot;$content_cb argument&quot;; otherwise true.
+
+       response_data =&gt; sub { my($response, $ua, $handler, $data) = @_; ... }
+           This  handler  is  called  for  each chunk of data received for the
+           response.  The handler might croak to abort the request.
+
+           This handler needs to return a TRUE value to be  called  again  for
+           subsequent chunks for the same request.
+
+       response_done =&gt; sub { my($response, $ua, $handler) = @_; ... }
+           The  handler  is called after the response has been fully received,
+           but before any redirect handling is attempted.  The handler can  be
+           used to extract information or modify the response.
+
+       response_redirect =&gt; sub { my($response, $ua, $handler) = @_; ... }
+           The  handler is called in &quot;$ua-&gt;request&quot; after &quot;response_done&quot;.  If
+           the handler returns an HTTP::Request object we&#x27;ll start  over  with
+           processing this request instead.
+
+       For  all  of these, $handler is a code reference to the handler that is
+       currently being run.
+
+   get_my_handler
+           $ua-&gt;get_my_handler( $phase, %matchspec );
+           $ua-&gt;get_my_handler( $phase, %matchspec, $init );
+
+       Will retrieve the matching handler as hash ref.
+
+       If $init is passed as a true value, create and add the handler if  it&#x27;s
+       not  found.   If $init is a subroutine reference, then it&#x27;s called with
+       the created handler hash as argument.  This sub might populate the hash
+       with extra fields;  especially  the  callback.   If  $init  is  a  hash
+       reference, merge the hashes.
+
+   handlers
+           $ua-&gt;handlers( $phase, $request )
+           $ua-&gt;handlers( $phase, $response )
+
+       Returns the handlers that apply to the given request or response at the
+       given processing phase.
+
+   remove_handler
+           $ua-&gt;remove_handler( undef, %matchspec );
+           $ua-&gt;remove_handler( $phase, %matchspec );
+           $ua-&gt;remove_handler(); # REMOVE ALL HANDLERS IN ALL PHASES
+
+       Remove  handlers  that  match  the  given %matchspec.  If $phase is not
+       provided, remove handlers from all phases.
+
+       Be careful as  calling  this  function  with  %matchspec  that  is  not
+       specific  enough  can  remove handlers not owned by you.  It&#x27;s probably
+       better to use the &quot;set_my_handler&quot; in LWP::UserAgent method instead.
+
+       The removed handlers are returned.
+
+   set_my_handler
+           $ua-&gt;set_my_handler( $phase, $cb, %matchspec );
+           $ua-&gt;set_my_handler($phase, undef); # remove handler for phase
+
+       Set handlers private to the executing subroutine.  Works by  defaulting
+       an  &quot;owner&quot;  field  to the %matchspec that holds the name of the called
+       subroutine.  You might pass an explicit &quot;owner&quot; to override this.
+
+       If $cb is passed as &quot;undef&quot;, remove the handler.
+
+REQUEST METHODS
+       The methods described in this section are used to dispatch requests via
+       the user agent.  The following request methods are provided:
+
+   delete
+           my $res = $ua-&gt;delete( $url );
+           my $res = $ua-&gt;delete( $url, $field_name =&gt; $value, ... );
+
+       This method  will  dispatch  a  &quot;DELETE&quot;  request  on  the  given  URL.
+       Additional headers and content options are the same as for the &quot;get&quot; in
+       LWP::UserAgent method.
+
+       This  method  will use the DELETE() function from HTTP::Request::Common
+       to build the request.  See HTTP::Request::Common for a details  on  how
+       to pass form content and other advanced features.
+
+   get
+           my $res = $ua-&gt;get( $url );
+           my $res = $ua-&gt;get( $url , $field_name =&gt; $value, ... );
+
+       This  method  will  dispatch a &quot;GET&quot; request on the given URL.  Further
+       arguments can be given to initialize the headers of the request.  These
+       are given as separate name/value pairs.  The return value is a response
+       object.   See  HTTP::Response  for  a  description  of the interface it
+       provides.
+
+       There will still be a response object returned when LWP  can&#x27;t  connect
+       to  the  server specified in the URL or when other failures in protocol
+       handlers occur.  These internal responses use the standard HTTP  status
+       codes, so the responses can&#x27;t be differentiated by testing the response
+       status  code alone.  Error responses that LWP generates internally will
+       have the &quot;Client-Warning&quot; header set to the value &quot;Internal  response&quot;.
+       If  you  need  to differentiate these internal responses from responses
+       that a remote server actually generates, you need to test  this  header
+       value.
+
+       Fields  names  that  start  with  &quot;:&quot;  are  special.   These  will  not
+       initialize headers of the request but will determine how  the  response
+       content is treated.  The following special field names are recognized:
+
+           &#x27;:content_file&#x27;   =&gt; $filename # or $filehandle
+           &#x27;:content_cb&#x27;     =&gt; \&amp;callback
+           &#x27;:read_size_hint&#x27; =&gt; $bytes
+
+       If  a  $filename  or  $filehandle  is provided with the &quot;:content_file&quot;
+       option, then the response content will be saved here instead of in  the
+       response  object.   The  $filehandle may also be an object with an open
+       file descriptor, such  as  a  File::Temp  object.   If  a  callback  is
+       provided  with  the  &quot;:content_cb&quot;  option  then  this function will be
+       called for each chunk of the response content as it  is  received  from
+       the  server.   If neither of these options are given, then the response
+       content will accumulate in the response object itself.  This might  not
+       be   suitable   for   very   large   response   bodies.   Only  one  of
+       &quot;:content_file&quot; or &quot;:content_cb&quot; can  be  specified.   The  content  of
+       unsuccessful  responses  will  always accumulate in the response object
+       itself, regardless of  the  &quot;:content_file&quot;  or  &quot;:content_cb&quot;  options
+       passed  in.   Note that errors writing to the content file (for example
+       due to permission denied or the filesystem being full) will be reported
+       via the &quot;Client-Aborted&quot; or &quot;X-Died&quot;  response  headers,  and  not  the
+       &quot;is_success&quot; method.
+
+       The  &quot;:read_size_hint&quot;  option  is  passed to the protocol module which
+       will try to read data from the  server  in  chunks  of  this  size.   A
+       smaller  value for the &quot;:read_size_hint&quot; will result in a higher number
+       of callback invocations.
+
+       The callback function is called with 3 arguments: a chunk  of  data,  a
+       reference  to  the  response  object,  and  a reference to the protocol
+       object.  The callback can abort the request  by  invoking  die().   The
+       exception  message  will  show  up  as the &quot;X-Died&quot; header field in the
+       response returned by the &quot;$ua-&gt;get()&quot; method.
+
+   head
+           my $res = $ua-&gt;head( $url );
+           my $res = $ua-&gt;head( $url , $field_name =&gt; $value, ... );
+
+       This method will dispatch a &quot;HEAD&quot; request on the given URL.  Otherwise
+       it works like the &quot;get&quot; in LWP::UserAgent method described above.
+
+   is_protocol_supported
+           my $bool = $ua-&gt;is_protocol_supported( $scheme );
+
+       You can use this method to test whether this user agent object supports
+       the specified &quot;scheme&quot;.  (The &quot;scheme&quot; might be a string  (like  &quot;http&quot;
+       or &quot;ftp&quot;) or it might be an URI object reference.)
+
+       Whether  a  scheme  is  supported  is  determined  by  the user agent&#x27;s
+       &quot;protocols_allowed&quot; or &quot;protocols_forbidden&quot; lists (if any), and by the
+       capabilities of LWP.  I.e., this will return true only if LWP  supports
+       this protocol and it&#x27;s permitted for this particular object.
+
+   is_online
+           my $bool = $ua-&gt;is_online;
+
+       Tries to determine if you have access to the Internet. Returns 1 (true)
+       if  the  built-in  heuristics  determine that the user agent is able to
+       access the Internet (over HTTP) or 0 (false).
+
+       See also LWP::Online.
+
+   mirror
+           my $res = $ua-&gt;mirror( $url, $filename );
+
+       This method will get the document identified by URL  and  store  it  in
+       file  called  $filename.   If the file already exists, then the request
+       will contain an &quot;If-Modified-Since&quot; header  matching  the  modification
+       time  of the file.  If the document on the server has not changed since
+       this time, then nothing happens.  If the document has been updated,  it
+       will  be  downloaded  again.  The modification time of the file will be
+       forced to match that of the server.
+
+       Uses  &quot;move&quot;  in  File::Copy  to  attempt  to  atomically  replace  the
+       $filename.
+
+       The return value is an HTTP::Response object.
+
+   patch
+           # Any version of HTTP::Message works with this form:
+           my $res = $ua-&gt;patch( $url, $field_name =&gt; $value, Content =&gt; $content );
+
+           # Using hash or array references requires HTTP::Message &gt;= 6.12
+           use HTTP::Request 6.12;
+           my $res = $ua-&gt;patch( $url, \%form );
+           my $res = $ua-&gt;patch( $url, \@form );
+           my $res = $ua-&gt;patch( $url, \%form, $field_name =&gt; $value, ... );
+           my $res = $ua-&gt;patch( $url, $field_name =&gt; $value, Content =&gt; \%form );
+           my $res = $ua-&gt;patch( $url, $field_name =&gt; $value, Content =&gt; \@form );
+
+       This  method  will  dispatch  a  &quot;PATCH&quot; request on the given URL, with
+       %form or @form providing the  key/value  pairs  for  the  fill-in  form
+       content. Additional headers and content options are the same as for the
+       &quot;get&quot; in LWP::UserAgent method.
+
+       CAVEAT:
+
+       This  method  can  only  accept content that is in key-value pairs when
+       using HTTP::Request::Common prior to version 6.12. Any use of  hash  or
+       array references will result in an error prior to version 6.12.
+
+       This method will use the &quot;PATCH&quot; function from HTTP::Request::Common to
+       build  the  request.  See HTTP::Request::Common for a details on how to
+       pass form content and other advanced features.
+
+   post
+           my $res = $ua-&gt;post( $url, \%form );
+           my $res = $ua-&gt;post( $url, \@form );
+           my $res = $ua-&gt;post( $url, \%form, $field_name =&gt; $value, ... );
+           my $res = $ua-&gt;post( $url, $field_name =&gt; $value, Content =&gt; \%form );
+           my $res = $ua-&gt;post( $url, $field_name =&gt; $value, Content =&gt; \@form );
+           my $res = $ua-&gt;post( $url, $field_name =&gt; $value, Content =&gt; $content );
+
+       This method will dispatch a &quot;POST&quot; request on the given URL, with %form
+       or @form providing the key/value pairs for the  fill-in  form  content.
+       Additional headers and content options are the same as for the &quot;get&quot; in
+       LWP::UserAgent method.
+
+       This  method will use the &quot;POST&quot; function from HTTP::Request::Common to
+       build the request.  See HTTP::Request::Common for a details on  how  to
+       pass form content and other advanced features.
+
+   put
+           # Any version of HTTP::Message works with this form:
+           my $res = $ua-&gt;put( $url, $field_name =&gt; $value, Content =&gt; $content );
+
+           # Using hash or array references requires HTTP::Message &gt;= 6.07
+           use HTTP::Request 6.07;
+           my $res = $ua-&gt;put( $url, \%form );
+           my $res = $ua-&gt;put( $url, \@form );
+           my $res = $ua-&gt;put( $url, \%form, $field_name =&gt; $value, ... );
+           my $res = $ua-&gt;put( $url, $field_name =&gt; $value, Content =&gt; \%form );
+           my $res = $ua-&gt;put( $url, $field_name =&gt; $value, Content =&gt; \@form );
+
+       This  method will dispatch a &quot;PUT&quot; request on the given URL, with %form
+       or @form providing the key/value pairs for the  fill-in  form  content.
+       Additional headers and content options are the same as for the &quot;get&quot; in
+       LWP::UserAgent method.
+
+       CAVEAT:
+
+       This  method  can  only  accept content that is in key-value pairs when
+       using HTTP::Request::Common prior to version 6.07. Any use of  hash  or
+       array references will result in an error prior to version 6.07.
+
+       This  method  will use the &quot;PUT&quot; function from HTTP::Request::Common to
+       build the request.  See HTTP::Request::Common for a details on  how  to
+       pass form content and other advanced features.
+
+   request
+           my $res = $ua-&gt;request( $request );
+           my $res = $ua-&gt;request( $request, $content_file );
+           my $res = $ua-&gt;request( $request, $content_cb );
+           my $res = $ua-&gt;request( $request, $content_cb, $read_size_hint );
+
+       This method will dispatch the given $request object. Normally this will
+       be  an  instance  of  the  HTTP::Request  class,  but any object with a
+       similar interface will  do.  The  return  value  is  an  HTTP::Response
+       object.
+
+       The   &quot;request&quot;   method  will  process  redirects  and  authentication
+       responses transparently. This means that it may actually  send  several
+       simple  requests  via  the  &quot;simple_request&quot;  in  LWP::UserAgent method
+       described below.
+
+       The request methods described above; &quot;get&quot; in LWP::UserAgent, &quot;head&quot; in
+       LWP::UserAgent, &quot;post&quot; in LWP::UserAgent and &quot;mirror&quot; in LWP::UserAgent
+       will all dispatch the request they build  via  this  method.  They  are
+       convenience methods that simply hide the creation of the request object
+       for you.
+
+       The  $content_file,  $content_cb  and $read_size_hint all correspond to
+       options described with the &quot;get&quot; in LWP::UserAgent method  above.  Note
+       that  errors writing to the content file (for example due to permission
+       denied  or  the  filesystem  being  full)  will  be  reported  via  the
+       &quot;Client-Aborted&quot; or &quot;X-Died&quot; response headers, and not the &quot;is_success&quot;
+       method.
+
+       You  are  allowed  to  use a CODE reference as &quot;content&quot; in the request
+       object passed in.  The &quot;content&quot; function  should  return  the  content
+       when  called.   The  content  can  be  returned in chunks.  The content
+       function will be invoked repeatedly until it return an empty string  to
+       signal that there is no more content.
+
+   simple_request
+           my $request = HTTP::Request-&gt;new( ... );
+           my $res = $ua-&gt;simple_request( $request );
+           my $res = $ua-&gt;simple_request( $request, $content_file );
+           my $res = $ua-&gt;simple_request( $request, $content_cb );
+           my $res = $ua-&gt;simple_request( $request, $content_cb, $read_size_hint );
+
+       This  method  dispatches  a  single  request  and  returns the response
+       received.   Arguments  are  the  same   as   for   the   &quot;request&quot;   in
+       LWP::UserAgent described above.
+
+       The    difference    from   &quot;request&quot;   in   LWP::UserAgent   is   that
+       &quot;simple_request&quot; will not try to  handle  redirects  or  authentication
+       responses.   The  &quot;request&quot;  in  LWP::UserAgent  method  will, in fact,
+       invoke this method for each simple request it sends.
+
+CALLBACK METHODS
+       The following methods will be invoked as requests are processed.  These
+       methods  are documented here because subclasses of LWP::UserAgent might
+       want to override their behaviour.
+
+   get_basic_credentials
+           # This checks wantarray and can either return an array:
+           my ($user, $pass) = $ua-&gt;get_basic_credentials( $realm, $uri, $isproxy );
+           # or a string that looks like &quot;user:pass&quot;
+           my $creds = $ua-&gt;get_basic_credentials($realm, $uri, $isproxy);
+
+       This is called by &quot;request&quot; in LWP::UserAgent to  retrieve  credentials
+       for  documents  protected  by  Basic  or  Digest  Authentication.   The
+       arguments passed in is the $realm provided  by  the  server,  the  $uri
+       requested  and  a  &quot;boolean flag&quot; to indicate if this is authentication
+       against a proxy server.
+
+       The method should return a username and password.  It should return  an
+       empty  list to abort the authentication resolution attempt.  Subclasses
+       can override this method to prompt the user  for  the  information.  An
+       example  of this can be found in &quot;lwp-request&quot; program distributed with
+       this library.
+
+       The base implementation  simply  checks  a  set  of  pre-stored  member
+       variables, set up with the &quot;credentials&quot; in LWP::UserAgent method.
+
+   prepare_request
+           $request = $ua-&gt;prepare_request( $request );
+
+       This  method is invoked by &quot;simple_request&quot; in LWP::UserAgent. Its task
+       is to modify the given $request object by setting  up  various  headers
+       based  on  the  attributes  of  the user agent. The return value should
+       normally be the $request object passed  in.   If  a  different  request
+       object is returned it will be the one actually processed.
+
+       The  headers  affected  by  the  base implementation are; &quot;User-Agent&quot;,
+       &quot;From&quot;, &quot;Range&quot; and &quot;Cookie&quot;.
+
+   progress
+           my $prog = $ua-&gt;progress( $status, $request_or_response );
+
+       This is called frequently as the response is received regardless of how
+       the content is processed.  The method is called with $status &quot;begin&quot; at
+       the start of processing the request and with $state  &quot;end&quot;  before  the
+       request  method returns.  In between these $status will be the fraction
+       of the response currently received or the string &quot;tick&quot; if the fraction
+       can&#x27;t be calculated.
+
+       When $status is  &quot;begin&quot;  the  second  argument  is  the  HTTP::Request
+       object, otherwise it is the HTTP::Response object.
+
+   redirect_ok
+           my $bool = $ua-&gt;redirect_ok( $prospective_request, $response );
+
+       This method is called by &quot;request&quot; in LWP::UserAgent before it tries to
+       follow a redirection to the request in $response.  This should return a
+       true    value    if    this    redirection    is    permissible.    The
+       $prospective_request will be the request to  be  sent  if  this  method
+       returns true.
+
+       The  base  implementation will return false unless the method is in the
+       object&#x27;s  &quot;requests_redirectable&quot;   list,   false   if   the   proposed
+       redirection is to a &quot;file://...&quot;  URL, and true otherwise.
+
+BEST PRACTICES
+       The  default settings can get you up and running quickly, but there are
+       settings you can change in order to make your life easier.
+
+   Handling Cookies
+       You  are  encouraged   to   install   Mozilla::PublicSuffix   and   use
+       HTTP::CookieJar::LWP as your cookie jar.  HTTP::CookieJar::LWP provides
+       a  better  security  model  matching  that of current Web browsers when
+       Mozilla::PublicSuffix is installed.
+
+           use HTTP::CookieJar::LWP ();
+
+           my $jar = HTTP::CookieJar::LWP-&gt;new;
+           my $ua = LWP::UserAgent-&gt;new( cookie_jar =&gt; $jar );
+
+       See &quot;cookie_jar&quot; for more information.
+
+   Managing Protocols
+       &quot;protocols_allowed&quot; gives you the ability to allow arbitrary protocols.
+
+           my $ua = LWP::UserAgent-&gt;new(
+               protocols_allowed =&gt; [ &#x27;http&#x27;, &#x27;https&#x27; ]
+           );
+
+       This  will  prevent  you  from  inadvertently   following   URLs   like
+       &quot;file:///etc/passwd&quot;.  See &quot;protocols_allowed&quot;.
+
+       &quot;protocols_forbidden&quot;   gives   you   the  ability  to  deny  arbitrary
+       protocols.
+
+           my $ua = LWP::UserAgent-&gt;new(
+               protocols_forbidden =&gt; [ &#x27;file&#x27;, &#x27;mailto&#x27;, &#x27;ssh&#x27;, ]
+           );
+
+       This can also  prevent  you  from  inadvertently  following  URLs  like
+       &quot;file:///etc/passwd&quot;.  See &quot;protocols_forbidden&quot;.
+
+SEE ALSO
+       See  LWP  for a complete overview of libwww-perl5.  See lwpcook and the
+       scripts lwp-request and lwp-download for examples of usage.
+
+       See HTTP::Request and HTTP::Response for a description of  the  message
+       objects   dispatched   and  received.   See  HTTP::Request::Common  and
+       HTML::Form for other ways to build request objects.
+
+       See WWW::Mechanize and WWW::Search for  examples  of  more  specialized
+       user agents based on LWP::UserAgent.
+
+COPYRIGHT AND LICENSE
+       Copyright 1995-2009 Gisle Aas.
+
+       This library is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+perl v5.40.1                      2025-03-01               LWP::UserAgent(3pm)
+</pre></body></html>

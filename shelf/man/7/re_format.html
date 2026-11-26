@@ -1,0 +1,175 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>re_format(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>regex(7)               Miscellaneous Information Manual               regex(7)
+
+NAME
+       regex - POSIX.2 regular expressions
+
+DESCRIPTION
+       Regular  expressions (&quot;RE&quot;s), as defined in POSIX.2, come in two forms:
+       modern REs (roughly those of egrep(1); POSIX.2 calls  these  &quot;extended&quot;
+       REs)  and  obsolete  REs (roughly those of ed(1); POSIX.2 &quot;basic&quot; REs).
+       Obsolete REs mostly exist for backward compatibility in some  old  pro‐
+       grams;  they will be discussed at the end.  POSIX.2 leaves some aspects
+       of RE syntax and semantics open; &quot;(!)&quot; marks decisions on these aspects
+       that may not be fully portable to other POSIX.2 implementations.
+
+       A (modern) RE is one(!) or more nonempty(!) branches, separated by &#x27;|&#x27;.
+       It matches anything that matches one of the branches.
+
+       A branch is one(!) or more pieces, concatenated.  It  matches  a  match
+       for the first, followed by a match for the second, and so on.
+
+       A  piece  is an atom possibly followed by a single(!) &#x27;*&#x27;, &#x27;+&#x27;, &#x27;?&#x27;, or
+       bound.  An atom followed by &#x27;*&#x27; matches a sequence of 0 or more matches
+       of the atom.  An atom followed by &#x27;+&#x27; matches a sequence of 1  or  more
+       matches  of  the atom.  An atom followed by &#x27;?&#x27; matches a sequence of 0
+       or 1 matches of the atom.
+
+       A bound is &#x27;{&#x27; followed by an unsigned decimal integer,  possibly  fol‐
+       lowed by &#x27;,&#x27; possibly followed by another unsigned decimal integer, al‐
+       ways  followed  by &#x27;}&#x27;.  The integers must lie between 0 and RE_DUP_MAX
+       (255(!)) inclusive, and if there are two of them, the first may not ex‐
+       ceed the second.  An atom followed by a bound containing one integer  i
+       and  no  comma matches a sequence of exactly i matches of the atom.  An
+       atom followed by a bound containing one integer i and a comma matches a
+       sequence of i or more matches of the atom.  An atom followed by a bound
+       containing two integers i and j matches a sequence of i through j  (in‐
+       clusive) matches of the atom.
+
+       An  atom is a regular expression enclosed in &quot;()&quot; (matching a match for
+       the regular expression), an  empty  set  of  &quot;()&quot;  (matching  the  null
+       string)(!),  a bracket expression (see below), &#x27;.&#x27; (matching any single
+       character), &#x27;^&#x27; (matching the null string at the beginning of a  line),
+       &#x27;$&#x27;  (matching the null string at the end of a line), a &#x27;\&#x27; followed by
+       one of the characters &quot;^.[$()|*+?{\&quot; (matching that character taken  as
+       an  ordinary  character),  a  &#x27;\&#x27;  followed  by  any other character(!)
+       (matching that character taken as an ordinary character, as if the  &#x27;\&#x27;
+       had  not been present(!)), or a single character with no other signifi‐
+       cance (matching that character).  A &#x27;{&#x27; followed by a  character  other
+       than a digit is an ordinary character, not the beginning of a bound(!).
+       It is illegal to end an RE with &#x27;\&#x27;.
+
+       A bracket expression is a list of characters enclosed in &quot;[]&quot;.  It nor‐
+       mally  matches  any single character from the list (but see below).  If
+       the list begins with &#x27;^&#x27;, it matches any single character (but see  be‐
+       low)  not from the rest of the list.  If two characters in the list are
+       separated by &#x27;-&#x27;, this is shorthand for the full  range  of  characters
+       between  those  two (inclusive) in the collating sequence, for example,
+       &quot;[0-9]&quot; in ASCII matches any decimal digit.  It is illegal(!)  for  two
+       ranges  to  share  an  endpoint, for example, &quot;a-c-e&quot;.  Ranges are very
+       collating-sequence-dependent, and portable programs should avoid  rely‐
+       ing on them.
+
+       To include a literal &#x27;]&#x27; in the list, make it the first character (fol‐
+       lowing a possible &#x27;^&#x27;).  To include a literal &#x27;-&#x27;, make it the first or
+       last  character,  or  the second endpoint of a range.  To use a literal
+       &#x27;-&#x27; as the first endpoint of a range, enclose it in &quot;[.&quot; and  &quot;.]&quot;   to
+       make  it  a collating element (see below).  With the exception of these
+       and some combinations using &#x27;[&#x27; (see next paragraphs), all  other  spe‐
+       cial  characters, including &#x27;\&#x27;, lose their special significance within
+       a bracket expression.
+
+       Within a bracket expression, a collating element (a character, a multi‐
+       character sequence that collates as if it were a single character, or a
+       collating-sequence name for either) enclosed in &quot;[.&quot;  and  &quot;.]&quot;  stands
+       for the sequence of characters of that collating element.  The sequence
+       is  a  single  element of the bracket expression&#x27;s list.  A bracket ex‐
+       pression containing a multicharacter collating element can  thus  match
+       more  than  one  character,  for example, if the collating sequence in‐
+       cludes a &quot;ch&quot; collating element, then the RE &quot;[[.ch.]]*c&quot;  matches  the
+       first five characters of &quot;chchcc&quot;.
+
+       Within  a  bracket expression, a collating element enclosed in &quot;[=&quot; and
+       &quot;=]&quot; is an equivalence class, standing for the sequences of  characters
+       of  all  collating  elements  equivalent to that one, including itself.
+       (If there are no other equivalent collating elements, the treatment  is
+       as  if the enclosing delimiters were &quot;[.&quot; and &quot;.]&quot;.)  For example, if o
+       and ô  are  the  members  of  an  equivalence  class,  then  &quot;[[=o=]]&quot;,
+       &quot;[[=ô=]]&quot;,  and  &quot;[oô]&quot;  are  all synonymous.  An equivalence class may
+       not(!) be an endpoint of a range.
+
+       Within a bracket expression, the name of a character class enclosed  in
+       &quot;[:&quot;  and  &quot;:]&quot; stands for the list of all characters belonging to that
+       class.  Standard character class names are:
+
+              l  l  l.   alnum     digit     punct   alpha     graph     space
+              blank     lower     upper cntrl     print     xdigit
+
+       These  stand  for the character classes defined in wctype(3).  A locale
+       may provide others.  A character class may not be used as  an  endpoint
+       of a range.
+
+       In  the event that an RE could match more than one substring of a given
+       string, the RE matches the one starting earliest in the string.  If the
+       RE could match more than one  substring  starting  at  that  point,  it
+       matches  the  longest.   Subexpressions also match the longest possible
+       substrings, subject to the constraint that the whole match be  as  long
+       as possible, with subexpressions starting earlier in the RE taking pri‐
+       ority  over ones starting later.  Note that higher-level subexpressions
+       thus take priority over their lower-level component subexpressions.
+
+       Match lengths are measured in characters, not  collating  elements.   A
+       null  string  is  considered longer than no match at all.  For example,
+       &quot;bb*&quot;   matches   the   three    middle    characters    of    &quot;abbbc&quot;,
+       &quot;(wee|week)(knights|nights)&quot;  matches  all  ten  characters  of  &quot;week‐
+       nights&quot;, when &quot;(.*).*&quot;  is  matched  against  &quot;abc&quot;  the  parenthesized
+       subexpression matches all three characters, and when &quot;(a*)*&quot; is matched
+       against  &quot;bc&quot;  both  the  whole  RE and the parenthesized subexpression
+       match the null string.
+
+       If case-independent matching is specified, the effect is much as if all
+       case distinctions had vanished from the alphabet.  When  an  alphabetic
+       that  exists in multiple cases appears as an ordinary character outside
+       a bracket expression, it is effectively transformed into a bracket  ex‐
+       pression  containing both cases, for example, &#x27;x&#x27; becomes &quot;[xX]&quot;.  When
+       it appears inside a bracket expression, all case counterparts of it are
+       added to the bracket expression, so that, for  example,  &quot;[x]&quot;  becomes
+       &quot;[xX]&quot; and &quot;[^x]&quot; becomes &quot;[^xX]&quot;.
+
+       No  particular  limit is imposed on the length of REs(!).  Programs in‐
+       tended to be portable should not employ REs longer than 256  bytes,  as
+       an  implementation  can refuse to accept such REs and remain POSIX-com‐
+       pliant.
+
+       Obsolete (&quot;basic&quot;) regular  expressions  differ  in  several  respects.
+       &#x27;|&#x27;,  &#x27;+&#x27;,  and  &#x27;?&#x27; are ordinary characters and there is no equivalent
+       for their functionality.  The delimiters for bounds are &quot;\{&quot; and  &quot;\}&quot;,
+       with  &#x27;{&#x27;  and  &#x27;}&#x27; by themselves ordinary characters.  The parentheses
+       for nested subexpressions are &quot;\(&quot; and &quot;\)&quot;, with &#x27;(&#x27; and &#x27;)&#x27; by  them‐
+       selves ordinary characters.  &#x27;^&#x27; is an ordinary character except at the
+       beginning  of  the RE or(!) the beginning of a parenthesized subexpres‐
+       sion, &#x27;$&#x27; is an ordinary character except at the end of  the  RE  or(!)
+       the  end of a parenthesized subexpression, and &#x27;*&#x27; is an ordinary char‐
+       acter if it appears at the beginning of the RE or the  beginning  of  a
+       parenthesized subexpression (after a possible leading &#x27;^&#x27;).
+
+       Finally,  there is one new type of atom, a back reference: &#x27;\&#x27; followed
+       by a nonzero decimal digit d matches the same  sequence  of  characters
+       matched  by  the  dth parenthesized subexpression (numbering subexpres‐
+       sions by the positions of their opening parentheses, left to right), so
+       that, for example, &quot;\([bc]\)\1&quot; matches &quot;bb&quot; or &quot;cc&quot; but not &quot;bc&quot;.
+
+BUGS
+       Having two kinds of REs is a botch.
+
+       The current POSIX.2 spec says that &#x27;)&#x27; is an ordinary character in  the
+       absence  of  an  unmatched  &#x27;(&#x27;;  this was an unintentional result of a
+       wording error, and change is likely.  Avoid relying on it.
+
+       Back references are a dreadful botch, posing major problems  for  effi‐
+       cient  implementations.   They  are also somewhat vaguely defined (does
+       &quot;a\(\(b\)*\2\)*d&quot; match &quot;abbbd&quot;?).  Avoid using them.
+
+       POSIX.2&#x27;s specification of case-independent  matching  is  vague.   The
+       &quot;one  case implies all cases&quot; definition given above is current consen‐
+       sus among implementors as to the right interpretation.
+
+AUTHOR
+       This page was taken from Henry Spencer&#x27;s regex package.
+
+SEE ALSO
+       grep(1), regex(3)
+
+       POSIX.2, section 2.8 (Regular Expression Notation).
+
+Linux man-pages 6.9.1             2024-06-15                          regex(7)
+</pre></body></html>

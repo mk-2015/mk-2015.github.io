@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>strfry(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>strfry(3)                  Library Functions Manual                  strfry(3)
+
+NAME
+       strfry - randomize a string
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #define _GNU_SOURCE         /* See feature_test_macros(7) */
+       #include &lt;string.h&gt;
+
+       char *strfry(char *string);
+
+DESCRIPTION
+       The  strfry()  function  randomizes  the contents of string by randomly
+       swapping characters in the string.  The result is an anagram of string.
+
+RETURN VALUE
+       The strfry() functions returns a pointer to the randomized string.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       strfry() T}   Thread safety  MT-Safe
+
+STANDARDS
+       GNU.
+
+SEE ALSO
+       memfrob(3), string(3)
+
+Linux man-pages 6.9.1             2024-05-02                         strfry(3)
+</pre></body></html>

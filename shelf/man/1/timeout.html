@@ -1,0 +1,92 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>timeout(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>TIMEOUT(1)                       User Commands                      TIMEOUT(1)
+
+NAME
+       timeout - run a command with a time limit
+
+SYNOPSIS
+       timeout [OPTION] DURATION COMMAND [ARG]...
+       timeout [OPTION]
+
+DESCRIPTION
+       Start COMMAND, and kill it if still running after DURATION.
+
+       Mandatory  arguments  to  long  options are mandatory for short options
+       too.
+
+       -f, --foreground
+
+              when not running timeout directly from  a  shell  prompt,  allow
+              COMMAND  to read from the TTY and get TTY signals; in this mode,
+              children of COMMAND will not be timed out
+
+       -k, --kill-after=DURATION
+
+              also send a KILL signal if COMMAND is still  running  this  long
+              after the initial signal was sent
+
+       -p, --preserve-status
+
+              exit  with  the  same  status  as COMMAND, even when the command
+              times out
+
+       -s, --signal=SIGNAL
+
+              specify the signal to be sent on timeout; SIGNAL may be  a  name
+              like &#x27;HUP&#x27; or a number; see &#x27;kill -l&#x27; for a list of signals
+
+       -v, --verbose
+              diagnose to stderr any signal sent upon timeout
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       DURATION  is  a  floating point number with an optional suffix: &#x27;s&#x27; for
+       seconds (the default), &#x27;m&#x27; for minutes, &#x27;h&#x27; for hours or &#x27;d&#x27; for  days.
+       A duration of 0 disables the associated timeout.
+
+       Upon timeout, send the TERM signal to COMMAND, if no other SIGNAL spec‐
+       ified.   The TERM signal kills any process that does not block or catch
+       that signal.  It may be necessary to use the KILL  signal,  since  this
+       signal can&#x27;t be caught.
+
+   Exit status:
+       124    if COMMAND times out, and --preserve-status is not specified
+
+       125    if the timeout command itself fails
+
+       126    if COMMAND is found but cannot be invoked
+
+       127    if COMMAND cannot be found
+
+       137    if  COMMAND  (or  timeout  itself)  is  sent the KILL (9) signal
+              (128+9)
+
+       -      the exit status of COMMAND otherwise
+
+BUGS
+       Some platforms don&#x27;t currently support timeouts beyond the year 2038.
+
+AUTHOR
+       Written by Padraig Brady.
+
+REPORTING BUGS
+       GNU coreutils online help: &lt;https://www.gnu.org/software/coreutils/&gt;
+       Report any translation bugs to &lt;https://translationproject.org/team/&gt;
+
+SEE ALSO
+       kill(1)
+
+       Full documentation &lt;https://www.gnu.org/software/coreutils/timeout&gt;
+       or available locally via: info &#x27;(coreutils) timeout invocation&#x27;
+
+       Packaged by Debian (9.7-3)
+       Copyright © 2025 Free Software Foundation, Inc.
+       License  GPLv3+:  GNU  GPL  version  3  or  later  &lt;https://gnu.org/li‐
+       censes/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+GNU coreutils 9.7                  June 2025                        TIMEOUT(1)
+</pre></body></html>

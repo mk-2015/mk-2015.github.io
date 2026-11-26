@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>file-hierarchy(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>FILE-HIERARCHY(7)               file-hierarchy               FILE-HIERARCHY(7)
+
+NAME
+       file-hierarchy - systemd file system hierarchy requirements
+
+DESCRIPTION
+       Operating systems using the systemd(1) system and service manager are
+       organized based on a file system hierarchy inspired by UNIX, as
+       described in Linux File System Hierarchy[1]. Additional requirements on
+       when given parts of the hierarchy must be available during boot are
+       listed in Mount Requirements[2].
+
+       Many of the paths described here can be queried with the systemd-
+       path(1) tool.
+
+SEE ALSO
+           hier(7)
+           File System Hierarchy[3]
+           XDG Base Directory Specification[4]
+           XDG User Directories[5]
+
+NOTES
+        1. Linux File System Hierarchy
+           https://uapi-group.org/specifications/specs/linux_file_system_hierarchy/
+
+        2. Mount Requirements
+           https://systemd.io/MOUNT_REQUIREMENTS/
+
+        3. File System Hierarchy
+           http://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.html
+
+        4. XDG Base Directory Specification
+           https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+        5. XDG User Directories
+           https://www.freedesktop.org/wiki/Software/xdg-user-dirs
+
+systemd 257.13                                               FILE-HIERARCHY(7)
+</pre></body></html>

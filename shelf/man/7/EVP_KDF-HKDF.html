@@ -1,0 +1,146 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KDF-HKDF(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KDF-HKDF(7SSL)                  OpenSSL                 EVP_KDF-HKDF(7SSL)
+
+NAME
+       EVP_KDF-HKDF - The HKDF EVP_KDF implementation
+
+DESCRIPTION
+       Support for computing the HKDF KDF through the EVP_KDF API.
+
+       The EVP_KDF-HKDF algorithm implements the HKDF key derivation function.
+       HKDF follows the &quot;extract-then-expand&quot; paradigm, where the KDF
+       logically consists of two modules. The first stage takes the input
+       keying material and &quot;extracts&quot; from it a fixed-length pseudorandom key
+       K. The second stage &quot;expands&quot; the key K into several additional
+       pseudorandom keys (the output of the KDF).
+
+       The output is considered to be keying material.
+
+   Identity
+       &quot;HKDF&quot; is the name for this implementation; it can be used with the
+       EVP_KDF_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;properties&quot; (OSSL_KDF_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+       &quot;digest&quot; (OSSL_KDF_PARAM_DIGEST) &lt;UTF8 string&gt;
+       &quot;key&quot; (OSSL_KDF_PARAM_KEY) &lt;octet string&gt;
+       &quot;salt&quot; (OSSL_KDF_PARAM_SALT) &lt;octet string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_KDF(3).
+
+       &quot;info&quot; (OSSL_KDF_PARAM_INFO) &lt;octet string&gt;
+           This parameter sets the info value.  The length of the context info
+           buffer  cannot  exceed  1024 bytes; this should be more than enough
+           for any normal use of HKDF.
+
+       &quot;mode&quot; (OSSL_KDF_PARAM_MODE) &lt;UTF8 string&gt; or &lt;integer&gt;
+           This parameter sets the mode for the  HKDF  operation.   There  are
+           three modes that are currently defined:
+
+           &quot;EXTRACT_AND_EXPAND&quot; or EVP_KDF_HKDF_MODE_EXTRACT_AND_EXPAND
+               This  is  the  default  mode.   Calling EVP_KDF_derive(3) on an
+               EVP_KDF_CTX set up for HKDF will perform an extract followed by
+               an expand operation in one go.  The derived key  returned  will
+               be  the  result  after  the  expand operation. The intermediate
+               fixed-length pseudorandom key K is not returned.
+
+               In this mode the digest, key, salt and info values must be  set
+               before a key is derived otherwise an error will occur.
+
+           &quot;EXTRACT_ONLY&quot; or EVP_KDF_HKDF_MODE_EXTRACT_ONLY
+               In  this  mode  calling EVP_KDF_derive(3) will just perform the
+               extract operation. The value returned will be the  intermediate
+               fixed-length  pseudorandom  key  K.   The keylen parameter must
+               match the size  of  K,  which  can  be  looked  up  by  calling
+               EVP_KDF_CTX_get_kdf_size() after setting the mode and digest.
+
+               The  digest,  key  and  salt values must be set before a key is
+               derived otherwise an error will occur.
+
+           &quot;EXPAND_ONLY&quot; or EVP_KDF_HKDF_MODE_EXPAND_ONLY
+               In this mode calling EVP_KDF_derive(3) will  just  perform  the
+               expand   operation.   The  input  key  should  be  set  to  the
+               intermediate fixed-length pseudorandom key K  returned  from  a
+               previous extract operation.
+
+               The  digest,  key  and  info values must be set before a key is
+               derived otherwise an error will occur.
+
+       The OpenSSL FIPS provider also supports the following parameters:
+
+       &quot;fips-indicator&quot; (OSSL_KDF_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           A getter that returns 1 if the operation is  FIPS  approved,  or  0
+           otherwise.   This  may  be  used  after  calling EVP_KDF_derive. It
+           returns 0 if &quot;key-check&quot; is set to 0 and the check fails.
+
+       &quot;key-check&quot; (OSSL_KDF_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           The   default   value    of    1    causes    an    error    during
+           EVP_KDF_CTX_set_params()  if  the length of used key-derivation key
+           (OSSL_KDF_PARAM_KEY) is shorter than 112  bits.   Setting  this  to
+           zero will ignore the error and set the approved &quot;fips-indicator&quot; to
+           0.   This  option  breaks FIPS compliance if it causes the approved
+           &quot;fips-indicator&quot; to return 0.
+
+NOTES
+       A context for HKDF can be obtained by calling:
+
+        EVP_KDF *kdf = EVP_KDF_fetch(NULL, &quot;HKDF&quot;, NULL);
+        EVP_KDF_CTX *kctx = EVP_KDF_CTX_new(kdf);
+
+       The output length of an HKDF expand  operation  is  specified  via  the
+       keylen   parameter  to  the  EVP_KDF_derive(3)  function.   When  using
+       EVP_KDF_HKDF_MODE_EXTRACT_ONLY the keylen parameter must equal the size
+       of the intermediate fixed-length pseudorandom key  otherwise  an  error
+       will  occur.   For that mode, the fixed output size can be looked up by
+       calling EVP_KDF_CTX_get_kdf_size() after setting the mode and digest on
+       the EVP_KDF_CTX.
+
+EXAMPLES
+       This example derives  10  bytes  using  SHA-256  with  the  secret  key
+       &quot;secret&quot;, salt value &quot;salt&quot; and info value &quot;label&quot;:
+
+        EVP_KDF *kdf;
+        EVP_KDF_CTX *kctx;
+        unsigned char out[10];
+        OSSL_PARAM params[5], *p = params;
+
+        kdf = EVP_KDF_fetch(NULL, &quot;HKDF&quot;, NULL);
+        kctx = EVP_KDF_CTX_new(kdf);
+        EVP_KDF_free(kdf);
+
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST,
+                                                SN_sha256, strlen(SN_sha256));
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_KEY,
+                                                 &quot;secret&quot;, (size_t)6);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_INFO,
+                                                 &quot;label&quot;, (size_t)5);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SALT,
+                                                 &quot;salt&quot;, (size_t)4);
+        *p = OSSL_PARAM_construct_end();
+        if (EVP_KDF_derive(kctx, out, sizeof(out), params) &lt;= 0) {
+            error(&quot;EVP_KDF_derive&quot;);
+        }
+
+        EVP_KDF_CTX_free(kctx);
+
+CONFORMING TO
+       RFC 5869
+
+SEE ALSO
+       EVP_KDF(3),           EVP_KDF_CTX_new(3),          EVP_KDF_CTX_free(3),
+       EVP_KDF_CTX_get_kdf_size(3),                 EVP_KDF_CTX_set_params(3),
+       EVP_KDF_derive(3), &quot;PARAMETERS&quot; in EVP_KDF(3), EVP_KDF-TLS13_KDF(7)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2016-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                EVP_KDF-HKDF(7SSL)
+</pre></body></html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bup-import-rsnapshot(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>bup-import-rsnapshot(1)                                bup-import-rsnapshot(1)
+
+NAME
+       bup-import-rsnapshot - import a rsnapshot archive
+
+SYNOPSIS
+       bup import-rsnapshot [-n] &lt;path to snapshot_root&gt; [&lt;backuptarget&gt;]
+
+SYNOPSIS
+       bup  import-rsnapshot imports an rsnapshot archive.  The timestamps for
+       the backups are preserved and the path  to  the  rsnapshot  archive  is
+       stripped from the paths.
+
+       bup  import-rsnapshot  either  imports the whole archive or imports all
+       backups only for a given backuptarget.
+
+OPTIONS
+       -n, --dry-run
+              don’t do anything just print out what would be done
+
+EXAMPLES
+              $ bup import-rsnapshot /.snapshots
+
+              $ bup import-rsnapshot /.snapshots host1
+
+BUP
+       Part of the bup(1) suite.
+
+AUTHORS
+       Zoran Zaric zz@zoranzaric.de
+
+Bup 0.33.7                        2025-01-11           bup-import-rsnapshot(1)
+</pre></body></html>

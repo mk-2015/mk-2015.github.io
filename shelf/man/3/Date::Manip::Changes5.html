@@ -1,0 +1,1478 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Date::Manip::Changes5(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Date::...hanges5(3pm) User Contributed Perl DocumentationDate::...hanges5(3pm)
+
+NAME
+       Date::Manip::Changes5 - changes in Date::Manip 5.xx
+
+SYNOPSIS
+       This describes the changes made to the Date::Manip module up to the
+       time that 6.00 was released.  Because 6.00 required a newer version of
+       perl (5.10 or higher), the old version was maintained.
+
+       When Date::Manip 6.10 was released, both versions were bundled together
+       (though how it was bundled changed when 6.14 was released).
+
+       This document describes all changes made to the old version of
+       Date::Manip.
+
+       For the most part, Date::Manip has remained backward compatible at
+       every release, but occasionally, a change is made which is backward
+       incompatible. These are marked with an exclamation mark (!).
+
+VERSION 5.66 (Released with 6.51)
+       Fixed a bug in Date_ConvTZ
+           Applied  a  patch  supplied  by  Zhenyi  Zhou  which fixes a bug in
+           Date_ConvTZ where passing in an empty string did not work.
+
+VERSION 5.65 (Released with 6.37)
+       As of December 2012,  Version  5  of  Date::Manip  will  no  longer  be
+       modified.   The  5.xx  version was updated to 5.65 (but no changes were
+       made), and this version is expected to be the final release in the 5.xx
+       series.
+
+       The one exception is that if  someone  submits  a  patch  that  applies
+       cleanly  and  causes  zero  failures in the test suite, I will consider
+       adding it on a case-by-cast bases.
+
+       Please use Date::Manip 6.xx instead.
+
+VERSION 5.64 (Released with 6.32)
+       Better handling of &#x27;0000&#x27; timezone
+           Applied a patch supplied by Ed Avis that improves handling  of  the
+           &#x27;0000&#x27; timezone..
+
+VERSION 5.63 (Released with 6.26)
+       Fixed business mode calculation
+           Applied  a  patch  that  I received some time ago to fix a business
+           mode calculation.  Steve Tempest
+
+VERSION 5.62 (Released with 6.21)
+       No changes
+
+VERSION 5.61 (Released with 6.20)
+       No changes
+
+VERSION 5.60 (Released with 6.14)
+       Fully integrated with 6.xx
+           As of Date::Manip 6.14, the 5.xx release is fully  integrated  into
+           the  distribution. Both will be installed automatically and you can
+           switch between them (if you have a recent version  of  perl).  This
+           simplifies   the   package  management  process  considerably.  The
+           downside is that Date::Manip 6.xx will be installed, even if you do
+           not have a recent version of perl and cannot use it.
+
+VERSION 5.59 (Released with 6.12)
+       Test fixes
+           Fix tests to work better on windows.
+
+VERSION 5.58 (Released with 6.11)
+       Test fixes
+           Fixed a bug in some of the tests that were  causing  two  tests  to
+           fail.  JD
+
+           Explicitly  set TZ in all tests to avoid some failures (it got left
+           out of a few when it was bundled with 6.10).
+
+VERSION 5.57 (Released with 6.10)
+       (*) Combined 5.xx and 6.xx
+           As of 6.10, Date-Manip-6.xx will contain both the Date::Manip  5.xx
+           and  6.xx  modules.  If  perl 5.10 or higher is available, the 6.xx
+           version will be installed. For older versions  of  perl,  the  5.xx
+           version will be installed.
+
+           This  will  allow  all  of  the  automatic  module  tools  to  work
+           correctly.
+
+       Bug fixes
+           Fixed  a  bug  where  years  earlier  than  1000   AD   failed   in
+           calculations.  John
+
+       Time zone fixes
+           Improved time zone detection.  Stepan Kasal
+
+       Documentation fixes
+           Minor improvements.  Josef Kreulich
+
+VERSION 5.56 (2010-02-24)
+       Bug fixes
+           Date_PrevWorkDay and documentation fix.  RT #17005
+
+           I  accidentally  included a require 5.10 which made Date::Manip not
+           work with earlier versions of perl.  Nicholas Riley
+
+VERSION 5.55 (2010-02-22)
+       (*) Added time zone abbreviations
+           Date::Manip 5.xx now includes all of the  time  zone  abbreviations
+           from  version  6.xx  (i.e.  all of the abbreviations from the Olsen
+           database).
+
+       Documentation fixes
+           Typo fix.  ddascalescu
+
+VERSION 5.54 (2008-05-09)
+       Released
+
+VERSION 5.53 (DEVELOPMENT)
+       Bug fixes
+           Fix so it won&#x27;t fail with &quot;Too early to specify a build action&quot;
+
+       CPANTS changes
+           Final changes to meet requirements on http://cpants.perl.org/
+
+VERSION 5.52 (2008-05-08)
+       Released
+
+VERSION 5.51 (DEVELOPMENT)
+       Bug fixes
+           Fixed bug where the wrong version was in Build.PL
+
+       CPANTS changes
+           Additional changes to meet requirements on http://cpants.perl.org/
+
+VERSION 5.50 (2008-05-05)
+       Released
+
+VERSION 5.49 (DEVELOPMENT)
+       New features
+           Added &quot;ereyesterday&quot;.  Ed Avis
+
+       Time zone fixes
+           Added time zones.  Damyan Ivanov, Ernesto Hernandez-Novich,  Gregor
+           Herrmann, Nicholas Riley, Enrique Verdes, Alexander Litvinov
+
+       Documentation fixes
+           Corrected typo in %G and %L format descriptions.  Troy A. Bollinger
+
+       CPANTS changes
+           Added  Build.PL  and  several  other things to meet requirements on
+           http://cpants.perl.org/
+
+VERSION 5.48 (2007-11-27)
+       Released
+
+VERSION 5.47 (DEVELOPMENT)
+       Bug fixes
+           Fixed the version number.  John R. Daily
+
+           Fixed a warning when the date command not present.  Daniel Hahler
+
+           Fixed a bug where recurrences  of  the  form  0:1*,  0:0:1*,  etc.,
+           incorrectly required a base date.  Gerry Lawrence
+
+           Fixed a bug where &quot;substring&quot; was used instead of &quot;substr&quot;.
+
+       Time zone fixes
+           Fixed a problem in the WEST time zone.  Cristina Nunes
+
+           Added time zone.  Kimmo R. M. Hovi
+
+       Documentation fixes
+           Revised some of the documentation about Y2K (given that it&#x27;s in the
+           past) and the 2007 US daylight saving time rule changes.
+
+VERSION 5.46 (2007-02-21)
+       Released
+
+VERSION 5.45 (DEVELOPMENT)
+       New features
+           Added &quot;overmorrow&quot;.  Ed Avis
+
+       Bug fixes
+           Fixed bug in parsing ISO 8601 dates.  Paul Schinder
+
+           Fixed a bug in UnixDate for years before 1000 AD.  Joaquin Ferrero
+
+           Fixed a bug where &quot;today&quot; wasn&#x27;t case insensitive.  Pedro Rodrigues
+
+           Fixed  a  bug where business/approximate mode wasn&#x27;t correctly used
+           in DateCalc.  Mark T. Kennedy
+
+           Bug in DateCalc where you couldn&#x27;t pass undef as the errref.   Alex
+           Howansky
+
+           Bug where cygwin wasn&#x27;t using the date command.  Rafael Kitover
+
+       Time zone fixes
+           New time zones.  Khairil Yusof, Andy Spiegel, Ernesto Rapetti
+
+           New time zones.  Robin Norwood
+
+           Fixed Russian time zones.  Yuri Kovalenko
+
+       Language fixes
+           Language fix for Danish.  Claus Rasmussen
+
+           Language fix for German.  Andreas Dembach
+
+       Documentation fixes
+           Minor documentation improvement.  Caminati Carlo
+
+           Lots of spelling fixes.  Asaf Bartov
+
+VERSION 5.44 (2005-06-02)
+       Released
+
+VERSION 5.43 (DEVELOPMENT)
+       (!) (*) Recurrences revisited
+           The  behavior  of  some  elements  of  recurrences  changed.  These
+           included making the week element (N) refer to the Nth occurrence of
+           a day of the week in the week, month, or year. It is  now  possible
+           to look at the 3rd Friday of every month for example.
+
+           Y-0-WOY-DOW  now  refers to the WOY&#x27;th occurrence of DOW instead of
+           the ISO 8601 date Y-W(WOY)-DOY. Also, changed Y-0-WOY-0 to refer to
+           the WOY&#x27;th occurrence of FirstDay, and got rid of  the  MW  and  MD
+           flags. Many other similar changes.
+
+       (!) Changed %x format in UnixDate
+           The  %x  format  used to be equivalent to %D (%m/%d/%y), but it has
+           been modified to use the DateFormat  config  variable,  so  it  may
+           return %d/%m/%y if a non-US DateFormat is specified.
+
+       New features
+           Added TodayIsMidnight.  Reuben Thomas
+
+           Added  &quot;approx&quot; mode to Delta_Format and reversed change to default
+           Delta_Format behavior to the  one  from  version  5.40.   Based  on
+           discussion with Adam Spiers.
+
+           Added %O UnixDate format.  Martin Thurn
+
+       Bug fixes
+           Fixed a bug is ParseRecur where values passed in were no overriding
+           old values in the recurrence.  Scott Barker (reported to the Debian
+           bugs list).
+
+           Fix for a potential problem in the &quot;0000&quot; time zone.  Ed Avis
+
+           Changed taint check to be the one in perlsec(1).  Max Kalika
+
+           Minor fix so DateInit(&quot;VAR=&quot;) will work.  Thomas Bohme
+
+           Fixed  a  bug where business mode was kept operative even after the
+           calculation was over.  Emiliano Bruni
+
+           Minor change to run under cygwin.  Niel Markwick
+
+           Minor VMS fix.  Martin P.J. Zinser
+
+           Small fix to taint checking.  David Worenklein
+
+           Fixed a problem where deltas were getting misinterpreted as dates.
+            Harry Zhu
+
+           Fixed a bug in ParseRecur where &quot;last day of every March&quot;  couldn&#x27;t
+           be done.  Andras Karacsony
+
+           Fixed a bug in business mode calculations.  Tracy L Sanders
+
+           Sorted  all  events  and dates returned by Events_List.  This fixes
+           problems with tests on some versions of perl.  Tulan
+
+           Modified %x UnixDate format  to  use  DateFormat  config  variable.
+           Matt Lyons
+
+       Time zone fixes
+           Fixed a problem with single character military time zones (T and W)
+           conflicting with ISO 8601 T and W dates.  Hugo Cornelis
+
+           Small correction to Brazil time zones.  John McDonald
+
+           Added  time  zones.   Michael Wood-Vasey, Don Robertson, Michael D.
+           Setzer II, Andres Tarallo
+
+       Language fixes
+           Fixed German translations.  Oliver Scheit
+
+           Minor corrections to Italian.  Nicola Pedrozzi
+
+           Added the language Catalan.  Xavi Drudis
+
+       Documentation fixes
+           Minor doc fixes  Reuben Thomas, Ed Avis, Thomas Winzig
+
+           Clarified documentation on %W/%G/%U/%L formats.  Joel Savignon
+
+VERSION 5.42a 2003-07-03
+       Test fixes
+           A quick fix to replace a faulty test.
+
+VERSION 5.42 (2003-07-02)
+       Released
+           Number changed  to  distinguish  between  the  development  release
+           (5.41) and the official release.
+
+VERSION 5.41 (DEVELOPMENT)
+       As  of  5.41, odd numbered releases are development (and appear only on
+       my page). Even number releases are official releases submitted to CPAN.
+
+       (!) Changed path separator for VMS
+           Since &quot;:&quot; is used in some VMS paths, it should not have  been  used
+           as  the  path  separator.   It has been changed to a newline (&quot;\n&quot;)
+           character.
+
+       (!) Delta_Format behavior changed
+           The entire  delta  is  exact  if  no  month  component  is  present
+           (previously,  no year or month component could be present).  Due to
+           discussion with Tim Turner.
+
+       Bug fixes
+           Small patch for OpenVMS.  Martin P.J. Zinser
+
+           Minor enhancement to ParseRecur.  Randy Harmon
+
+           Fixed a bug involving business deltas with negative hours.  Ludovic
+           Dubost
+
+           Added some support for NetWare.  Chris Shields
+
+           Applied some robustness patches.  Ed Avis
+
+           Fixed a bug with years &lt;1000.  Jonathan Callahan
+
+           Patch to make Manip.pm  -Mstrict  clean  and  better  VMS  support.
+           Peter Prymmer
+
+           Fixed a bug in &quot;1st Saturday of 2005&quot; format.  Maurice Aubrey
+
+           Taint check insecure $ENV{PATH} fix.  Ed Avis
+
+           Patch to allow deltas of the form &quot;+ -1 day&quot; to work.  Ed Avis
+
+           Removed  ampersands from function calls in documentation to fit new
+           perl coding standards.  Bill Pollock
+
+           Fixed a bug where spaces in a date caused problems in  German  (due
+           to the number 1st, 2nd, etc. being 1., 2., etc.).  Erik Roderwald
+
+       Time zone fixes
+           Minor  bug  fix  where  /etc/time  zone  not correctly read.  Jacek
+           Nowacki
+
+           Made the UnixDate %Z format work with numeric time zones.   Michael
+           Isard
+
+           Fixed  bug where -HH:MM and +HH:MM were not being accepted as valid
+           time zones.  Hank Barta
+
+           Fixed a bug where time zones -HH:MM weren&#x27;t  handled  in  ISO  8601
+           dates.  Ed Avis
+
+           Added some help for VMS time zones.  Don Slutz
+
+           Added some checking to the time zone determination.  Ed Avis
+
+           Added time zones.  David Coppit, Daniel Serodio, Fabian Mandelbaum,
+           Raul  Dias,  Pedro  Melo  CUNHA,  Roman  Y Malakhov, David Whiting,
+           Khaled Mostaguir, Jason King
+
+       Language fixes
+           (*) Replaced all non-ASCII characters with hex  representations  to
+           avoid the malformed UTF-8 character warnings. Ed Avis
+
+           Added Russian translation.  Dapi
+
+           Additions to Dutch translation.  Willem
+
+           Patch to French support.  Patrick Turmel
+
+           Added Tues/Thur abbreviations. Martin Thurn
+
+           Added Turkish. Giray
+
+           Added Danish.  Jesper Dalberg
+              A patch for Danish was send by Jorgen Norgaard previously, and
+              I somehow overlooked it. I apologize for that.
+
+       Test fixes
+           Added runtests.bat contributed by Lon Amick
+
+       Documentation fixes
+           Minor doc fix.  Jeremy Tietsort
+
+           Fixed spelling of Veteran&#x27;s day.  Dirk Eddelbuettel
+
+           Documentation improvements.  James Olsen
+
+VERSION 5.40 (2001-06-07)
+       New features
+           Added  support  for  negative  values  is  &quot;epoch SECS&quot; type dates.
+           Larry Warner
+
+           Added NWD/PWD/DWD flags to ParseRecur.  Peter Wyngaard
+
+       Bug fixes
+           Fixed a warning.  Edward Avis
+
+           Fixed a bug where the date wasn&#x27;t rolling over when  parsing  dates
+           containing only times.  James L. Gordon
+
+           Fixed  a  bug  where some times were defaulting to the current time
+           instead of 00:00:00.  Edward Avis
+
+           Fixed a bug in Date_NthDayOfYear with decimal days.  Olga Polyakov
+
+           Fixed a bug where ParseDateDelta returned a delta  if  nothing  was
+           passed in.  Jim Hranicky
+
+           Fixed a bug where noon was case sensitive.  Bion Pohl
+
+           Fixed a bug where dateTtime wasn&#x27;t parsed.  Jeremy Brinkley
+
+           Fixed a bug in holiday parsing involving recurrences.  Jerry Wilcox
+
+           Fixed a bug where an invalid date passed to Date_IsWorkDay produced
+           an error message.  Mark Rejhon
+
+           Fixed  a  bug  where  EraseHolidays wasn&#x27;t taking affect correctly.
+           Chateauvieux Martial
+
+           Fixed a bug where the list produced by Date_Init couldn&#x27;t be passed
+           back in to Date_Init.  James Elson
+
+       Time zone fixes
+           Added `date +%Z` support in Date_TimeZone.  Mike Bristow
+
+           Fixed a warning if the time zone is supplied  as  a  +HHMM  format.
+           Viola Mauro
+
+           Fixed South African time zone.  David Sieborger
+
+       Documentation fixes
+           Added an example.  Philip Jones
+
+VERSION 5.39 (2000-06-27)
+       Bug fixes
+           `date` uses the user&#x27;s path unless taint checking is on.
+
+           @::DatePath  used  instead  of  @Date::Manip::DatePath incorrectly.
+           Fixed by John Labovitz.
+
+           Fixed a bug where times such as &quot;5 seconds ago&quot; were  not  changing
+           over time.  Matthew R. Sheahan
+
+       Time zone fixes
+           Added /etc/time zone support to &amp;Date_TimeZone.  Dirk Eddelbuettel
+
+           Added time zones. Dirk Eddelbuettel, Eli Selinger
+
+VERSION 5.38 (2000-05-23)
+       (*) Added Events
+           Added  Events  section  to  config  file  and  Events_List routine.
+           Prompted by Greg Schiedler and paid for by Alan Cezar.
+
+       (!) Removed Date_DaysSince999
+           The  Date_DaysSince999  function  (deprecated  in  5.35)  has  been
+           removed.
+
+       New features
+           Added  support  for  ISO8601  dates of the format dateTtime.  Jason
+           Pierce
+
+           Got rid of the &quot;use Cwd&quot; and ENV{PATH} lines which  means  no  more
+           taint problems.
+
+       Bug fixes
+           Fixed  &quot;dofw&quot;  format  to  return  the  day  of the current week as
+           documented instead of next week.  Dennis Ingram
+
+           Fixed a bug where dates in years 1900, 1800, etc. (but not 2000  or
+           other 400th years) were off by one day in DayOfWeek.  Noble Thomas
+
+           Fixed  a  bug  in ParseRecur (2-digit years not treated correctly).
+           Brian Rectanus
+
+       Time zone fixes
+           Added time zones.  Nelson Ferreira, David Harper
+
+       Documentation fixes
+           Fixed some typos.  Thanks to Alex Kapranoff
+
+           Typo fixed.  Jim Hranicky
+
+VERSION 5.37 (2000-02-14)
+       Bug fixes
+           Set ENV{PATH} to help with taint checking.  Joe Lipson
+
+           Fixed a serious bug where HH:24:00 was broken due to  support  from
+           24:00:00.  Scott Egashira
+
+       Time zone fixes
+           Fixed the sign on the military time zones.  John Scott
+
+VERSION 5.36 (2000-01-21)
+       New features
+           Added support for 24:00:00 to ParseDate.  William H Asquith
+
+       Bug fixes
+           Fixed a bug in ParseRecur. Lewis Tsao
+
+           Fixed a bug is UnixDate (%l format).  Jon Hedley
+
+           Fixed a bug in Date_GetNext/Prev.  Christoph Haas
+
+           Fixed a bug in Date_IsHoliday.  Report and patch by Rolf Beutner
+
+           Fixed a bug in UnixDate.  Patch by Kurtis D. Rader
+
+           Rewrote   IsInt  routine  based  on  discussion  with  Sean  Hunter
+           (approximately 30% faster on a SPARC).
+
+       Time zone fixes
+           Added time zone.  Paul Arzul
+
+       Documentation fixes
+           Fixed a documentation problem with Date_ConvTZ.  Diab Jerius
+
+VERSION 5.35 (1999-07-06)
+       (!) Deprecated Date_DaysSince999
+           In  fixing   support   for   the   years   0001-0999,   I   rewrote
+           Date_DaysSince999  to  be Date_DaysSince1BC.  The Date_DaysSince999
+           function will be removed.
+
+       (*) (!) Added PathSep variable
+           In order to better support Win32 platforms,  I  added  the  PathSep
+           config  variable.   This  will  allow  the  use  of  paths  such as
+           &quot;c:\date&quot; on Win32 platforms.  Old config files on Win32  platforms
+           (which  were  not  working correctly in many cases) may not work if
+           they contain path information to the personal config file.
+
+       (*) Recurrences now support flags
+           Flags for modifying recurrence dates are now supported.
+
+       (*) Improved holiday support considerably
+           Added support  for  recurrences  and  one-year-only  holidays  (the
+           latter requested first by Vishal Bhatia.
+
+       (*) Date_Init improved
+           Date_Init  can  now  return a list of config variables if called in
+           array context.  Based on a suggestion by Matt Tuttle.
+
+       New features
+           Modified Date_GetPrev/Date_GetNext to take $curr=2.
+
+           Now parses the Apache log file format  &quot;dd/mmm/yyyy:hh:mm:ss  (time
+           zone)&quot;.  Mark Ferguson
+
+           Added OS/2 support.  Michael B. Babakov
+
+           Added Date_IsHoliday routine.  Joe Pepin
+
+           Added recurrence support for Easter (first suggested by Abigail).
+
+       Bug fixes
+           Made &quot;epoch&quot; not case sensitive and fixed a bug where it would fail
+           in  some  languages.   Caught  because of Iosif&#x27;s thorough Romanian
+           test file.
+
+           Fixed a problem where &quot;in 5 days/weeks/months&quot;  sometimes  wouldn&#x27;t
+           get correctly parsed in other languages.  Caught because of Iosif&#x27;s
+           thorough Romanian test file.
+
+           Fixed  a  weakness  in  ParseDateDelta  brought out by the Romanian
+           delta test file.
+
+           Fixed a bug causing warnings in the beta version of perl.  Patch by
+           Paul Johnson.
+
+           Fixed support for years 0000-0999.  Requested by Chris Vaughan
+
+           Several recurrence bug fixes.
+
+           Put all the my&#x27;ed global variables in a couple hashes to  clean  up
+           the namespace and to make a few future enhancements easier to do.
+
+           Fixed  a  bug  where  business  weeks weren&#x27;t being used correctly.
+           Qian Miao
+
+           Fixed a serious typo in the DaysSince1BC routine.  Qian Miao
+
+           Fixed Veteran&#x27;s day, added Good Friday  (off  by  default).   Peter
+           Chen
+
+           Cleaned up holiday variables and re-did holiday routines.
+
+       Time zone fixes
+           Added time zones.  Oded Cohen
+
+       Language fixes
+           Added Romanian support (including 2 test files).  Iosif Fettich
+
+           Corrected Swedish translations.  Danne Solli
+
+           Some fixes to German translations.  Peter Ehrenberg
+
+           Added Italian.  Nicola Pedrozzi
+
+       Test fixes
+           Added recurrence test suite
+
+       Documentation fixes
+           Several documentation updates.
+
+           New recurrence documentation.
+
+VERSION 5.34 (1999-04-13)
+       (!) (*) All Date::Manip variables are no longer accessible
+           Previously,  Date::Manip  variables  were  declared  using  a  full
+           package name.  Now, they are declared with the my() function.  This
+           means that internal variables are no longer accessible  outside  of
+           the module.  Based on suggestion by Tom Christiansen
+
+       (!) Week interpretation in business mode deltas
+           A business mode delta containing a week value used to be treated as
+           7  days.   A much more likely interpretation of a week is Monday to
+           Monday, regardless of holidays, so this is now the behavior.
+
+       (!) %z UnixDate format
+           The %z UnixDate format used to return the time  zone  abbreviation.
+           It  now  returns it as a GMT offset (i.e. -0500).  %Z still returns
+           the time zone abbreviation.  Suggested by Tuc.
+
+       (!) Formats &quot;22nd Sunday&quot; returns the intuitive value
+           The date &quot;22nd Sunday&quot; used to return the Sunday of the  22nd  week
+           of  the  year (which could be the 21st, 22nd, or 23rd Sunday of the
+           year depending on how weeks were defined).   Now,  it  returns  the
+           22nd Sunday of the year regardless.
+
+       (!) Separator in DD/YYmmm and mmmDD/YY formats no longer optional
+           Previously,  the  date  &quot;Dec1065&quot; would return Dec 10, 1965.  After
+           adding  the  YYYYmmm  and  mmmYYYY  formats,  this  was  no  longer
+           possible.   The  separator between DD and YY is no longer optional,
+           so
+
+              Dec1065     returns December 1, 1065
+              Dec10/65    returns December 10, 1965
+
+       (*) Date_Cmp added
+           In one of the next versions of Date::Manip, the internal format  of
+           the  date  will  change to include time zone information.  All date
+           comparisons should be made using  Date_Cmp  (which  currently  does
+           nothing  more  than  call  the  Perl  &quot;cmp&quot; command, but which will
+           important when comparing dates that include the time zone).
+
+           Added now in response to a question by Al Sorrell  (I  should  have
+           added it earlier).
+
+       New features
+           Added exact business mode.  Ian Duplisse
+
+           Added  &quot;mmmYYYY&quot; and &quot;YYYYmmm&quot; formats.  As a result, &quot;DDYYmmm&quot; and
+           &quot;mmmDDYY&quot; formats changed to &quot;DD/YYmmm&quot; and &quot;mmmDD/YY&quot; as described
+           above.  David Twomey
+
+       Bug fixes
+           Fixed a bug where a date passed in as an array wasn&#x27;t  getting  the
+           date removed from the array.  Rick Wise
+
+           Added tests for MPE/iX OS.  John Testa
+
+           Fixed a bug where WorkDayBeg=8:00 went into an infinite loop.  Mark
+           Martinec
+
+           Changed a business week to be the same as an exact week.  Abigail
+
+           Fixed  a  bug where &quot;Sunday week 0&quot; didn&#x27;t work (only affected week
+           0) Gerald Rinske
+
+           Minor bug (my variable declared twice).  Paul J. Schinder
+
+           Fixed a bug where &quot;epoch SECONDS&quot; was  getting  parsed  wrong  (for
+           SECONDS which could be interpreted as an ISO-8601 date).  N. Thomas
+
+           Fixed a problem where init files were not being read.  Mike Reetz
+
+       Time zone fixes
+           At  the  request  of the UN, I added the SAT time zone.  :-) Howard
+           Hendler
+
+           Fixed a bug where time  zones  were  converted  multiple  times  if
+           ConvTZ was set and DateCalc called.  Steven Hartland
+
+       Language fixes
+           Added Portuguese.  Rui Pedro da Silva Leite Pereira
+
+       Documentation fixes
+           A number of typos fixed.  Ron Pero
+
+VERSION 5.33 (1998-08-20)
+       Bug fixes
+           Fixed a bug where &quot;1 month ago&quot; was no longer working (and added it
+           to  the test cases).  This broke when I fixed the &quot;-1second&quot; bug in
+           the previous version.  A  result  of  this  is  that  a  number  of
+           &quot;deltas&quot; can be parsed as dates (i.e. &amp;ParseDate(&quot;1 hour 20 minutes
+           ago&quot;)  is  equivalent to &amp;DateCalc(&quot;now&quot;,&quot;1 hour 20 minutes ago&quot;)).
+           Only   text   deltas   can   be   used   in    this    way    (i.e.
+           &amp;ParseDate(&quot;-0:0:0:0:1:20:0&quot;) will not work).
+
+       Language fixes
+           Added Spanish support.  Bautista Jasso Javier
+
+VERSION 5.32 (1998-08-17)
+       (!) Date_Init arguments
+           The  old  style Date_Init arguments that were deprecated in version
+           5.07 have been removed.
+
+       (!) (*) DateManip.cnf change
+           Changed .DateManip.cnf to Manip.cnf (to get rid of problems on OS&#x27;s
+           that insist on 8.3 filenames) for all non-Unix platforms  (Windows,
+           VMS, Mac).  For all Unix platforms, it&#x27;s still .DateManip.cnf .  It
+           will only look in the user&#x27;s home directory on VMS and Unix.
+
+       New features
+           Added &quot;in N days&quot; and &quot;N days ago&quot; formats.  Tony Bowden.
+
+           Added cYYYY format to YYtoYYYY variable.  Mark Rejhon.
+
+           Added  2  days/weeks/months  later in both ParseDate and ParseDelta
+           (for Dutch support).  Abigail.
+
+           Added &quot;Y:M:0*-DOM:0:0:0&quot; to ParseRecur.  Jeff Yoak.
+
+       Bug fixes
+           Fixed a bug where the deltas could be off by up to a couple minutes
+           in some rare cases.  Herman Horsten.
+
+           Fixed an &quot;uninitialized symbol&quot; warning.  Mark D. Anderson.
+
+           Fixed a bug where holidays weren&#x27;t erased.  Jonathan Wright.
+
+           Applied a bug fix from Joe Chapman where the %W/%U UnixDate formats
+           were frequently wrong.
+
+           Several minor fixes and improvements.  Abigail.
+
+           Added some VMS support.  Charles Lane.
+
+           Fixed a bug which caused a test to fail on some  systems.   Charles
+           Lane.
+
+           Fixed  a  bug  where &quot;-1second&quot; was treated as a date rather than a
+           delta in DateCalc.  Kenneth Ingham
+
+           Added a bit to the Makefile.PL (as it was distributed in the  Win32
+           Perl Resource Kit).  Murray Nesbitt
+
+       Time zone fixes
+           Allowed time zones of the format STD-#DST-#.  Peter Gordon.
+
+           Added time zone support for &quot;+0500 (EST)&quot;.  Tom Christiansen.
+
+           Restricted  time  zones  parsing to 0000-2359 instead of 0000-9999.
+           Frank Cusack
+
+           Added  time  zones.   W.  Phillip  Moore,  Michael  Smith,   Samuli
+           Karkkainen
+
+       Language fixes
+           Added Polish support.  Ian Wojtowicz.
+
+           Added Dutch support.  Abigail.
+
+           Added  A.M.  and  P.M.  parsing  (not  just AM and PM).  William W.
+           Arnold.
+
+           Fixed a German initialization problem.  Thomas  Horster-Moller  and
+           Christian Reithmaier
+
+       Documentation fixes
+           Documentation fix.  Peter Gordon.
+
+           Minor documentation changes.  Yamamoto Hiroshi.
+
+           Added info about the RCS problem.  Supplied by Kipp E. Howard.
+
+VERSION 5.31 (1998-04-08)
+       New features
+           Added &quot;epoch SECS&quot; format to ParseDateString.  Thanks to: Joshua M.
+           Burgin.
+
+           Added  a  patch  by Blair Zajac to make Date_NthDayOfYear work with
+           decimal days.
+
+       Bug fixes
+           Fixed a bug in ParseDateDelta (seems to appear only in  5.005  pre-
+           releases).  Found by Larry W. Virden.
+
+           Missed one form in ParseDate.  Noted by Tuc.
+
+           Fixed a bug where &quot;15:00:00&quot; couldn&#x27;t be parsed.  Michael Pizolato.
+
+           Split Manip.pm.  New files are HISTORY, TODO, Manip.pod.
+
+           Fixed a bug in ParseDateDelta.  Antonio Rosella.
+
+           Removed the only occurrence of $&amp; (which may speed some things up).
+           Fix by Ken Williams.  First suggested by Abigail.
+
+           Fixed  an overflow bug in doing date calculations with 2 dates more
+           than 70 years apart.  Fix by Vishal Bhatia.
+
+           Fixed a bug where &quot;5:00pm&quot; wasn&#x27;t always parsed correctly.   Thanks
+           to Jim Trocki.
+
+           Fixed  a bug in UnixDate (it wouldn&#x27;t return the correct string for
+           a format who&#x27;s last character was &#x27;0&#x27;) noted by Ramin V.
+
+       Time zone fixes
+           Relaxed some restrictions on time zones so ISO-8601 dates  can  use
+           non-ISO-8601 time zones.  Noted by John Chambers.
+
+           Fixed  a bug in converting time zones with a minutes field (+1030).
+           Found by Paul O.
+
+       Language fixes
+           Some fixes to the French translations by Emmanuel Bataille.
+
+           Added German support.  Thanks to Andreas C. Poszvek.
+
+       Documentation fixes
+           Minor documentation fixes.  Will Linden.
+
+           Fixed a documentation problem with Date_GetPrev.  It was still  0-6
+           instead of 1-7.  Thanks to Robert Klep.
+
+VERSION 5.30 (1998-01-21)
+       (!) (*) Delta format changed
+           A  week  field  has been added to the internal format of the delta.
+           It now reads &quot;Y:M:W:D:H:MN:S&quot; instead of &quot;Y:M:D:H:MN:S&quot;.
+
+       (*) Now handles recurring events
+           Added ParseRecur.  First suggested by Chris Jackson.
+
+       New features
+           All routines can now take either a 2- or 4-digit year.
+
+           Added Delta_Format.  First suggested by Alan Burlison.
+
+           Added Date_SetDateField.  Thanks to Martin Thurn.
+
+       Bug fixes
+           Made the $err argument to DateCalc optional.
+
+           Changed the name of  several  of  the  library  routines  (not  the
+           callable ones) to standardize naming.
+
+VERSION 5.21 (1998-01-15)
+       (!) Long running processes may give incorrect time zone
+           A process that runs during a time zone change (Daylight Saving Time
+           specifically) may report the wrong time zone.  See the UpdateCurrTZ
+           variable for more information.
+
+       (!) UnixDate &quot;%J&quot;, &quot;%W&quot;, and &quot;%U&quot; formats fixed
+           The  %J,  %W, and %U will no longer report a week 0 or a week 53 if
+           it should really be week 1 of the following year.  They now  report
+           the correct week number according to ISO 8601.
+
+       New features
+           Added YYtoYYYY variable.  Suggested by Michel van der List.
+
+           Added  the  UpdateCurrTZ  variable to increase speed at the cost of
+           being wrong on the time zone.
+
+           Added British date formats.  Thanks to Piran Montford.
+              Monday week
+              today week
+              as well as some US formats
+              in 2 months
+              next month
+
+           Time can now be written 5pm.  Piran Montford.
+
+           Added the TomorrowFirst variable and Date_NearestWorkDay function.
+
+           Added UnixDate formats %G and %L  to  correctly  handle  the  year.
+           Thanks to Samuli Karkkainen.
+
+           Added  ForceDate  variable.  Based  on  a  suggestion  by Christian
+           Campbell.
+
+       Bug fixes
+           Now passes Taint checks.  Thanks to Mike Fuhr, Ron E.  Nelson,  and
+           Jason L Tibbitts III.
+
+           Put everything in a &quot;use integer&quot; pragma.
+
+           Added  a  missing  space in the %g UnixDate format.  Thanks to Mike
+           Booth.
+
+           Removed all mandatory call to Date_Init (only called  when  current
+           time is required).  Significantly faster.
+
+           Fixed a bug in Date_ConvTZ.  Thanks to Patrick K Malone.
+
+           Fixed a bug in Date_IsWorkDay.
+
+       Time zone fixes
+           Fixed some Australian time zones.  Kim Davies.
+
+       Language fixes
+           Cleaned  up  multi-lingual  initialization and added the IntCharSet
+           variable.
+
+           Improved French translations.  Thanks to Emmanuel Bataille.
+
+           Added &quot;Sept&quot; as a recognized abbreviation.  Thanks to Martin Thurn.
+
+           Typo in the French initialization.  Thanks to Michel Minsoul.
+
+       Test fixes
+           Fixed the tests to not fail in 1998.
+
+       Documentation fixes
+           Documented how to get around Micro$oft problem.  Based on a mail by
+           Patrick Stepp.
+
+VERSION 5.20 (1997-10-12)
+       (*) ISO 8601 support
+           ISO 8601 dates are now  parsed.  This  resulted  in  several  other
+           changes specified below.
+
+       (!) (*) ParseDate formats removed
+           As  a  result  of  ISO  8601 support, some formats which previously
+           worked may no longer be parsed since they conflict with an ISO 8601
+           format.  These  include  MM-DD-YY  (conflicts  with  YY-MM-DD)  and
+           YYMMDD (conflicts with YYYYMM).  MM/DD/YY still works, so the first
+           form  can  be  kept  easily  by changing &quot;-&quot; to &quot;/&quot;.  YYMMDD can be
+           changed to YY-MM-DD before being parsed.   Whenever  parsing  dates
+           using dashes as separators, they will be treated as ISO 8601 dates.
+           You can get around this by converting all dashes to slashes.
+
+       (!) (*) Week day numbering
+           The  day  numbering was changed from 0-6 (Sun-Sat) to 1-7 (Mon-Sun)
+           to be ISO 8601 compatible.  Weeks start on Monday (though this  can
+           be  overridden using the FirstDay config variable) and the 1st week
+           of the year contains Jan 4 (though it can be forced to contain  Jan
+           1 with the Jan1Week1 config variable).
+
+       New features
+           Several new parsing formats added, including:
+              &quot;Friday&quot;             suggested by Rob Perelman
+              &quot;12th&quot;               suggested by Rob Perelman
+              &quot;last day of MONTH&quot;  suggested by Chadd Westhoff
+
+           Added  ParseDateString  for  speed  (and  simplicity  for modifying
+           ParseDate)
+
+           Added %J and %K formats to UnixDate.
+
+           Added Date_DaysInMonth.
+
+       Bug fixes
+           Reorganized ParseDate more efficiently.
+
+           Fixed some incorrect uses of $in instead of $future  in  ParseDate.
+           Thanks to Erik Corry.
+
+           Added some speedups (more to come).
+
+       Test fixes
+           Cleaned  up  testing  mechanism  a bit and added tests for ISO 8601
+           formats.
+
+VERSION 5.11 (1997-08-07)
+       Version 5.11 was never released to CPAN.
+
+       Bug fixes
+           Added one more check for NT perl.  Thanks to Rodney Haywood.
+
+           Added some comments to help me keep my  personal  libraries  up-to-
+           date with respect to Date::Manip and vice-versa.
+
+           Fixed a bug which showed up in French dates (though it could happen
+           in other languages as well).  Thanks to Georges Martin.
+
+           Fixed a bug in DateCalc.  Thanks to Thomas Winzig.
+
+           Removed the &quot;eval&quot; statement from CheckFilePath which causes a suid
+           c  wrapper  program  to  die  when  it  calls a Date::Manip script.
+           Thanks to Hank Hughes.
+
+           Fixed a bug in business  mode  calculations.   Thanks  to  Sterling
+           Swartwout.
+
+           Fixed  a  bug  in  which  &quot;1997023100:00:00&quot; was accepted as valid.
+           Thanks to Doug Emerald.
+
+           Fixed a bug in which ConvTZ was not used  correctly  in  ParseDate.
+           Re-did portions of Date_ConvTZ.  Thanks to Vivek Khera.
+
+           Fixed a bug in business mode calculations.  Thanks to Ian Duplisse.
+
+           Added $^X check for Win95 perl.  Thanks to Walter Soldierer.
+
+           Missed  one call to NormalizeDelta so the output was wrong.  Thanks
+           to Brad A. Buikema.
+
+       Time zone fixes
+           Added time zones.  Paul Gillingwater, Rosella Antonio, Kang Taewook
+
+VERSION 5.10 (1997-03-19)
+       Bug fixes
+           Cleaned up In, At, and On regexps.
+
+           Added 2 checks for MSWin32 (date command and getpw*  didn&#x27;t  work).
+           Thanks to Alan Humphrey.
+
+           Fixed  two  bugs  in  the  DateCalc routines.  Pointed out by Kevin
+           Baker.
+
+           Added a check for Windows_95.  Thanks to Charlie W.
+
+           Cleaned up checks for MacOS  and  Microsoft  OS&#x27;s.   Hopefully  I&#x27;m
+           catching everything.  Thanks to Charlie Wu for one more check.
+
+           Fixed a typo which broke Time%Date (Date=dd%mmm%yy) format.  Thanks
+           to Timothy Kimball.
+
+       Time zone fixes
+           Fixed  some  problems  with  how  &quot;US/Eastern&quot; type time zones were
+           used.  Thanks to Marvin Solomon.
+
+       Test fixes
+           Tests will now run regardless of the time zone you are in.
+
+           Test will always read the DateManip.cnf file in t/ now.
+
+           A failed test will now give slightly more information.
+
+           DateManip.cnf file in t/ now  sets  ALL  options  to  override  any
+           changes made in the Manip.pm file.
+
+       Documentation fixes
+           Added documentation for backwards incompatibilities to POD.
+
+           Fixed  some  problems  in  POD  documentation.   Thanks  to  Marvin
+           Solomon.
+
+           Fixed minor POD error pointed out by John Perkins.
+
+           Changed documentation for Date_IsWorkDay (it  was  quite  confusing
+           using a variable named $time).  Thanks to Erik M. Schwartz.
+
+           Fixed  typo  in  documentation  (midnight  misspelled).   Thanks to
+           Timothy Kimball.
+
+VERSION 5.09 (1997-01-28)
+       Bug fixes
+           Upgraded to 5.003_23 and fixed one problem associated with it.
+
+           Used carp and changed all die&#x27;s to confess.
+
+           Replaced some  UNIX  commands  with  perl  equivalents  (date  with
+           localtime in the tests, pwd with cwd in the path routines).
+
+           Cleaned up all routines working with the path.
+
+       Test fixes
+           Tests work again (broke in 5.08).  Thanks to Alex Lewin and Michael
+           Fuhr for running debugging tests.
+
+VERSION 5.08 (1997-01-24)
+       Bug fixes
+           (*) Fixed serious bug in ConvTZ pointed out by David Hall.
+
+           (*) Modified Date_ConvTZ (and documented it).
+
+VERSION 5.07p2  1997-01-03
+       Released two patches for 5.07.
+
+       Bug fixes
+           Fixed  a  bug where a delta component of &quot;-0&quot; would mess things up.
+           Reported by Nigel Chapman.
+
+       Time zone fixes
+           (*)  Can  now  understand  PST8PDT  type   zones   (but   only   in
+           Date_TimeZone).
+
+           Added lots of time zone abbreviations.
+
+       Test fixes
+           Fixed some tests (good for another year).
+
+VERSION 5.07 (1996-12-10)
+       (!) UnixDate &quot;%s&quot; format
+           Used  to return the number of seconds since 1/1/1970 in the current
+           time zone.  It now returns the number  of  seconds  since  1/1/1970
+           GMT.   The &quot;%o&quot; format was added which returns what &quot;%s&quot; previously
+           did.
+
+       (!) (*) Internal format of delta
+           The format for  the  deltas  returned  by  ParseDateDelta  changed.
+           Previously,  each  element  of  a  delta  had a sign attached to it
+           (+1:+2:+3:+4:+5:+6).  The new format removes all unnecessary  signs
+           by  default  (+1:2:3:4:5:6).   Also,  because of the way deltas are
+           normalized (see documentation on ParseDateDelta), at most two signs
+           are included.  For backwards  compatibility,  the  config  variable
+           DeltaSigns was added.  If set to 1, all deltas include all 6 signs.
+
+       (!) (*) Date_Init arguments
+           The  format  of  the  Date_Init calling arguments changed.  The old
+           method
+
+              Date_Init($language,$format,$tz,$convtz);
+
+           is still supported , but this support will likely disappear in  the
+           future.  Use the new calling format instead:
+
+              Date_Init(&quot;var=val&quot;,&quot;var=val&quot;,...);
+
+           NOTE:  The old format is no longer supported as of version 5.32 .
+
+       (*) Added weeks to ParseDateDelta.
+           Suggested  by  Mike  Bassman.   Note  that  since  this  is  a late
+           addition, I  did  not  change  the  internal  format  of  a  delta.
+           Instead, it is added to the days field.
+
+       (*) Now reads a config file.
+           Refer to the Date_Init documentation for details.
+
+       (*) Added business mode.
+           See documentation.  Suggested by Mike Bassman.
+
+       New features
+           (*)  Modified  how  deltas  are normalized and added the DeltaSigns
+           config variable.
+
+           Added %q format &quot;YYYYMMDDHHMMSS&quot; to  UnixDate.   Requested  by  Rob
+           Perelman.  Also added %P format &quot;YYYYMMDDHH:MM:SS&quot;.
+
+           Added  a  new  config  variable  to allow you to work with multiple
+           internal formats (with  and  without  colons).   Requested  by  Rob
+           Perelman.  See Date_Init documentation.
+
+           Added the following formats suggested by Andreas Johansson:
+              Sunday week 22 [in 1996] [at 12:00]
+              22nd Sunday [in 1996] [at 12:00]
+              Sunday 22nd week [in 1996] [at 12:00]
+
+           Added a new config variable to allow you to define the first day of
+           the week.  See Date_Init documentation.
+
+           Added the following formats to ParseDate for convenience (some were
+           suggested by Mike Bassman):
+              next/last Friday [at time]
+              next/last week [at time]
+              in 2 weeks [at time]
+              2 weeks ago [at time]
+              Friday in 2 weeks
+              in 2 weeks on Friday
+              Friday 2 weeks ago
+              2 weeks ago Friday
+
+           Added  Date_SecsSince1970GMT, moved the %s format to %o (secs since
+           1/1/70) and added %s format (secs  since  1/1/70  GMT).   Based  on
+           suggestions  by  Mark  Osbourne.   Note  this  introduces  a  minor
+           backward incompatibility described above.
+
+           Date_SetTime now works with international time separators.
+
+           Added the %g format (%a, %d %b %Y %H:%M:%S  %z)  for  an  RFC  1123
+           date.  Suggested by Are Bryne.
+
+           Added  options to delete existing holidays and ignore global config
+           file.
+
+           Date_GetNext and Date_GetPrev now return the  next/prev  occurrence
+           of a time as well as a day.  Suggested by Are Bryne.
+
+           In  approximate  mode,  deltas  now  come out completely normalized
+           (only 1 sign).  Suggested by Rob Perelman.
+
+           Added Date::Manip::InitDone so initialization isn&#x27;t duplicated.
+
+           Added a 3rd internal  format  to  store  YYYY-MM-DD  HH:MN:SS  (iso
+           8601).
+
+           Added  a config variable to allow you to work with 24 hour business
+           days.  Suggested by Mike Bassman.
+
+           ParseDateDelta now returns &quot;&quot; rather than &quot;+0:0:0:0:0:0&quot; when there
+           is an error.
+
+       Bug fixes
+           (*) The d:h:mn:s of ALL deltas are normalized.
+
+           Huge number of code changes to clean things up.
+
+           Subroutines now  check  to  see  if  4  digit  years  are  entered.
+           Suggested by Are Bryne.
+
+           Added  local($_)  to  all  routines which use $_.  Suggested by Rob
+           Perelman.
+
+           Complete rewrite of DateCalc.
+
+           Fixed a bug where UnixDate %E format didn&#x27;t work with single  digit
+           dates.  Patch supplied by Jyrgen Nyrgaard.
+
+           Fixed  a  bug  where  &quot;today&quot; was not converted to the correct time
+           zone.
+
+       Time zone fixes
+           Fixed bug in Date_TimeZone where it  didn&#x27;t  recognize  +HHMN  type
+           time zones.  Thanks to Are Bryne.
+
+           Added  WindowsNT  check  to  Date_TimeZone to get around NT&#x27;s weird
+           date command.  Thanks to Are Bryne.
+
+           Fixed typo (CSD instead of CST).
+
+           Fixed sign in military  time  zones  making  Date::Manip  RFC  1123
+           compliant  (except  that time zone information is not stored in any
+           format)
+
+       Test fixes
+           (*) Added test suite!
+
+VERSION 5.06 (1996-10-25)
+       New features
+           Added &quot;today at time&quot; formats.
+
+           ParseDateDelta now normalizes the delta as well as DateCalc.
+
+           Added %Q format &quot;YYYYMMDD&quot; to UnixDate.  Requested by Rob Perelman.
+
+       Bug fixes
+           Fixed another two places where a variable was declared twice  using
+           my (thanks to Ric Steinberger).
+
+           Fixed a bug where fractional seconds weren&#x27;t parsed correctly.
+
+           Fixed a bug where &quot;noon&quot; and other special times were not parsed in
+           the &quot;which day of month&quot; formats.
+
+           Fixed a minor bug where a few matches were case sensitive.
+
+           The  command &quot;date +%Z&quot; doesn&#x27;t work on SunOS machines (and perhaps
+           others) so 5.05 is effectively broken.  5.06 released to fix  this.
+           Reported by Rob Perelman.
+
+VERSION 5.05 (1996-10-11)
+       New features
+           Changed  deltas to be all positive or all negative when produced by
+           DateCalc.  Suggested by Steve Braun
+
+           Added DateManipVersion routine.
+
+           (*) Parses RFC  822  dates  (thanks  to  J.B.  Nicholson-Owens  for
+           suggestion).
+
+           Parses ctime() date formats (suggested by Matthew R. Sheahan).
+
+           Now supports times like &quot;noon&quot; and &quot;midnight&quot;.
+
+       Bug fixes
+           Fixed  bug  introduced  in 5.04 when default day set to 1.  When no
+           date given, have day default to  today  rather  than  1.   It  only
+           defaults to one if a partial date is given.
+
+           Fixed  bug  where  Date_DaysSince999  returned the wrong value (the
+           error did not affect any other functions in Date::Manip due to  the
+           way  it  was  called  and the nature of the error).  Pointed out by
+           Jason Baker
+
+           Dates with commas in them are now read properly.
+
+           Fixed two places where a  variable  was  declared  twice  using  my
+           (thanks to Ric Steinberger).
+
+           Hopefully fixed installation problems.
+
+           Got rid of the last (I think) couple of US specific strings.
+
+           Fixed bug in Date_SetTime (didn&#x27;t work with $hr,$min,$sec &lt; 10).
+
+           Added ModuloAddition routine and simplified DateCalc.
+
+       Time zone fixes
+           (*) Now supports time zones.
+
+           (*) Added Date_ConvTZ routine for time zone support.
+
+           Date_TimeZone  will now also check `date &#x27;+%Z&#x27;` suggested by Aharon
+           Schkolnik.
+
+       Language fixes
+           Added Swedish translation (thanks to Andreas Johansson
+
+           The time separators are now language specific  so  the  French  can
+           write  &quot;10h30&quot;  and  the  Swedes  can  write &quot;10.30&quot;.  Suggested by
+           Andreas Johansson.
+
+       Documentation fixes
+           Fixed bad mistake in documentation (use Date::Manip instead of  use
+           DateManip) pointed out by tuc@valhalla.stormking.com
+
+           Minor improvements to documentation.
+
+           Documented the &#x27;sort within a sort&#x27; bug.
+
+           Fixed type in documentation/README pointed out by James K. Bence.
+
+VERSION 5.04 (1996-08-01)
+       New features
+           Added  support  for  fractional  seconds  (as generated by Sybase).
+           They are parsed and ignored.  Added by Kurt Stephens
+
+       Bug fixes
+           Fixed bugs reported by J.B. Nicholson-Owens
+              &quot;Tue Jun 25 1996&quot; wasn&#x27;t parsed correctly (regexp was case
+                 sensitive)
+              full day names not parsed correctly
+              the default day in ErrorCheck should be 1, NOT currd since when
+              currd&gt;28, it may not be a valid date for the month
+
+VERSION 5.03 (1996-07-17)
+       Bug fixes
+           Fixed a couple of bugs in UnixDate.
+
+           Declared package variables to avoid warning  &quot;Identifier  XXX  used
+           only once&quot;.  Thanks to Peter Bray for the suggestion.
+
+VERSION 5.02 (1996-07-15)
+       New features
+           (*) Added some internationalization (most of the routines had to be
+           modified at least slightly)
+
+       Bug fixes
+           Fixed  a  bug  where  repeated  calls to ParseDate(&quot;today&quot;) was not
+           reset
+
+           Replaced the %Date::Manip::Date variable with  a  large  number  of
+           other, more flexible variables
+
+           Rewrote the Init routine
+
+VERSION 5.01 (1996-06-24)
+       New features
+           Added %F format to UnixDate. Rob Perelman
+
+           Added &quot;Date at Time&quot; types
+
+           Weekdays can be entered and checked
+
+           Two digit years fall in the range CurrYear-89 to CurrYear+10
+
+       Bug fixes
+           Reworked a number of the ParseDate regular expressions to make them
+           more flexible
+
+       Documentation fixes
+           Fixed a typo (Friday misspelled Fridat). Rob Perelman
+
+           Documentation problem for \$err in DateCalc. Rob Perelman
+
+VERSION 5.00 (1996-06-21)
+       (*) Switched to a package.
+           Patch supplied by Peter Bray:
+              renamed to Date::Manip
+              changed version number to 2 decimal places
+              added POD documentation
+
+           Thanks   to   Peter  Bray,  Randal  Schwartz,  Andreas  Koenig  for
+           suggestions
+
+       Bug fixes
+           Fixed a bug pointed out by Peter Bray where it was  complaining  of
+           an uninitialized variable.
+
+VERSION 4.3 (1995-10-26)
+       New features
+           Added &quot;which dofw in mmm&quot; formats to ParseDate.  Mark Dedlow
+
+       Bug fixes
+           Added  a  bugfix  of Adam Nevins where &quot;12:xx pm&quot; used to be parsed
+           &quot;24:xx:00&quot;.
+
+VERSION 4.2 (1995-10-23)
+       New features
+           UnixDate will now return a scalar or list depending on context
+
+           ParseDate/ParseDateDelta will now take a scalar, a reference  to  a
+           scalar, or a reference to an array
+
+           (*) Simple time zone handling
+
+           (*) Added Date_SetTime, Date_GetPrev, Date_GetNext
+
+       Bug fixes
+           Added copyright notice (requested by Tim Bunce)
+
+VERSION 4.1 (1995-10-18)
+       New features
+           (*) Added DateCalc
+
+       Bug fixes
+           Changed %DATE_ to %DateManip::Date
+
+           (*) Rewrote ParseDateDelta
+
+VERSION 4.0 (1995-08-13)
+       (*) First public release
+
+       New features
+           Added time first formats to ParseDate
+
+       Bug fixes
+           (*) Switched to perl 5
+
+           Cleaned up ParseDate, ParseDateDelta
+
+VERSION 3.0 (1995-05-03)
+       New features
+           Added today/tomorrows/etc. formats
+
+           (*) Added UnixDate
+
+           (*) Added ParseDateDelta
+
+       Bug fixes
+           Added %DATE_ global variable to clean some stuff up
+
+           Simplified several routines
+
+VERSION 2.0 (1995-04-17)
+       New features
+           Included ideas from Time::ParseDate (David Muir Sharnoff)
+
+           Included ideas from date.pl 3.2 (Terry McGonigal)
+
+           (*) Added seconds to ParseDate
+
+       Bug fixes
+           Made error checking much nicer
+
+VERSION 1.2 (1995-03-31)
+       New features
+           Added a few date formats
+
+       Bug fixes
+           Made months case insensitive
+
+VERSION 1.1 (1995-02-08)
+       New features
+           Added leap year checking
+
+           Both &quot;Feb&quot; and &quot;February&quot; formats available
+
+VERSION 1.0 (1995-01-20)
+       (*) Initial release
+           Though  not  released  to the public, the initial released combined
+           routines from several scripts into one library.
+
+BUGS AND QUESTIONS
+       Please refer to the Date::Manip::Problems documentation for information
+       on submitting bug reports or questions to the author.
+
+SEE ALSO
+       Date::Manip       - main module documentation
+
+LICENSE
+       This script is free software; you can redistribute it and/or modify  it
+       under the same terms as Perl itself.
+
+AUTHOR
+       Sullivan Beck (sbeck@cpan.org)
+
+perl v5.40.1                      2025-06-08             Date::...hanges5(3pm)
+</pre></body></html>

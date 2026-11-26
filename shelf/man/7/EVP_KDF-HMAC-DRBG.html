@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KDF-HMAC-DRBG(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KDF-HMAC-DRBG(7SSL)             OpenSSL            EVP_KDF-HMAC-DRBG(7SSL)
+
+NAME
+       EVP_KDF-HMAC-DRBG - The HMAC DRBG DETERMINISTIC EVP_KDF implementation
+
+DESCRIPTION
+       Support for a deterministic HMAC DRBG using the EVP_KDF API. This is
+       similar to EVP_RAND-HMAC-DRBG(7), but uses fixed values for its entropy
+       and nonce values. This is used to generate deterministic nonce value
+       required by ECDSA and DSA (as defined in RFC 6979).
+
+   Identity
+       &quot;HMAC-DRBG-KDF&quot; is the name for this implementation; it can be used
+       with the EVP_KDF_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;digest&quot; (OSSL_DRBG_PARAM_DIGEST) &lt;UTF8 string&gt;
+       &quot;properties&quot; (OSSL_DRBG_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_KDF(3).
+
+       &quot;entropy&quot; (OSSL_KDF_PARAM_HMACDRBG_ENTROPY) &lt;octet string&gt;
+           Sets the entropy bytes supplied to the HMAC-DRBG.
+
+       &quot;nonce&quot; (OSSL_KDF_PARAM_HMACDRBG_NONCE) &lt;octet string&gt;
+           Sets the nonce bytes supplied to the HMAC-DRBG.
+
+NOTES
+       A context for KDF HMAC DRBG can be obtained by calling:
+
+        EVP_KDF *kdf = EVP_KDF_fetch(NULL, &quot;HMAC-DRBG-KDF&quot;, NULL);
+        EVP_KDF_CTX *kdf_ctx = EVP_KDF_CTX_new(kdf, NULL);
+
+CONFORMING TO
+       RFC 6979
+
+SEE ALSO
+       EVP_KDF(3), &quot;PARAMETERS&quot; in EVP_KDF(3)
+
+HISTORY
+       The EVP_KDF-HMAC-DRBG functionality was added in OpenSSL 3.2.
+
+COPYRIGHT
+       Copyright 2022-2023 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09           EVP_KDF-HMAC-DRBG(7SSL)
+</pre></body></html>

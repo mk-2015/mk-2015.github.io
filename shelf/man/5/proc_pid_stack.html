@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>proc_pid_stack(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>proc_pid_stack(5)             File Formats Manual            proc_pid_stack(5)
+
+NAME
+       /proc/pid/stack - kernel stack
+
+DESCRIPTION
+       /proc/pid/stack (since Linux 2.6.29)
+              This  file  provides  a  symbolic trace of the function calls in
+              this process&#x27;s kernel stack.  This file is provided only if  the
+              kernel  was  built  with the CONFIG_STACKTRACE configuration op‐
+              tion.
+
+              Permission to access this file is governed by  a  ptrace  access
+              mode PTRACE_MODE_ATTACH_FSCREDS check; see ptrace(2).
+
+SEE ALSO
+       proc(5)
+
+Linux man-pages 6.9.1             2024-05-02                 proc_pid_stack(5)
+</pre></body></html>

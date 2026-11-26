@@ -1,0 +1,311 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HTML::Element::traverse(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>HTML::...raverse(3pm) User Contributed Perl DocumentationHTML::...raverse(3pm)
+
+NAME
+       HTML::Element::traverse - discussion of HTML::Element&#x27;s traverse method
+
+VERSION
+       This document describes version 5.07 of HTML::Element::traverse,
+       released August 31, 2017 as part of HTML-Tree.
+
+SYNOPSIS
+         # $element-&gt;traverse is unnecessary and obscure.
+         #   Don&#x27;t use it in new code.
+
+DESCRIPTION
+       &quot;HTML::Element&quot; provides a method &quot;traverse&quot; that traverses the tree
+       and calls user-specified callbacks for each node, in pre- or post-
+       order.  However, use of the method is quite superfluous: if you want to
+       recursively visit every node in the tree, it&#x27;s almost always simpler to
+       write a subroutine does just that, than it is to bundle up the pre-
+       and/or post-order code in callbacks for the &quot;traverse&quot; method.
+
+EXAMPLES
+       Suppose you want to traverse at/under a node $tree and give elements an
+       &#x27;id&#x27; attribute unless they already have one.
+
+       You can use the &quot;traverse&quot; method:
+
+         {
+           my $counter = &#x27;x0000&#x27;;
+           $start_node-&gt;traverse(
+             [ # Callbacks;
+               # pre-order callback:
+               sub {
+                 my $x = $_[0];
+                 $x-&gt;attr(&#x27;id&#x27;, $counter++) unless defined $x-&gt;attr(&#x27;id&#x27;);
+                 return HTML::Element::OK; # keep traversing
+               },
+               # post-order callback:
+               undef
+             ],
+             1, # don&#x27;t call the callbacks for text nodes
+           );
+         }
+
+       or you can just be simple and clear (and not have to understand the
+       calling format for &quot;traverse&quot;) by writing a sub that traverses the tree
+       by just calling itself:
+
+         {
+           my $counter = &#x27;x0000&#x27;;
+           sub give_id {
+             my $x = $_[0];
+             $x-&gt;attr(&#x27;id&#x27;, $counter++) unless defined $x-&gt;attr(&#x27;id&#x27;);
+             foreach my $c ($x-&gt;content_list) {
+               give_id($c) if ref $c; # ignore text nodes
+             }
+           };
+           give_id($start_node);
+         }
+
+       See, isn&#x27;t that nice and clear?
+
+       But, if you really need to know:
+
+THE TRAVERSE METHOD
+       The &quot;traverse()&quot; method is a general object-method for traversing a
+       tree or subtree and calling user-specified callbacks.  It accepts the
+       following syntaxes:
+
+       $h-&gt;traverse(\&amp;callback)
+       or $h-&gt;traverse(\&amp;callback, $ignore_text)
+       or $h-&gt;traverse( [\&amp;pre_callback,\&amp;post_callback] , $ignore_text)
+
+       These  all  mean to traverse the element and all of its children.  That
+       is, this method starts at node $h, &quot;pre-order visits&quot; $h, traverses its
+       children, and then will &quot;post-order visit&quot; $h.  &quot;Visiting&quot;  means  that
+       the callback routine is called, with these arguments:
+
+           $_[0] : the node (element or text segment),
+           $_[1] : a startflag, and
+           $_[2] : the depth
+
+       If  the  $ignore_text  parameter  is given and true, then the pre-order
+       call will not be happen for text content.
+
+       The startflag is 1 when we enter a node (i.e., in pre-order calls)  and
+       0 when we leave the node (in post-order calls).
+
+       Note,  however,  that  post-order calls don&#x27;t happen for nodes that are
+       text segments or are elements that are prototypically empty (like &quot;br&quot;,
+       &quot;hr&quot;, etc.).
+
+       If we visit text nodes (i.e., unless $ignore_text is given  and  true),
+       then when text nodes are visited, we will also pass two extra arguments
+       to the callback:
+
+           $_[3] : the element that&#x27;s the parent
+                    of this text node
+           $_[4] : the index of this text node
+                    in its parent&#x27;s content list
+
+       Note that you can specify that the pre-order routine can be a different
+       routine from the post-order one:
+
+           $h-&gt;traverse( [\&amp;pre_callback,\&amp;post_callback], ...);
+
+       You  can  also  specify  that  no  post-order  calls are to be made, by
+       providing a false value as the post-order routine:
+
+           $h-&gt;traverse([ \&amp;pre_callback,0 ], ...);
+
+       And similarly for suppressing pre-order callbacks:
+
+           $h-&gt;traverse([ 0,\&amp;post_callback ], ...);
+
+       Note that these two syntaxes specify the same operation:
+
+           $h-&gt;traverse([\&amp;foo,\&amp;foo], ...);
+           $h-&gt;traverse( \&amp;foo       , ...);
+
+       The return values from calls to your pre- or  post-order  routines  are
+       significant, and are used to control recursion into the tree.
+
+       These  are  the values you can return, listed in descending order of my
+       estimation of their usefulness:
+
+       HTML::Element::OK, 1, or any other true value
+           ...to keep on traversing.
+
+           Note that &quot;HTML::Element::OK&quot; et al are constants.   So  if  you&#x27;re
+           running  under  &quot;use  strict&quot;  (as  I  hope  you are), and you say:
+           &quot;return HTML::Element::PRUEN&quot; the compiler will  flag  this  as  an
+           error (an unallowable bareword, specifically), whereas if you spell
+           PRUNE correctly, the compiler will not complain.
+
+       undef, 0, &#x27;0&#x27;, &#x27;&#x27;, or HTML::Element::PRUNE
+           ...to  block traversing under the current element&#x27;s content.  (This
+           is ignored if received from a post-order callback,  since  by  then
+           the recursion has already happened.)  If this is returned by a pre-
+           order  callback,  no  post-order callback for the current node will
+           happen.  (Recall that if your callback exits with  just  &quot;return;&quot;,
+           it is returning undef -- at least in scalar context, and &quot;traverse&quot;
+           always calls your callbacks in scalar context.)
+
+       HTML::Element::ABORT
+           ...to  abort the whole traversal immediately.  This is often useful
+           when you&#x27;re looking for just the first node in the tree that  meets
+           some criterion of yours.
+
+       HTML::Element::PRUNE_UP
+           ...to abort continued traversal into this node and its parent node.
+           No post-order callback for the current or parent node will happen.
+
+       HTML::Element::PRUNE_SOFTLY
+           Like PRUNE, except that the post-order call for the current node is
+           not blocked.
+
+       Almost  every task to do with extracting information from a tree can be
+       expressed in terms of traverse operations (usually in  only  one  pass,
+       and usually paying attention to only pre-order, or to only post-order),
+       or  operations based on traversing. (In fact, many of the other methods
+       in this  class  are  basically  calls  to  traverse()  with  particular
+       arguments.)
+
+       The source code for HTML::Element and HTML::TreeBuilder contain several
+       examples  of  the  use  of  the &quot;traverse&quot; method to gather information
+       about the content of trees and subtrees.
+
+       (Note: you should not change the structure of  a  tree  while  you  are
+       traversing it.)
+
+       [End of documentation for the &quot;traverse()&quot; method]
+
+   Traversing with Recursive Anonymous Routines
+       Now,  if  you&#x27;ve  been reading Structure and Interpretation of Computer
+       Programs too much, maybe you even want a recursive lambda.  Go ahead:
+
+         {
+           my $counter = &#x27;x0000&#x27;;
+           my $give_id;
+           $give_id = sub {
+             my $x = $_[0];
+             $x-&gt;attr(&#x27;id&#x27;, $counter++) unless defined $x-&gt;attr(&#x27;id&#x27;);
+             foreach my $c ($x-&gt;content_list) {
+               $give_id-&gt;($c) if ref $c; # ignore text nodes
+             }
+           };
+           $give_id-&gt;($start_node);
+           undef $give_id;
+         }
+
+       It&#x27;s a bit nutty, and it&#x27;s still  more  concise  than  a  call  to  the
+       &quot;traverse&quot; method!
+
+       It  is  left  as  an exercise to the reader to figure out how to do the
+       same thing without using a $give_id symbol at all.
+
+       It is also left as an exercise to  the  reader  to  figure  out  why  I
+       undefine $give_id, above; and why I could achieved the same effect with
+       any of:
+
+           $give_id = &#x27;I like pie!&#x27;;
+          # or...
+           $give_id = [];
+          # or even;
+           $give_id = sub { print &quot;Mmmm pie!\n&quot; };
+
+       But not:
+
+           $give_id = sub { print &quot;I&#x27;m $give_id and I like pie!\n&quot; };
+          # nor...
+           $give_id = \$give_id;
+          # nor...
+           $give_id = { &#x27;pie&#x27; =&gt; \$give_id, &#x27;mode&#x27; =&gt; &#x27;a la&#x27; };
+
+   Doing Recursive Things Iteratively
+       Note that you may at times see an iterative implementation of pre-order
+       traversal, like so:
+
+          {
+            my @to_do = ($tree); # start-node
+            while(@to_do) {
+              my $this = shift @to_do;
+
+              # &quot;Visit&quot; the node:
+              $this-&gt;attr(&#x27;id&#x27;, $counter++)
+               unless defined $this-&gt;attr(&#x27;id&#x27;);
+
+              unshift @to_do, grep ref $_, $this-&gt;content_list;
+               # Put children on the stack -- they&#x27;ll be visited next
+            }
+          }
+
+       This  can  under  certain  circumstances  be more efficient than just a
+       normal recursive routine, but at the cost of being rather obscure.   It
+       gains  efficiency  by  avoiding  the  overhead of function-calling, but
+       since there are several method dispatches however you do it (to  &quot;attr&quot;
+       and  &quot;content_list&quot;),  the  overhead  for  a  simple  function  call is
+       insignificant.
+
+   Pruning and Whatnot
+       The &quot;traverse&quot; method  does  have  the  fairly  neat  features  of  the
+       &quot;ABORT&quot;,  &quot;PRUNE_UP&quot;  and &quot;PRUNE_SOFTLY&quot; signals.  None of these can be
+       implemented totally straightforwardly with recursive routines,  but  it
+       is  quite  possible.   &quot;ABORT&quot;-like  behavior can be implemented either
+       with using non-local returning with &quot;eval&quot;/&quot;die&quot;:
+
+         my $died_on; # if you need to know where...
+         sub thing {
+           ... visits $_[0]...
+           ... maybe set $died_on to $_[0] and die &quot;ABORT_TRAV&quot; ...
+           ... else call thing($child) for each child...
+           ...any post-order visiting $_[0]...
+         }
+         eval { thing($node) };
+         if($@) {
+           if($@ =~ m&lt;^ABORT_TRAV&gt;) {
+             ...it died (aborted) on $died_on...
+           } else {
+             die $@; # some REAL error happened
+           }
+         }
+
+       or you can just do it with flags:
+
+         my($abort_flag, $died_on);
+         sub thing {
+           ... visits $_[0]...
+           ... maybe set $abort_flag = 1; $died_on = $_[0]; return;
+           foreach my $c ($_[0]-&gt;content_list) {
+             thing($c);
+             return if $abort_flag;
+           }
+           ...any post-order visiting $_[0]...
+           return;
+         }
+
+         $abort_flag = $died_on = undef;
+         thing($node);
+         ...if defined $abort_flag, it died on $died_on
+
+SEE ALSO
+       HTML::Element
+
+AUTHOR
+       Current maintainers:
+
+       •   Christopher J. Madsen &quot;&lt;perl AT cjmweb.net&gt;&quot;
+
+       •   Jeff Fearn &quot;&lt;jfearn AT cpan.org&gt;&quot;
+
+       Original HTML-Tree author:
+
+       •   Gisle Aas
+
+       Former maintainers:
+
+       •   Sean M. Burke
+
+       •   Andy Lester
+
+       •   Pete Krawczyk &quot;&lt;petek AT cpan.org&gt;&quot;
+
+       You  can  follow  or   contribute   to   HTML-Tree&#x27;s   development   at
+       &lt;https://github.com/kentfredric/HTML-Tree&gt;.
+
+COPYRIGHT
+       Copyright 2000,2001 Sean M. Burke
+
+perl v5.36.0                      2022-12-06             HTML::...raverse(3pm)
+</pre></body></html>

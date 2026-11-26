@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFCustomTagList(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFCUSTOMTAGLIST(3tiff)            LibTIFF           TIFFCUSTOMTAGLIST(3tiff)
+
+NAME
+       TIFFCustomTagList - returns information about the custom tag list
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFGetTagListCount(TIFF *tif)
+
+       uint32_t TIFFGetTagListEntry(TIFF *tif, int tag_index)
+
+DESCRIPTION
+       TIFFGetTagListCount()  returns  the number of entries in the custom tag
+       list.
+
+       TIFFGetTagListEntry() returns the tag number of the (n.th  -  1)  entry
+       within the custom tag list.  If the tag_index is larger or equal to the
+       number  of  entries  in the tag list 0xFFFFFFFF (=(uint32_t(-1)) is re‐
+       turned.
+
+NOTE
+       The known tags to libtiff are define as &#x27;named&#x27; tags and a lot of  them
+       as  custom  tags. The custom tag definitions are handled in an internal
+       custom tag list. This list can also be extended by adding  tag  defini‐
+       tions  to  that  list,  so  that  libtiff  is aware of those tags.  See
+       Defining Application Tags
+
+DIAGNOSTICS
+       none
+
+SEE ALSO
+       libtiff (3tiff), TIFFOpen  (3tiff), TIFFError (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026         TIFFCUSTOMTAGLIST(3tiff)
+</pre></body></html>

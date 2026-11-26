@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>getcap(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>GETCAP(8)                   System Manager&#x27;s Manual                  GETCAP(8)
+
+NAME
+       getcap - examine file capabilities
+
+SYNOPSIS
+       getcap [-v] [-n] [-r] [-h] filename [ ... ]
+
+DESCRIPTION
+       getcap displays the name and capabilities of each specified file.
+
+OPTIONS
+       -h  prints quick usage.
+
+       -n  prints  any  non-zero user namespace root user ID value found to be
+           associated with a file&#x27;s capabilities.
+
+       -r  enables recursive search.
+
+       -v  display all searched entries, even if the  have  no  file-capabili‐
+           ties.
+
+       NOTE:  an  empty  value  of &#x27;=&#x27; is not equivalent to an omitted (or re‐
+       moved) capability on a file. This is most significant with  respect  to
+       the  Ambient  capability vector, since a process with Ambient capabili‐
+       ties will lose them when executing a file having &#x27;=&#x27; capabilities,  but
+       will  retain the Ambient inheritance of privilege when executing a file
+       with an omitted file capability. This special empty setting can be used
+       to prevent a binary from executing with privilege. For some  time,  the
+       kernel  honored  this  suppression for root executing the file, but the
+       kernel developers decided after a number of years  that  this  behavior
+       was  unexpected  for  the  superuser and reverted it just for that user
+       identity. Suppression of root privilege, for a process tree, is  possi‐
+       ble, using the capsh(1) --mode option.
+
+       filename
+           One file per line.
+
+REPORTING BUGS
+       Please report bugs via:
+
+       https://bugzilla.kernel.org/buglist.cgi?component=lib‐
+       cap&amp;list_id=1090757
+
+SEE ALSO
+       capsh(1),  cap_get_file(3), cap_to_text(3), capabilities(7), user_name‐
+       spaces(7), captree(8), getpcaps(8) and setcap(8).
+
+                                  2021-08-29                         GETCAP(8)
+</pre></body></html>

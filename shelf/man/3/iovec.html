@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>iovec(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>iovec(3type)                                                      iovec(3type)
+
+NAME
+       iovec - Vector I/O data structure
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;sys/uio.h&gt;
+
+       struct iovec {
+           void   *iov_base;  /* Starting address */
+           size_t  iov_len;   /* Size of the memory pointed to by iov_base. */
+       };
+
+DESCRIPTION
+       Describes  a  region  of memory, beginning at iov_base address and with
+       the size of iov_len bytes.  System calls use arrays of this  structure,
+       where  each  element  of  the array represents a memory region, and the
+       whole array represents a vector of memory regions.  The maximum  number
+       of  iovec  structures  in  that array is limited by IOV_MAX (defined in
+       &lt;limits.h&gt;, or accessible via the call sysconf(_SC_IOV_MAX)).
+
+STANDARDS
+       POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001.
+
+NOTES
+       The following header also provides this type: &lt;sys/socket.h&gt;.
+
+SEE ALSO
+       process_madvise(2), readv(2)
+
+Linux man-pages 6.9.1             2024-05-02                      iovec(3type)
+</pre></body></html>

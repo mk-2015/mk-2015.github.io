@@ -1,0 +1,91 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::804delta(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>804delta(3pm)         User Contributed Perl Documentation        804delta(3pm)
+
+NAME
+       Tk::804delta - what is new for perl/Tk 804
+
+DESCRIPTION
+       This document describes differences between the Tk800 series and the
+       Tk804 series.
+
+Incompatible Changes
+       In Tk804.028, there are some additional incompatible changes:
+
+       Return values of some Tk::Wm methods (e.g. aspect, wmGrid,
+       iconposition, resizable ...) were changed from returning tclish lists
+       (e.g. &quot;1 2 3 4&quot;) to perlish lists (1,2,3,4).
+
+       Tk::Wm::wmTracing needs argument for setting on/off, without argument
+       just return the current value.
+
+       All Tk804 releases have the following incompatible changes:
+
+       Tk804 will only work with perl 5.8.0 and above. For older perl versions
+       look for Tk800.025.
+
+       curselection of Tk::Listbox now returns an array reference in scalar
+       context. This means you have to write
+
+               my(@selected) = $listbox-&gt;curselection
+
+       or
+
+               my(@selected) = @{ $listbox-&gt;curselection }
+
+       now.
+
+       The fontActual method now returns the pixel value instead of the point
+       value for -size. Pixel values are expressed as negative numbers.
+
+       Some enhancements from the &quot;dash&quot; patches are lost for now (i.e. -tile,
+       -troughtile ...).
+
+       The -state option is not available anymore for Tk::Text tags.  Use
+       -elide instead.
+
+Enhancements
+       Tk804 is Unicode-aware.
+
+       It is possible to build Tk with Xft support on X11. This is strongly
+       recommened if you are planning to make use of Unicode rendering
+       capabilities of Tk. It also gives anti-aliased fonts for regular text
+       (if you have TrueType or Type1 fonts and they are in your fontconfig
+       config file).
+
+       The new method chooseDirectory is available as a standard directory
+       selector.
+
+       Tk::PNG and Tk::JPEG are bundled now with the perl/Tk distribution,
+       providing support for the image formats png and jpeg.
+
+       Improvements to Tk::Listbox: new option -activestyle, new methods
+       itemconfigure and itemcget, new virtual event &lt;&lt;ListboxSelect&gt;&gt;.
+
+       More tests.
+
+New Widgets
+       Tk::Labelframe
+           An alternative to Tk::LabFrame.
+
+       Tk::Panedwindow
+           An alternative to Tk::Adjuster.
+
+       Tk::Spinbox
+           An alternative to the CPAN module Tk::NumEntry.
+
+Selected Bug Fixes
+Changed Internals
+Platform Specific Problems
+Future Directions
+Reporting Bugs
+       If  you  find  what  you  think  is a bug, you might check the articles
+       recently posted to the comp.lang.perl.tk newsgroup.
+
+       If you believe you have an  unreported  bug,  please  send  a  mail  to
+       &lt;ptk@lists.stanford.edu&gt;  and/or  &lt;nick@ing-simmons.net&gt;.   Be  sure to
+       trim your bug down to a tiny but sufficient test case.
+
+SEE ALSO
+       Tk, &quot;Changes&quot; file in the Perl/Tk distribution.
+
+perl v5.40.1                      2025-04-13                     804delta(3pm)
+</pre></body></html>

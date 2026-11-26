@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>acorn(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>acorn(1)                                                              acorn(1)
+
+NAME
+       acorn - parse JavaScript file
+
+SYNOPSIS
+       acorn [--ecma3 | --ecma5 | --ecma6 | --ecma7 | ... | --ecma2015 |
+             --ecma2016] [--tokenize] [--locations] [--allow-hash-bang]
+             [--compact] [--silent] [--module] [--help] [--] [infile]
+
+DESCRIPTION
+       acorn  is  a  utility to parse a JavaScript file from the command line.
+       It accepts as arguments the input file.  The utility spits out the syn‐
+       tax tree as JSON data.
+
+OPTIONS
+       --ecma3, --ecma5, --ecma6, --ecma7, ..., --ecma2015, --ecma2016
+              Sets the ECMAScript version to parse.  Default is version 7.
+
+       --tokenize
+              Tokenizer mode of the parser.
+
+       --locations
+              Attaches a &quot;loc&quot; object to each node with &quot;start&quot; and &quot;end&quot; sub‐
+              objects, each of which contains the  one-based  line  and  zero-
+              based column numbers in {line, column} form.
+
+       --allow-hash-bang
+              If enabled, skip the leading hashbang line.
+
+       --compact
+              No whitespace is used in the AST output.
+
+       --silent
+              Do not output the AST, just return the exit status.
+
+       --module
+              Indicates the code shouldn&#x27;t be parsed as a script but as a mod‐
+              ule.   This  influences global strict mode and &#x27;import&#x27; and &#x27;ex‐
+              port&#x27; declarations.
+
+       --help Print the usage information and quit.
+
+                                  1668059290                          acorn(1)
+</pre></body></html>

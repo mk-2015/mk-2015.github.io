@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>openssl-core_dispatch.h(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>OPENSSL-CORE_DISPATCH.H(7SSL)       OpenSSL      OPENSSL-CORE_DISPATCH.H(7SSL)
+
+NAME
+       openssl/core_dispatch.h - OpenSSL provider dispatch numbers and
+       function types
+
+SYNOPSIS
+        #include &lt;openssl/core_dispatch.h&gt;
+
+DESCRIPTION
+       The &lt;openssl/core_dispatch.h&gt; header defines all the operation numbers,
+       dispatch numbers and provider interface function types currently
+       available.
+
+       The operation and dispatch numbers are represented with macros, which
+       are named as follows:
+
+       operation numbers
+           These macros have the form &quot;OSSL_OP_opname&quot;.
+
+       dipatch numbers
+           These  macros  have  the  form  &quot;OSSL_FUNC_opname_funcname&quot;,  where
+           &quot;opname&quot; is the same  as  in  the  macro  for  the  operation  this
+           function belongs to.
+
+       With every dispatch number, there is an associated function type.
+
+       For further information, please see the provider(7)
+
+SEE ALSO
+       provider(7)
+
+HISTORY
+       The types and macros described here were added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2020 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09     OPENSSL-CORE_DISPATCH.H(7SSL)
+</pre></body></html>

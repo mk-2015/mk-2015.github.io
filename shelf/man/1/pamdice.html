@@ -1,0 +1,237 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pamdice(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>Pamdice User Manual(1)      General Commands Manual     Pamdice User Manual(1)
+
+NAME
+       pamdice - slice a Netpbm image into many horizontally and/or vertically
+
+
+EXAMPLE
+           $ pamdice myimage.ppm -outstem=myimage_part -width=10 -height=8
+           $ pamundice myimage_part_%1d_%1a.ppm -across=10 -down=8 &gt;myimage.ppm
+
+           $ pamdice myimage.ppm -outstem=myimage_part -height=12 -voverlap=9
+
+           $ pamdice myimage.ppm -width=10 -height=8 -listfile=tiles.txt myimage.ppm
+           $ pamundice -across=10 -down=4 -listfile=tiles.txt &gt;myimage.ppm
+
+           $ pamdice myimage.ppm -width=10 -height=8 -outstem=myimage_part \
+               -indexfile=tiles.pam myimage.ppm
+           $ pamundice myimage_part_%1d_%1a.ppm  -across=10 -down=8 \
+               -indexfile=tiles.pam &gt;myimage.ppm
+
+
+
+
+SYNOPSIS
+       pamdice
+
+       -outstem=filenamestem
+
+       [-width=width]
+
+       [-height=height]
+
+       [-hoverlap=hoverlap]
+
+       [-voverlap=voverlap]
+
+       [-numberwidth=N]
+
+       [-listfile=textfilename]
+
+       [-indexfile=pamfilename
+
+       [-dry-run]
+
+       [-verbose]
+
+       [filename]
+
+       You  can  use  the minimum unique abbreviation of the options.  You can
+       use two hyphens instead of one.  You can separate an option  name  from
+       its value with white space instead of an equals sign.
+
+
+DESCRIPTION
+       This program is part of Netpbm(1).
+
+       pamdice reads a PAM, PBM, PGM, or PPM image as input and splits it hor‐
+       izontally and/or vertically into equal size pieces and writes them into
+       separate  files as the same kind of image.  You can optionally make the
+       pieces overlap.
+
+       See the -outstem option for information on naming of the output files.
+
+       The -width and -height options determine the size of the output pieces.
+
+       pamundice can rejoin the images.  For finer control, you can  also  use
+       pamcat.
+
+       One  use  for  this is to make pieces that take less computer resources
+       than the whole image to process.  For example, you might have an  image
+       so  large  that  an  image  editor  can&#x27;t  read  it  all into memory or
+       processes it very slowly.  With pamdice, you can split it into  smaller
+       pieces, edit one at a time, and then reassemble them.
+
+       Another  use  for this is to print a large image in small printer-sized
+       pieces that you can glue together.  ppmglobe does a similar  thing;  it
+       lets you glue the pieces together into a sphere.
+
+       If  you want to cut pieces from an image individually, not in a regular
+       grid, use pamcut.
+
+
+
+OPTIONS
+       In addition to the options common to all programs  based  on  libnetpbm
+       (most  notably  -quiet,  see   Common Options ), pamdice recognizes the
+       following command line options:
+
+
+
+       -outstem=filenamestem
+              This option determines the names of the output files.  Each out‐
+              put file is named filenamestem_y_x.type, where  filenamestem  is
+              the value of the -outstem option, x and y are the horizontal and
+              vertical locations, respectively, in the input image of the out‐
+              put  image,  zero  being the leftmost and top, and type is .pbm,
+              .pgm, .ppm, or .pam, depending on the type of image.
+
+              x and y are filled with leading zeroes so are the same width  in
+              every  file.  Use -numberwidth to specify that width; otherwise,
+              it defaults to the minimum width that works for all  the  files.
+              For example, if you have 25 slices across and no -numberwidth, x
+              is  2  digits  for  all the output files.  The leftmost slice is
+              numbered &#x27;00&#x27;; the next one is &#x27;01&#x27;, etc.  With  -numberwidth=3,
+              x is &#x27;000&#x27;, &#x27;001&#x27;, etc.
+
+
+       -numberwidth=N
+              This  option  determines  the width of the numbers in the output
+              file names.  See the -outstem option for details.
+
+              It is not valid to specify a width less  than  is  necessary  to
+              represent all the slices.
+
+              This option was new in Netpbm 11.10 (March 2025).
+
+
+       -width=width
+              This gives the width in pixels of the output images.  The right‐
+              most  pieces  are  smaller than this if the input image is not a
+              multiple of width pixels wide.
+
+
+       -height=height
+              This gives the height in pixels of the output images.  The  bot‐
+              tom  pieces  are  smaller  than this if the input image is not a
+              multiple of height pixels high.
+
+
+       -hoverlap=hoverlap
+              This gives the horizontal overlap in pixels between  output  im‐
+              ages.  Each image in a row will overlap the previous one by hov‐
+              erlap pixels.  By default, there is no overlap.
+
+              This option was new in Netpbm 10.23 (July 2004).
+
+
+       -voverlap=voverlap
+              This gives the vertical overlap in pixels between output images.
+              Each  row  of  images  will overlap the previous row by voverlap
+              pixels.  By default, there is no overlap.
+
+              This option was new in Netpbm 10.23 (July 2004).
+
+
+
+       -listfile=textfilename
+              This causes the program to generate a file listing the names  of
+              all  the  tile  files it creates.  It is in row-major order. For
+              example,
+
+
+                $ pamdice -width=100 -height=100 -outstem=myimage_part  -list‐
+              file=mylist.txt \
+                    -numberwidth=3 myimage.ppm
+
+              on  a  200x200  image  generates  the file mylist.txt containing
+              this:
+
+
+                  myimage_part_000_000.ppm
+                  myimage_part_000_001.ppm
+                  myimage_part_001_000.ppm
+                  myimage_part_001_001.ppm
+
+
+
+              You can use this list file with pamundice -listfile in  lieu  of
+              an  input  file  name  pattern  argument, which may save you the
+              trouble of coordinating the patterns used in your invocations of
+              pamdice and pamundice.
+
+              This option was new in Netpbm 11.10 (March 2025).
+
+
+       -indexfile=pamfilename
+              This causes the program to generate a file containing a PAM  im‐
+              age  that  contains  rank and file numbers for the tiles.  It is
+              simply an image whose width and height are the number  of  hori‐
+              zontal and vertical slices, respectively, in which each tuple is
+              just  the  row and column number of that tuple.  For example, if
+              pamdice produces 3 slices across and 2  down,  the  image  looks
+              like this:
+
+                      (0,0) (0,1) (0,2)
+                      (1,0) (1,1) (1,2)
+
+
+              The  depth  of the image is 2, the tuple type is &#x27;grid_coord&#x27; (a
+              tuple type invented for use with pamdice and pamundice), and the
+              maxval is 255 unless the height or width is greater than 256, in
+              which case it is 65535.
+
+              This image can be useful as input to pamundice, particularly af‐
+              ter doing transformations on it.  The prime example of such  us‐
+              age  is  in flipping a large image.  You can dice the image with
+              pamdice, then flip each of the tiles  produced  (with  pamflip),
+              then  flip  the  index  image (again with pamflip), then use pa‐
+              mundice with the flipped tiles and the flipped  index  image  to
+              generate a flipped version of the original large image.
+
+              This option was new in Netpbm 11.10 (March 2025).
+
+
+       -dry-run
+              This  makes  pamdice  skip  creating the output tile images.  It
+              still creates the list file (with -listfile) and the index  file
+              (with -indexfile) and checks for most errors.
+
+              This option was new in Netpbm 11.10 (March 2025).
+
+
+       -verbose
+              Print information about the processing to Standard Error.
+
+
+
+
+HISTORY
+       pamdice was new in Netpbm 9.25 (March 2002).
+
+       Before  Netpbm  10.29 (August 2005), there was a limit of 100 slices in
+       each direction.
+
+
+SEE ALSO
+       pamundice(1), pamcut(1), pamcat(1), pgmslice(1), ppmglobe(1) pamflip(1)
+       pnm(1) pam(1)
+
+DOCUMENT SOURCE
+       This manual page was generated by the Netpbm tool &#x27;makeman&#x27;  from  HTML
+       source.  The master documentation is at
+
+              http://netpbm.sourceforge.net/doc/pamdice.html
+
+netpbm documentation           07 February 2025         Pamdice User Manual(1)
+</pre></body></html>

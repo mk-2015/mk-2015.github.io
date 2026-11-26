@@ -1,0 +1,158 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.GattDescriptor(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ...ESCRIPTOR(5)  Linux System Administration ORG.BLUEZ...ESCRIPTOR(5)
+
+NAME
+       org.bluez.GattDescriptor - BlueZ D-Bus GattDescriptor API documentation
+
+DESCRIPTION
+       GATT local/server and remote/client descriptor attribute representation
+       share the same high-level D-Bus API.
+
+       Local/Server  refers  to GATT based descriptors exported by a plugin or
+       an external application.
+
+       Remote/Client refers to GATT descriptors exported by the peer.
+
+INTERFACE
+   Client
+       Service
+              org.bluez
+
+       Interface
+              org.bluez.GattDescriptor1
+
+       Object path
+              [variable     prefix]/{hci0,hci1,...}/dev_XX_XX_XX_XX_XX_XX/ser‐
+              viceXX/charYYYY/descriptorZZZ
+
+   Server
+       Service
+              unique name
+
+       Interface
+              org.bluez.GattDescriptor1
+
+       Object path
+              freely definable
+
+   Methods
+   array{byte} ReadValue(dict flags)
+          Issues a request to read the value of the descriptor and returns the
+          value if the operation was successful.
+
+          Possible options:
+
+          uint16_t offset
+                 Read start offset in bytes.
+
+          object device (server only)
+                 Device object.
+
+          string link
+                 Link type (Server only).
+
+                 Possible values:
+
+                 &quot;BR/EDR&quot;
+
+                 &quot;LE&quot;
+
+          Possible Errors:
+
+          org.bluez.Error.Failed
+
+          org.bluez.Error.InProgress
+
+          org.bluez.Error.NotPermitted
+
+          org.bluez.Error.NotAuthorized
+
+          org.bluez.Error.NotSupported
+
+   void WriteValue(array{byte} value, dict flags)
+          Issues a request to write the value of the descriptor.
+
+          Possible flags:
+
+          uint16 offset
+                 Write start offset in bytes.
+
+          uint16 mtu
+                 Exchanged MTU (Server only).
+
+          object device
+                 Device path (Server only).
+
+          string link
+                 Link type (Server only).
+
+                 Possible values:
+
+                 &quot;BR/EDR&quot;
+
+                 &quot;LE&quot;
+
+          boolean prepare-authorize
+                 True if prepare authorization request.
+
+          Possible Errors:
+
+          org.bluez.Error.Failed
+
+          org.bluez.Error.InProgress
+
+          org.bluez.Error.NotPermitted
+
+          org.bluez.Error.InvalidValueLength
+
+          org.bluez.Error.NotAuthorized
+
+          org.bluez.Error.NotSupported
+
+          org.bluez.Error.ImproperlyConfigured
+
+   Properties
+   string UUID [read-only]
+          128-bit descriptor UUID.
+
+   object Characteristic [read-only]
+          Object path of the GATT characteristic the descriptor belongs to.
+
+   array{byte} Value [read-only, optional]
+          The  cached value of the descriptor. This property gets updated only
+          after a successful read request, upon which a PropertiesChanged sig‐
+          nal will be emitted.
+
+   array{string} Flags [read-only]
+          Defines how the descriptor value can be used.
+
+          Possible values:
+
+          &quot;read&quot;
+
+          &quot;write&quot;
+
+          &quot;encrypt-read&quot;
+
+          &quot;encrypt-write&quot;
+
+          &quot;encrypt-authenticated-read&quot;
+
+          &quot;encrypt-authenticated-write&quot;
+
+          &quot;secure-read&quot; (Server Only)
+
+          &quot;secure-write&quot; (Server Only)
+
+          &quot;authorize&quot;
+
+   uint16 Handle [read-only] (Client Only)
+          Descriptor handle.
+
+   uint16 Handle [read-write, optional] (Server Only)
+          Descriptor handle. When available in the server it would attempt  to
+          use  to  allocate into the database which may fail, to auto allocate
+          the value 0x0000 shall be used which will cause the allocated handle
+          to be set once registered.
+
+BlueZ                            October 2023         ORG.BLUEZ...ESCRIPTOR(5)
+</pre></body></html>

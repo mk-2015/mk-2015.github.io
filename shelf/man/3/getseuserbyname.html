@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>getseuserbyname(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>getseuserbyname(3)         SELinux API documentation        getseuserbyname(3)
+
+NAME
+       getseuserbyname  -  get  SELinux  username  and level for a given Linux
+       username
+
+SYNOPSIS
+       #include &lt;selinux/selinux.h&gt;
+
+       int getseuserbyname(const char  *linuxuser,  char  **selinuxuser,  char
+       **level);
+
+DESCRIPTION
+       getseuserbyname() retrieves the SELinux username and security level as‐
+       sociated  with  a given Linux username.  The SELinux username and secu‐
+       rity level can then be passed to other  libselinux  functions  such  as
+       get_ordered_context_list_with_level(3)                              and
+       get_default_context_with_level(3).
+
+       The returned SELinux username and level should be freed by  the  caller
+       using free.
+
+RETURN VALUE
+       On success, 0 is returned.  On failure, -1 is returned and errno is set
+       appropriately.
+
+       The  errors  documented for the stat(2) system call are also applicable
+       here.
+
+SEE ALSO
+       selinux(8)
+
+dwalsh@redhat.com              29 September 2005            getseuserbyname(3)
+</pre></body></html>

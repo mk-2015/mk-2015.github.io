@@ -1,0 +1,102 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Mail::Field::Date(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Mail::...d::Date(3pm) User Contributed Perl DocumentationMail::...d::Date(3pm)
+
+NAME
+       Mail::Field::Date - a date header field
+
+INHERITANCE
+        Mail::Field::Date
+          is a Mail::Field
+
+SYNOPSIS
+         use HTTP::Date &#x27;time2iso&#x27;;
+         my $field = Mail::Field-&gt;new(Date =&gt; time2iso());
+
+DESCRIPTION
+       Represents one &quot;Date&quot; header field.
+
+       Extends &quot;DESCRIPTION&quot; in Mail::Field.
+
+METHODS
+       Extends &quot;METHODS&quot; in Mail::Field.
+
+   Constructors
+       Extends &quot;Constructors&quot; in Mail::Field.
+
+       Mail::Field::Date-&gt;combine($fields)
+           Inherited, see &quot;Constructors&quot; in Mail::Field
+
+       Mail::Field::Date-&gt;extract( $tag, $head [, $index ] )
+           Inherited, see &quot;Constructors&quot; in Mail::Field
+
+       Mail::Field::Date-&gt;new( $tag [, STRING | %options] )
+           Inherited, see &quot;Constructors&quot; in Mail::Field
+
+   &quot;Fake&quot; constructors
+       Extends &quot;&quot;Fake&quot; constructors&quot; in Mail::Field.
+
+       $obj-&gt;create(%options)
+           Inherited, see &quot;&quot;Fake&quot; constructors&quot; in Mail::Field
+
+       $obj-&gt;parse()
+           Inherited, see &quot;&quot;Fake&quot; constructors&quot; in Mail::Field
+
+   Accessors
+       Extends &quot;Accessors&quot; in Mail::Field.
+
+       $obj-&gt;set(%options)
+            -Option --Default
+             Time     undef
+             TimeStr  undef
+
+           Time =&gt; SECONDS
+           TimeStr =&gt; STRING
+             A string acceptable to Date::Parse.
+
+       $obj-&gt;stringify()
+           Inherited, see &quot;Accessors&quot; in Mail::Field
+
+       $obj-&gt;tag()
+       Mail::Field::Date-&gt;tag()
+           Inherited, see &quot;Accessors&quot; in Mail::Field
+
+   Smart accessors
+       Extends &quot;Smart accessors&quot; in Mail::Field.
+
+       $obj-&gt;text( [STRING] )
+           Inherited, see &quot;Smart accessors&quot; in Mail::Field
+
+       $obj-&gt;time( [$time] )
+           Query (or change) the $time (as stored in the field) in seconds.
+
+DETAILS
+       Extends &quot;DETAILS&quot; in Mail::Field.
+
+DIAGNOSTICS
+       Error: Undefined subroutine &lt;method&gt; called
+           Mail::Field  objects  use autoloading to compile new functionality.
+           Apparently, the method called is not implemented for  the  specific
+           class of the field object.
+
+SEE ALSO
+       This    module    is    part    of    the    MailTools    distribution,
+       http://perl.overmeer.net/mailtools/.
+
+AUTHORS
+       The MailTools  bundle  was  developed  by  Graham  Barr.   Later,  Mark
+       Overmeer   took   over   maintenance   without  commitment  to  further
+       development.
+
+       Mail::Cap by Gisle  Aas  &lt;aas@oslonett.no&gt;.   Mail::Field::AddrList  by
+       Peter  Orbaek  &lt;poe@cit.dk&gt;.   Mail::Mailer and Mail::Send by Tim Bunce
+       &lt;Tim.Bunce@ig.co.uk&gt;.  For other contributors see ChangeLog.
+
+LICENSE
+       Copyrights 1995-2000 Graham Barr &lt;gbarr@pobox.com&gt; and  2001-2024  Mark
+       Overmeer &lt;perl@overmeer.net&gt;.
+
+       This program is free software; you can redistribute it and/or modify it
+       under      the      same     terms     as     Perl     itself.      See
+       http://www.perl.com/perl/misc/Artistic.html
+
+perl v5.40.0                      2024-11-23             Mail::...d::Date(3pm)
+</pre></body></html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>URI::geo(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>URI::geo(3pm)         User Contributed Perl Documentation        URI::geo(3pm)
+
+NAME
+       URI::geo - URI scheme for geo Identifiers
+
+SYNOPSIS
+         use URI;
+
+         # Geo URI from textual uri
+         my $guri = URI-&gt;new( &#x27;geo:54.786989,-2.344214&#x27; );
+
+         # From coordinates
+         my $guri = URI::geo-&gt;new( 54.786989, -2.344214 );
+
+         # Decode
+         my ( $lat, $lon, $alt ) = $guri-&gt;location;
+         my $latitude = $guri-&gt;latitude;
+
+         # Update
+         $guri-&gt;location( 55, -1 );
+         $guri-&gt;longitude( -43.23 );
+
+DESCRIPTION
+       From &lt;http://geouri.org/&gt;:
+
+         More and more protocols and data formats are being extended by methods
+         to add geographic information. However, all of those options are tied
+         to that specific protocol or data format.
+
+         A dedicated Uniform Resource Identifier (URI) scheme for geographic
+         locations would be independent from any protocol, usable by any
+         software/data format that can handle generich URIs. Like a &quot;mailto:&quot;
+         URI launches your favourite mail application today, a &quot;geo:&quot; URI could
+         soon launch your favourite mapping service, or queue that location for
+         a navigation device.
+
+SUBROUTINES/METHODS
+   &quot;new&quot;
+       Create a new URI::geo. The arguments should be either
+
+       •   latitude, longitude and optionally altitude
+
+       •   a reference to an array containing lat, lon, alt
+
+       •   a reference to a hash with suitably named keys or
+
+       •   a reference to an object with suitably named accessors
+
+       To  maximize  the  likelihood  that  you  can  pass in some object that
+       represents a geographical location and have URI::geo do the right thing
+       we try a number of different accessor names.
+
+       If the object has a &quot;latlong&quot; method (e.g. Geo::Point) we&#x27;ll use  that.
+       If  there&#x27;s  a  &quot;location&quot;  method  we call that. Otherwise we look for
+       accessors called &quot;lat&quot;, &quot;latitude&quot;, &quot;lon&quot;, &quot;long&quot;, &quot;longitude&quot;,  &quot;ele&quot;,
+       &quot;alt&quot;, &quot;elevation&quot; or &quot;altitude&quot; and use them.
+
+       Often  if  you have an object or hash reference that represents a point
+       you can pass it directly to &quot;new&quot;; so for example this will work:
+
+         use URI::geo;
+         use Geo::Point;
+
+         my $pt = Geo::Point-&gt;latlong( 48.208333, 16.372778 );
+         my $guri = URI::geo-&gt;new( $pt );
+
+       As will this:
+
+         my $guri = URI::geo-&gt;new( { lat =&gt; 55, lon =&gt; -1 } );
+
+       and this:
+
+         my $guri = URI::geo-&gt;new( 55, -1 );
+
+       Note that you can also create a new &quot;URI::geo&quot; by passing a Geo URI  to
+       &quot;URI::new&quot;:
+
+         use URI;
+
+         my $guri = URI-&gt;new( &#x27;geo:55,-1&#x27; );
+
+   &quot;location&quot;
+       Get or set the location of this geo URI.
+
+         my ( $lat, $lon, $alt ) = $guri-&gt;location;
+         $guri-&gt;location( 55.3, -3.7, 120 );
+
+       When  setting  the  location it is possible to pass any of the argument
+       types that can be passed to &quot;new&quot;.
+
+   &quot;latitude&quot;
+       Get or set the latitude of this geo URI.
+
+   &quot;longitude&quot;
+       Get or set the longitude of this geo URI.
+
+   &quot;altitude&quot;
+       Get             or             set             the             altitude
+       &lt;https://en.wikipedia.org/wiki/Geo_URI_scheme#Altitude&gt;   of  this  geo
+       URI. To delete the altitude set it to &quot;undef&quot;.
+
+   &quot;crs&quot;
+       Get     or      set      the      Coordinate      Reference      System
+       &lt;https://en.wikipedia.org/wiki/Geo_URI_scheme#Coordinate_reference_systems&gt;
+       of this geo URI. To delete the CRS set it to &quot;undef&quot;.
+
+   &quot;uncertainty&quot;
+       Get             or            set            the            uncertainty
+       &lt;https://en.wikipedia.org/wiki/Geo_URI_scheme#Uncertainty&gt; of this  geo
+       URI. To delete the uncertainty set it to &quot;undef&quot;.
+
+   &quot;field&quot;
+CONFIGURATION AND ENVIRONMENT
+       URI::geo requires no configuration files or environment variables.
+
+DEPENDENCIES
+       URI
+
+DIAGNOSTICS
+       &quot;Too many arguments&quot;
+           The   new  method  can  only  accept  three  parameters;  latitude,
+           longitude and altitude.
+
+       &quot;Don&#x27;t know how to convert point&quot;
+           The new method doesn&#x27;t know how to convert the supplied  parameters
+           into a URI::geo object.
+
+       &quot;Need lat, lon or lat, lon, alt&quot;
+           The  new  method  needs  two  (latitude  and  longitude)  or  three
+           (latitude, longitude and altitude) parameters in a list.  Any  less
+           or more than this is an error.
+
+       &quot;No such field: %s&quot;
+           This field is not a known field for the URI::geo object.
+
+       &quot;Badly formed geo uri&quot;
+           The URI cannot be parsed as a URI
+
+       &quot;Badly formed geo uri&quot;
+           The URI cannot be parsed as a URI
+
+       &quot;Latitude out of range&quot;
+           Latitude may only be from -90 to +90
+
+       &quot;Longitude out of range&quot;
+           Longitude may only be from -180 to +180
+
+INCOMPATIBILITIES
+       None reported.
+
+BUGS AND LIMITATIONS
+       To  report  a  bug,  or  view  the  current  list of bugs, please visit
+       &lt;https://github.com/libwww-perl/URI/issues&gt;
+
+AUTHOR
+       Andy Armstrong  &quot;&lt;andy@hexten.net&gt;&quot;
+
+LICENSE AND COPYRIGHT
+       Copyright (c) 2009, Andy Armstrong &quot;&lt;andy@hexten.net&gt;&quot;.
+
+       This module is free software; you can redistribute it and/or modify  it
+       under the same terms as Perl itself. See perlartistic.
+
+perl v5.38.2                      2024-10-09                     URI::geo(3pm)
+</pre></body></html>

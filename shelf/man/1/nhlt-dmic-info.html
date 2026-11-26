@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>nhlt-dmic-info(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>NHLT-DMIC-INFO(1)           General Commands Manual          NHLT-DMIC-INFO(1)
+
+NAME
+       nhlt-dmic-info - dump microphone array information from ACPI NHLT table
+
+SYNOPSIS
+       nhlt-dmic-info [-option]
+
+DESCRIPTION
+       nhlt-dmic-info  dumps microphone array information from ACPI NHLT table
+       in JSON format.
+
+
+OPTIONS
+       -h | --help
+
+              Prints the help information.
+
+
+       -f &lt;file&gt; | --file=&lt;file&gt;
+
+              Input  file  with  the  binary  ACPI  NHLT  table  (default   is
+              /sys/firmware/acpi/tables/NHLT).
+
+
+       -o &lt;file&gt; | --output=&lt;file&gt;
+
+              JSON output file (default is stdout: -).
+
+
+EXAMPLES
+       nhlt-dmic-info -f nhlt.bin -o dmic.json
+
+
+BUGS
+       None known.
+
+AUTHOR
+       nhlt-dmic-info  is  by Jaroslav Kysela &lt;perex@perex.cz&gt;.  This document
+       is by Jaroslav Kysela &lt;perex@perex.cz&gt;.
+
+                                  16 May 2023                NHLT-DMIC-INFO(1)
+</pre></body></html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sd_device_enumerator_unrefp(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>SD_DEVICE_...ERATOR_NEW(3) sd_device_enumerator_new SD_DEVICE_...ERATOR_NEW(3)
+
+NAME
+       sd_device_enumerator_new, sd_device_enumerator_ref,
+       sd_device_enumerator_unref, sd_device_enumerator_unrefp - Create,
+       reference, and release a device enumerator object
+
+SYNOPSIS
+       #include &lt;systemd/sd-device.h&gt;
+
+
+       int sd_device_enumerator_new(sd_device_enumerator **ret);
+
+       sd_device_enumerator*
+                                                      sd_device_enumerator_ref(sd_device_enumerator *enumerator);
+
+
+       sd_device_enumerator*
+                                                        sd_device_enumerator_unref(sd_device_enumerator *enumerator);
+
+
+       void sd_device_enumerator_unrefp(sd_device_enumerator **enumerator);
+
+DESCRIPTION
+       The sd_device_enumerator family of functions provides a way to iterate
+       over devices recognized by systemd-udevd(8). The enumerator allows
+       filtering and matching devices by subsystem, properties and other
+       attributes.
+
+       sd_device_enumerator_new() creates a new device enumerator object and
+       stores the result in the pointer referenced by ret. Returns 0 on
+       success, or a negative errno-style error code on failure.
+
+       sd_device_enumerator_ref() increases the reference count of the
+       specified enumerator by one.
+
+       sd_device_enumerator_unref() decreases the reference count of the
+       enumerator by one. When the reference count reaches zero, the
+       enumerator object is destroyed and cannot be used anymore, so further
+       calls to sd_device_enumerator_unref() or sd_device_enumerator_unrefp()
+       are illegal.
+
+       sd_device_enumerator_unrefp() is similar to
+       sd_device_enumerator_unref() but takes a pointer to a pointer to an
+       sd_device_enumerator object. This call is useful in conjunction with
+       GCC&#x27;s and LLVM&#x27;s Clean-up Variable Attribute[1]. Note that this
+       function is defined as an inline function. Use a declaration like the
+       following, in order to allocate a sd_device_enumerator object that is
+       freed automatically as the code block is left:
+
+           {
+             __attribute__((cleanup(sd_device_enumerator_unrefp))) sd_device_enumerator *enumerator = NULL;
+             int r;
+             ...
+             r = sd_device_enumerator_new(&amp;enumerator);
+             if (r &lt; 0)
+               fprintf(stderr, &quot;Failed to allocate sd_device_enumerator: %s\n&quot;, strerror(-r));
+             ...
+           }
+
+       sd_device_enumerator_ref() and sd_device_enumerator_unref() execute no
+       operation if the enumerator is NULL.  sd_device_enumerator_unrefp()
+       will first dereference its argument, which must not be NULL, and will
+       execute no operation if that is NULL.
+
+RETURN VALUE
+       sd_device_enumerator_new() returns 0 on success or a negative
+       errno-style error code on failure.
+
+       sd_device_enumerator_ref() always returns the enumerator pointer.
+
+       sd_device_enumerator_unref() always returns NULL.
+
+   Errors
+       Returned errors may indicate the following problems:
+
+       -ENOMEM
+           Memory allocation failed.
+
+       -EINVAL
+           The argument is invalid.
+
+EXAMPLE
+       Example 1. Using sd_device_enumerator_new()
+
+           /* SPDX-License-Identifier: MIT-0 */
+
+           #include &lt;stdio.h&gt;
+           #include &lt;systemd/sd-device.h&gt;
+
+           int main(void) {
+               sd_device_enumerator *enumerator;
+               int r;
+
+               r = sd_device_enumerator_new(&amp;enumerator);
+               if (r &lt; 0) {
+                   fprintf(stderr, &quot;Failed to create enumerator: %s\n&quot;, strerror(-r));
+                   return 1;
+               }
+
+               sd_device_enumerator_ref(enumerator);
+               sd_device_enumerator_unref(enumerator);
+
+               sd_device_enumerator_unref(enumerator);
+
+               return 0;
+           }
+
+HISTORY
+       sd_device_enumerator_new(), sd_device_enumerator_ref(),
+       sd_device_enumerator_unref(), and sd_device_enumerator_unrefp() were
+       added in version 240.
+
+SEE ALSO
+       sd_device_ref(3), sd_device_enumerator_add_match_parent(3)
+
+NOTES
+        1. Clean-up Variable Attribute
+           https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html
+
+systemd 257.13                                      SD_DEVICE_...ERATOR_NEW(3)
+</pre></body></html>

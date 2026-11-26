@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>qfcvt(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>qecvt(3)                   Library Functions Manual                   qecvt(3)
+
+NAME
+       qecvt, qfcvt, qgcvt - convert a floating-point number to a string
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;stdlib.h&gt;
+
+       [[deprecated]] char *qecvt(long double number, int ndigits,
+                                  int *restrict decpt, int *restrict sign);
+       [[deprecated]] char *qfcvt(long double number, int ndigits,
+                                  int *restrict decpt, int *restrict sign);
+       [[deprecated]] char *qgcvt(long double number, int ndigit, char *buf);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       qecvt(), qfcvt(), qgcvt():
+           Since glibc 2.19:
+               _DEFAULT_SOURCE
+           In glibc up to and including 2.19:
+               _SVID_SOURCE
+
+DESCRIPTION
+       The  functions  qecvt(), qfcvt(), and qgcvt() are identical to ecvt(3),
+       fcvt(3), and gcvt(3) respectively, except that they use a  long  double
+       argument number.  See ecvt(3) and gcvt(3).
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       qecvt() T}   Thread safety  MT-Unsafe race:qecvt T{ qfcvt() T}   Thread
+       safety  MT-Unsafe race:qfcvt T{ qgcvt() T}   Thread safety  MT-Safe
+
+STANDARDS
+       None.
+
+HISTORY
+       SVr4, SunOS, GNU.
+
+       These functions are obsolete.  Instead, snprintf(3) is recommended.
+
+SEE ALSO
+       ecvt(3), ecvt_r(3), gcvt(3), sprintf(3)
+
+Linux man-pages 6.9.1             2024-05-02                          qecvt(3)
+</pre></body></html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Control(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Control(3perl)             libdpkg-perl             Dpkg::Control(3perl)
+
+NAME
+       Dpkg::Control - parse and manipulate official control-like information
+
+DESCRIPTION
+       The Dpkg::Control object is a smart version of Dpkg::Control::Hash.  It
+       associates a type to the control information. That type can be used to
+       know what fields are allowed and in what order they must be output.
+
+       The types are constants that are exported by default. Here&#x27;s the full
+       list:
+
+       CTRL_UNKNOWN
+           This  type  is  the  default  type,  it  indicates that the type of
+           control information is not yet known.
+
+       CTRL_TMPL_SRC
+           Corresponds to the first source package stanza in a  debian/control
+           file in a Debian source package.
+
+       CTRL_TMPL_PKG
+           Corresponds to subsequent binary package stanza in a debian/control
+           file in a Debian source package.
+
+       CTRL_REPO_RELEASE
+           Corresponds to a Release file in a repository.
+
+       CTRL_REPO_SRC
+           Corresponds  to  a  stanza  in  a  Sources file of a source package
+           repository.
+
+       CTRL_REPO_PKG
+           Corresponds to a stanza in a Packages  file  of  a  binary  package
+           repository.
+
+       CTRL_DSC
+           Corresponds to a .dsc file of a Debian source package.
+
+       CTRL_DEB
+           Corresponds  to  the  control  file  generated  by  dpkg-gencontrol
+           (DEBIAN/control) and to the same file inside .deb packages.
+
+       CTRL_FILE_BUILDINFO
+           Corresponds to a .buildinfo file.
+
+       CTRL_FILE_CHANGES
+           Corresponds to a .changes file.
+
+       CTRL_FILE_VENDOR
+           Corresponds to a vendor file in $Dpkg::CONFDIR/origins/.
+
+       CTRL_FILE_STATUS
+           Corresponds    to    a    stanza    in    dpkg&#x27;s    status     file
+           ($Dpkg::ADMINDIR/status).
+
+       CTRL_CHANGELOG
+           Corresponds to the output of dpkg-parsechangelog.
+
+       CTRL_COPYRIGHT_HEADER
+           Corresponds  to  the  header  stanza  in a debian/copyright file in
+           machine readable format.
+
+       CTRL_COPYRIGHT_FILES
+           Corresponds to a files stanza in a debian/copyright file in machine
+           readable format.
+
+       CTRL_COPYRIGHT_LICENSE
+           Corresponds to a license  stanza  in  a  debian/copyright  file  in
+           machine readable format.
+
+       CTRL_TESTS
+           Corresponds   to   a   source   package   tests   control  file  in
+           debian/tests/control.
+
+       CTRL_INFO_SRC
+           Deprecated alias for CTRL_TMPL_SRC.
+
+       CTRL_INFO_PKG
+           Deprecated alias for CTRL_TMPL_PKG.
+
+       CTRL_PKG_SRC
+           Deprecated alias for CTRL_DSC.
+
+       CTRL_PKG_DEB
+           Deprecated alias for CTRL_DEB.
+
+       CTRL_INDEX_SRC
+           Deprecated alias for CTRL_REPO_SRC.
+
+       CTRL_INDEX_PKG
+           Deprecated alias for CTRL_REPO_PKG.
+
+METHODS
+       All the methods of  Dpkg::Control::Hash  are  available.  Those  listed
+       below are either new or overridden with a different behavior.
+
+       $c = Dpkg::Control-&gt;new(%opts)
+           Create a new deb822 control object.
+
+           Options:
+
+           type
+               Set  the  deb822 control type, used to setup default values for
+               other options.
+
+           See set_options() for more details.
+
+       $c-&gt;set_options(%opts)
+           Changes the value of one or more options.
+
+           Options:
+
+           type
+               Sets the deb822 control object type,  used  to  define  default
+               values for others options.
+
+               The output order is also set to match the ordered list returned
+               by Dpkg::Control::Fields::field_ordered_list($type).
+
+           name
+               Sets a textual description of the type of control information.
+
+           allow_pgp
+               Sets  whether  the parser accepts OpenPGP signatures around the
+               deb822 control information.
+
+               By default it is set to 1 for CTRL_DSC,  CTRL_FILE_CHANGES  and
+               CTRL_REPO_RELEASE and to 0 otherwise.
+
+           allow_duplicate
+               Sets  whether  the  parser  allows  duplicate  fields in deb822
+               control information.
+
+           keep_duplicate
+               Sets whether the parser will keep values for  duplicate  fields
+               found  in  deb822  control information (when allow_duplicate is
+               enabled), as array references.
+
+           drop_empty
+               Sets whether empty fields are dropped during output.
+
+               By default it is set to 0 for CTRL_TMPL_SRC  and  CTRL_TMPL_PKG
+               and to 1 otherwise.
+
+       $c-&gt;get_type()
+           Returns  the  type  of  control  information  stored.  See the type
+           parameter set during new().
+
+CHANGES
+   Version 1.05 (dpkg 1.22.12)
+       Deprecate   types:    CTRL_INFO_SRC,    CTRL_INFO_PKG,    CTRL_PKG_SRC,
+       CTRL_PKG_DEB, CTRL_INDEX_SRC, CTRL_INDEX_PKG.
+
+   Version 1.04 (dpkg 1.22.2)
+       New  types: CTRL_TMPL_SRC, CTRL_TMPL_PKG, CTRL_REPO_SRC, CTRL_REPO_PKG,
+       CTRL_DSC, CTRL_DEB.
+
+   Version 1.03 (dpkg 1.18.11)
+       New type: CTRL_FILE_BUILDINFO.
+
+   Version 1.02 (dpkg 1.18.8)
+       New type: CTRL_TESTS.
+
+   Version 1.01 (dpkg 1.18.5)
+       New       types:       CTRL_REPO_RELEASE,        CTRL_COPYRIGHT_HEADER,
+       CTRL_COPYRIGHT_FILES, CTRL_COPYRIGHT_LICENSE.
+
+   Version 1.00 (dpkg 1.15.6)
+       Mark the module as public.
+
+1.22.22                           2026-03-06              Dpkg::Control(3perl)
+</pre></body></html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ts_finddev(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>TS_FINDDEV(1)                        tslib                       TS_FINDDEV(1)
+
+NAME
+       ts_finddev - Discover touch screen devices.
+
+SYNOPSIS
+       ts_finddev device wait_seconds
+
+DESCRIPTION
+       ts_finddev  tests  whether  the  device  given  as parameter is a touch
+       screen device. Touch the screen after invoking ts_finddev.
+
+       Return value is 0 if the given timeout wait_seconds expired without  an
+       input event, -1 if device is no touch screen device and 1 if it is.
+
+SEE ALSO
+       ts.conf (5), ts_test (1), ts_test_mt (1), ts_calibrate (1)
+
+                                                                 TS_FINDDEV(1)
+</pre></body></html>

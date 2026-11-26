@@ -1,0 +1,104 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>qsort_r(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>qsort(3)                   Library Functions Manual                   qsort(3)
+
+NAME
+       qsort, qsort_r - sort an array
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;stdlib.h&gt;
+
+       void qsort(void base[.size * .nmemb], size_t nmemb, size_t size,
+                  int (*compar)(const void [.size], const void [.size]));
+       void qsort_r(void base[.size * .nmemb], size_t nmemb, size_t size,
+                  int (*compar)(const void [.size], const void [.size], void *),
+                  void *arg);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       qsort_r():
+           _GNU_SOURCE
+
+DESCRIPTION
+       The  qsort()  function sorts an array with nmemb elements of size size.
+       The base argument points to the start of the array.
+
+       The contents of the array are sorted in ascending order according to  a
+       comparison  function pointed to by compar, which is called with two ar‐
+       guments that point to the objects being compared.
+
+       The comparison function must return an integer less than, equal to,  or
+       greater  than  zero  if  the first argument is considered to be respec‐
+       tively less than, equal to, or greater than the second.  If two members
+       compare as equal, their order in the sorted array is undefined.
+
+       The qsort_r() function is identical to qsort() except that the compari‐
+       son function compar takes a third argument.  A pointer is passed to the
+       comparison function via arg.  In this way, the comparison function does
+       not need to use global variables to pass through  arbitrary  arguments,
+       and is therefore reentrant and safe to use in threads.
+
+RETURN VALUE
+       The qsort() and qsort_r() functions return no value.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       qsort(), qsort_r() T}   Thread safety  MT-Safe
+
+STANDARDS
+       qsort()
+              C11, POSIX.1-2008.
+
+HISTORY
+       qsort()
+              POSIX.1-2001, C89, SVr4, 4.3BSD.
+
+       qsort_r()
+              glibc 2.8.
+
+NOTES
+       To compare C strings, the comparison function can  call  strcmp(3),  as
+       shown in the example below.
+
+EXAMPLES
+       For one example of use, see the example under bsearch(3).
+
+       Another example is the following program, which sorts the strings given
+       in its command-line arguments:
+
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;string.h&gt;
+
+       static int
+       cmpstringp(const void *p1, const void *p2)
+       {
+           /* The actual arguments to this function are &quot;pointers to
+              pointers to char&quot;, but strcmp(3) arguments are &quot;pointers
+              to char&quot;, hence the following cast plus dereference. */
+
+           return strcmp(*(const char **) p1, *(const char **) p2);
+       }
+
+       int
+       main(int argc, char *argv[])
+       {
+           if (argc &lt; 2) {
+               fprintf(stderr, &quot;Usage: %s &lt;string&gt;...\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           qsort(&amp;argv[1], argc - 1, sizeof(char *), cmpstringp);
+
+           for (size_t j = 1; j &lt; argc; j++)
+               puts(argv[j]);
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       sort(1), alphasort(3), strcmp(3), versionsort(3)
+
+Linux man-pages 6.9.1             2024-06-15                          qsort(3)
+</pre></body></html>

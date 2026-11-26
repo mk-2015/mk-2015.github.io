@@ -1,0 +1,596 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>openssl-pkeyutl(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>OPENSSL-PKEYUTL(1SSL)               OpenSSL              OPENSSL-PKEYUTL(1SSL)
+
+NAME
+       openssl-pkeyutl - asymmetric key command
+
+SYNOPSIS
+       openssl pkeyutl [-help] [-in file] [-rawin] [-digest algorithm] [-out
+       file] [-secret file] [-sigfile file] [-inkey filename|uri] [-keyform
+       DER|PEM|P12|ENGINE] [-passin arg] [-pubin] [-certin] [-rev] [-sign]
+       [-verify] [-verifyrecover] [-encrypt] [-decrypt] [-derive] [-peerkey
+       file] [-peerform DER|PEM|P12|ENGINE] [-encap] [-decap] [-kdf algorithm]
+       [-kdflen length] [-kemop mode] [-pkeyopt opt:value] [-pkeyopt_passin
+       opt[:passarg]] [-hexdump] [-asn1parse] [-engine id] [-engine_impl]
+       [-rand files] [-writerand file] [-provider name] [-provider-path path]
+       [-provparam [name:]key=value] [-propquery propq] [-config configfile]
+
+DESCRIPTION
+       This command can be used to perform low-level operations on asymmetric
+       (public or private) keys using any supported algorithm.
+
+       By default the signing operation (see -sign option) is assumed.
+
+OPTIONS
+       -help
+           Print out a usage message.
+
+       -in filename
+           This  specifies  the  input  filename to read data from or standard
+           input if this option is not specified.
+
+       -rawin
+           This indicates that the signature or verification input data is raw
+           data, which is not hashed by any message digest algorithm.   Except
+           with  EdDSA,  the  user can specify a digest algorithm by using the
+           -digest option.  For signature algorithms like RSA, DSA and  ECDSA,
+           the default digest algorithm is SHA256. For SM2, it is SM3.
+
+           This  option  can  only  be used with -sign and -verify.  For EdDSA
+           (the Ed25519 and Ed448 algorithms) this  option  is  implied  since
+           OpenSSL 3.5, and required in earlier versions.
+
+           The -digest option implies -rawin since OpenSSL 3.5.
+
+       -digest algorithm
+           This  option can only be used with -sign and -verify.  It specifies
+           the digest algorithm that is used to hash  the  input  data  before
+           signing  or  verifying  it with the input key. This option could be
+           omitted if the signature algorithm does not  require  preprocessing
+           the  input  through  a  pluggable hash function before signing (for
+           instance, EdDSA). If this  option  is  omitted  but  the  signature
+           algorithm  requires  one  and the -rawin option is given, a default
+           value will be used (see -rawin for details).   If  this  option  is
+           present,  then  the -rawin option is implied since OpenSSL 3.5, and
+           required in earlier versions.
+
+           At this time, HashEdDSA (the ph or &quot;prehash&quot; variant of  EdDSA)  is
+           not supported, so the -digest option cannot be used with EdDSA.
+
+       -out filename
+           Specifies  the  output  filename  to write to or standard output by
+           default.
+
+       -secret filename
+           Specifies the shared-secret output  filename  for  when  performing
+           encapsulation via the -encap option or decapsulation via the -decap
+           option.   The  -encap  option  also  produces  a  separate (public)
+           ciphertext output which is by default written to  standard  output,
+           but  being  binary non-text data, is typically also redirected to a
+           file selected via the -out option.
+
+       -sigfile file
+           Signature file, required and allowed for -verify operations only.
+
+       -inkey filename|uri
+           The input key, by default it should be a private key.
+
+       -keyform DER|PEM|P12|ENGINE
+           The    key     format;     unspecified     by     default.      See
+           openssl-format-options(1) for details.
+
+       -passin arg
+           The  input  key  password  source.  For  more information about the
+           format of arg see openssl-passphrase-options(1).
+
+       -pubin
+           By default a private key is read from the  key  input.   With  this
+           option  a  public  key  is  read instead.  If the input contains no
+           public key but a private key, its public part is used.
+
+       -certin
+           The input is a certificate containing a public key.
+
+       -rev
+           Reverse the order of the input buffer.  This  is  useful  for  some
+           libraries (such as CryptoAPI) which represent the buffer in little-
+           endian format.  This cannot be used in conjunction with -rawin.
+
+       -sign
+           Sign  the  input data and output the signed result. This requires a
+           private key.  Using a message digest operation along with  this  is
+           recommended,  when  applicable,  see the -rawin and -digest options
+           for details.  Otherwise, the input data given with the  -in  option
+           is  assumed  to  already  be a digest, but this may then require an
+           additional -pkeyopt &quot;digest:&quot;md in some cases (e.g., RSA  with  the
+           default  PKCS#1  padding  mode).   Even  for  other algorithms like
+           ECDSA,  where  the  additional  -pkeyopt  option  does  not  affect
+           signature  output,  it  is recommended, as it enables checking that
+           the input length is consistent with the intended digest.
+
+       -verify
+           Verify the input data against the signature given with the -sigfile
+           option and indicate if the verification succeeded or  failed.   The
+           input  data given with the -in option is assumed to be a hash value
+           unless the -rawin option is specified or implied.  With  raw  data,
+           when  a  digest  algorithm is applicable, though it may be inferred
+           from the signature or take a  default  value,  it  should  also  be
+           specified.
+
+       -verifyrecover
+           Verify the given signature and output the recovered data (signature
+           payload).  For example, in case of RSA PKCS#1 the recovered data is
+           the  EMSA-PKCS-v1_5  DER  encoding  of the digest algorithm OID and
+           value     as     specified     in     RFC8017      Section      9.2
+           &lt;https://datatracker.ietf.org/doc/html/rfc8017#section-9.2&gt;.
+
+           Note  that  here  the  input  given  with  the  -in option is not a
+           signature input (as with the  -sign  and  -verify  options)  but  a
+           signature output value, typically produced using the -sign option.
+
+           This option is available only for use with RSA keys.
+
+       -encrypt
+           Encrypt the input data using a public key.
+
+       -decrypt
+           Decrypt the input data using a private key.
+
+       -derive
+           Derive a shared secret using own private (EC)DH key and peer key.
+
+       -peerkey file
+           File  containing  the peer public or private (EC)DH key to use with
+           the key derivation (agreement) operation.  Its type must match  the
+           type of the own private key given with -inkey.
+
+       -peerform DER|PEM|P12|ENGINE
+           The    peer    key    format;    unspecified   by   default.    See
+           openssl-format-options(1) for details.
+
+       -encap
+           Use a Key Encapsulation Mechanism (KEM) to  encapsulate  a  shared-
+           secret  to  a  peer&#x27;s  public  key.   The  encapsulated  result (or
+           ciphertext, non-text binary data) is written to standard output  by
+           default,  or  else  to  the  file specified with -out.  The -secret
+           option must also be provided to specify the  output  file  for  the
+           derived shared-secret value generated in the encapsulation process.
+           Encapsulation  is supported with a number of public key algorithms,
+           currently: ML-KEM, X25519, X448, and EC.  The ECX and EC algorithms
+           use  the  RFC9180  &lt;https://www.rfc-editor.org/rfc/rfc9180&gt;   DHKEM
+           construction.   Encapsulation  is  also supported with RSA keys via
+           the RSASVE construction.
+
+           At  the  API  level,  encapsulation  and  decapsulation  are   also
+           supported for a few hybrid ECDHE (no DHKEM) plus ML-KEM algorithms,
+           but these are intended primarily for use with TLS and should not be
+           used  standalone.   There  are  in  any case no standard public and
+           private key formats  for  the  hybrid  algorithms,  so  it  is  not
+           possible to provide the required key material.
+
+       -decap
+           Decode  an  encapsulated secret, with the use of a -private key, to
+           derive the same shared-secret as that obtained when the secret  was
+           encapsulated  to  the  corresponding  public key.  The encapsulated
+           secret is by default read from the standard input, or else from the
+           file specified with -in.  The derived shared-secret is  written  to
+           the  file  specified  with  the  -secret option, which must also be
+           provided.  Decapsulation is supported with a number of  public  key
+           algorithms,  currently:  ML-KEM, X25519, X448, and EC.  The ECX and
+           EC     algorithms     use     the     RFC9180     &lt;https://www.rfc-
+           editor.org/rfc/rfc9180&gt;  DHKEM construction.  Decapsulation is also
+           supported with RSA keys via the RSASVE construction.
+
+       -kemop mode
+           This option is used with the -encap/-decap commands  and  specifies
+           the  KEM  mode  specific  for  the  key  algorithm when there is no
+           default way to encapsulate and decapsulate shared secrets with  the
+           chosen  key  type.   All the supported algorithms presently support
+           only their default mode, and this option, though available, is  not
+           required.
+
+       -kdf algorithm
+           Use  key  derivation  function algorithm.  The supported algorithms
+           are at present TLS1-PRF and HKDF.  Note: additional parameters  and
+           the  KDF  output  length  will  normally have to be set for this to
+           work.          See         EVP_PKEY_CTX_set_hkdf_md(3)          and
+           EVP_PKEY_CTX_set_tls1_prf_md(3) for the supported string parameters
+           of each algorithm.
+
+       -kdflen length
+           Set the output length for KDF.
+
+       -pkeyopt opt:value
+           Public key options specified as opt:value. See NOTES below for more
+           details.
+
+       -pkeyopt_passin opt[:passarg]
+           Allows  reading  a  public  key option opt from stdin or a password
+           source.  If only opt is specified, the user  will  be  prompted  to
+           enter a password on stdin.  Alternatively, passarg can be specified
+           which can be any value supported by openssl-passphrase-options(1).
+
+       -hexdump
+           hex dump the output data.
+
+       -asn1parse
+           Parse the ASN.1 output data to check its DER encoding and print any
+           errors.   When combined with the -verifyrecover option, this may be
+           useful in case an  ASN.1  DER-encoded  structure  had  been  signed
+           directly  (without  hashing  it)  and  when checking a signature in
+           PKCS#1 v1.5 format, which has a DER encoding.
+
+       -engine id
+           See &quot;Engine Options&quot; in openssl(1).  This option is deprecated.
+
+       -engine_impl
+           When used with the -engine option, it specifies to also use  engine
+           id for crypto operations.
+
+       -rand files, -writerand file
+           See &quot;Random State Options&quot; in openssl(1) for details.
+
+       -provider name
+       -provider-path path
+       -provparam [name:]key=value
+       -propquery propq
+           See &quot;Provider Options&quot; in openssl(1), provider(7), and property(7).
+
+       -config configfile
+           See &quot;Configuration Option&quot; in openssl(1).
+
+NOTES
+       The  operations  and  options  supported  vary  according  to  the  key
+       algorithm and its implementation. The OpenSSL  operations  and  options
+       are indicated below.
+
+       Unless  otherwise  mentioned,  the  -pkeyopt  option  supports  for all
+       public-key types the &quot;digest:&quot;alg argument, which specifies the  digest
+       in  use  for  the  signing  and verification operations.  The value alg
+       should represent a digest name as used  in  the  EVP_get_digestbyname()
+       function  for  example sha256. This value is not used to hash the input
+       data. It is used (by some algorithms) for sanity-checking  the  lengths
+       of  data  passed  in  and  for creating the structures that make up the
+       signature (e.g., DigestInfo in RSASSA PKCS#1 v1.5 signatures).
+
+       For instance, if the value of the -pkeyopt option &quot;digest&quot; argument  is
+       sha256, the signature or verification input should be the 32 bytes long
+       binary value of the SHA256 hash function output.
+
+       Unless  -rawin is used or implied, this command does not hash the input
+       data but rather it will use the data directly as input to the signature
+       algorithm.  Depending on the key type,  signature  type,  and  mode  of
+       padding,  the  maximum  sensible lengths of input data differ. With RSA
+       the signed data cannot be longer than the key modulus. In case of ECDSA
+       and DSA the data should not be longer than the field size, otherwise it
+       will be silently truncated to the field size.  In any event  the  input
+       size  must  not be larger than the largest supported digest output size
+       EVP_MAX_MD_SIZE, which currently is 64 bytes.
+
+RSA ALGORITHM
+       The RSA algorithm generally supports the encrypt, decrypt, sign, verify
+       and verifyrecover operations. However, some padding modes support  only
+       a  subset  of these operations. The following additional pkeyopt values
+       are supported:
+
+       rsa_padding_mode:mode
+           This sets the RSA padding mode.  Acceptable  values  for  mode  are
+           pkcs1  for PKCS#1 padding, none for no padding, oaep for OAEP mode,
+           x931 for X9.31 mode and pss for PSS.
+
+           In PKCS#1 padding, if the message  digest  is  not  set,  then  the
+           supplied  data  is  signed  or verified directly instead of using a
+           DigestInfo structure. If a  digest  is  set,  then  the  DigestInfo
+           structure  is  used  and  its  length must correspond to the digest
+           type.
+
+           Note, for pkcs1 padding, as a protection against the Bleichenbacher
+           attack, the decryption will not  fail  in  case  of  padding  check
+           failures.  Use  none and manual inspection of the decrypted message
+           to verify if the decrypted value has correct PKCS#1 v1.5 padding.
+
+           For oaep mode only encryption and decryption is supported.
+
+           For x931 if the digest type is set it is used to format  the  block
+           data  otherwise  the first byte is used to specify the X9.31 digest
+           ID. Sign, verify and verifyrecover are can  be  performed  in  this
+           mode.
+
+           For pss mode only sign and verify are supported and the digest type
+           must be specified.
+
+       rsa_pss_saltlen:len
+           For  pss  mode  only  this  option specifies the salt length. Three
+           special values are supported: digest sets the salt  length  to  the
+           digest  length, max sets the salt length to the maximum permissible
+           value.  When  verifying  auto  causes  the  salt   length   to   be
+           automatically determined based on the PSS block structure.
+
+       rsa_mgf1_md:digest
+           For  PSS  and OAEP padding sets the MGF1 digest. If the MGF1 digest
+           is not explicitly set in PSS mode then the signing digest is used.
+
+       rsa_oaep_md:digest
+           Sets the digest used for the OAEP hash function. If not  explicitly
+           set then SHA256 is used.
+
+       rsa_pkcs1_implicit_rejection:flag
+           Disables  (when  set  to  0)  or enables (when set to 1) the use of
+           implicit rejection with PKCS#1 v1.5 decryption. When  enabled  (the
+           default),  as  a  protection  against  Bleichenbacher  attack,  the
+           library will generate a deterministic random plaintext that it will
+           return to the caller  in  case  of  padding  check  failure.   When
+           disabled,  it&#x27;s  the callers&#x27; responsibility to handle the returned
+           errors in a side-channel free manner.
+
+RSA-PSS ALGORITHM
+       The RSA-PSS algorithm is a restricted  version  of  the  RSA  algorithm
+       which  only  supports  the sign and verify operations with PSS padding.
+       The following additional -pkeyopt values are supported:
+
+       rsa_padding_mode:mode, rsa_pss_saltlen:len, rsa_mgf1_md:digest
+           These have  the  same  meaning  as  the  RSA  algorithm  with  some
+           additional  restrictions.  The  padding mode can only be set to pss
+           which is the default value.
+
+           If the key has parameter restrictions then the digest, MGF1  digest
+           and  salt length are set to the values specified in the parameters.
+           The digest and MG cannot be changed and the salt length  cannot  be
+           set to a value less than the minimum restriction.
+
+DSA ALGORITHM
+       The  DSA  algorithm  supports signing and verification operations only.
+       Currently there are no additional -pkeyopt options other  than  digest.
+       The SHA256 digest is assumed by default.
+
+DH ALGORITHM
+       The  DH  algorithm  only  supports  the  derivation  operation  and  no
+       additional -pkeyopt options.
+
+EC ALGORITHM
+       The EC algorithm supports sign, verify and derive operations. The  sign
+       and verify operations use ECDSA and derive uses ECDH. SHA256 is assumed
+       by default for the -pkeyopt digest option.
+
+X25519 AND X448 ALGORITHMS
+       The  X25519  and X448 algorithms support key derivation only. Currently
+       there are no additional options.
+
+   SLH-DSA ALGORITHMS
+       The   SLH-DSA   algorithms    (SLH-DSA-SHA2-128s,    SLH-DSA-SHA2-128f,
+       SLH-DSA-SHA2-192s,         SLH-DSA-SHA2-192f,        SLH-DSA-SHA2-256s,
+       SLH-DSA-SHA2-256f) are post-quantum signature  algorithms.  When  using
+       SLH-DSA with pkeyutl, the following options are available:
+
+       -sign
+           Sign the input data using an SLH-DSA private key. For example:
+
+             $ openssl pkeyutl -sign -in file.txt -inkey slhdsa.pem -out sig
+
+       -verify
+           Verify the signature using an SLH-DSA public key. For example:
+
+             $ openssl pkeyutl -verify -in file.txt -inkey slhdsa.pem -sigfile sig
+
+       See  EVP_PKEY-SLH-DSA(7)  and  EVP_SIGNATURE-SLH-DSA(7)  for additional
+       details about the SLH-DSA algorithm and its implementation.
+
+ML-DSA-44, ML-DSA-65 AND ML-DSA-87 ALGORITHMS
+       The  ML-DSA  algorithms  are  post-quantum  signature  algorithms  that
+       support  signing  and  verification  of &quot;raw&quot; messages.  No preliminary
+       hashing is performed. When using ML-DSA  with  pkeyutl,  the  following
+       options are available:
+
+       -sign
+           Sign the input data using an ML-DSA private key. For example:
+
+             $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig
+
+       -verify
+           Verify the signature using an ML-DSA public key. For example:
+
+             $ openssl pkeyutl -verify -in file.txt -inkey mldsa65.pem -sigfile sig
+
+       -pkeyopt opt:value
+           Additional options for ML-DSA signing and verification:
+
+           message-encoding:value
+               Specifies  the  message  encoding  mode  used for signing. This
+               controls how the input message  is  processed  before  signing.
+               Valid  values  are  described  in  EVP_SIGNATURE-ML-DSA(7). For
+               example:
+
+                 $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt message-encoding:1
+
+           test-entropy:value
+               Specifies a test entropy value for deterministic  signing.  For
+               example:
+
+                 $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt test-entropy:abcdefghijklmnopqrstuvwxyz012345
+
+           hextest-entropy:value
+               Specifies a test entropy value in hex format. For example:
+
+                 $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt hextest-entropy:000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+
+           deterministic:value
+               Enables deterministic signing. For example:
+
+                 $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt deterministic:1
+
+           mu:value
+               Specifies the mu parameter. For example:
+
+                 $ echo -n &quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot; &gt;file.txt
+                 $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt mu:1
+
+       context-string:string
+           Specifies  a  context  string  for  both  signing  and verification
+           operations. The context string must be the same for verification to
+           succeed. For example:
+
+             $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt context-string:mycontext
+             $ openssl pkeyutl -verify -in file.txt -inkey mldsa65.pem -sigfile sig -pkeyopt context-string:mycontext
+
+       hexcontext-string:string
+           Specifies a context string in hex format, allowing  binary  control
+           values. For example:
+
+             $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt hexcontext-string:6d79636f6e74657874
+
+       The  signing  operation supports a deterministic:bool option, with bool
+       set to 1 if a deterministic signature is to be generated with  a  fixed
+       all  zero  random  input.   By  default,  or  if the bool is 0 a random
+       entropy value is used.  A deterministic result can also be obtained  by
+       specifying  an  explicit  entropy  value  via the hextest-entropy:value
+       parameter.  Deterministic ML-DSA signing should only be used in tests.
+
+       See EVP_SIGNATURE-ML-DSA(7) for additional  details  about  the  ML-DSA
+       algorithms and their implementation.
+
+ML-KEM-512, ML-KEM-768 AND ML-KEM-1024 ALGORITHMS
+       The  ML-KEM  algorithms  support  encapsulation and decapsulation only.
+       The encapsulation operation supports  a  hexikme:entropy  option,  with
+       entropy  the  64  hexadecimal  digit encoding of a 32-byte value.  This
+       should only be used in tests, known or leaked values of the option  may
+       compromise the generated shared secret.
+
+       See EVP_KEM-ML-KEM(7) for additional detail.
+
+ED25519 AND ED448 ALGORITHMS
+       These  algorithms  only  support  signing  and  verifying. OpenSSL only
+       implements the &quot;pure&quot; variants of these algorithms so raw data  can  be
+       passed  directly  to  them  without  hashing  them  first. OpenSSL only
+       supports &quot;oneshot&quot; operation with these algorithms. This means that the
+       entire file to be signed/verified  must  be  read  into  memory  before
+       processing it. Signing or Verifying very large files should be avoided.
+       Additionally  the  size  of the file must be known for this to work. If
+       the size of the file cannot be determined (for example if the input  is
+       stdin) then the sign or verify operation will fail.
+
+SM2
+       The   SM2   algorithm   supports  sign,  verify,  encrypt  and  decrypt
+       operations. For  the  sign  and  verify  operations,  SM2  requires  an
+       Distinguishing  ID string to be passed in. The following -pkeyopt value
+       is supported:
+
+       distid:string
+           This sets the ID string used in  SM2  sign  or  verify  operations.
+           While  verifying  an  SM2 signature, the ID string must be the same
+           one used when signing the data.  Otherwise  the  verification  will
+           fail.
+
+       hexdistid:hex_string
+           This  sets  the  ID  string  used in SM2 sign or verify operations.
+           While verifying an SM2 signature, the ID string must  be  the  same
+           one  used  when  signing the data.  Otherwise the verification will
+           fail. The ID string provided with this option  should  be  a  valid
+           hexadecimal value.
+
+EXAMPLES
+       Sign some data using a private key:
+
+        openssl pkeyutl -sign -in file -inkey key.pem -out sig
+
+       Recover the signed data (e.g. if an RSA key is used):
+
+        openssl pkeyutl -verifyrecover -in sig -inkey key.pem
+
+       Verify the signature (e.g. a DSA key):
+
+        openssl pkeyutl -verify -in file -sigfile sig -inkey key.pem
+
+       Sign  data  using  a message digest value (this is currently only valid
+       for RSA):
+
+        openssl pkeyutl -sign -in file -inkey key.pem -out sig -pkeyopt digest:sha256
+
+       Derive a shared secret value:
+
+        openssl pkeyutl -derive -inkey key.pem -peerkey pubkey.pem -out secret
+
+       Hexdump 48 bytes of TLS1 PRF using digest SHA256 and shared secret  and
+       seed consisting of the single byte 0xFF:
+
+        openssl pkeyutl -kdf TLS1-PRF -kdflen 48 -pkeyopt md:SHA256 \
+           -pkeyopt hexsecret:ff -pkeyopt hexseed:ff -hexdump
+
+       Derive a key using scrypt where the password is read from command line:
+
+        openssl pkeyutl -kdf scrypt -kdflen 16 -pkeyopt_passin pass \
+           -pkeyopt hexsalt:aabbcc -pkeyopt N:16384 -pkeyopt r:8 -pkeyopt p:1
+
+       Derive using the same algorithm, but read key from environment variable
+       MYPASS:
+
+        openssl pkeyutl -kdf scrypt -kdflen 16 -pkeyopt_passin pass:env:MYPASS \
+           -pkeyopt hexsalt:aabbcc -pkeyopt N:16384 -pkeyopt r:8 -pkeyopt p:1
+
+       Sign some data using an SM2(7) private key and a specific ID:
+
+        openssl pkeyutl -sign -in file -inkey sm2.key -out sig -rawin -digest sm3 \
+           -pkeyopt distid:someid
+
+       Verify some data using an SM2(7) certificate and a specific ID:
+
+        openssl pkeyutl -verify -certin -in file -inkey sm2.cert -sigfile sig \
+           -rawin -digest sm3 -pkeyopt distid:someid
+
+       Decrypt some data using a private key with OAEP padding using SHA256:
+
+        openssl pkeyutl -decrypt -in file -inkey key.pem -out secret \
+           -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256
+
+       Create an ML-DSA key pair and sign data with a specific context string:
+
+         $ openssl genpkey -algorithm ML-DSA-65 -out mldsa65.pem
+         $ openssl pkeyutl -sign -in file.txt -inkey mldsa65.pem -out sig -pkeyopt context-string:example
+
+       Verify a signature using ML-DSA with the same context string:
+
+         $ openssl pkeyutl -verify -in file.txt -inkey mldsa65.pem -sigfile sig -pkeyopt context-string:example
+
+       Generate an ML-KEM key pair and use it for encapsulation:
+
+         $ openssl genpkey -algorithm ML-KEM-768 -out mlkem768.pem
+         $ openssl pkey -in mlkem768.pem -pubout -out mlkem768_pub.pem
+         $ openssl pkeyutl -encap -inkey mlkem768_pub.pem -pubin -out ciphertext -secret shared_secret.bin
+
+       Decapsulate a shared secret using an ML-KEM private key:
+
+         $ openssl pkeyutl -decap -inkey mlkem768.pem -in ciphertext -secret decapsulated_secret.bin
+
+       Create an SLH-DSA key pair and sign data:
+
+         $ openssl genpkey -algorithm SLH-DSA-SHA2-128s -out slh-dsa.pem
+         $ openssl pkeyutl -sign -in file.txt -inkey slh-dsa.pem -out sig
+
+       Verify a signature using SLH-DSA:
+
+         $ openssl pkeyutl -verify -in file.txt -inkey slh-dsa.pem -sigfile sig
+
+SEE ALSO
+       openssl(1),   openssl-genpkey(1),   openssl-pkey(1),  openssl-rsautl(1)
+       openssl-dgst(1),  openssl-rsa(1),   openssl-genrsa(1),   openssl-kdf(1)
+       EVP_PKEY_CTX_set_hkdf_md(3), EVP_PKEY_CTX_set_tls1_prf_md(3),
+
+HISTORY
+       Since  OpenSSL  3.5,  the  -digest option implies -rawin, and these two
+       options are no longer  required  when  signing  or  verifying  with  an
+       Ed25519 or Ed448 key.
+
+       Also since OpenSSL 3.5, the -kemop option is no longer required for any
+       of  the  supported  algorithms,  the  only  supported  mode  is now the
+       default.
+
+       The -engine option was deprecated in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2006-2026 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09             OPENSSL-PKEYUTL(1SSL)
+</pre></body></html>

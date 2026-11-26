@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Control::Tests(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Control::Tests(3perl)      libdpkg-perl      Dpkg::Control::Tests(3perl)
+
+NAME
+       Dpkg::Control::Tests - parse files like debian/tests/control
+
+DESCRIPTION
+       It provides a class to access data of files that follow the same syntax
+       as debian/tests/control.
+
+METHODS
+       All the methods of Dpkg::Index are available. Those listed below are
+       either new or overridden with a different behavior.
+
+       $c = Dpkg::Control::Tests-&gt;new(%opts)
+           Create  a  new  Dpkg::Control::Tests  object,  which  inherits from
+           Dpkg::Index.
+
+           The  options  are  passed   through   to   the   Dpkg::Index-&gt;new()
+           constructor.
+
+       $item = $tests-&gt;new_item()
+           Creates a new item.
+
+CHANGES
+   Version 1.00 (dpkg 1.18.8)
+       Mark the module as public.
+
+1.22.22                           2026-03-06       Dpkg::Control::Tests(3perl)
+</pre></body></html>

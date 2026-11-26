@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>uuid_copy(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>UUID_COPY(3)                  Programmers Manual                  UUID_COPY(3)
+
+NAME
+       uuid_copy - copy a UUID value
+
+SYNOPSIS
+       #include &lt;uuid.h&gt;
+
+       void uuid_copy(uuid_t dst, const uuid_t src);
+
+DESCRIPTION
+       The uuid_copy() function copies the UUID variable src to dst.
+
+RETURN VALUE
+       The copied UUID is returned in the location pointed to by dst.
+
+AUTHORS
+       Theodore Y. Ts’o
+
+SEE ALSO
+       uuid(3), uuid_clear(3), uuid_compare(3), uuid_generate(3),
+       uuid_is_null(3), uuid_parse(3), uuid_unparse(3)
+
+REPORTING BUGS
+       For bug reports, use the issue tracker
+       &lt;https://github.com/util-linux/util-linux/issues&gt;.
+
+AVAILABILITY
+       The libuuid library is part of the util-linux package since version
+       2.15.1. It can be downloaded from Linux Kernel Archive
+       &lt;https://www.kernel.org/pub/linux/utils/util-linux/&gt;.
+
+util-linux 2.41.5                 2026-06-16                      UUID_COPY(3)
+</pre></body></html>

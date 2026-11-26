@@ -1,0 +1,102 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.MediaItem(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ.MEDIAITEM(5)    Linux System Administration   ORG.BLUEZ.MEDIAITEM(5)
+
+NAME
+       org.bluez.MediaItem - BlueZ D-Bus MediaItem API documentation
+
+INTERFACE
+       Service
+              unique name (Target role) org.bluez (Controller role)
+
+       Interface
+              org.bluez.MediaItem1
+
+       Object path
+              freely     definable     (Target     role)     [variable    pre‐
+              fix]/{hci0,hci1,...}/dev_XX_XX_XX_XX_XX_XX/playerX/itemX   (Con‐
+              troller role)
+
+   Methods
+   void Play()
+          Play item
+
+          Possible Errors:
+
+          org.bluez.Error.NotSupported
+
+          org.bluez.Error.Failed
+
+   void AddtoNowPlaying()
+          Add item to now playing list
+
+          Possible Errors:
+
+          org.bluez.Error.NotSupported
+
+          org.bluez.Error.Failed
+
+   Properties
+   object Player [readonly]
+          Player object path the item belongs to
+
+   string Name [readonly]
+          Item displayable name
+
+   string Type [readonly]
+          Item type
+
+          Possible values: &quot;video&quot;, &quot;audio&quot;, &quot;folder&quot;
+
+   string FolderType [readonly, optional]
+          Folder type.
+
+          Possible values: &quot;mixed&quot;, &quot;titles&quot;, &quot;albums&quot;, &quot;artists&quot;
+
+          Available if property Type is &quot;Folder&quot;
+
+   boolean Playable [readonly, optional]
+          Indicates if the item can be played
+
+          Available if property Type is &quot;folder&quot;
+
+   dict Metadata [readonly]
+          Item metadata.
+
+          Possible values:
+
+          string Title
+                 Item title name
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+          string Artist
+                 Item artist name
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+          string Album
+                 Item album name
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+          string Genre
+                 Item genre name
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+          uint32 NumberOfTracks
+                 Item album number of tracks in total
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+          uint32 Number
+                 Item album number
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+          uint32 Duration
+                 Item duration in milliseconds
+
+                 Available if property Type is &quot;audio&quot; or &quot;video&quot;
+
+BlueZ                           September 2023          ORG.BLUEZ.MEDIAITEM(5)
+</pre></body></html>

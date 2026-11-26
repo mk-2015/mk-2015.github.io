@@ -1,0 +1,30 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>selabel_partial_match(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>selabel_partial_match(3)   SELinux API documentation  selabel_partial_match(3)
+
+NAME
+       selabel_partial_match  - determine whether a direct or partial match is
+       possible on a file path - Only supported on file backend.
+
+SYNOPSIS
+       #include &lt;stdbool.h&gt;
+       #include &lt;selinux/selinux.h&gt;
+       #include &lt;selinux/label.h&gt;
+
+       bool selabel_partial_match(struct selabel_handle *hnd,
+                                 const char *key);
+
+DESCRIPTION
+       selabel_partial_match() performs a partial match operation on the  han‐
+       dle  hnd, returning TRUE or FALSE.  The key parameter is a file path to
+       check for a direct or partial match.
+
+
+RETURN VALUE
+       TRUE is returned if a direct or partial match is found, FALSE if not.
+
+
+SEE ALSO
+       selabel_open(3), selabel_stats(3), selinux_set_callback(3), selinux(8),
+       selabel_file(5)
+
+Security Enhanced Linux           05 May 2015         selabel_partial_match(3)
+</pre></body></html>

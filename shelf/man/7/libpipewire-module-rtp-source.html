@@ -1,0 +1,98 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-rtp-source(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...p-source(7)  Miscellaneous Information Manual  libpipe...p-source(7)
+
+NAME
+       libpipewire-module-rtp-source - RTP source
+
+DESCRIPTION
+       The rtp-source module creates a PipeWire source that receives audio and
+       midi RTP packets.
+
+       This module is usually loaded from the SAP Announce and create RTP
+       streams so that the source.ip and source.port and format parameters
+       matches that of the sender.
+
+MODULE NAME
+       libpipewire-module-rtp-source
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • local.ifname = &lt;str&gt;: interface name to use
+
+       • source.ip  =  &lt;str&gt;:  the  source ip address, default 224.0.0.56. Set
+         this to the IP address you want to receive packets from or 0.0.0.0 to
+         receive from any source address.
+
+       • source.port = &lt;int&gt;: the source port
+
+       • node.always-process = &lt;bool&gt;: true to receive even when not running
+
+       • sess.latency.msec = &lt;float&gt;: target network latency in  milliseconds,
+         default 100
+
+       • sess.ignore-ssrc = &lt;bool&gt;: ignore SSRC, default false
+
+       • sess.media = &lt;string&gt;: the media type audio|midi|opus, default audio
+
+       • stream.may-pause = &lt;bool&gt;: pause the stream when no data is reveived,
+         default false
+
+       • stream.props = {}: properties to be passed to the stream
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • media.name
+
+       • media.class
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.latency
+
+       • node.virtual
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-rtp-source.conf
+
+       context.modules = [
+       {   name = libpipewire-module-rtp-source
+           args = {
+               #local.ifname = eth0
+               #source.ip = 224.0.0.56
+               #source.port = 0
+               sess.latency.msec = 100
+               #sess.ignore-ssrc = false
+               #node.always-process = false
+               #sess.media = &quot;audio&quot;
+               #audio.format = &quot;S16BE&quot;
+               #audio.rate = 48000
+               #audio.channels = 2
+               #audio.position = [ FL FR ]
+               stream.props = {
+                  #media.class = &quot;Audio/Source&quot;
+                  node.name = &quot;rtp-source&quot;
+               }
+           }
+       }
+       ]
+
+       Since
+           0.3.60
+
+PipeWire                             1.4.2               libpipe...p-source(7)
+</pre></body></html>

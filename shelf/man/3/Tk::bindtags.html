@@ -1,0 +1,89 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::bindtags(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>bindtags(3pm)         User Contributed Perl Documentation        bindtags(3pm)
+
+NAME
+       Tk::bindtags - Determine which bindings apply to a window, and order of
+       evaluation
+
+SYNOPSIS
+       $widget-&gt;bindtags([tagList]);
+
+       @tags = $widget-&gt;bindtags;
+
+DESCRIPTION
+       When a binding is created with the bind command, it is associated
+       either with a particular window such as $widget, a class name such as
+       Tk::Button, the keyword all, or any other string.  All of these forms
+       are called binding tags.  Each window has a list of binding tags that
+       determine how events are processed for the window.  When an event
+       occurs in a window, it is applied to each of the window&#x27;s tags in
+       order:  for each tag, the most specific binding that matches the given
+       tag and event is executed.  See the Tk::bind documentation for more
+       information on the matching process.
+
+       By default, each window has four binding tags consisting of the the
+       window&#x27;s class name, name of the window, the name of the window&#x27;s
+       nearest toplevel ancestor, and all, in that order.  Toplevel windows
+       have only three tags by default, since the toplevel name is the same as
+       that of the window.
+
+       Note that this order is different from order used by Tcl/Tk.  Tcl/Tk
+       has the window ahead of the class name in the binding order.  This is
+       because Tcl is procedural rather than object oriented and the normal
+       way for Tcl/Tk applications to override class bindings is with an
+       instance binding. However, with perl/Tk the normal way to override a
+       class binding is to derive a class. The perl/Tk order causes instance
+       bindings to execute after the class binding, and so instance bind
+       callbacks can make use of state changes (e.g. changes to the selection)
+       than the class bindings have made.
+
+       The bindtags command allows the binding tags for a window to be read
+       and modified.
+
+       If $widget-&gt;bindtags is invoked without an argument, then the current
+       set of binding tags for $widget is returned as a list.  If the tagList
+       argument is specified to bindtags, then it must be a reference to and
+       array; the tags for $widget are changed to the elements of the array.
+       (A reference to an anonymous array can be created by enclosin the
+       elements in [ ].)  The elements of tagList may be arbitrary strings or
+       widget objects, if no window exists for an object at the time an event
+       is processed, then the tag is ignored for that event.  The order of the
+       elements in tagList determines the order in which binding callbacks are
+       executed in response to events.  For example, the command
+
+        $b-&gt;bindtags([$b,ref($b),$b-&gt;toplevel,&#x27;all&#x27;])
+
+       applies the Tcl/Tk binding order which binding callbacks will be
+       evaluated for a button (say) $b so that $b&#x27;s instance bindings are
+       invoked first, following by bindings for $b&#x27;s class, followed by
+       bindings for $b&#x27;s toplevel, followed by &#x27;all&#x27; bindings.
+
+       If tagList is an empty list i.e. [], then the binding tags for $widget
+       are returned to the perl/Tk default state described above.
+
+       The bindtags command may be used to introduce arbitrary additional
+       binding tags for a window, or to remove standard tags.  For example,
+       the command
+
+        $b-&gt;bindtags([&#x27;TrickyButton&#x27;,$b-&gt;toplevel,&#x27;all&#x27;])
+
+       replaces the (say) Tk::Button tag for $b with TrickyButton.  This means
+       that the default widget bindings for buttons, which are associated with
+       the Tk::Button tag, will no longer apply to $b, but any bindings
+       associated with TrickyButton (perhaps some new button behavior) will
+       apply.
+
+BUGS
+       The current mapping of the &#x27;native&#x27; Tk behaviour of this method i.e.
+       returning a list but only accepting a reference to an array is counter
+       intuitive. The perl/Tk interface  may be tidied up, returning a list is
+       sensible so, most likely fix will be to allow a list to be passed to
+       set the bindtags.
+
+SEE ALSO
+       Tk::bind Tk::callbacks
+
+KEYWORDS
+       binding, event, tag
+
+perl v5.40.1                      2025-04-13                     bindtags(3pm)
+</pre></body></html>

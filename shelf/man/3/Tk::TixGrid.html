@@ -1,0 +1,374 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::TixGrid(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TixGrid(3pm)          User Contributed Perl Documentation         TixGrid(3pm)
+
+NAME
+       Tk::TixGrid - Create and manipulate Tix Grid widgets
+
+SYNOPSIS
+           $tixgrid = $parent-&gt;TixGrid?(options)?;
+
+DESCRIPTION
+       This widget is intended as the basis of &quot;spread sheet&quot; like interfaces.
+       The widget displays its contents in a two dimensional &quot;grid&quot; of cells.
+       Each cell may contain one Tix display item, which may be in text,
+       graphics or other formats. See Tk::DItem for more information about Tix
+       display items. Because these &quot;items&quot; need not be &quot;windows&quot; large grids
+       can be handled  without consuming excessive display system resources.
+
+       Individual cells, or groups of cells, can be formatted with a wide
+       range of attributes, such as its color, relief and border. However
+       because the widget is intended to handle large grids the mechanisms to
+       achieve these are lower level, and more callback oriented than for
+       other widgets. The assumption is that to avoid storing display details
+       of a large number of cells, the data will be re-computed as needed.
+
+       The port of Tix C code and some of the bindings to perl/Tk is done but
+       still need further work. In several places the intent of the Tix code
+       is not yet understood. For example the &#x27;edit&#x27; interface is clearly
+       intended for spread-sheet like cell content editing in an auxillary
+       &quot;entry&quot; widget or similar, but how that should work is not yet clear.
+
+       The TixGrid method creates a new TixGrid window and returns a blessed
+       reference of this TixGrid widget.  Additional options, described below,
+       may be specified on the command line or in the option database to
+       configure aspects of the TixGrid widget.
+
+STANDARD OPTIONS
+       -background      -borderwidth      -cursor      -font      -foreground
+            -height      -highlightbackground      -highlightcolor
+            -highlightthickness      -padx      -pady      -relief
+            -selectbackground      -selectborderwidth      -selectforeground
+            -state      -takefocus      -width      -xscrollcommand
+            -yscrollcommand
+
+       See Tk::options for details of the standard options.
+
+WIDGET-SPECIFIC OPTIONS
+       Name:     browseCmd
+       Class:    BrowseCmd
+       Switch:   -browsecmd
+           If  defined,  gives a perl/Tk callback to be executed when the user
+           browses a grid cell (This is normally the case when the user clicks
+           on an entry).  When this callback is called, it is passed with  two
+           additional parameters: x y, where (x,y) is the location of the cell
+           that has just been clicked.
+
+       Name:     Command
+       Class:    Command
+       Switch:   -command
+           If  defined,  gives a perl/Tk callback to be executed when the user
+           double-clicks a grid cell.  When this callback  is  called,  it  is
+           passed  with  two  additional  parameters:  x y, where (x,y) is the
+           location of the cell that has just been clicked.
+
+       Name:     editDoneCmd
+       Class:    EditDoneCmd
+       Switch:   -editdonecmd
+           If defined, gives a perl/Tk callback to be executed when  the  user
+           has  edited  grid  cell. When this callback is called, it is passed
+           with two additional parameters: x y, where (x,y) is the location of
+           the cell that has just been edited.
+
+       Name:     editNotifyCmd
+       Class:    EditNotifyCmd
+       Switch:   -editnotifycmd
+           If defined gives a perl/Tk callback to be executed  when  the  user
+           tries  to  edit  a  grid cell.  When this callback is called, it is
+           passed with two additional parameters: x y,  where  (x,y,)  is  the
+           location  of the cell. This callback should return a boolean value:
+           true indicates that the cell is editable and false otherwise.
+
+       Name:     FloatingCols
+       Class:    floatingCols
+       Switch:   -floatingcols
+           Defines the number of extra columns beyond the existing  grid  that
+           can be brought into view by scrolling.
+
+       Name:     FloatingRows
+       Class:    floatingRows
+       Switch:   -floatingrows
+           Defines  the number of extra rows beyond the the existing grid that
+           can be brought into view by scrolling.
+
+       Name:     formatCmd
+       Class:    FormatCmd
+       Switch:   -formatcmd
+           If defined, gives a perl/Tk callback to be executed when  the  grid
+           cells  need  to be displayed on the screen.  Its primary purpose is
+           to draw the background of the region before the cells are  rendered
+           on  top.  This  is  normally  achieved  by  calling  formatGrid  or
+           formatBorder (see below).  However other uses can  be made of  this
+           low-level callback. For example it can be used to &quot;lazily&quot; populate
+           the grid by calling the set method only as cells come into view.
+
+           When  this  callback  is  called, it is passed with five additional
+           parameters: type x1 y1 x2 y2.
+
+           x1 y1 x2 y2 gives the extent of the region that needs formatting.
+
+           type gives the logical type of the region in the grid.  It  may  be
+           one of the following.
+
+           x_margin
+                   The horizontal margin.
+
+           y_margin
+                   The vertical margin.
+
+           s_margin
+                   The  area  in  the top left corner where the horizontal and
+                   vertical margins are joined.
+
+           main    The main body i.e. all the cells that do not fall into  the
+                   above three types.
+
+       Name:     leftMargin
+       Class:    LeftMargin
+       Switch:   -leftmargin
+           Gives  the  width  of  vertical  margin in cells (columns).  A zero
+           indicates that no  vertical  margin  exists.  A  positive  value  N
+           indicates  that  first  N  columns  are  &quot;labels&quot;  and  are  always
+           displayed and not scrolled.
+
+       Name:     itemType
+       Class:    ItemType
+       Switch:   -itemtype
+           Default item type for cells.
+
+       Name:     selectMode
+       Class:    SelectMode
+       Switch:   -selectmode
+           Specifies one of several styles  for  manipulating  the  selection.
+           The  value of the option may be arbitrary, but the default bindings
+           expect it to be either single, browse, multiple, or  extended;  the
+           default value is single.
+
+       Name:     selectUnit
+       Class:    SelectUnit
+       Switch:   -selectunit
+           Specifies the selection unit. Valid values are cell, column or row.
+
+       Name:     sizeCmd
+       Class:    SizeCmd
+       Switch:   -sizecmd
+           Callback  is  called  (with no extra arguments) when grid sizes are
+           re-computed. For example if window changes size, a  different  font
+           is specified etc.
+
+           It is called just after scrollbars (if present) are updated.
+
+       Name:     topMargin
+       Class:    TopMargin
+       Switch:   -topmargin
+           Gives  the  width  of  horizontal  margin  in cells (rows).  A zero
+           indicates that no horizontal margin  exists.  A  positive  value  N
+           indicates  that  first N rows are &quot;labels&quot; and are always displayed
+           and not scrolled.
+
+WIDGET METHODS
+       The TixGrid method creates a  TixGrid  widget  and  returns  a  blessed
+       reference of this TixGrid widget.  This reference may be used to invoke
+       various operations on the widget.  It has the following general form:
+
+           $tixgrid-&gt;method?(arg, arg, ...)?
+
+       args determine the exact behavior of the method.
+
+       This  object  supports  the  configure  and  cget  methods described in
+       Tk::options which can  be  used  to  enquire  and  modify  the  options
+       described  above.  The widget also inherits all the methods provided by
+       the generic Tk::Widget class.
+
+       The following additional methods are possible for TixGrid widgets:
+
+       $tixgrid-&gt;anchorGet(x, y)
+       $tixgrid-&gt;anchorSet(x, y)
+       $tixgrid-&gt;anchorClear
+           Manipulates the anchor cell of the TixGrid widget.  The anchor cell
+           is the end of the  selection  that  is  fixed  while  the  user  is
+           dragging out a selection with the mouse.
+
+       ($bd,$col,$row) = $tixgrid-&gt;bdtype(x,y ?,xDelta,yDelta?)
+           Determines  if  the the screen (pixel) position x,y is in a border.
+           This is useful for changing the mouse cursor when the  user  points
+           at  a  border  -  e.g.  to indicate that the border can be adjusted
+           interactively.
+
+           If in a border returns a list of three elements. First  element  is
+           &#x27;xy&#x27;,  &#x27;x&#x27;  or  &#x27;y&#x27;,  second  two elements are integers.  (Value of
+           these are not understood, seem to indicate which column and row  of
+           the border the screen position corresponds to?)
+
+           If not in a border returns an empty list.
+
+       $tixgrid-&gt;delete(dim, from?, to?)
+       $tixgrid-&gt;deleteColumn(from?, to?)
+       $tixgrid-&gt;deleteRow(from?, to?)
+           Dim  may be row or column. If to is not given, deletes a single row
+           (or column) at the position from.  If  to  is  given,  deletes  the
+           range of rows (or columns) from position from through to.
+
+       $tixgrid-&gt;dragsite(option, x, y)
+       $tixgrid-&gt;dropsite(option, x, y)
+           Tcl/Tix  has (or was going to have) Drag&amp;Drop support.  Meaning for
+           perl/Tk is not clear yet.
+
+       $tixgrid-&gt;editApply
+           If any cell is being edited, de-highlight the cell and applies  the
+           changes.
+
+       $tixgrid-&gt;editSet(x, y)
+           Highlights  the  cell  at  (x,y)  for  editing,  if the -editnotify
+           callback returns true for this cell.
+
+       $tixgrid-&gt;entrycget(x, y, &#x27;-option&#x27;)
+       $tixgrid-&gt;entryconfigure(x, y?, -option??=&gt;value, -option=&gt;value, ...?)
+           Provide a configue interface to cells in the  grid.   The  -options
+           depend on the item type of the cell.
+
+       $tixgrid-&gt;formatBorder(x1,y1, x2,y2, options);
+       $tixgrid-&gt;formatGrid(x1,y1, x2,y2, options);
+           The formatBorder and formatBorder methods can only be called by the
+           -formatcmd callback of the tixGrid widget. They draw the background
+           of  the region described by x1,y1, x2,y2 according the the supplied
+           options. One call to -formatcmd callback can make multiple calls to
+           formatBorder and/or formatBorder for different sub-regions.
+
+           formatBorder draws the background using Tk relief style, formatGrid
+           also draws grid lines between the cells.  It only  makes  sense  to
+           call one or the other for a particular sub-region as one will over-
+           write the other.
+
+           The options allowed are:
+
+           -background / -bg
+           -borderwidth / -bd
+           -filled
+           -relief
+           -selectbackground
+           -xoff
+           -xon
+           -yoff
+           -yon
+
+           The  -xon/-xoff  and  -yon/-yoff options are obscure. If anyone can
+           figure  out  how   to   do   something   interesting   given   what
+           pTk/tixGrFmt.c is doing with them please let Nick know!.
+
+       $tixgrid-&gt;geometryinfo(?width, height?)
+           Returns  list  of  four  values  -  two  sets of two floating point
+           numbers.  First set is the scrollbar  fractions  for  x  direction,
+           second  set  is  scrollbar  fractions for y direction. If width and
+           height are specified then fractions are based on as if window  size
+           was of specified size (in pixels, but not allowing normal GetPixels
+           units).   Otherwise  fractions  are  based  on  current size of the
+           window.
+
+           Usage obscure.
+
+       $tixgrid-&gt;index(xcoord, ycoord)
+           Retuns (x, y) of entry  at  position  ($coordx,  $coordy).   Either
+           coordinate  may  be  &#x27;max&#x27;  which is largest existing entry in that
+           direction, &#x27;end&#x27; which is one beyond largest existing entry,  or  a
+           number. (This is how you find out how big the grid is.)
+
+       $tixgrid-&gt;infoBbox(x,y)
+           Return the pixel bounding box of the cell at x,y.
+
+       $tixgrid-&gt;infoExists(x,y)
+           Returns  true  if  there  is an item in the cell at x,y.  Throws an
+           exception (dies) if x,y is outside the grid - this may change (Nick
+           doesn&#x27;t like it).
+
+       $tixgrid-&gt;move(dim, from, to, offset)
+       $tixgrid-&gt;moveColumn(from, to, offset)
+       $tixgrid-&gt;moveRow(from, to, offset)
+           Dim may be row or column. Moves the range of rows (or columns) from
+           position from through to by the distance indicated by  offset.  For
+           example,  $tixgrid-&gt;moveRow(2,  4,  1) moves the rows 2,3,4 to rows
+           3,4,5.
+
+       $tixgrid-&gt;nearest(x, y)
+           Screen pos (pixels) to entry (nx,ny) translation.
+
+       $tixgrid-&gt;selectionAdjust(x1, y1 ?,x2, y2?)
+       $tixgrid-&gt;selectionClear(x1, y1 ?,x2, y2?)
+       $tixgrid-&gt;selectionIncludes(x1, y1 ?,x2, y2?)
+       $tixgrid-&gt;selectionSet(x1, y1 ?,x2, y2?)
+       $tixgrid-&gt;selectionToggle(x1, y1 ?,x2, y2?)
+           Selection support methods - probably buggy.
+
+           x1 (y1) has not to be greater than x2 (y2), but only x2 and y2  can
+           be &#x27;max&#x27;.
+
+           BUG: selectionIncludes: has no visible effect (as in Tix). Eh???
+
+           BUG:  selectionClear:  only  works  for 0, 0, max, max (as in Tix).
+           Eh???
+
+           When x2, y2 are not given they default to x1, y1, respectively.
+
+       $tixgrid-&gt;set(x, y?, -itemtype=&gt;type??, -option=&gt;value, ...?)
+           Creates a new display item at  the  cell  at  (x,y).  The  optional
+           -itemtype  parameter  gives  the  type  of  the  display  item.  An
+           additional list  of  option-value  pairs  specify  options  of  the
+           display  item.  If  a display item already exists at this cell, the
+           old item will be deleted automatically.
+
+       $tixgrid-&gt;size(dim, index?, -option??=&gt;value, ...?)
+       $tixgrid-&gt;sizeColumn(index?, -option??=&gt;value, ...?)
+       $tixgrid-&gt;sizeRow(index?, -option??=&gt;value, ...?)
+           Queries or sets the size of the row or  column  given  by  dim  and
+           index.  Dim  may  be  row or column.  Index may be any non-negative
+           integer that gives the position of a given row (or column).   Index
+           can  also  be the string default; in this case, this method queries
+           or sets the default size of all rows (or columns).  When no option-
+           value pair is given, this method  returns  a  list  containing  the
+           current  size  setting  of the given row (or column).  When option-
+           value pairs are  given,  the  corresponding  options  of  the  size
+           setting  of  the  given  row are changed. -option may be one of the
+           following:
+
+           -pad0 =&gt; pixels
+                   Specifies the paddings to the left of a column or  the  top
+                   of a row.
+
+           -pad1 =&gt; pixels
+                   Specifies  the  paddings  to  the  right of a column or the
+                   bottom of a row.
+
+           -size =&gt; val
+                   Specifies the width of a column or the  height  of  a  row.
+                   Val  may  be:  auto  --  the width of the column is set the
+                   widest cell in the column; a valid Tk screen distance  unit
+                   (see  Tk_GetPixels); or a real number following by the word
+                   chars (e.g. 3.4chars) that sets the width of the column  to
+                   the given number of characters.
+
+       $tixgrid-&gt;sort(dimension, start, end, ?args ...?)
+           ?docu here? (not supported on Win* OSs up to now)
+
+       $tixgrid-&gt;unset(x, y)
+           Clears the cell at (x,y) by removing its display item.
+
+       $tixgrid-&gt;xview
+           Normal horizontal scrollbar method.
+
+       $tixgrid-&gt;yview
+           Normal vertical scrollbar method.
+
+BINDINGS
+       To  be  done  - only most obvious basic bindings work. The Tcl/Tix code
+       was coded as a &quot;state machine&quot; which is not easy to follow.
+
+SEE ALSO
+       Tk::DItem Tk::callbacks Tk::FloatEntry
+
+BUGS
+       Tcl/Tix was/is not finished and both C code  and  bindings  of  TixGrid
+       have some bugs.
+
+KEYWORDS
+       tix, tixgrid, table, display item, spreadsheet
+
+perl v5.40.1                      2025-04-13                      TixGrid(3pm)
+</pre></body></html>

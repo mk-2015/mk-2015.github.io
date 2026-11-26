@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFstrip(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFSTRIP(3tiff)                    LibTIFF                   TIFFSTRIP(3tiff)
+
+NAME
+       TIFFstrip - strip-related utility routines
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       uint32_t TIFFDefaultStripSize(TIFF *tif, uint32_t estimate)
+
+       tmsize_t TIFFStripSize(TIFF *tif)
+
+       uint64_t TIFFStripSize64(TIFF *tif)
+
+       tmsize_t TIFFVStripSize(TIFF *tif, uint32_t nrows)
+
+       uint64_t TIFFVStripSize64(TIFF *tif, uint32_t nrows)
+
+       tmsize_t TIFFRawStripSize(TIFF *tif, uint32_t strip)
+
+       uint64_t TIFFRawStripSize64(TIFF *tif, uint32_t strip)
+
+       tstrip_t TIFFComputeStrip(TIFF *tif, uint32_t row, tsample_t sample)
+
+       tstrip_t TIFFNumberOfStrips(TIFF *tif)
+
+       int TIFFSetupStrips(TIFF *tif)
+
+DESCRIPTION
+       TIFFDefaultStripSize()  returns  the  number  of  rows  for  a  reason‐
+       able-sized strip according to the current settings of  the  ImageWidth,
+       BitsPerSample  and  SamplesPerPixel,  tags and any compression-specific
+       requirements. If the estimate parameter, sf non-zero, then it is  taken
+       as  an estimate of the desired strip size and adjusted according to any
+       compression-specific requirements. The value returned by this  function
+       is  typically  used  to define the RowsPerStrip tag. In lieu of any un‐
+       usual requirements TIFFDefaultStripSize tries  to  create  strips  that
+       have approximately 8 kilobytes of uncompressed data.
+
+       TIFFStripSize()  returns  the equivalent size for a strip of data as it
+       would be returned in a call to TIFFReadEncodedStrip() or as it would be
+       expected in a call to TIFFWriteEncodedStrip().  If an error  occurs,  0
+       is returned.
+
+       TIFFStripSize64()  returns  the  equivalent size for a strip of data as
+       uint64_t.  If an error occurs, 0 is returned.
+
+       TIFFVStripSize() returns the number of bytes in a strip with nrows rows
+       of data.  If an error occurs, 0 is returned.
+
+       TIFFVStripSize64() returns the number of bytes in a  strip  with  nrows
+       rows of data as uint64_t.  If an error occurs, 0 is returned.
+
+       TIFFRawStripSize() returns the number of bytes in a raw strip (i.e. not
+       decoded).  If an error occurs, 0xFFFFFFFF (=(tmsize_t(-1)) is returned.
+
+       TIFFRawStripSize64()  returns  the  number  of  bytes in a raw strip as
+       uint64_t.  If an error occurs, 0xFFFFFFFF (=(uint64_t(-1)) is returned.
+
+       TIFFComputeStrip() returns the strip that contains the specified  coor‐
+       dinates. A valid strip is always returned; out-of-range coordinate val‐
+       ues are clamped to the bounds of the image. The row parameter is always
+       used  in calculating a strip. The sample parameter is used only if data
+       are organized in separate planes (PlanarConfiguration = 2).
+
+       TIFFNumberOfStrips() returns the number of strips in the image.
+
+       TIFFSetupStrips() setup  or reset strip parameters and strip array mem‐
+       ory.
+
+DIAGNOSTICS
+       None.
+
+SEE ALSO
+       TIFFReadEncodedStrip      (3tiff),      TIFFReadRawStrip       (3tiff),
+       TIFFWriteEncodedStrip   (3tiff),   TIFFWriteRawStrip  (3tiff),  libtiff
+       (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026                 TIFFSTRIP(3tiff)
+</pre></body></html>

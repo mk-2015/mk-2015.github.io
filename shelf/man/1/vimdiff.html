@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>vimdiff(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>VIMDIFF(1)                  General Commands Manual                 VIMDIFF(1)
+
+NAME
+       vimdiff  -  edit  between two and eight versions of a file with Vim and
+       show differences
+
+SYNOPSIS
+       vimdiff [options]  file1  file2  [file3  [file4  [file5  [file6  [file7
+       [file8]]]]]]
+
+       gvimdiff
+
+DESCRIPTION
+       Vimdiff  starts  Vim  on two up to eight files.  Each file gets its own
+       window.  The differences between the files are highlighted.  This is  a
+       nice way to inspect changes and to move changes from one version to an‐
+       other version of the same file.
+
+       See vim(1) for details about Vim itself.
+
+       When started as gvimdiff the GUI will be started, if available.
+
+       In  each window the &#x27;diff&#x27; option will be set, which causes the differ‐
+       ences to be highlighted.
+       The &#x27;wrap&#x27; and &#x27;scrollbind&#x27; options are set to make the text look good.
+       The &#x27;foldmethod&#x27; option is set to &quot;diff&quot;, which puts  ranges  of  lines
+       without  changes in a fold.  &#x27;foldcolumn&#x27; is set to two to make it easy
+       to spot the folds and open or close them.
+
+OPTIONS
+       Vertical splits are used to align the lines, as if  the  &quot;-O&quot;  argument
+       was used.  To use horizontal splits instead, use the &quot;-o&quot; argument.
+
+       For all other arguments see vim(1).
+
+SEE ALSO
+       vim(1)
+
+AUTHOR
+       Most of Vim was made by Bram Moolenaar, with a lot of help from others.
+       See &quot;:help credits&quot; in Vim.
+
+                                 2021 June 13                       VIMDIFF(1)
+</pre></body></html>

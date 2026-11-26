@@ -1,0 +1,221 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>IO::Wrap(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>IO::Wrap(3pm)         User Contributed Perl Documentation        IO::Wrap(3pm)
+
+NAME
+       IO::Wrap - Wrap raw filehandles in the IO::Handle interface
+
+SYNOPSIS
+           use strict;
+           use warnings;
+           use IO::Wrap;
+
+           # this is a fairly senseless use case as IO::Handle already does this.
+           my $wrap_fh = IO::Wrap-&gt;new(\*STDIN);
+           my $line = $wrap_fh-&gt;getline();
+
+           # Do stuff with any kind of filehandle (including a bare globref), or
+           # any kind of blessed object that responds to a print() message.
+
+           # already have a globref? a FileHandle? a scalar filehandle name?
+           $wrap_fh = IO::Wrap-&gt;new($some_unknown_thing);
+
+           # At this point, we know we have an IO::Handle-like object! YAY
+           $wrap_fh-&gt;print(&quot;Hey there!&quot;);
+
+       You can also do this using a convenience wrapper function
+
+           use strict;
+           use warnings;
+           use IO::Wrap qw(wraphandle);
+
+           # this is a fairly senseless use case as IO::Handle already does this.
+           my $wrap_fh = wraphandle(\*STDIN);
+           my $line = $wrap_fh-&gt;getline();
+
+           # Do stuff with any kind of filehandle (including a bare globref), or
+           # any kind of blessed object that responds to a print() message.
+
+           # already have a globref? a FileHandle? a scalar filehandle name?
+           $wrap_fh = wraphandle($some_unknown_thing);
+
+           # At this point, we know we have an IO::Handle-like object! YAY
+           $wrap_fh-&gt;print(&quot;Hey there!&quot;);
+
+DESCRIPTION
+       Let&#x27;s say you want to write some code which does I/O, but you don&#x27;t
+       want to force the caller to provide you with a FileHandle or IO::Handle
+       object.  You want them to be able to say:
+
+           do_stuff(\*STDOUT);
+           do_stuff(&#x27;STDERR&#x27;);
+           do_stuff($some_FileHandle_object);
+           do_stuff($some_IO_Handle_object);
+
+       And even:
+
+           do_stuff($any_object_with_a_print_method);
+
+       Sure, one way to do it is to force the caller to use tiehandle().  But
+       that puts the burden on them.  Another way to do it is to use IO::Wrap.
+
+       Clearly, when wrapping a raw external filehandle (like &quot;\*STDOUT&quot;), I
+       didn&#x27;t want to close the file descriptor when the wrapper object is
+       destroyed; the user might not appreciate that! Hence, there&#x27;s no
+       &quot;DESTROY&quot; method in this class.
+
+       When wrapping a FileHandle object, however, I believe that Perl will
+       invoke the &quot;FileHandle::DESTROY&quot; when the last reference goes away, so
+       in that case, the filehandle is closed if the wrapped FileHandle really
+       was the last reference to it.
+
+FUNCTIONS
+       IO::Wrap makes the following functions available.
+
+   wraphandle
+           # wrap a filehandle glob
+           my $fh = wraphandle(\*STDIN);
+           # wrap a raw filehandle glob by name
+           $fh = wraphandle(&#x27;STDIN&#x27;);
+           # wrap a handle in an object
+           $fh = wraphandle(&#x27;Class::HANDLE&#x27;);
+
+           # wrap a blessed FileHandle object
+           use FileHandle;
+           my $fho = FileHandle-&gt;new(&quot;/tmp/foo.txt&quot;, &quot;r&quot;);
+           $fh = wraphandle($fho);
+
+           # wrap any other blessed object that shares IO::Handle&#x27;s interface
+           $fh = wraphandle($some_object);
+
+       This function is simply a wrapper to the &quot;new&quot; in IO::Wrap constructor
+       method.
+
+METHODS
+       IO::Wrap implements the following methods.
+
+   close
+           $fh-&gt;close();
+
+       The &quot;close&quot; method will attempt to close the system file descriptor.
+       For a more complete description, read &quot;close&quot; in perlfunc.
+
+   fileno
+           my $int = $fh-&gt;fileno();
+
+       The &quot;fileno&quot; method returns the file descriptor for the wrapped
+       filehandle.  See &quot;fileno&quot; in perlfunc for more information.
+
+   getline
+           my $data = $fh-&gt;getline();
+
+       The &quot;getline&quot; method mimics the function by the same name in
+       IO::Handle.  It&#x27;s like calling &quot;my $data = &lt;$fh&gt;;&quot; but only in scalar
+       context.
+
+   getlines
+           my @data = $fh-&gt;getlines();
+
+       The &quot;getlines&quot; method mimics the function by the same name in
+       IO::Handle.  It&#x27;s like calling &quot;my @data = &lt;$fh&gt;;&quot; but only in list
+       context. Calling this method in scalar context will result in a croak.
+
+   new
+           # wrap a filehandle glob
+           my $fh = IO::Wrap-&gt;new(\*STDIN);
+           # wrap a raw filehandle glob by name
+           $fh = IO::Wrap-&gt;new(&#x27;STDIN&#x27;);
+           # wrap a handle in an object
+           $fh = IO::Wrap-&gt;new(&#x27;Class::HANDLE&#x27;);
+
+           # wrap a blessed FileHandle object
+           use FileHandle;
+           my $fho = FileHandle-&gt;new(&quot;/tmp/foo.txt&quot;, &quot;r&quot;);
+           $fh = IO::Wrap-&gt;new($fho);
+
+           # wrap any other blessed object that shares IO::Handle&#x27;s interface
+           $fh = IO::Wrap-&gt;new($some_object);
+
+       The &quot;new&quot; constructor method takes in a single argument and decides to
+       wrap it or not it based on what it seems to be.
+
+       A raw scalar file handle name, like &quot;STDOUT&quot; or &quot;Class::HANDLE&quot; can be
+       wrapped, returning an IO::Wrap object instance.
+
+       A raw filehandle glob, like &quot;\*STDOUT&quot; can also be wrapped, returning
+       an IO::Wrawp object instance.
+
+       A blessed FileHandle object can also be wrapped. This is a special case
+       where an IO::Wrap object instance will only be returned in the case
+       that your FileHandle object doesn&#x27;t support the &quot;read&quot; method.
+
+       Also, any other kind of blessed object that conforms to the IO::Handle
+       interface can be passed in. In this case, you just get back that
+       object.
+
+       In other words, we only wrap it into an IO::Wrap object when what
+       you&#x27;ve supplied doesn&#x27;t already conform to the IO::Handle interface.
+
+       If you get back an IO::Wrap object, it will obey a basic subset of the
+       &quot;IO::&quot; interface. It will do so with object methods, not operators.
+
+       CAVEATS
+
+       This module does not allow you to wrap filehandle names which are given
+       as strings that lack the package they were opened in. That is, if a
+       user opens FOO in package Foo, they must pass it to you either as
+       &quot;\*FOO&quot; or as &quot;Foo::FOO&quot;.  However, &quot;STDIN&quot; and friends will work just
+       fine.
+
+   print
+           $fh-&gt;print(&quot;Some string&quot;);
+           $fh-&gt;print(&quot;more&quot;, &quot; than one&quot;, &quot; string&quot;);
+
+       The &quot;print&quot; method will attempt to print a string or list of strings to
+       the filehandle. For a more complete description, read &quot;print&quot; in
+       perlfunc.
+
+   read
+           my $buffer;
+           # try to read 30 chars into the buffer starting at the
+           # current cursor position.
+           my $num_chars_read = $fh-&gt;read($buffer, 30);
+
+       The read method attempts to read a number of characters, starting at
+       the filehandle&#x27;s current cursor position. It returns the number of
+       characters actually read. See &quot;read&quot; in perlfunc for more information.
+
+   seek
+           use Fcntl qw(:seek); # import the SEEK_CUR, SEEK_SET, SEEK_END constants
+           # seek to the position in bytes
+           $fh-&gt;seek(0, SEEK_SET);
+           # seek to the position in bytes from the current position
+           $fh-&gt;seek(22, SEEK_CUR);
+           # seek to the EOF plus bytes
+           $fh-&gt;seek(0, SEEK_END);
+
+       The &quot;seek&quot; method will attempt to set the cursor to a given position in
+       bytes for the wrapped file handle. See &quot;seek&quot; in perlfunc for more
+       information.
+
+   tell
+           my $bytes = $fh-&gt;tell();
+
+       The &quot;tell&quot; method will attempt to return the current position of the
+       cursor in bytes for the wrapped file handle. See &quot;tell&quot; in perlfunc for
+       more information.
+
+AUTHOR
+       Eryq (eryq@zeegee.com).  President, ZeeGee Software Inc
+       (http://www.zeegee.com).
+
+CONTRIBUTORS
+       Dianne Skoll (dfs@roaringpenguin.com).
+
+COPYRIGHT &amp; LICENSE
+       Copyright (c) 1997 Erik (Eryq) Dorfman, ZeeGee Software, Inc. All
+       rights reserved.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+perl v5.38.2                      2024-07-31                     IO::Wrap(3pm)
+</pre></body></html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::WidgetDemo(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>WidgetDemo(3pm)       User Contributed Perl Documentation      WidgetDemo(3pm)
+
+NAME
+       Tk::WidgetDemo - create a standard widget demonstration window.
+
+SYNOPSIS
+        use WidgetDemo;
+        my $TOP = $MW-&gt;WidgetDemo(
+            -name             =&gt; $demo,
+            -text             =&gt; &#x27;Learn how to write a widget demonstration!&#x27;,
+            -title            =&gt; &#x27;WidgetDemo Demonstration&#x27;,
+            -iconname         =&gt; &#x27;WidgetDemo&#x27;,
+            -geometry_manager =&gt; &#x27;grid&#x27;,
+            -font             =&gt; $FONT,
+        );
+
+DESCRIPTION
+       This constructor builds a standard widget demonstration window,
+       composed of three frames.  The top frame contains descriptive
+       demonstration text.  The bottom frame contains the &quot;Dismiss&quot; and &quot;See
+       Code&quot; buttons.  The middle frame is demonstration container, which came
+       be managed by either the pack or grid geometry manager.
+
+       The -text attribute is supplied to a Label widget, which is left-
+       adjusted with -wraplength set to 4 inches.  If you require different
+       specifications then pass an array to -text; the first element is the
+       text string and the remaining array elements are standard Label widget
+       attributes - WidgetDemo will rearrange things as required..
+
+           -text =&gt; [&#x27;Hello World!&#x27;, qw/-wraplength 6i/],
+
+AUTHOR
+       Steve Lidie &lt;Stephen.O.Lidie@Lehigh.EDU&gt;
+
+HISTORY
+       lusol@Lehigh.EDU, LUCC, 97/02/11 lusol@Lehigh.EDU, LUCC, 97/06/07
+       Stephen.O.Lidie@Lehigh.EDU, LUCC, 97/06/07
+        . Add Delegates() call that obviates the need for Top().  Many thanks
+       to
+          Achim Bohnet for this patch.
+        . Fix -title so that it works.
+
+COPYRIGHT
+       Copyright (C) 1997 - 1998 Stephen O. Lidie. All rights reserved.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+perl v5.40.1                      2025-04-13                   WidgetDemo(3pm)
+</pre></body></html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>vhangup(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>vhangup(2)                    System Calls Manual                   vhangup(2)
+
+NAME
+       vhangup - virtually hangup the current terminal
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;unistd.h&gt;
+
+       int vhangup(void);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       vhangup():
+           Since glibc 2.21:
+               _DEFAULT_SOURCE
+           In glibc 2.19 and 2.20:
+               _DEFAULT_SOURCE || (_XOPEN_SOURCE &amp;&amp; _XOPEN_SOURCE &lt; 500)
+           Up to and including glibc 2.19:
+               _BSD_SOURCE || (_XOPEN_SOURCE &amp;&amp; _XOPEN_SOURCE &lt; 500)
+
+DESCRIPTION
+       vhangup()  simulates  a  hangup  on  the  current  terminal.  This call
+       arranges for other users to have a “clean” terminal at login time.
+
+RETURN VALUE
+       On success, zero is returned.  On error, -1 is returned, and  errno  is
+       set to indicate the error.
+
+ERRORS
+       EPERM  The   calling   process   has  insufficient  privilege  to  call
+              vhangup(); the CAP_SYS_TTY_CONFIG capability is required.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       init(1), capabilities(7)
+
+Linux man-pages 6.9.1             2024-05-02                        vhangup(2)
+</pre></body></html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>gtk4-launch(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GTK4-LAUNCH(1)                   GTK commands                   GTK4-LAUNCH(1)
+
+NAME
+       gtk4-launch - Launch an application
+
+SYNOPSIS
+       gtk4-launch [OPTIONS...] &lt;APPLICATION&gt; [URI...]
+
+
+DESCRIPTION
+       gtk4-launch  launches an application using the given name. The applica‐
+       tion is started with proper startup notification on a default  display,
+       unless specified otherwise.
+
+       gtk4-launch takes at least one argument, the name of the application to
+       launch.  The name should match application desktop file name, as resid‐
+       ing in the applications subdirectories of  the  XDG  data  directories,
+       with or without the .desktop suffix.
+
+       If called with more than one argument, the rest of them besides the ap‐
+       plication name are considered URI locations and are passed as arguments
+       to the launched application.
+
+OPTIONS
+       -?, -h, --help
+          Print the command&#x27;s help and exit.
+
+       --version
+          Print the command&#x27;s version and exit.
+
+ENVIRONMENT
+       Some environment variables affect the behavior of gtk4-launch:
+
+       XDG_DATA_HOME, XDG_DATA_DIRS
+          The environment variables specifying the XDG data directories.
+
+GTK                                                             GTK4-LAUNCH(1)
+</pre></body></html>

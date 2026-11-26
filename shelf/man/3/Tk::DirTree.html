@@ -1,0 +1,120 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::DirTree(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>DirTree(3pm)          User Contributed Perl Documentation         DirTree(3pm)
+
+NAME
+       Tk::DirTree - Create and manipulate DirTree widgets
+
+SYNOPSIS
+           use Tk::DirTree;
+
+           $dirtree = $parent-&gt;DirTree(?options?);
+
+SUPER-CLASS
+       The DirTree class is derived from the Tree class and inherits all the
+       methods, options and subwidgets of its super-class.
+
+STANDARD OPTIONS
+       Tree supports all the standard options of a Tree widget.  See
+       Tk::options for details on the standard options.
+
+WIDGET-SPECIFIC OPTIONS
+       Name:          browseCmd
+       Class:         BrowseCmd
+       Switch:        -browsecmd
+           Specifies  a  callback  to  call  whenever  the  user  browses on a
+           directory  (usually  by  single-clicking  on  the   name   of   the
+           directory).  The callback is called with one argument, the complete
+           pathname of the directory.
+
+       Name:          command
+       Class:         Command
+       Switch:        -command
+           Specifies the callback to be called when the user  activates  on  a
+           directory   (usually   by   double-clicking  on  the  name  of  the
+           directory). The callback is called with one argument, the  complete
+           pathname of the directory.
+
+       Name:          dircmd
+       Class:         DirCmd
+       Switch:        -dircmd
+           Specifies  the  callback  to  be called when a directory listing is
+           needed for a particular directory. If this option is not specified,
+           by default the DirTree widget will attempt to read the directory as
+           a Unix directory. On special occasions, the application  programmer
+           may  want  to  supply a special method for reading directories: for
+           example, when he needs to list remote directories.  In  this  case,
+           the  -dircmd option can be used. The specified callback accepts two
+           arguments: the first is the name of the directory to be listed; the
+           second is a Boolean value indicating whether hidden sub-directories
+           should be listed. This callback returns a list of names of the sub-
+           directories of this directory. For example:
+
+               sub read_dir {
+                   my( $dir, $showhidden ) = @_;
+                   return( qw/DOS NORTON WINDOWS/ ) if $dir eq &quot;C:\\&quot;;
+                   return();
+               }
+
+       Name:          showHidden
+       Class:         ShowHidden
+       Switch:        -showhidden
+           Specifies whether hidden directories should be shown. By default, a
+           directory name starting with a period &quot;.&quot; is considered as a hidden
+           directory. This rule can be overridden by supplying an  alternative
+           -dircmd option.
+
+       Name:          directory
+       Class:         Directory
+       Switch:        -directory
+       Alias:         -value
+           Specifies  the name of the current directory to be displayed in the
+           DirTree widget.
+
+DESCRIPTION
+       The DirTree constructor method creates  a  new  window  (given  by  the
+       $dirtree  argument)  and  makes  it  into a DirTree widget.  Additional
+       options, described above, may be specified on the command  line  or  in
+       the  option  database  to  configure aspects of the DirTree such as its
+       cursor and relief.  The DirTree  widget  displays  a  list  view  of  a
+       directory,  its  previous directories and its sub-directories. The user
+       can choose one of the directories displayed in the list  or  change  to
+       another directory.
+
+WIDGET METHODS
+       The  DirTree  method creates a widget object.  This object supports the
+       configure and cget methods described in Tk::options which can  be  used
+       to  enquire  and  modify  the options described above.  The widget also
+       inherits all the methods provided by the generic Tk::Widget class.
+
+       The following additional methods are available for DirTree widgets:
+
+       $dirtree-&gt;chdir(dir)
+           Change the current directory to dir.
+
+OTHER METHODS
+       These methods have to be documented or made private:
+
+       OpenCmd
+       Populate
+       add_to_tree
+       dirnames
+       fullpath
+       has_subdir
+       opencmd
+       set_dir
+
+BINDINGS
+       The mouse and keyboard bindings of the DirTree widget are the  same  as
+       the bindings of the Tree widget.
+
+KEYWORDS
+       directory, tree, tix
+
+SEE ALSO
+       Tk::Tree Tk::HList
+
+AUTHOR
+       Perl/TK  version  by  Chris  Dean &lt;ctdean@cogit.com&gt;.  Original Tcl/Tix
+       version by Ioi Kim Lam.
+
+perl v5.40.1                      2025-04-13                      DirTree(3pm)
+</pre></body></html>

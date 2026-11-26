@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-loopback(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...loopback(7)  Miscellaneous Information Manual  libpipe...loopback(7)
+
+NAME
+       libpipewire-module-loopback - Loopback
+
+DESCRIPTION
+       The loopback module passes the output of a capture stream unmodified to
+       a playback stream.
+
+       It can be used to construct a link between a source and sink but also
+       to create new virtual sinks or sources or to remap channel between
+       streams.
+
+       Because both ends of the loopback are built with streams, the session
+       manager can manage the configuration and connection with the sinks and
+       sources.
+
+MODULE NAME
+       libpipewire-module-loopback
+
+MODULE OPTIONS
+       • node.description: a human readable name for the loopback streams
+
+       • target.delay.sec: delay in seconds as float (Since 0.3.60)
+
+       • capture.props = {}: properties to be passed to the input stream
+
+       • playback.props = {}: properties to be passed to the output stream
+
+GENERAL OPTIONS
+       Options  with  well-known  behavior.  Most  options can be added to the
+       global configuration or the individual streams:
+
+       • remote.name
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • media.name
+
+       • node.latency
+
+       • node.description
+
+       • node.group
+
+       • node.link.group
+
+       • node.virtual
+
+       • node.name : See notes below. If not specified, defaults to &#x27;loopback-
+         PID-MODULEID&#x27;.
+
+       Stream only properties:
+
+       • media.class
+
+       • node.name : if not given per stream, the  global  node.name  will  be
+         prefixed  with  &#x27;input.&#x27;  and  &#x27;output.&#x27;  to  generate  a capture and
+         playback stream node.name respectively.
+
+CHANNEL HANDLING
+       Channels from the capture stream are copied, in order, to the  channels
+       of  the  output stream. The remaining streams are ignored (when capture
+       has more channels) or filled  with  silence  (when  playback  has  more
+       channels).
+
+       When  a  global channel position is set, both capture and playback will
+       be converted to and from this common channel layout. This can  be  used
+       to implement up or downmixing loopback sinks/sources.
+
+EXAMPLE CONFIGURATION OF SOURCE TO SINK LINK
+       This  loopback  links  a source node to a sink node. You can change the
+       target.object properties to match your source/sink node.name.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-loopback-0.conf
+
+       context.modules = [
+       {   name = libpipewire-module-loopback
+           args = {
+               capture.props = {
+                   #  if you want to capture sink monitor ports,
+                   #  uncomment the next line and set the target.object
+                   #  to the sink name.
+                   #stream.capture.sink = true
+                   target.object = &quot;alsa_input.usb-C-Media_Electronics_Inc._TONOR_TC-777_Audio_Device-00.mono-fallback&quot;
+                   node.passive = true
+                   node.dont-reconnect = true
+               }
+               playback.props = {
+                   target.object = &quot;alsa_output.usb-0d8c_USB_Sound_Device-00.analog-surround-71&quot;
+                   node.dont-reconnect = true
+                   node.passive = true
+               }
+           }
+       }
+       ]
+
+EXAMPLE CONFIGURATION OF A VIRTUAL SINK
+       This Virtual sink routes stereo input to the rear  channels  of  a  7.1
+       sink.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-loopback-1.conf
+
+       context.modules = [
+       {   name = libpipewire-module-loopback
+           args = {
+               node.description = &quot;CM106 Stereo Pair 2&quot;
+               #target.delay.sec = 1.5
+               capture.props = {
+                   node.name = &quot;CM106_stereo_pair_2&quot;
+                   media.class = &quot;Audio/Sink&quot;
+                   audio.position = [ FL FR ]
+               }
+               playback.props = {
+                   node.name = &quot;playback.CM106_stereo_pair_2&quot;
+                   audio.position = [ RL RR ]
+                   target.object = &quot;alsa_output.usb-0d8c_USB_Sound_Device-00.analog-surround-71&quot;
+                   node.dont-reconnect = true
+                   stream.dont-remix = true
+                   node.passive = true
+               }
+           }
+       }
+       ]
+
+EXAMPLE CONFIGURATION OF A VIRTUAL SOURCE
+       This  Virtual  source  routes the front-left channel of a multi-channel
+       input to a mono channel. This is useful for splitting up  multi-channel
+       inputs  from  USB  audio interfaces that are not yet fully supported by
+       alsa.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-loopback-2.conf
+
+       context.modules = [
+       {   name = libpipewire-module-loopback
+           args = {
+               node.description = &quot;Scarlett Focusrite Line 1&quot;
+               capture.props = {
+                   audio.position = [ FL ]
+                   stream.dont-remix = true
+                   node.target = &quot;alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7ZD17C24495BC-00.analog-stereo&quot;
+                   node.passive = true
+               }
+               playback.props = {
+                   node.name = &quot;SF_mono_in_1&quot;
+                   media.class = &quot;Audio/Source&quot;
+                   audio.position = [ MONO ]
+               }
+           }
+       }
+       ]
+
+EXAMPLE CONFIGURATION OF AN UPMIX SINK
+       This Virtual sink has 2 input channels and 6 output channels.  It  will
+       perform upmixing using the PSD algorithm on the playback stream.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-loopback-3.conf
+
+       context.modules = [
+       {   name = libpipewire-module-loopback
+           args = {
+               node.description = &quot;Upmix Sink&quot;
+               audio.position = [ FL FR ]
+               capture.props = {
+                   node.name = &quot;effect_input.upmix&quot;
+                   media.class = Audio/Sink
+               }
+               playback.props = {
+                   node.name = &quot;effect_output.upmix&quot;
+                   audio.position = [ FL FR RL RR FC LFE ]
+                   node.passive = true
+                   stream.dont-remix = true
+                   channelmix.upmix = true
+                   channelmix.upmix-method = psd
+                   channelmix.lfe-cutoff = 150
+                   channelmix.fc-cutoff = 12000
+                   channelmix.rear-delay = 12.0
+               }
+           }
+       }
+       ]
+
+EXAMPLE CONFIGURATION OF A DOWNMIX SOURCE
+       This  Virtual source has 2 input channels and a mono output channel. It
+       will perform downmixing from the two first AUX channels of a  pro-audio
+       device.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-loopback-4.conf
+
+       context.modules = [
+       {   name = libpipewire-module-loopback
+           args = {
+               node.description = &quot;Downmix Source&quot;
+               audio.position = [ AUX0 AUX1 ]
+               capture.props = {
+                   node.name = &quot;effect_input.downmix&quot;
+                   target.object = &quot;alsa_input.usb-BEHRINGER_UMC404HD_192k-00.pro-input-0&quot;
+                   node.passive = true
+                   stream.dont-remix = true
+               }
+               playback.props = {
+                   node.name = &quot;effect_output.downmix&quot;
+                   media.class = Audio/Source
+                   audio.position = [ MONO ]
+               }
+           }
+       }
+       ]
+
+SEE ALSO
+       pw-loopback  :  a  tool  that  loads  the  loopback  module  with given
+       parameters.
+
+
+PipeWire                             1.4.2               libpipe...loopback(7)
+</pre></body></html>

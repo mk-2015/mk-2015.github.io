@@ -1,0 +1,100 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>nl(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>NL(1)                            User Commands                           NL(1)
+
+NAME
+       nl - number lines of files
+
+SYNOPSIS
+       nl [OPTION]... [FILE]...
+
+DESCRIPTION
+       Write each FILE to standard output, with line numbers added.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory  arguments  to  long  options are mandatory for short options
+       too.
+
+       -b, --body-numbering=STYLE
+              use STYLE for numbering body lines
+
+       -d, --section-delimiter=CC
+              use CC for logical page delimiters
+
+       -f, --footer-numbering=STYLE
+              use STYLE for numbering footer lines
+
+       -h, --header-numbering=STYLE
+              use STYLE for numbering header lines
+
+       -i, --line-increment=NUMBER
+              line number increment at each line
+
+       -l, --join-blank-lines=NUMBER
+              group of NUMBER empty lines counted as one
+
+       -n, --number-format=FORMAT
+              insert line numbers according to FORMAT
+
+       -p, --no-renumber
+              do not reset line numbers for each section
+
+       -s, --number-separator=STRING
+              add STRING after (possible) line number
+
+       -v, --starting-line-number=NUMBER
+              first line number for each section
+
+       -w, --number-width=NUMBER
+              use NUMBER columns for line numbers
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+       Default options are: -bt -d&#x27;\:&#x27; -fn -hn -i1 -l1 -n&#x27;rn&#x27; -s&lt;TAB&gt; -v1 -w6
+
+       CC are two delimiter characters used to construct logical  page  delim‐
+       iters;  a missing second character implies &#x27;:&#x27;.  As a GNU extension one
+       can specify more than two characters, and  also  specifying  the  empty
+       string (-d &#x27;&#x27;) disables section matching.
+
+       STYLE is one of:
+
+       a      number all lines
+
+       t      number only nonempty lines
+
+       n      number no lines
+
+       pBRE   number only lines that contain a match for the basic regular ex‐
+              pression, BRE
+
+       FORMAT is one of:
+
+       ln     left justified, no leading zeros
+
+       rn     right justified, no leading zeros
+
+       rz     right justified, leading zeros
+
+AUTHOR
+       Written by Scott Bartram and David MacKenzie.
+
+REPORTING BUGS
+       GNU coreutils online help: &lt;https://www.gnu.org/software/coreutils/&gt;
+       Report any translation bugs to &lt;https://translationproject.org/team/&gt;
+
+SEE ALSO
+       Full documentation &lt;https://www.gnu.org/software/coreutils/nl&gt;
+       or available locally via: info &#x27;(coreutils) nl invocation&#x27;
+
+       Packaged by Debian (9.7-3)
+       Copyright © 2025 Free Software Foundation, Inc.
+       License  GPLv3+:  GNU  GPL  version  3  or  later  &lt;https://gnu.org/li‐
+       censes/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+GNU coreutils 9.7                  June 2025                             NL(1)
+</pre></body></html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>socketcall(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>socketcall(2)                 System Calls Manual                socketcall(2)
+
+NAME
+       socketcall - socket system calls
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/net.h&gt;        /* Definition of SYS_* constants */
+       #include &lt;sys/syscall.h&gt;      /* Definition of SYS_socketcall */
+       #include &lt;unistd.h&gt;
+
+       int syscall(SYS_socketcall, int call, unsigned long *args);
+
+       Note: glibc provides no wrapper for socketcall(), necessitating the use
+       of syscall(2).
+
+DESCRIPTION
+       socketcall()  is  a  common  kernel  entry  point for the socket system
+       calls.  call determines which socket function to invoke.   args  points
+       to a block containing the actual arguments, which are passed through to
+       the appropriate call.
+
+       User  programs  should  call  the  appropriate functions by their usual
+       names.  Only standard library implementors and kernel hackers  need  to
+       know about socketcall().
+
+       tab(:);  l  l.   call:Man  page  T{  SYS_SOCKET  T}:T{  socket(2) T} T{
+       SYS_BIND T}:T{  bind(2)  T}  T{  SYS_CONNECT  T}:T{  connect(2)  T}  T{
+       SYS_LISTEN  T}:T{  listen(2)  T}  T{  SYS_ACCEPT  T}:T{ accept(2) T} T{
+       SYS_GETSOCKNAME T}:T{ getsockname(2) T} T{ SYS_GETPEERNAME  T}:T{  get‐
+       peername(2)  T}  T{  SYS_SOCKETPAIR  T}:T{ socketpair(2) T} T{ SYS_SEND
+       T}:T{ send(2) T} T{ SYS_RECV  T}:T{  recv(2)  T}  T{  SYS_SENDTO  T}:T{
+       sendto(2) T} T{ SYS_RECVFROM T}:T{ recvfrom(2) T} T{ SYS_SHUTDOWN T}:T{
+       shutdown(2) T} T{ SYS_SETSOCKOPT T}:T{ setsockopt(2) T} T{ SYS_GETSOCK‐
+       OPT  T}:T{  getsockopt(2)  T}  T{  SYS_SENDMSG  T}:T{  sendmsg(2) T} T{
+       SYS_RECVMSG T}:T{ recvmsg(2) T} T{ SYS_ACCEPT4 T}:T{ accept4(2)  T}  T{
+       SYS_RECVMMSG T}:T{ recvmmsg(2) T} T{ SYS_SENDMMSG T}:T{ sendmmsg(2) T}
+
+VERSIONS
+       On  some  architectures—for example, x86-64 and ARM—there is no socket‐
+       call() system call; instead socket(2), accept(2), bind(2),  and  so  on
+       really are implemented as separate system calls.
+
+STANDARDS
+       Linux.
+
+       On  x86-32,  socketcall() was historically the only entry point for the
+       sockets API.  However, starting in Linux 4.3, direct system  calls  are
+       provided  on x86-32 for the sockets API.  This facilitates the creation
+       of seccomp(2) filters that filter sockets system calls (for  new  user-
+       space  binaries that are compiled to use the new entry points) and also
+       provides a (very) small performance improvement.
+
+SEE ALSO
+       accept(2), bind(2), connect(2),  getpeername(2),  getsockname(2),  get‐
+       sockopt(2),   listen(2),  recv(2),  recvfrom(2),  recvmsg(2),  send(2),
+       sendmsg(2), sendto(2), setsockopt(2), shutdown(2),  socket(2),  socket‐
+       pair(2)
+
+Linux man-pages 6.9.1             2024-05-02                     socketcall(2)
+</pre></body></html>

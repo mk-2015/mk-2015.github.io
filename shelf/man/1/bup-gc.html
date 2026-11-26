@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bup-gc(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>bup-gc(1)                                                            bup-gc(1)
+
+NAME
+       bup-gc - remove unreferenced, unneeded data
+
+SYNOPSIS
+       bup gc [-#|--verbose] &lt;branch|save...&gt;
+
+DESCRIPTION
+       bup  gc removes (permanently deletes) unreachable data from the reposi‐
+       tory, data that isn’t referred to directly or indirectly by the current
+       set of branches (backup sets) and tags.  But bear in  mind  that  given
+       deduplication,  deleting a save and running the garbage collector might
+       or might not actually delete anything (or reclaim any space).
+
+       With the current, proababilistic implementation, some fraction  of  the
+       unreachable  data may be retained.  In exchange, the garbage collection
+       should require less RAM than might be required by some more precise ap‐
+       proaches.
+
+       Typically, the garbage collector would be invoked after some set of in‐
+       vocations of bup rm.
+
+       WARNING: This is one of the few bup commands that modifies your archive
+       in intentionally destructive ways.  Though if an attempt to join or re‐
+       store the data you still care about  after  a  gc  succeeds,  that’s  a
+       fairly  encouraging  sign  that  the  commands  worked correctly.  (The
+       dev/compare-trees command in the source tree can be used to  help  test
+       before/after results.)
+
+OPTIONS
+       --threshold=N
+              only  rewrite a packfile if it’s over N percent garbage and con‐
+              tains no unreachable trees or commits.  The default threshold is
+              10%.
+
+       -v, --verbose
+              increase verbosity (can be used more than once).  With  one  -v,
+              bup  prints every directory name as it gets backed up.  With two
+              -v, it also prints every filename.
+
+       -#, --compress=#
+              set the compression level to # (a value from 0-9, where 9 is the
+              highest and 0 is no compression).  The default is 1 (fast, loose
+              compression).
+
+       --ignore-missing
+              report missing objects, but don’t stop the collection.
+
+EXIT STATUS
+       The exit status will be nonzero if there were any errors.  Encountering
+       any missing object is considered an error.
+
+EXAMPLES
+              # Remove all saves of &quot;home&quot; and most of the otherwise unreferenced data.
+              $ bup rm home
+              $ bup gc
+
+SEE ALSO
+       bup-rm(1) and bup-fsck(1)
+
+BUP
+       Part of the bup(1) suite.
+
+AUTHORS
+       Rob Browning rlb@defaultvalue.org
+
+Bup 0.33.7                        2025-01-11                         bup-gc(1)
+</pre></body></html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>timeval(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>timeval(3type)                                                  timeval(3type)
+
+NAME
+       timeval - time in seconds and microseconds
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;sys/time.h&gt;
+
+       struct timeval {
+           time_t       tv_sec;   /* Seconds */
+           suseconds_t  tv_usec;  /* Microseconds */
+       };
+
+DESCRIPTION
+       Describes times in seconds and microseconds.
+
+STANDARDS
+       POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001.
+
+NOTES
+       The   following  headers  also  provide  this  type:  &lt;sys/resource.h&gt;,
+       &lt;sys/select.h&gt;, and &lt;utmpx.h&gt;.
+
+SEE ALSO
+       gettimeofday(2), select(2), utimes(2), adjtime(3),  futimes(3),  timer‐
+       add(3), suseconds_t(3type), time_t(3type), timespec(3type)
+
+Linux man-pages 6.9.1             2024-05-02                    timeval(3type)
+</pre></body></html>

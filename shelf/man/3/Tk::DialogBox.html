@@ -1,0 +1,119 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::DialogBox(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>DialogBox(3pm)        User Contributed Perl Documentation       DialogBox(3pm)
+
+NAME
+       Tk::DialogBox - create and manipulate a dialog screen.
+
+SYNOPSIS
+           use Tk::DialogBox
+           ...
+           $d = $top-&gt;DialogBox(-title =&gt; &quot;Title&quot;, -buttons =&gt; [&quot;OK&quot;, &quot;Cancel&quot;]);
+           $w = $d-&gt;add(Widget, args)-&gt;pack;
+           ...
+           $button = $d-&gt;Show;
+
+DESCRIPTION
+       DialogBox is very similar to Dialog except that it allows any widget in
+       the top Frame. DialogBox creates two Frames, top and bottom. The bottom
+       Frame shows all the specified Buttons, lined up from left to right. The
+       top Frame acts as a container for all other widgets that can be added
+       with the add() method.
+
+OPTIONS
+       The options recognized by DialogBox are as follows:
+
+       -title
+           Specify  the  title  of the DialogBox. If this is not set, then the
+           name of the program is used.
+
+       -buttons
+           The button names  to  display  in  the  bottom  Frame.  This  is  a
+           reference to an array of strings containing the text to put on each
+           Button.  There  is no default value for this. If you do not specify
+           any button names, no Buttons are displayed.
+
+       -default_button
+           Specifies the default Button that is considered invoked  when  user
+           presses  &lt;Return&gt;  on the DialogBox. This Button is highlighted. If
+           no default Button is specified, then the first element of the array
+           whose reference is passed to the -buttons option  is  used  as  the
+           default.
+
+       -cancel_button
+           Specifies  the  Button  that  is  considered  invoked when the user
+           closes the DialogBox using the window manager&#x27;s  close  button.  If
+           the  -cancel_button  option  is  not given, and if there&#x27;s only one
+           button configured, then this button is  also  used  as  the  cancel
+           button.  Otherwise no button is considered as the cancel button; in
+           such  a  case  Show  just  returns &quot;undef&quot; when the user closes the
+           DialogBox.
+
+       -command
+           A callback which is executed after invoking an action to close  the
+           DialogBox,  but  before  restoring  focus and grab information. The
+           selected button is passed as the first argument.
+
+       -focus
+           Specify the widget to receive the initial focus  after  popping  up
+           the  DialogBox.  By default the -default_button widget receives the
+           initial focus.
+
+       -showcommand
+           A callback which is executed before displaying  the  DialogBox  and
+           waiting for user input. The DialogBox itself is passed as the first
+           argument.
+
+METHODS
+       DialogBox supports only two methods as of now:
+
+       add(widget, options)
+           Add  the  widget indicated by widget. Widget can be the name of any
+           Tk widget (standard or contributed). options are the  options  that
+           the  widget  accepts.  The  widget  is advertized as a subwidget of
+           DialogBox. The name of  widget  is  lower-cased  and  used  as  the
+           advertised name. If multiple instances of widget are created in the
+           DialogBox,  then  only the last one gets the advertised name. add()
+           does not automatically pack() or grid() widget into the DialogBox.
+
+       Show(?-global?)
+           Displays the Dialog until the user invokes one of  the  Buttons  in
+           the  bottom Frame. If the grab type -global is specified, then Show
+           uses that grab; otherwise it defaults to a local grab. Returns  the
+           name of the Button invoked.
+
+           The  actual  Dialog  is  shown  using  the  Popup method. Any other
+           options supplied to Show are passed to Popup, and can  be  used  to
+           position  the  Dialog  on  the  screen.  Please  read Tk::Popup for
+           details.
+
+       Exit()
+           Close the dialogbox, by emulating a click on the default button.
+
+ADVERTISED WIDGETS
+       top The subwidget reference to the top half of  the  DialogBox  widget,
+           the Frame containing widgets added by the add method.
+
+       bottom
+           The subwidget reference to the bottom half of the DialogBox widget,
+           the Frame containing the Button widgets.
+
+       B_&quot;button-text&quot;
+           Individual  subwidget  references  to  the Buttons in the DialogBox
+           widget. The subwidget name is the string B_ concatenated  with  the
+           Button&#x27;s -text value.
+
+BUGS
+       There  is no way of removing a widget once it has been added to the top
+       Frame, unless you access the top subwidget and  go  through  the  child
+       widgets.
+
+       There  is  no  control over the appearance of the Buttons in the bottom
+       Frame nor is there any way to control the placement of the  two  Frames
+       with respect to each other.
+
+AUTHOR
+       Rajappa Iyer rsi@earthling.net
+
+       This code is distributed under the same terms as Perl.
+
+perl v5.40.1                      2025-04-13                    DialogBox(3pm)
+</pre></body></html>

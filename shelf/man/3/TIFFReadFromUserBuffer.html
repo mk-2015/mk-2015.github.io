@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFReadFromUserBuffer(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFREADFROMUSERBUFFER(3tiff)       LibTIFF      TIFFREADFROMUSERBUFFER(3tiff)
+
+NAME
+       TIFFReadFromUserBuffer - decode data using an user defined buffer
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFReadFromUserBuffer(TIFF *tif, uint32_t strile, void *inbuf, tm‐
+       size_t insize, void *outbuf, tmsize_t outsize)
+
+DESCRIPTION
+       Use  the  provided  input buffer (inbuf, insize) and decompress it into
+       (outbuf,   outsize).   This    function    replaces    the    use    of
+       TIFFReadEncodedStrip()  /  TIFFReadEncodedTile() when the user can pro‐
+       vide the buffer for the input data, for example when he wants to  avoid
+       libtiff  to read the strile offset/count values from the StripOffsets /
+       StripByteCounts or TileOffsets / TileByteCounts arrays.  inbuf  content
+       must be writable (if bit reversal is needed).
+
+RETURN VALUES
+       Returns 1 in case of success, 0 otherwise.
+
+DIAGNOSTICS
+       All error messages are directed to the TIFFErrorExtR() routine.
+
+SEE ALSO
+       TIFFOpen  (3tiff),  TIFFReadRawStrip (3tiff), TIFFReadScanline (3tiff),
+       TIFFReadEncodedStrip  (3tiff),  TIFFReadEncodedTile  (3tiff),   libtiff
+       (3tiff),
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026    TIFFREADFROMUSERBUFFER(3tiff)
+</pre></body></html>

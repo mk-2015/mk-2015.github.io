@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCGLCKTRMIOS(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSLCKTRMIOS(2const)                                  TIOCSLCKTRMIOS(2const)
+
+NAME
+       TIOCGLCKTRMIOS, TIOCSLCKTRMIOS - locking the termios structre
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC*CLKTRMIOS constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCGLCKTRMIOS, struct termios *argp);
+       int ioctl(int fd, TIOCSLCKTRMIOS, const struct termios *argp);
+
+       #include &lt;asm/termbits.h&gt;
+
+       struct termios;
+
+DESCRIPTION
+       The  termios structure of a terminal can be locked.  The lock is itself
+       a termios structure, with nonzero bits or fields  indicating  a  locked
+       value.
+
+       TIOCGLCKTRMIOS
+              Gets  the  locking status of the termios structure of the termi‐
+              nal.
+
+       TIOCSLCKTRMIOS
+              Sets the locking status of the termios structure of  the  termi‐
+              nal.   Only  a  process with the CAP_SYS_ADMIN capability can do
+              this.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EPERM  Insufficient permission.
+
+CAVEATS
+       Please  note that struct termios from &lt;asm/termbits.h&gt; is different and
+       incompatible with struct termios from &lt;termios.h&gt;.  These  ioctl  calls
+       require struct termios from &lt;asm/termbits.h&gt;.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2), TCSETS(2const)
+
+Linux man-pages 6.9.1             2024-06-13            TIOCSLCKTRMIOS(2const)
+</pre></body></html>

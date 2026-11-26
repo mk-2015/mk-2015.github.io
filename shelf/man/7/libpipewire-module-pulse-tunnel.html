@@ -1,0 +1,87 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-pulse-tunnel(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...e-tunnel(7)  Miscellaneous Information Manual  libpipe...e-tunnel(7)
+
+NAME
+       libpipewire-module-pulse-tunnel - Pulse Tunnel
+
+DESCRIPTION
+       The pulse-tunnel module provides a source or sink that tunnels all
+       audio to a remote PulseAudio connection.
+
+       It is usually used with the PulseAudio or module-protocol-pulse on the
+       remote end to accept the connection.
+
+       This module is usually used together with module-zeroconf-discover that
+       will automatically load the tunnel with the right parameters based on
+       zeroconf information.
+
+MODULE NAME
+       libpipewire-module-pulse-tunnel
+
+MODULE OPTIONS
+       • tunnel.mode:  the  desired  tunnel to create, must be source or sink.
+         (Default sink)
+
+       • pulse.server.address: the address of the PulseAudio server to  tunnel
+         to.
+
+       • pulse.latency:  the  latency to end-to-end latency in milliseconds to
+         maintain (Default 200).
+
+       • reconnect.interval.ms: when the remote connection is broken, retry to
+         connect with this interval in millisconds.  A  value  of  0  disables
+         recovery  and  will  result  in  a  module unload. (Default 0) (Since
+         1.1.0)
+
+       • stream.props: Extra properties for the local stream.
+
+GENERAL OPTIONS
+       Options with well-known behavior.
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • node.latency
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.virtual
+
+       • media.class
+
+       • target.object to specify the remote node.name or serial.id to link to
+
+EXAMPLE CONFIGURATION OF A VIRTUAL SINK
+       # ~/.config/pipewire/pipewire.conf.d/my-pulse-tunnel.conf
+
+       context.modules = [
+       {   name = libpipewire-module-pulse-tunnel
+           args = {
+               tunnel.mode = sink
+               # Set the remote address to tunnel to
+               pulse.server.address = &quot;tcp:192.168.1.126&quot;
+               #pulse.latency = 200
+               #reconnect.interval.ms = 0
+               #audio.rate=&lt;sample rate&gt;
+               #audio.channels=&lt;number of channels&gt;
+               #audio.position=&lt;channel map&gt;
+               #target.object=&lt;remote target name&gt;
+               stream.props = {
+                   # extra sink properties
+               }
+           }
+       }
+       ]
+
+PipeWire                             1.4.2               libpipe...e-tunnel(7)
+</pre></body></html>

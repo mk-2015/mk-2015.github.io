@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net::DBus::Error(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Net::DBus::Error(3pm) User Contributed Perl DocumentationNet::DBus::Error(3pm)
+
+NAME
+       Net::DBus::Error - Error details for remote method invocation
+
+SYNOPSIS
+         package Music::Player::UnknownFormat;
+
+         use base qw(Net::DBus::Error);
+
+         # Define an error type for unknown track encoding type
+         # for a music player service
+         sub new {
+             my $proto = shift;
+             my $class = ref($proto) || $proto;
+             my $self = $class-&gt;SUPER::new(name =&gt; &quot;org.example.music.UnknownFormat&quot;,
+                                           message =&gt; &quot;Unknown track encoding format&quot;);
+         }
+
+
+         package Music::Player::Engine;
+
+         ...snip...
+
+         # Play either mp3 or ogg music tracks, otherwise
+         # thrown an error
+         sub play {
+             my $self = shift;
+             my $url = shift;
+
+             if ($url =~ /\.(mp3|ogg)$/) {
+                 ...play the track
+             } else {
+                die Music::Player::UnknownFormat-&gt;new();
+             }
+         }
+
+DESCRIPTION
+       This objects provides for strongly typed error handling. Normally a
+       service would simply call
+
+         die &quot;some message text&quot;
+
+       When returning the error condition to the calling DBus client, the
+       message is associated with a generic error code or
+       &quot;org.freedesktop.DBus.Failed&quot;.  While this suffices for many
+       applications, occasionally it is desirable to be able to catch and
+       handle specific error conditions. For such scenarios the service should
+       create subclasses of the &quot;Net::DBus::Error&quot; object providing in a
+       custom error name. This error name is then sent back to the client
+       instead of the genreic &quot;org.freedesktop.DBus.Failed&quot; code.
+
+METHODS
+       my $error = Net::DBus::Error-&gt;new(name =&gt; $error_name, message =&gt;
+       $description);
+           Creates  a  new  error  object  whose  name  is given by the &quot;name&quot;
+           parameter, and long descriptive text is provided by  the  &quot;message&quot;
+           parameter.  The &quot;name&quot; parameter has certain formatting rules which
+           must be adhered to. It  must  only  contain  the  letters  &#x27;a&#x27;-&#x27;Z&#x27;,
+           &#x27;0&#x27;-&#x27;9&#x27;,  &#x27;-&#x27;,  &#x27;_&#x27;  and &#x27;.&#x27;. There must be at least two components
+           separated   by   a   &#x27;.&#x27;,   For   example   a   valid    name    is
+           &#x27;org.example.Music.UnknownFormat&#x27;.
+
+       $error-&gt;name
+           Returns the DBus error name associated with the object.
+
+       $error-&gt;message
+           Returns  the  descriptive  text/message  associated  with the error
+           condition.
+
+       $error-&gt;stringify
+           Formats the error as a string in a manner suitable for printing out
+           / logging / displaying to the user, etc.
+
+AUTHOR
+       Daniel P. Berrange
+
+COPYRIGHT
+       Copyright (C) 2005-2011 Daniel P. Berrange
+
+SEE ALSO
+       Net::DBus, Net::DBus::Object
+
+perl v5.40.0                      2024-10-15             Net::DBus::Error(3pm)
+</pre></body></html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>nologin(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>NOLOGIN(8)                   System Administration                  NOLOGIN(8)
+
+NAME
+       nologin - politely refuse a login
+
+SYNOPSIS
+       nologin [-V] [-h]
+
+DESCRIPTION
+       nologin displays a message that an account is not available and exits
+       non-zero. It is intended as a replacement shell field to deny login
+       access to an account.
+
+       If the file /etc/nologin.txt exists, nologin displays its contents to
+       the user instead of the default message.
+
+       The exit status returned by nologin is always 1.
+
+OPTIONS
+       -c, --command command
+
+       --init-file
+
+       -i --interactive
+
+       --init-file file
+
+       -i, --interactive
+
+       -l, --login
+
+       --noprofile
+
+       --norc
+
+       --posix
+
+       --rcfile file
+
+       -r, --restricted
+
+       These shell command-line options are ignored to avoid nologin error.
+
+       -h, --help
+           Display help text and exit.
+
+       -V, --version
+           Display version and exit.
+
+NOTES
+       nologin is a per-account way to disable login (usually used for system
+       accounts like http or ftp). nologin uses /etc/nologin.txt as an
+       optional source for a non-default message, the login access is always
+       refused independently of the file.
+
+       pam_nologin(8) PAM module usually prevents all non-root users from
+       logging into the system. pam_nologin(8) functionality is controlled by
+       /var/run/nologin or the /etc/nologin file.
+
+HISTORY
+       The nologin command appeared in 4.4BSD.
+
+AUTHORS
+       Karel Zak &lt;kzak@redhat.com&gt;
+
+SEE ALSO
+       login(1), passwd(5), pam_nologin(8)
+
+REPORTING BUGS
+       For bug reports, use the issue tracker
+       &lt;https://github.com/util-linux/util-linux/issues&gt;.
+
+AVAILABILITY
+       The nologin command is part of the util-linux package which can be
+       downloaded from Linux Kernel Archive
+       &lt;https://www.kernel.org/pub/linux/utils/util-linux/&gt;.
+
+util-linux 2.41.5                 2026-06-16                        NOLOGIN(8)
+</pre></body></html>

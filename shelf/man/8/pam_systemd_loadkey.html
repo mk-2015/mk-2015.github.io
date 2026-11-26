@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pam_systemd_loadkey(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>PAM_SYSTEMD_LOADKEY(8)        pam_systemd_loadkey       PAM_SYSTEMD_LOADKEY(8)
+
+NAME
+       pam_systemd_loadkey - Read password from kernel keyring and set it as
+       PAM authtok
+
+SYNOPSIS
+       pam_systemd_loadkey.so
+
+DESCRIPTION
+       pam_systemd_loadkey reads a NUL-separated password list from the kernel
+       keyring, and sets the last password in the list as the PAM authtok,
+       which can be used by e.g.  pam_get_authtok(3).
+
+       The password list is supposed to be stored in the &quot;user&quot; keyring of the
+       root user, by an earlier call to systemd-ask-password(1) with
+       --keyname=. You can pass the keyname to pam_systemd_loadkey via the
+       keyname= option.
+
+OPTIONS
+       The following options are understood:
+
+       keyname=
+           Takes a string argument which sets the keyname to read. The default
+           is &quot;cryptsetup&quot;. During boot, systemd-cryptsetup@.service(8) stores
+           a passphrase or PIN in the keyring. The LUKS2 volume key can also
+           be used, via the link-volume-key option in crypttab(5).
+
+           Table 1.  Possible values for keyname.  allbox tab(:); lB lB.  T{
+           Value T}:T{ Description T} l l l l l l l l.  T{ cryptsetup T}:T{
+           Passphrase or recovery key T} T{ fido2-pin T}:T{ Security token PIN
+           T} T{ luks2-pin T}:T{ LUKS2 token PIN T} T{ tpm2-pin T}:T{ TPM2 PIN
+           T}
+
+           Added in version 255.
+
+       debug
+           The module will log debugging information as it operates.
+
+           Added in version 255.
+
+EXAMPLE
+       This module is intended to be used when you use LUKS with a passphrase,
+       enable autologin in the display manager, and want to unlock Gnome
+       Keyring / KDE KWallet automatically. So in total, you only enter one
+       password during boot.
+
+       You need to set the password of your Gnome Keyring/KWallet to the same
+       as your LUKS passphrase. Then add the following lines to your display
+       manager&#x27;s PAM config under /etc/pam.d/ (e.g.  sddm-autologin):
+
+           -auth       optional    pam_systemd_loadkey.so
+           -auth       optional    pam_gnome_keyring.so
+           -session    optional    pam_gnome_keyring.so auto_start
+           -session    optional    pam_kwallet5.so auto_start
+
+       And add the following lines to your display manager&#x27;s systemd service
+       file, so it can access root&#x27;s keyring:
+
+           [Service]
+           KeyringMode=inherit
+
+       In this setup, early during the boot process, systemd-
+       cryptsetup@.service(8) will ask for the passphrase and store it in the
+       kernel keyring with the keyname &quot;cryptsetup&quot;. Then when the display
+       manager does the autologin, pam_systemd_loadkey will read the
+       passphrase from the kernel keyring, set it as the PAM authtok, and then
+       pam_gnome_keyring and pam_kwallet5 will unlock with the same
+       passphrase.
+
+systemd 257.13                                          PAM_SYSTEMD_LOADKEY(8)
+</pre></body></html>

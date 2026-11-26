@@ -1,0 +1,92 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>terser(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>TERSER(1)                        User Commands                       TERSER(1)
+
+NAME
+       terser  -  JavaScript  parser  and  mangler/compressor  and  beautifier
+       toolkit
+
+SYNOPSIS
+       terser [options] [files...]
+
+OPTIONS
+       -V, --version
+              output the version number
+
+       -p, --parse &lt;options&gt;
+              Specify parser options.
+
+       -c, --compress [options]
+              Enable compressor/specify compressor options.
+
+       -m, --mangle [options]
+              Mangle names/specify mangler options.
+
+       --mangle-props [options]
+              Mangle properties/specify mangler options.
+
+       -f, --format [options]
+              Format options.
+
+       -b, --beautify [options]
+              Alias for --format.
+
+       -o, --output &lt;file&gt;
+              Output file (default STDOUT).
+
+       --comments [filter]
+              Preserve copyright comments in the output.
+
+       --config-file &lt;file&gt;
+              Read minify() options from JSON file.
+
+       -d, --define &lt;expr&gt;[=value]
+              Global definitions.
+
+       --ecma &lt;version&gt;
+              Specify ECMAScript release: 5, 2015, 2016 or 2017...
+
+       -e, --enclose [arg[,...][:value[,...]]]
+              Embed output in a big function with configurable  arguments  and
+              values.
+
+       --ie8  Support non-standard Internet Explorer 8.
+
+       --keep-classnames
+              Do not mangle/drop class names.
+
+       --keep-fnames
+              Do  not  mangle/drop  function names. Useful for code relying on
+              Function.prototype.name.
+
+       --module
+              Input is an ES6 module
+
+       --name-cache &lt;file&gt;
+              File to hold mangled name mappings.
+
+       --rename
+              Force symbol expansion.
+
+       --no-rename
+              Disable symbol expansion.
+
+       --safari10
+              Support non-standard Safari 10.
+
+       --source-map [options]
+              Enable source map/specify source map options.
+
+       --timings
+              Display operations run time on STDERR.
+
+       --toplevel
+              Compress and/or mangle variables in toplevel scope.
+
+       --wrap &lt;name&gt;
+              Embed everything as a function with ???exports???  corresponding
+              to ???name??? globally.
+
+       -h, --help
+              display help for command
+
+terser 5.38.0                    February 2025                       TERSER(1)
+</pre></body></html>

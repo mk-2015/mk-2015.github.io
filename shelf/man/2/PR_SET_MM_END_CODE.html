@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_MM_END_CODE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_MM_START_CODE(2const)                      PR_SET_MM_START_CODE(2const)
+
+NAME
+       PR_SET_MM_START_CODE, PR_SET_MM_END_CODE - modify kernel memory map de‐
+       scriptor fields
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_MM, PR_SET_MM_START_CODE, unsigned long addr, 0L, 0L);
+       int prctl(PR_SET_MM, PR_SET_MM_END_CODE, unsigned long addr, 0L, 0L);
+
+DESCRIPTION
+       PR_SET_MM_START_CODE
+              Set  the address above which the program text can run.  The cor‐
+              responding memory area must be readable and executable, but  not
+              writable  or shareable (see mprotect(2) and mmap(2) for more in‐
+              formation).
+
+       PR_SET_MM_END_CODE
+              Set the address below which the program text can run.  The  cor‐
+              responding  memory area must be readable and executable, but not
+              writable or shareable.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL addr  is  greater  than  TASK_SIZE (the limit on the size of the
+              user address space for this architecture).
+
+       EINVAL The permissions of the corresponding memory area are not as  re‐
+              quired.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.3.
+
+SEE ALSO
+       prctl(2)
+
+Linux man-pages 6.9.1             2024-06-01      PR_SET_MM_START_CODE(2const)
+</pre></body></html>

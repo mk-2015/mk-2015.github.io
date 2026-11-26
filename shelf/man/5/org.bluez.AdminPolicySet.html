@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.AdminPolicySet(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ...POLICYSET(5)  Linux System Administration ORG.BLUEZ...POLICYSET(5)
+
+NAME
+       org.bluez.AdminPolicySet - BlueZ D-Bus AdminPolicySet API documentation
+
+DESCRIPTION
+       This  API  provides methods to control the behavior of bluetoothd(8) as
+       an administrator.
+
+       Interface AdminPolicySet1 provides methods to set  policies.  Once  the
+       policy is set successfully, it will affect all clients and stay persis‐
+       tently even after restarting bluetoothd(8). The only way to clear it is
+       to overwrite the policy with the same method.
+
+INTERFACE
+       Service
+              org.bluez
+
+       Interface
+              org.bluez.AdminPolicySet1 [experimental]
+
+       Object path
+              [variable prefix]/{hci0,hci1,...}
+
+   Methods
+   void SetServiceAllowList(array{string} UUIDs)
+          Sets the service allowlist by specifying service UUIDs.
+
+          When  called, bluetoothd(8) will block incoming and outgoing connec‐
+          tions to the service not in UUIDs for all of the clients.
+
+          Any subsequent calls to this method will  supersede  any  previously
+          set  allowlist values.  Calling this method with an empty array will
+          allow any service UUIDs to be used.
+
+          The default value is an empty array.
+
+          Possible errors:
+
+          org.bluez.Error.InvalidArguments
+
+          org.bluez.Error.Failed
+
+BlueZ                            October 2023         ORG.BLUEZ...POLICYSET(5)
+</pre></body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_CIPHER-NULL(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_CIPHER-NULL(7SSL)               OpenSSL              EVP_CIPHER-NULL(7SSL)
+
+NAME
+       EVP_CIPHER-NULL - The NULL EVP_CIPHER implementation
+
+DESCRIPTION
+       Support for a NULL symmetric encryption using the EVP_CIPHER API.  This
+       is used when the TLS cipher suite is TLS_NULL_WITH_NULL_NULL.  This
+       does no encryption (just copies the data) and has a mac size of zero.
+
+   Algorithm Name
+       The following algorithm is available in the default provider:
+
+       &quot;NULL&quot;
+
+   Parameters
+       This implementation supports the following parameters:
+
+       Gettable EVP_CIPHER parameters
+
+       See &quot;Gettable EVP_CIPHER parameters&quot; in EVP_EncryptInit(3)
+
+       Gettable EVP_CIPHER_CTX parameters
+
+       &quot;keylen&quot; (OSSL_CIPHER_PARAM_KEYLEN) &lt;unsigned integer&gt;
+       &quot;ivlen&quot; (OSSL_CIPHER_PARAM_IVLEN and &lt;OSSL_CIPHER_PARAM_AEAD_IVLEN)
+       &lt;unsigned integer&gt;
+       &quot;tls-mac&quot; (OSSL_CIPHER_PARAM_TLS_MAC) &lt;octet ptr&gt;
+
+       See &quot;PARAMETERS&quot; in EVP_EncryptInit(3) for further information.
+
+       Settable EVP_CIPHER_CTX parameters
+
+       &quot;tls-mac-size&quot; (OSSL_CIPHER_PARAM_TLS_MAC_SIZE) &lt;unsigned integer&gt;
+
+       See &quot;PARAMETERS&quot; in EVP_EncryptInit(3) for further information.
+
+CONFORMING TO
+       RFC 5246 section-6.2.3.1
+
+SEE ALSO
+       provider-cipher(7), OSSL_PROVIDER-default(7)
+
+COPYRIGHT
+       Copyright 2023 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09             EVP_CIPHER-NULL(7SSL)
+</pre></body></html>

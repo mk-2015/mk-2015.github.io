@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-example-sink(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...ple-sink(7)  Miscellaneous Information Manual  libpipe...ple-sink(7)
+
+NAME
+       libpipewire-module-example-sink - Example Sink
+
+DESCRIPTION
+       The example sink is a good starting point for writing a custom sink.
+
+       We refer to the source code for more information.
+
+MODULE NAME
+       libpipewire-module-example-sink
+
+MODULE OPTIONS
+       • node.name: a unique name for the stream
+
+       • node.description: a human readable name for the stream
+
+       • stream.props = {}: properties to be passed to the stream
+
+GENERAL OPTIONS
+       Options with well-known behavior.
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • media.name
+
+       • node.latency
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.virtual
+
+       • media.class
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-example-sink.conf
+
+       context.modules = [
+       {   name = libpipewire-module-example-sink
+           args = {
+               node.name = &quot;example_sink&quot;
+               node.description = &quot;My Example Sink&quot;
+               stream.props = {
+                   audio.position = [ FL FR ]
+               }
+           }
+       }
+       ]
+
+PipeWire                             1.4.2               libpipe...ple-sink(7)
+</pre></body></html>

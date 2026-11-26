@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_PTRACER(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_PTRACER(2const)                                  PR_SET_PTRACER(2const)
+
+NAME
+       PR_SET_PTRACER - allow processes to ptrace(2) the calling process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_PTRACER, long pid);
+
+DESCRIPTION
+       This  is  meaningful  only  when  the Yama LSM is enabled and in mode 1
+       (&quot;restricted ptrace&quot;, visible via /proc/sys/kernel/yama/ptrace_scope).
+
+       When a &quot;ptracer process ID&quot; is passed in pid, the caller  is  declaring
+       that  the  ptracer  process  can ptrace(2) the calling process as if it
+       were a direct process ancestor.
+
+       Each PR_SET_PTRACER operation replaces the  previous  &quot;ptracer  process
+       ID&quot;.
+
+       Employing PR_SET_PTRACER with pid set to 0 clears the caller&#x27;s &quot;ptracer
+       process ID&quot;.  If pid is PR_SET_PTRACER_ANY, the ptrace restrictions in‐
+       troduced by Yama are effectively disabled for the calling process.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL pid is not 0, PR_SET_PTRACER_ANY, nor the  PID  of  an  existing
+              process.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.4.
+
+SEE ALSO
+       prctl(2),
+
+       For  further  information, see the kernel source file Documentation/ad‐
+       min-guide/LSM/Yama.rst (or Documentation/security/Yama.txt before Linux
+       4.13).
+
+Linux man-pages 6.9.1             2024-06-02            PR_SET_PTRACER(2const)
+</pre></body></html>

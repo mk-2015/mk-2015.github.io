@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_MD-SHAKE(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_MD-SHAKE(7SSL)                  OpenSSL                 EVP_MD-SHAKE(7SSL)
+
+NAME
+       EVP_MD-SHAKE, EVP_MD-KECCAK-KMAC - The SHAKE / KECCAK family EVP_MD
+       implementations
+
+DESCRIPTION
+       Support for computing SHAKE or KECCAK-KMAC digests through the EVP_MD
+       API.
+
+       KECCAK-KMAC is an Extendable Output Function (XOF), with a definition
+       similar to SHAKE, used by the KMAC EVP_MAC implementation (see
+       EVP_MAC-KMAC(7)).
+
+   Identities
+       This implementation is available in the FIPS provider as well as the
+       default provider, and includes the following varieties:
+
+       KECCAK-KMAC-128
+           Known  names  are  &quot;KECCAK-KMAC-128&quot; and &quot;KECCAK-KMAC128&quot;.  This is
+           used by EVP_MAC-KMAC128(7).  Using the notation from NIST FIPS  202
+           (Section      6.2),     we     have     KECCAK-KMAC-128(M, d)     =
+           KECCAK[256](M || 00, d) (see the description of KMAC128 in Appendix
+           A of NIST SP 800-185).
+
+       KECCAK-KMAC-256
+           Known names are &quot;KECCAK-KMAC-256&quot; and  &quot;KECCAK-KMAC256&quot;.   This  is
+           used  by EVP_MAC-KMAC256(7).  Using the notation from NIST FIPS 202
+           (Section     6.2),     we     have     KECCAK-KMAC-256(M, d)      =
+           KECCAK[512](M || 00, d) (see the description of KMAC256 in Appendix
+           A of NIST SP 800-185).
+
+       SHAKE-128
+           Known names are &quot;SHAKE-128&quot; and &quot;SHAKE128&quot;.
+
+       SHAKE-256
+           Known names are &quot;SHAKE-256&quot; and &quot;SHAKE256&quot;.
+
+   Parameters
+       This implementation supports the following OSSL_PARAM(3) entries:
+
+       &quot;xoflen&quot; (OSSL_DIGEST_PARAM_XOFLEN) &lt;unsigned integer&gt;
+           Sets  or  Gets  the  digest length for extendable output functions.
+           The length of the &quot;xoflen&quot; parameter should not exceed  that  of  a
+           size_t.
+
+           The SHAKE-128 and SHAKE-256 implementations do not have any default
+           digest length.
+
+           This    parameter    must    be    set    before   calling   either
+           EVP_DigestFinal_ex() or EVP_DigestFinal(),  since  these  functions
+           were   not  designed  to  handle  variable  length  output.  It  is
+           recommended    to     either     use     EVP_DigestSqueeze()     or
+           EVP_DigestFinalXOF() instead.
+
+       &quot;size&quot; (OSSL_DIGEST_PARAM_SIZE) &lt;unsigned integer&gt;
+           An alias of &quot;xoflen&quot;.
+
+       See  &quot;PARAMETERS&quot;  in EVP_DigestInit(3) for further information related
+       to parameters
+
+NOTES
+       For SHAKE-128, to ensure the maximum security strength of 128 bits, the
+       output length passed to EVP_DigestFinalXOF() should be at least 32.
+
+       For SHAKE-256, to ensure the maximum security strength of 256 bits, the
+       output length passed to EVP_DigestFinalXOF() should be at least 64.
+
+SEE ALSO
+       EVP_MD_CTX_set_params(3), provider-digest(7), OSSL_PROVIDER-default(7)
+
+HISTORY
+       Since OpenSSL 3.4 the SHAKE-128 and SHAKE-256 implementations  have  no
+       default digest length.
+
+COPYRIGHT
+       Copyright 2020-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                EVP_MD-SHAKE(7SSL)
+</pre></body></html>

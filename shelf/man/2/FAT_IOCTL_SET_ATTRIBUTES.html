@@ -1,0 +1,165 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FAT_IOCTL_SET_ATTRIBUTES(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>FAT_IOCTL_SET_ATTRIBUTES(2const)              FAT_IOCTL_SET_ATTRIBUTES(2const)
+
+NAME
+       FAT_IOCTL_GET_ATTRIBUTES,  FAT_IOCTL_SET_ATTRIBUTES  - get and set file
+       attributes in a FAT filesystem
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/msdos_fs.h&gt;  /* Definition of FAT_* and
+                                       ATTR_* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, FAT_IOCTL_GET_ATTRIBUTES, uint32_t *attr);
+       int ioctl(int fd, FAT_IOCTL_SET_ATTRIBUTES, uint32_t *attr);
+
+DESCRIPTION
+       Files and directories in the FAT filesystem possess  an  attribute  bit
+       mask  that  can  be read with FAT_IOCTL_GET_ATTRIBUTES and written with
+       FAT_IOCTL_SET_ATTRIBUTES.
+
+       The fd argument contains a file descriptor for a file or directory.  It
+       is sufficient to create the file descriptor by calling open(2) with the
+       O_RDONLY flag.
+
+       The attr argument contains a pointer to a bit mask.  The  bits  of  the
+       bit mask are:
+
+       ATTR_RO
+              This bit specifies that the file or directory is read-only.
+
+       ATTR_HIDDEN
+              This bit specifies that the file or directory is hidden.
+
+       ATTR_SYS
+              This bit specifies that the file is a system file.
+
+       ATTR_VOLUME
+              This  bit  specifies  that the file is a volume label.  This at‐
+              tribute is read-only.
+
+       ATTR_DIR
+              This bit specifies that this is a directory.  This attribute  is
+              read-only.
+
+       ATTR_ARCH
+              This  bit  indicates  that  this  file  or  directory  should be
+              archived.  It is set when a file is created or modified.  It  is
+              reset by an archiving system.
+
+       The  zero value ATTR_NONE can be used to indicate that no attribute bit
+       is set.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.12.
+
+EXAMPLES
+       The  following program demonstrates the usage of ioctl(2) to manipulate
+       file attributes.  The program reads and displays the archive  attribute
+       of  a  file.   After  inverting the value of the attribute, the program
+       reads and displays the attribute again.
+
+       The following was recorded when  applying  the  program  for  the  file
+       /mnt/user/foo:
+
+           # ./toggle_fat_archive_flag /mnt/user/foo
+           Archive flag is set
+           Toggling archive flag
+           Archive flag is not set
+
+   Program source (toggle_fat_archive_flag.c)
+
+       #include &lt;fcntl.h&gt;
+       #include &lt;linux/msdos_fs.h&gt;
+       #include &lt;stdint.h&gt;
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;sys/ioctl.h&gt;
+       #include &lt;unistd.h&gt;
+
+       /*
+        * Read file attributes of a file on a FAT filesystem.
+        * Output the state of the archive flag.
+        */
+       static uint32_t
+       readattr(int fd)
+       {
+           int       ret;
+           uint32_t  attr;
+
+           ret = ioctl(fd, FAT_IOCTL_GET_ATTRIBUTES, &amp;attr);
+           if (ret == -1) {
+               perror(&quot;ioctl&quot;);
+               exit(EXIT_FAILURE);
+           }
+
+           if (attr &amp; ATTR_ARCH)
+               printf(&quot;Archive flag is set\n&quot;);
+           else
+               printf(&quot;Archive flag is not set\n&quot;);
+
+           return attr;
+       }
+
+       int
+       main(int argc, char *argv[])
+       {
+           int       fd;
+           int       ret;
+           uint32_t  attr;
+
+           if (argc != 2) {
+               printf(&quot;Usage: %s FILENAME\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           fd = open(argv[1], O_RDONLY);
+           if (fd == -1) {
+               perror(&quot;open&quot;);
+               exit(EXIT_FAILURE);
+           }
+
+           /*
+            * Read and display the FAT file attributes.
+            */
+           attr = readattr(fd);
+
+           /*
+            * Invert archive attribute.
+            */
+           printf(&quot;Toggling archive flag\n&quot;);
+           attr ^= ATTR_ARCH;
+
+           /*
+            * Write the changed FAT file attributes.
+            */
+           ret = ioctl(fd, FAT_IOCTL_SET_ATTRIBUTES, &amp;attr);
+           if (ret == -1) {
+               perror(&quot;ioctl&quot;);
+               exit(EXIT_FAILURE);
+           }
+
+           /*
+            * Read and display the FAT file attributes.
+            */
+           readattr(fd);
+
+           close(fd);
+
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       ioctl(2), ioctl_fat(2)
+
+Linux man-pages 6.9.1             2024-06-15  FAT_IOCTL_SET_ATTRIBUTES(2const)
+</pre></body></html>

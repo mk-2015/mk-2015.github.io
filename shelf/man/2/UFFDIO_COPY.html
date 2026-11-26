@@ -1,0 +1,89 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UFFDIO_COPY(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>UFFDIO_COPY(2const)                                        UFFDIO_COPY(2const)
+
+NAME
+       UFFDIO_COPY  - atomically copy a continuous memory chunk into the user‐
+       fault registered range
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, UFFDIO_COPY, struct uffdio_copy *argp);
+
+       #include &lt;linux/userfaultfd.h&gt;
+
+       struct uffdio_copy {
+           __u64  dst;   /* Destination of copy */
+           __u64  src;   /* Source of copy */
+           __u64  len;   /* Number of bytes to copy */
+           __u64  mode;  /* Flags controlling behavior of copy */
+           __s64  copy;  /* Number of bytes copied, or negated error */
+       };
+
+DESCRIPTION
+       Atomically copy a continuous memory chunk into the userfault registered
+       range and optionally wake up the blocked thread.
+
+       The following value may be bitwise ORed in mode to change the  behavior
+       of the UFFDIO_COPY operation:
+
+       UFFDIO_COPY_MODE_DONTWAKE
+              Do not wake up the thread that waits for page-fault resolution
+
+       UFFDIO_COPY_MODE_WP
+              Copy  the  page with read-only permission.  This allows the user
+              to trap the next write to the page, which will block and  gener‐
+              ate  another write-protect userfault message.  This is used only
+              when   both   UFFDIO_REGISTER_MODE_MISSING   and   UFFDIO_REGIS‐
+              TER_MODE_WP modes are enabled for the registered range.
+
+       The copy field is used by the kernel to return the number of bytes that
+       was  actually  copied,  or an error (a negated errno-style value).  The
+       copy field is output-only; it is not read by the UFFDIO_COPY operation.
+
+RETURN VALUE
+       On success, 0 is returned.  In this case, the entire area was copied.
+
+       On error, -1 is returned and errno is set to indicate the error.
+
+ERRORS
+       EAGAIN The number of bytes copied (i.e., the value returned in the copy
+              field) does not equal the value that was specified  in  the  len
+              field.
+
+       EINVAL Either dst or len was not a multiple of the system page size, or
+              the range specified by src and len or dst and len was invalid.
+
+       EINVAL An invalid bit was specified in the mode field.
+
+       ENOENT (since Linux 4.11)
+              The  faulting  process has changed its virtual memory layout si‐
+              multaneously with an outstanding UFFDIO_COPY operation.
+
+       ENOSPC (from Linux 4.11 until Linux 4.13)
+              The faulting process has exited at the time of a UFFDIO_COPY op‐
+              eration.
+
+       ESRCH (since Linux 4.13)
+              The faulting process has exited at the time of a UFFDIO_COPY op‐
+              eration.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.3.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), ioctl_userfaultfd(2), userfaultfd(2)
+
+       linux.git/Documentation/admin-guide/mm/userfaultfd.rst
+
+Linux man-pages 6.9.1             2024-06-17               UFFDIO_COPY(2const)
+</pre></body></html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Archive::Ar(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Archive::Ar(3perl)         libdpkg-perl         Dpkg::Archive::Ar(3perl)
+
+NAME
+       Dpkg::Archive::Ar - Unix ar archive support
+
+DESCRIPTION
+       This module provides a class to handle Unix ar archives.  It support
+       the common format, with no GNU or BSD extensions.
+
+       Note: This is a private module, its API can change at any time.
+
+METHODS
+       $ar = Dpkg::Archive::Ar-&gt;new(%opts)
+               Create a new object to handle Unix ar archives.
+
+               Options:
+
+               filename
+                       The filename for the archive to open or create.
+
+               create  A  boolean  denoting  whether  the  archive  should  be
+                       created, otherwise if it does not exist the constructor
+                       will not open, create or scan it.
+
+       $ar-&gt;create_archive($filename)
+               Create the archive.
+
+       $ar-&gt;open_archive($filename)
+               Open the archive.
+
+       $ar-&gt;parse_magic()
+               Reads and parses the archive magic string, and validates it.
+
+       $ar-&gt;parse_member()
+               Reads and parses the archive member and  tracks  it  for  later
+               handling.
+
+       $ar-&gt;skip_member($member)
+               Skip  this  member  to  the next one.  Get the value of a given
+               substitution.
+
+       $ar-&gt;scan_archive()
+               Scan the archive for all its member files and metadata.
+
+       $ar-&gt;get_members()
+               Get the list of members in the archive.
+
+       $ar-&gt;extract_member($member)
+               Extract the specified member to the current directory.
+
+       $ar-&gt;write_member($member)
+               Write the provided $member into the archive.
+
+       $ar-&gt;add_file($filename)
+               Append the specified $filename into the archive.
+
+       $ar-&gt;close_archive()
+               Close the archive and release any allocated resource.
+
+CHANGES
+   Version 0.xx
+       This is a private module.
+
+1.22.22                           2026-03-06          Dpkg::Archive::Ar(3perl)
+</pre></body></html>

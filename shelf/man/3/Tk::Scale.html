@@ -1,0 +1,245 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Scale(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Scale(3pm)            User Contributed Perl Documentation           Scale(3pm)
+
+NAME
+       Tk::Scale - Create and manipulate Scale widgets
+
+SYNOPSIS
+       $scale = $parent-&gt;Scale(?options?);
+
+STANDARD OPTIONS
+       -activebackground   -font     -highlightthickness -repeatinterval
+       -background    -foreground    -orient   -takefocus
+       -borderwidth   -highlightbackground     -relief   -troughcolor
+       -cursor   -highlightcolor     -repeatdelay
+
+       See Tk::options for details of the standard options.
+
+WIDGET-SPECIFIC OPTIONS
+       Name:     bigIncrement
+       Class:    BigIncrement
+       Switch:   -bigincrement
+           Some  interactions  with  the  scale  cause  its value to change by
+           ``large&#x27;&#x27; increments;  this option specifies the size of the  large
+           increments.   If  specified  as  0, the large increments default to
+           1/10 the range of the scale.
+
+       Name:     command
+       Class:    Command
+       Switch:   -command
+           Specifies the prefix of a perl/Tk callback to invoke  whenever  the
+           scale&#x27;s value is changed via a method.  The actual command consists
+           of this option followed by a space and a real number indicating the
+           new value of the scale.
+
+       Name:     digits
+       Class:    Digits
+       Switch:   -digits
+           An  integer  specifying  how  many  significant  digits  should  be
+           retained when converting the value of the scale to  a  string.   If
+           the  number is less than or equal to zero, then the scale picks the
+           smallest value that guarantees that every possible slider  position
+           prints as a different string.
+
+       Name:     from
+       Class:    From
+       Switch:   -from
+           A real value corresponding to the left or top end of the scale.
+
+       Name:     label
+       Class:    Label
+       Switch:   -label
+           A  string to display as a label for the scale.  For vertical scales
+           the label is displayed just to the right of  the  top  end  of  the
+           scale.  For horizontal scales the label is displayed just above the
+           left  end  of  the  scale.   If the option is specified as an empty
+           string, no label is displayed.
+
+       Name:     length
+       Class:    Length
+       Switch:   -length
+           Specifies the desired long dimension of the scale in  screen  units
+           (i.e.  any  of the forms acceptable to Tk_GetPixels).  For vertical
+           scales this is the scale&#x27;s height;  for horizontal scales it is the
+           scale&#x27;s width.
+
+       Name:     resolution
+       Class:    Resolution
+       Switch:   -resolution
+           A real value specifying the resolution  for  the  scale.   If  this
+           value  is  greater  than zero then the scale&#x27;s value will always be
+           rounded to an even multiple of this value, as will tick  marks  and
+           the endpoints of the scale.  If the value is less than zero then no
+           rounding occurs.  Defaults to 1 (i.e., the value will be integral).
+
+       Name:     showValue
+       Class:    ShowValue
+       Switch:   -showvalue
+           Specifies  a  boolean  value  indicating whether or not the current
+           value of the scale is to be displayed.
+
+       Name:     sliderLength
+       Class:    SliderLength
+       Switch:   -sliderlength
+           Specfies the size of the slider, measured in screen units along the
+           slider&#x27;s long dimension.  The value may be specified in any of  the
+           forms acceptable to Tk_GetPixels.
+
+       Name:     sliderRelief
+       Class:    SliderRelief
+       Switch:   -sliderrelief
+           Specifies the relief to use when drawing the slider, such as raised
+           or sunken.
+
+       Name:     state
+       Class:    State
+       Switch:   -state
+           Specifies  one  of  three states for the scale:  normal, active, or
+           disabled.  If the scale is disabled  then  the  value  may  not  be
+           changed  and the scale won&#x27;t activate.  If the scale is active, the
+           slider  is   displayed   using   the   color   specified   by   the
+           activeBackground option.
+
+       Name:     tickInterval
+       Class:    TickInterval
+       Switch:   -tickinterval
+           Must  be  a  real  value.  Determines the spacing between numerical
+           tick marks displayed below or to the left of the slider.  If 0,  no
+           tick marks will be displayed.
+
+       Name:     to
+       Class:    To
+       Switch:   -to
+           Specifies  a real value corresponding to the right or bottom end of
+           the scale.  This value may be either less than or greater than  the
+           from option.
+
+       Name:     variable
+       Class:    Variable
+       Switch:   -variable
+           Specifies  the  name  of  a  global  variable to link to the scale.
+           Whenever the value of the variable changes, the scale  will  update
+           to   reflect   this  value.   Whenever  the  scale  is  manipulated
+           interactively, the variable will be modified to reflect the scale&#x27;s
+           new value.
+
+       Name:     width
+       Class:    Width
+       Switch:   -width
+           Specifies the desired narrow dimension  of  the  trough  in  screen
+           units  (i.e.  any  of  the  forms acceptable to Tk_GetPixels).  For
+           vertical scales this is the trough&#x27;s width;  for horizontal  scales
+           this is the trough&#x27;s height.
+
+DESCRIPTION
+       The  Scale  method creates a new window (given by the $widget argument)
+       and makes it into a scale widget.  Additional options, described above,
+       may be specified on the command line  or  in  the  option  database  to
+       configure  aspects  of  the  scale such as its colors, orientation, and
+       relief.  The scale command returns its $widget argument.  At  the  time
+       this  command  is invoked, there must not exist a window named $widget,
+       but $widget&#x27;s parent must exist.
+
+       A scale is a widget that displays a  rectangular  trough  and  a  small
+       slider.   The  trough corresponds to a range of real values (determined
+       by the from, to, and resolution  options),  and  the  position  of  the
+       slider  selects  a  particular  real value.  The slider&#x27;s position (and
+       hence the scale&#x27;s value) may be adjusted with the mouse or keyboard  as
+       described  in the &quot;BINDINGS&quot; section below.  Whenever the scale&#x27;s value
+       is changed, a Tcl command is invoked  (using  the  command  option)  to
+       notify  other interested widgets of the change.  In addition, the value
+       of the scale can be linked  to  a  Tcl  variable  (using  the  variable
+       option), so that changes in either are reflected in the other.
+
+       Three  annotations  may  be  displayed  in  a  scale  widget:   a label
+       appearing at the top right of  the  widget  (top  left  for  horizontal
+       scales),  a number displayed just to the left of the slider (just above
+       the slider for horizontal scales), and a collection of  numerical  tick
+       marks  just to the left of the current value (just below the trough for
+       horizontal scales).  Each of these three annotations may be enabled  or
+       disabled using the configuration options.
+
+WIDGET METHODS
+       The  Scale  method  creates  a widget object.  This object supports the
+       configure and cget methods described in Tk::options which can  be  used
+       to  enquire  and  modify  the options described above.  The widget also
+       inherits all the methods provided by the generic Tk::Widget class.
+
+       The following additional methods are available for scale widgets:
+
+       $scale-&gt;coords(?value?)
+           Returns a list whose elements are the x and y  coordinates  of  the
+           point along the centerline of the trough that corresponds to value.
+           If value is omitted then the scale&#x27;s current value is used.
+
+       $scale-&gt;get(?x, y?)
+           If x and y are omitted, returns the current value of the scale.  If
+           x  and  y  are  specified,  they  give pixel coordinates within the
+           widget;  the command returns the scale value corresponding  to  the
+           given  pixel.  Only one of x or y is used:  for horizontal scales y
+           is ignored, and for vertical scales x is ignored.
+
+       $scale-&gt;identify(x, y)
+           Returns a string indicating what part of the scale lies  under  the
+           coordinates  given by x and y.  A return value of slider means that
+           the point is over the slider;  trough1 means that the point is over
+           the portion of the slider above  or to the left of the slider;  and
+           trough2  means  that  the  point  is over the portion of the slider
+           below or to the right of the slider.  If the point isn&#x27;t  over  one
+           of these elements, an empty string is returned.
+
+       $scale-&gt;set(value)
+           This  command  is invoked to change the current value of the scale,
+           and hence the position at which the  slider  is  displayed.   Value
+           gives  the  new  value for the scale.  The command has no effect if
+           the scale is disabled.
+
+BINDINGS
+       Tk automatically creates class bindings for scales that give  them  the
+       following  default  behavior.   Where  the  behavior  is  different for
+       vertical and horizontal scales, the horizontal behavior is described in
+       parentheses.
+
+       [1] If button 1 is pressed in the trough, the  scale&#x27;s  value  will  be
+           incremented or decremented by the value of the resolution option so
+           that  the  slider  moves  in  the  direction of the cursor.  If the
+           button is held down, the action auto-repeats.
+
+       [2] If button 1 is pressed over the slider, the slider can  be  dragged
+           with the mouse.
+
+       [3] If button 1 is pressed in the trough with the Control key down, the
+           slider  moves all the way to the end of its range, in the direction
+           towards the mouse cursor.
+
+       [4] If button 2 is pressed, the scale&#x27;s  value  is  set  to  the  mouse
+           position.   If the mouse is dragged with button 2 down, the scale&#x27;s
+           value changes with the drag.
+
+       [5] The Up and Left keys move the slider up (left) by the value of  the
+           resolution option.
+
+       [6] The  Down  and Right keys move the slider down (right) by the value
+           of the resolution option.
+
+       [7] Control-Up and Control-Left move the slider up (left) by the  value
+           of the bigIncrement option.
+
+       [8] Control-Down  and Control-Right move the slider down (right) by the
+           value of the bigIncrement option.
+
+       [9] Home moves the slider to the top (left) end of its range.
+
+       [10]
+           End moves the slider to the bottom (right) end of its range.
+
+           If the scale is disabled using the state option then  none  of  the
+           above bindings have any effect.
+
+           The  behavior of scales can be changed by defining new bindings for
+           individual widgets or by redefining the class bindings.
+
+KEYWORDS
+       scale, slider, trough, widget
+
+perl v5.40.1                      2025-04-13                        Scale(3pm)
+</pre></body></html>

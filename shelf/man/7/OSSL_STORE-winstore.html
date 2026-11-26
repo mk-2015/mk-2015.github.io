@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OSSL_STORE-winstore(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>OSSL_STORE-WINSTORE(7SSL)           OpenSSL          OSSL_STORE-WINSTORE(7SSL)
+
+NAME
+       OSSL_STORE-winstore - OpenSSL built in OSSL_STORE for Windows
+
+DESCRIPTION
+       The OSSL_STORE implementation for Windows provides access to Windows&#x27;
+       system &quot;ROOT&quot; certificate store through URIs, using the URI scheme
+       &quot;org.openssl.winstore&quot;.
+
+   Supported URIs
+       There is only one supported URI:
+
+         org.openssl.winstore:
+
+       No authority (host, etc), no path, no query, no fragment.
+
+   Supported OSSL_STORE_SEARCH operations
+       OSSL_STORE_SEARCH_by_name(3)
+           As  a  matter  of  fact,  this must be used.  It is not possible to
+           enumerate all available certificates in the store.
+
+   Windows certificate store features
+       Apart from diverse constraints present in the certificates  themselves,
+       the  Windows  certificate  store  also  has  the  ability  to associate
+       additional constraining  properties  alongside  a  certificate  in  the
+       store. This includes both documented and undocumented capabilities:
+
+       •   The documented capability to override EKU
+
+       •   The undocumented capability to add name constraints
+
+       •   The undocumented capability to override the certificate expiry date
+
+       Such constraints are not checked by this OSSL_STORE implementation, and
+       thereby not honoured.
+
+       However, once extracted with OSSL_STORE_load(3), certificates that have
+       constraints  in  their  X.509  extensions  will  go  through  the usual
+       constraint checks when used by OpenSSL, and are thereby honoured.
+
+SEE ALSO
+       ossl_store(7), OSSL_STORE_open_ex(3), OSSL_STORE_SEARCH(3)
+
+HISTORY
+       The  winstore  (&quot;org.openssl.winstore&quot;)  implementation  was  added  in
+       OpenSSL 3.2.0.
+
+NOTES
+       OpenSSL  uses  OSSL_DECODER(3)  implementations  under  the  hood.   To
+       influence what OSSL_DECODER(3) implementations are used, it&#x27;s advisable
+       to use OSSL_STORE_open_ex(3) and set the propq argument.
+
+COPYRIGHT
+       Copyright 2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09         OSSL_STORE-WINSTORE(7SSL)
+</pre></body></html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>e2ln(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>E2LN(1)                          User commands                         E2LN(1)
+
+NAME
+       e2ln - create hard links on an ext2 filesystem
+
+SYNOPSIS
+       e2ln [options] source destination
+
+DESCRIPTION
+       The e2ln command is used to create hard links on an ext2 filesystem.
+
+OPTIONS
+       -f     Force the operation to remove any existing files.
+
+       -s     Create a symlink.
+
+       -v     Be verbose.
+
+       Note: creating symlinks is not operational at this time.
+
+EXAMPLES
+       This  will remove `/data/process_status` if it exists and isn&#x27;t already
+       a hard link to `/data/info/status`.
+
+           e2ln -vf /dev/hdb1:/data/info/status /data/process_status
+
+
+SEE ALSO
+       e2tools(7), e2mv(1), e2ls(1), e2mkdir(1), e2cp(1), e2rm(1), e2tail(1).
+
+AUTHOR
+       The e2tools were written by Keith Sheffield &lt;sheff@pobox.com&gt;.
+
+       This manual page was written by Lucas Wall &lt;lwall@debian.org&gt;, for  the
+       Debian project (but may be used by others).
+
+Linux                             2020-02-05                           E2LN(1)
+</pre></body></html>

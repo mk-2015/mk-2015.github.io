@@ -1,0 +1,207 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Mail::Header(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Mail::Header(3pm)     User Contributed Perl Documentation    Mail::Header(3pm)
+
+NAME
+       Mail::Header - manipulate MIME headers
+
+SYNOPSIS
+        use Mail::Header;
+
+        my $head = Mail::Header-&gt;new;
+        my $head = Mail::Header-&gt;new( \*STDIN );
+        my $head = Mail::Header-&gt;new( [&lt;&gt;], Modify =&gt; 0);
+
+DESCRIPTION
+       Read, write, create, and manipulate MIME headers, the leading part of
+       each modern e-mail message, but also used in other protocols like HTTP.
+       The fields are kept in Mail::Field objects.
+
+       Be aware that the header fields each have a name part, which shall be
+       treated case-insensitive, and a content part, which may be folded over
+       multiple lines.
+
+       Mail::Header does not always follow the RFCs strict enough, does not
+       help you with character encodings.  It does not use weak references
+       where it could (because those did not exist when the module was
+       written) which costs some performance and make the implementation a
+       little more complicated.  The Mail::Message::Head implementation is
+       much newer and therefore better.
+
+METHODS
+   Constructors
+       $obj-&gt;dup()
+           Create a duplicate of the current object.
+
+       $obj-&gt;new( [$source], [%options] )
+       Mail::Header-&gt;new( [$source], [%options] )
+           The  $source  may be either a file descriptor (reference to a GLOB)
+           or a reference to an  array.  If  given  the  new  object  will  be
+           initialized  with  headers  either  from the array of read from the
+           file descriptor.
+
+           %options is a list of options given in the form of key-value pairs,
+           just like a hash table. Valid options are
+
+            -Option    --Default
+             FoldLength  79
+             MailFrom    &#x27;KEEP&#x27;
+             Modify      false
+
+           FoldLength =&gt; INTEGER
+             The default length of line to be used when folding header  lines.
+             See fold_length().
+
+           MailFrom =&gt; &#x27;IGNORE&#x27;|&#x27;COERCE&#x27;|&#x27;KEEP&#x27;|&#x27;ERROR&#x27;
+             See method mail_from().
+
+           Modify =&gt; BOOLEAN
+             If  this  value  is  true  then the headers will be re-formatted,
+             otherwise the format of the header lines will remain unchanged.
+
+   &quot;Fake&quot; constructors
+       Be warned that the next constructors all  require  an  already  created
+       header object, of which the original content will be destroyed.
+
+       $obj-&gt;empty()
+           Empty an existing &quot;Mail::Header&quot; object of all lines.
+
+       $obj-&gt;extract(ARRAY)
+           Extract a header from the given array into an existing Mail::Header
+           object.  &quot;extract&quot; will modify this array.  Returns the object that
+           the method was called on.
+
+       $obj-&gt;header( [ARRAY] )
+           &quot;header&quot; does multiple operations. First it will extract  a  header
+           from  the  ARRAY,  if  given.  It will then reformat the header (if
+           reformatting is permitted), and finally return a  reference  to  an
+           array which contains the header in a printable form.
+
+       $obj-&gt;header_hashref( [HASH] )
+           As  header(),  but  it  will  eventually  set  headers  from a hash
+           reference, and it will return the headers as a hash reference.
+
+           example:
+
+            $fields-&gt;{From} = &#x27;Tobias Brox &lt;tobix@cpan.org&gt;&#x27;;
+            $fields-&gt;{To}   = [&#x27;you@somewhere&#x27;, &#x27;me@localhost&#x27;];
+            $head-&gt;header_hashref($fields);
+
+       $obj-&gt;read($fh)
+           Read a header from the  given  file  descriptor  into  an  existing
+           Mail::Header object.
+
+   Accessors
+       $obj-&gt;fold_length( [$tag], [$length] )
+           Set  the  default  fold  length  for  all tags or just one. With no
+           arguments the default fold length is returned. With  two  arguments
+           it  sets the fold length for the given tag and returns the previous
+           value. If only $length is given it sets the default fold length for
+           the current object.
+
+           In the two argument form &quot;fold_length&quot; may be called  as  a  static
+           method,  setting default fold lengths for tags that will be used by
+           all &quot;Mail::Header&quot; objects. See the &quot;fold&quot; method for a description
+           on how &quot;Mail::Header&quot; uses these values.
+
+       $obj-&gt;mail_from(&#x27;IGNORE&#x27;|&#x27;COERCE&#x27;|&#x27;KEEP&#x27;|&#x27;ERROR&#x27;)
+           This specifies what to do when  a  `From  &#x27;  line  is  encountered.
+           Valid  values are &quot;IGNORE&quot; - ignore and discard the header, &quot;ERROR&quot;
+           - invoke an error (call die), &quot;COERCE&quot; - rename them  as  Mail-From
+           and &quot;KEEP&quot; - keep them.
+
+       $obj-&gt;modify( [$value] )
+           If  $value  is  false then &quot;Mail::Header&quot; will not do any automatic
+           reformatting of the headers, other than to  ensure  that  the  line
+           starts with the tags given.
+
+   Processing
+       $obj-&gt;add( $tag, $line [, $index] )
+           Add  a  new  line to the header. If $tag is &quot;undef&quot; the tag will be
+           extracted from the beginning of the given line. If $index is given,
+           the new line will be inserted into the header at the  given  point,
+           otherwise the new line will be appended to the end of the header.
+
+       $obj-&gt;as_string()
+           Returns the header as a single string.
+
+       $obj-&gt;cleanup()
+           Remove  any  header  line  that,  other than the tag, only contains
+           whitespace
+
+       $obj-&gt;combine( $tag [, $with] )
+           Combine all instances of $tag into one. The lines  will  be  joined
+           together  $with,  or a single space if not given. The new item will
+           be positioned in the header where the first instance was, all other
+           instances of $tag will be removed.
+
+       $obj-&gt;count($tag)
+           Returns the number of times the given atg appears in the header
+
+       $obj-&gt;delete( $tag [, $index ] )
+           Delete a tag from the header. If an $index id is  given,  then  the
+           Nth  instance  of  the  tag will be removed. If no $index is given,
+           then all instances of tag will be removed.
+
+       $obj-&gt;fold( [$length] )
+           Fold the header. If $length is not given, then &quot;Mail::Header&quot;  uses
+           the following rules to determine what length to fold a line.
+
+       $obj-&gt;get( $tag [, $index] )
+           Get  the  text from a line. If an $index is given, then the text of
+           the Nth instance will be returned. If it is not  given  the  return
+           value depends on the context in which &quot;get&quot; was called. In an array
+           context  a  list of all the text from all the instances of the $tag
+           will be returned. In a  scalar  context  the  text  for  the  first
+           instance will be returned.
+
+           The  lines  are unfolded, but still terminated with a new-line (see
+           &quot;chomp&quot;)
+
+       $obj-&gt;print( [$fh] )
+           Print the header to the given file descriptor, or  &quot;STDOUT&quot;  if  no
+           file descriptor is given.
+
+       $obj-&gt;replace( $tag, $line [, $index ] )
+           Replace  a  line in the header.  If $tag is &quot;undef&quot; the tag will be
+           extracted from the beginning of the given line. If $index is  given
+           the  new  line will replace the Nth instance of that tag, otherwise
+           the first instance of the tag is replaced.  If  the  tag  does  not
+           appear  in  the  header  then  a  new  line will be appended to the
+           header.
+
+       $obj-&gt;tags()
+           Returns an array of all the tags that exist in the header. Each tag
+           will only appear in the list once. The order of  the  tags  is  not
+           specified.
+
+       $obj-&gt;unfold( [$tag] )
+           Unfold  all  instances  of the given tag so that they do not spread
+           across multiple lines. If $tag is not  given  then  all  lines  are
+           unfolded.
+
+           The unfolding process is wrong but (for compatibility reasons) will
+           not  be repaired: only one blank at the start of the line should be
+           removed, not all of them.
+
+SEE ALSO
+       This    module    is    part    of    the    MailTools    distribution,
+       http://perl.overmeer.net/mailtools/.
+
+AUTHORS
+       The  MailTools  bundle  was  developed  by  Graham  Barr.   Later, Mark
+       Overmeer  took  over  maintenance   without   commitment   to   further
+       development.
+
+       Mail::Cap  by  Gisle  Aas  &lt;aas@oslonett.no&gt;.  Mail::Field::AddrList by
+       Peter Orbaek &lt;poe@cit.dk&gt;.  Mail::Mailer and Mail::Send  by  Tim  Bunce
+       &lt;Tim.Bunce@ig.co.uk&gt;.  For other contributors see ChangeLog.
+
+LICENSE
+       Copyrights  1995-2000  Graham Barr &lt;gbarr@pobox.com&gt; and 2001-2024 Mark
+       Overmeer &lt;perl@overmeer.net&gt;.
+
+       This program is free software; you can redistribute it and/or modify it
+       under     the     same     terms     as     Perl      itself.       See
+       http://www.perl.com/perl/misc/Artistic.html
+
+perl v5.40.0                      2024-11-23                 Mail::Header(3pm)
+</pre></body></html>

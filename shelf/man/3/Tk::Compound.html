@@ -1,0 +1,205 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Compound(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Compound(3pm)         User Contributed Perl Documentation        Compound(3pm)
+
+NAME
+       Tk::Compound - Create multi-line compound images.
+
+SYNOPSIS
+           use Tk::Compound;
+           $image = $widget-&gt;Compound(name,options);
+           $image-&gt;Line(options);
+           $image-&gt;Text(options);
+           $image-&gt;Bitmap(options);
+           $image-&gt;Image(options);
+           $image-&gt;Space(options);
+
+DESCRIPTION
+       Compound image types can be used to create images that consists of
+       multiple horizontal lines; each line is composed of a series of items
+       (texts, bitmaps, images or spaces) arranged from left to right.
+       Compound images are mainly used to embed complex drawings into widgets
+       that support the -image option. As shown in the EXAMPLE section below,
+       a compound image can be used to display a bitmap and a text string
+       simutaneously in a Tk Button widget.
+
+       Compound images can only be used on windows on the same display as, and
+       with the same pixel depth and visual as the $widget used to create
+       them.
+
+CREATING COMPOUND IMAGES
+       Compounds are created using $widget-&gt;Compound.  Compounds support the
+       following options:
+
+       -background =&gt; color
+           Specifies the background color of the compound image. This color is
+           also  used  as the default background color for the bitmap items in
+           the compound image.
+
+       -borderwidth =&gt; pixels
+           Specifies a non-negative value indicating  the  width  of  the  3-D
+           border drawn around the compound image.
+
+       -font =&gt; font
+           Specifies  the  default  font  for  the  text items in the compound
+           image.
+
+       -foreground =&gt; color
+           Specifies the default foreground color  for  the  bitmap  and  text
+           items in the compound image.
+
+       -padx =&gt; value
+           Specifies  a  non-negative value indicating how much extra space to
+           request for the compound image in the X-direction.  The  value  may
+           have any of the forms acceptable to Tk_GetPixels(3).
+
+       -pady =&gt; value
+           Specifies  a  non-negative value indicating how much extra space to
+           request for the compound image in the Y-direction.
+
+       -relief =&gt; value
+           Specifies the 3-D effect desired for the background of the compound
+           image. Acceptable values  are  raised,  sunken,  flat,  ridge,  and
+           groove.
+
+       -showbackground =&gt; value
+           Specifies  whether  the  background  and  the  3D borders should be
+           drawn.  Must be a valid boolean value. By default the background is
+           not drawn and the compound image  appears  to  have  a  transparent
+           background.
+
+IMAGE COMMAND
+       When  a  compound image is created, Tk also creates a new object.  This
+       object supports the configure and cget methods described in Tk::options
+       which can be used to enquire and modify the options described above.
+
+       The object also supports the following methods:
+
+       $compound-&gt;Line?(option = value ...&gt;)?
+           Creates a new line at the  bottom  of  the  compound  image.  Lines
+           support the following options:
+
+           -anchor value
+               Specifies  how  the line should be aligned along the horizontal
+               axis.  When the values are w, sw or nw, the line is aligned  to
+               the left. When the values are c, s or n, the line is aligned to
+               the  middle.   When  the  values  are  e, se or ne, the line is
+               aligned to the right.
+
+           -padx =&gt; value
+               Specifies a non-negative value indicating how much extra  space
+               to request for this line in the X-direction.
+
+       $compound-&gt;Itemtype?(option = value ...&gt;)?
+           Creates a new item of the type Itemtype at the end of the last line
+           of  the  compound image. All types of items support these following
+           common options:
+
+           -anchor value
+               Specifies how the item should be  aligned  along  the  vertical
+               axis.  When  the values are n, nw or ne, the item is aligned to
+               the top of the line. When the values are c, w or e, the item is
+               aligned to the middle of the line.  When the values are  s,  se
+               or sw, the item is aligned to the bottom of the line.
+
+           -padx =&gt; value
+               Specifies  a non-negative value indicating how much extra space
+               to request for this item in the X-direction.
+
+           -pady =&gt; value
+               Specifies a non-negative value indicating how much extra  space
+               to request for this item in the Y-direction.
+
+           item-type can be any of the following:
+       $compound-&gt;Bitmap?(option = value ...&gt;)?
+           Creates  a  new  bitmap  item of at the end of the last line of the
+           compound image. Additional options accepted by the bitmap type are:
+
+           -background =&gt; color
+               Specifies the background color of the bitmap item.
+
+           -bitmap =&gt; name
+               Specifies a bitmap to display in this item, in any of the forms
+               acceptable to Tk_GetBitmap(3).
+
+           -foreground =&gt; color
+               Specifies the foreground color of the bitmap item.
+
+       $compound-&gt;Image?(option = value ...&gt;)?
+           Creates a new image item of at the end of  the  last  line  of  the
+           compound image. Additional options accepted by the image type are:
+
+           -image =&gt; name
+               Specifies an image to display in this item. name must have been
+               created with the image create command.
+
+       $compound-&gt;Space?(option = value ...&gt;)?
+           Creates  a  new  space  item  of at the end of the last line of the
+           compound image. Space items do not display anything. They just acts
+           as space holders that add additional spaces between items inside  a
+           compound image. Additional options accepted by the image type are:
+
+           -width =&gt; value
+               Specifies  the  width  of this space. The value may have any of
+               the forms acceptable to Tk_GetPixels(3).
+
+           -height =&gt; value
+               Specifies the height of this space. The value may have  any  of
+               the forms acceptable to Tk_GetPixels(3).
+
+       $compound-&gt;Text?(option = value ...&gt;)?
+           Creates  a  new  text  item  of  at the end of the last line of the
+           compound image. Additional options accepted by the text type are:
+
+           -background =&gt; color
+               Specifies the background color of the text item.
+
+           -font =&gt; name
+               Specifies the font to be used for this text item.
+
+           -foreground =&gt; color
+               Specifies the foreground color of the text item.
+
+           -justify value
+               When there are multiple lines of text displayed in a text item,
+               this option determines how the lines line up with  each  other.
+               value  must  be one of left, center, or right.  Left means that
+               the lines&#x27; left edges all line up, center means that the lines&#x27;
+               centers are aligned, and right  means  that  the  lines&#x27;  right
+               edges line up.
+
+           -text =&gt; string
+               Specifies a text string to display in this text item.
+
+           -underline value
+               Specifies  the integer index of a character to underline in the
+               text item. 0 corresponds to the first  character  of  the  text
+               displayed in the text item, 1 to the next character, and so on.
+
+           -wraplength value
+               This  option  specifies  the  maximum  line length of the label
+               string on this text item. If  the  line  length  of  the  label
+               string  exceeds  this length, it is wrapped onto the next line,
+               so that no line is longer than the specified length. The  value
+               may  be  specified  in  any  of  the  standard forms for screen
+               distances. If this value is less than or equal  to  0  then  no
+               wrapping  is  done: lines will break only at newline characters
+               in the text.
+
+EXAMPLE
+       The following example creates a compound image with a bitmap and a text
+       string and places this image into a Button(n) widget. Notice  that  the
+       image must be created using the widget that it resides in.
+
+         my $b = $parent-&gt;Button;
+         my $c = $b-&gt;Compound;
+         $b-&gt;configure(-image =&gt; $c);
+         $c-&gt;Line;
+         $c-&gt;Bitmap(-bitmap =&gt; &#x27;warning&#x27;);
+         $c-&gt;Space(-width =&gt; 8);
+         $c-&gt;Text(-text =&gt; &quot;Warning&quot;, -underline =&gt; 0);
+         $b-&gt;pack;
+
+KEYWORDS
+       image(n), Tix(n)
+
+perl v5.40.1                      2025-04-13                     Compound(3pm)
+</pre></body></html>

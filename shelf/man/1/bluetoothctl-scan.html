@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-scan(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-SCAN(1)      Linux System Administration     BLUETOOTHCTL-SCAN(1)
+
+NAME
+       bluetoothctl-scan - Scan Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [scan.commands]
+
+SCAN COMMANDS
+   uuids
+       Set/Get UUIDs filter.
+
+       Usage  &gt; uuids [all/uuid1 uuid2 ...]
+
+   rssi
+       Set/Get RSSI filter, and clears pathloss.
+
+       This sets the minimum rssi value for reporting device advertisements.
+
+       The value is in dBm.
+
+       If  one or more discovery filters have been set, the RSSI delta-thresh‐
+       old imposed by starting discovery by default will not be applied.
+
+       Usage  &gt; rssi [rssi]
+
+       Example
+              &gt; rssi -60
+
+   pathloss
+       Set/Get Pathloss filter, and clears RSSI.
+
+       This sets the maximum pathloss value for  reporting  device  advertise‐
+       ments.
+
+       The value is in dB.
+
+       If  one or more discovery filters have been set, the RSSI delta-thresh‐
+       old imposed by starting discovery by default will not be applied.
+
+       Usage  &gt; pathloss [pathloss]
+
+       Example
+              &gt; pathloss 4
+
+   transport
+       Set/Get transport filter.
+
+       Transport parameter determines the type of scan.
+
+       The default is auto.
+
+       Possible values:
+
+       • &quot;auto&quot;: interleaved scan
+
+       • &quot;bredr&quot;: BR/EDR inquiry
+
+       • &quot;le&quot;: LE scan only
+
+       If &quot;le&quot; or &quot;bredr&quot; Transport is requested and  the  controller  doesn&#x27;t
+       support it, an org.bluez.Error.Failed error will be returned.
+
+       If &quot;auto&quot; transport is requested, the scan will use LE, BREDR, or both,
+       depending on what&#x27;s currently enabled on the controller.
+
+       Usage  &gt; transport [auto/bredr/le]
+
+   duplicate-data
+       Set/Get duplicate data filter.
+
+       Disables duplicate detection of advertisement data.
+
+       When  enabled, PropertiesChanged signals will be generated for Manufac‐
+       turerData and ServiceData every time they are discovered.
+
+       Usage  &gt; duplicate-data [on/off]
+
+   discoverable
+       Set/Get discoverable filter.
+
+       Makes the adapter discoverable while discovering.
+
+       If the adapter is already discoverable, setting this filter won&#x27;t  have
+       any effect.
+
+       Usage  &gt; discoverable [on/off]
+
+   pattern
+       Set/Get pattern filter.
+
+       Discover devices where the pattern matches either the prefix of the ad‐
+       dress or the device name, which is a convenient way to limit the number
+       of device objects created during a discovery.
+
+       When set, it disregards device discoverable flags.
+
+       Note   The  pattern matching is ignored if there are other clients that
+              don&#x27;t set any pattern, as it works as a logical OR.  Also,  set‐
+              ting an empty string &quot;&quot; pattern will match any device found.
+
+       Usage  &gt; pattern [value]
+
+   clear
+       Clears discovery filter.
+
+       Usage  &gt;  clear [uuids/rssi/pathloss/transport/duplicate-data/discover‐
+              able/pattern]
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                              July 2023              BLUETOOTHCTL-SCAN(1)
+</pre></body></html>

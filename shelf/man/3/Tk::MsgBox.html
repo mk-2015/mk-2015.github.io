@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::MsgBox(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>MsgBox(3pm)           User Contributed Perl Documentation          MsgBox(3pm)
+
+NAME
+       Tk::MsgBox - create and manipulate a message dialog
+
+SYNOPSIS
+           use Tk::MsgBox
+           ...
+           $d = $top-&gt;MsgBox(-title =&gt; &quot;Title&quot;, -type =&gt; &quot;okcancel&quot;);
+           ...
+           $button = $d-&gt;Show;
+
+DESCRIPTION
+       MsgBox is a simple dialog with predefined buttons.
+
+OPTIONS
+       The options recognized by MsgBox are as follows:
+
+       -icon
+           Specify  the  icon  of  the  MsgBox.  Valid values are error, info,
+           question, or warning.
+
+       -type
+           Specify the type of the MsgBox. Valid values are  abortretryignore,
+           ok,   okcancel,   retrycancel,  yesno,  or  yesnocancel.  The  type
+           determines the buttons to be shown.
+
+       -default
+           Specify the default button. This  must  be  one  of  abort,  retry,
+           ignore, ok, cancel, yes, or no, depending on the type of the MsgBox
+           previously specified.
+
+       -detail
+           Specify text for the detail region of the MsgBox.
+
+       -message
+           Specify the message text of the MsgBox.
+
+       -title
+           Specify the title of the MsgBox.
+
+METHODS
+       MsgBox supports only one method as of now:
+
+       Show()
+           Displays  the  MsgBox  until  the  user invokes one of the buttons.
+           Returns the name of the button invoked.
+
+AUTHOR
+       Translated from Tcl/Tk by Slaven Rezic srezic@cpan.org
+
+       This code is distributed under the same terms as Perl.
+
+SEE ALSO
+       Tk::messageBox, Tk::DialogBox, Tk::Dialog.
+
+perl v5.40.1                      2025-04-13                       MsgBox(3pm)
+</pre></body></html>

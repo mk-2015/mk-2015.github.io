@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>openssl-skeyutl(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>OPENSSL-SKEYUTL(1SSL)               OpenSSL              OPENSSL-SKEYUTL(1SSL)
+
+NAME
+       openssl-skeyutl - opaque symmetric keys routines
+
+SYNOPSIS
+       openssl skeyutl [-help] [-cipher cipher] [-skeymgmt skeymgmt] [-skeyopt
+       opt:value] [-genkey] [-provider name] [-provider-path path] [-provparam
+       [name:]key=value] [-propquery propq]
+
+DESCRIPTION
+       Not all cipher implementations support keys as raw bytes. E.g. PKCS#11
+       tokens can store them internally without any option to get the raw byte
+       representation.
+
+       This tool is designed for managing opaque symmetric keys.
+
+OPTIONS
+       -help
+           Print out a usage message.
+
+       -cipher cipher
+           The cipher to generate the key for.
+
+       -skeymgmt skeymgmt
+           Some  providers  may  support opaque symmetric keys objects. To use
+           them, we need to know the skeymgmt. If not specified, the  name  of
+           the cipher will be used.
+
+           To  find  out  the  name  of the suitable symmetric key management,
+           please refer to the output of  the  &quot;openssl  list  -skey-managers&quot;
+           command.
+
+       -skeyopt opt:value
+           To  obtain  an  existing  opaque symmetric key or to generate a new
+           one, key options are specified as opt:value. These options can&#x27;t be
+           used together with any options implying raw key either directly  or
+           indirectly.
+
+       -genkey
+           Generate a new opaque key object.
+
+       -provider name
+       -provider-path path
+       -provparam [name:]key=value
+       -propquery propq
+           See &quot;Provider Options&quot; in openssl(1), provider(7), and property(7).
+
+SEE ALSO
+       openssl-enc(1), EVP_SKEY(3)
+
+HISTORY
+       The skeyutl command was added in OpenSSL 3.5.
+
+COPYRIGHT
+       Copyright 2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09             OPENSSL-SKEYUTL(1SSL)
+</pre></body></html>

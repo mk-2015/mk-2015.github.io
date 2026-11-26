@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>newgrp(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>NEWGRP(1)                        User Commands                       NEWGRP(1)
+
+NAME
+       newgrp - log in to a new group
+
+SYNOPSIS
+       newgrp [group [command]]
+
+       newgrp [-c command] [group]
+
+DESCRIPTION
+       newgrp changes the group identification of its caller, analogously to
+       login(1). The same person remains logged in, and the current directory
+       is unchanged, but calculations of access permissions to files are
+       performed with respect to the new group ID.
+
+       If no group is specified, the GID is changed to the login GID.
+
+       An optional command can be specified, which is invoked after group
+       change instead of the user’s shell.
+
+OPTIONS
+       -c, --command=command
+           Pass command to the user’s shell with the -c option.
+
+       -h, --help
+           Display help text and exit.
+
+       -V, --version
+           Display version and exit.
+
+FILES
+       /etc/group, /etc/passwd
+
+AUTHORS
+       Originally by Michael Haardt. Currently maintained by Peter Orbaek
+       &lt;poe@daimi.aau.dk&gt;.
+
+SEE ALSO
+       login(1), group(5)
+
+REPORTING BUGS
+       For bug reports, use the issue tracker
+       &lt;https://github.com/util-linux/util-linux/issues&gt;.
+
+AVAILABILITY
+       The newgrp command is part of the util-linux package which can be
+       downloaded from Linux Kernel Archive
+       &lt;https://www.kernel.org/pub/linux/utils/util-linux/&gt;.
+
+util-linux 2.41.5                 2026-06-16                         NEWGRP(1)
+</pre></body></html>

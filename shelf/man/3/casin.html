@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>casin(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>casin(3)                   Library Functions Manual                   casin(3)
+
+NAME
+       casin, casinf, casinl - complex arc sine
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double complex casin(double complex z);
+       float complex casinf(float complex z);
+       long double complex casinl(long double complex z);
+
+DESCRIPTION
+       These  functions calculate the complex arc sine of z.  If y = casin(z),
+       then z = csin(y).  The real  part  of  y  is  chosen  in  the  interval
+       [-pi/2,pi/2].
+
+       One has:
+
+           casin(z) = -i clog(iz + csqrt(1 - z * z))
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       casin(), casinf(), casinl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       clog(3), csin(3), complex(7)
+
+Linux man-pages 6.9.1             2024-05-02                          casin(3)
+</pre></body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>iswspace(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>iswspace(3)                Library Functions Manual                iswspace(3)
+
+NAME
+       iswspace - test for whitespace wide character
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wctype.h&gt;
+
+       int iswspace(wint_t wc);
+
+DESCRIPTION
+       The  iswspace()  function  is  the wide-character equivalent of the is‐
+       space(3) function.  It tests whether wc is a wide  character  belonging
+       to the wide-character class &quot;space&quot;.
+
+       The  wide-character  class  &quot;space&quot; is disjoint from the wide-character
+       class &quot;graph&quot; and therefore also disjoint from its subclasses  &quot;alnum&quot;,
+       &quot;alpha&quot;, &quot;upper&quot;, &quot;lower&quot;, &quot;digit&quot;, &quot;xdigit&quot;, &quot;punct&quot;.
+
+       The  wide-character  class  &quot;space&quot;  contains  the wide-character class
+       &quot;blank&quot;.
+
+       The wide-character class &quot;space&quot; always contains  at  least  the  space
+       character and the control characters &#x27;\f&#x27;, &#x27;\n&#x27;, &#x27;\r&#x27;, &#x27;\t&#x27;, and &#x27;\v&#x27;.
+
+RETURN VALUE
+       The  iswspace()  function returns nonzero if wc is a wide character be‐
+       longing to the wide-character class  &quot;space&quot;.   Otherwise,  it  returns
+       zero.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       iswspace() T}   Thread safety  MT-Safe locale
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+NOTES
+       The behavior of iswspace() depends on the LC_CTYPE category of the
+       current locale.
+
+SEE ALSO
+       isspace(3), iswctype(3)
+
+Linux man-pages 6.9.1             2024-06-15                       iswspace(3)
+</pre></body></html>

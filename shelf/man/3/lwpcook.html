@@ -1,0 +1,287 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>lwpcook(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>lwpcook(3pm)          User Contributed Perl Documentation         lwpcook(3pm)
+
+NAME
+       lwpcook - The libwww-perl cookbook
+
+DESCRIPTION
+       This document contain some examples that show typical usage of the
+       libwww-perl library.  You should consult the documentation for the
+       individual modules for more detail.
+
+       All examples should be runnable programs. You can, in most cases, test
+       the code sections by piping the program text directly to perl.
+
+GET
+       It is very easy to use this library to just fetch documents from the
+       net.  The LWP::Simple module provides the get() function that return
+       the document specified by its URL argument:
+
+         use LWP::Simple;
+         $doc = get &#x27;http://search.cpan.org/dist/libwww-perl/&#x27;;
+
+       or, as a perl one-liner using the getprint() function:
+
+         perl -MLWP::Simple -e &#x27;getprint &quot;http://search.cpan.org/dist/libwww-perl/&quot;&#x27;
+
+       or, how about fetching the latest perl by running this command:
+
+         perl -MLWP::Simple -e &#x27;
+           getstore &quot;ftp://ftp.sunet.se/pub/lang/perl/CPAN/src/latest.tar.gz&quot;,
+                    &quot;perl.tar.gz&quot;&#x27;
+
+       You will probably first want to find a CPAN site closer to you by
+       running something like the following command:
+
+         perl -MLWP::Simple -e &#x27;getprint &quot;http://www.cpan.org/SITES.html&quot;&#x27;
+
+       Enough of this simple stuff!  The LWP object oriented interface gives
+       you more control over the request sent to the server.  Using this
+       interface you have full control over headers sent and how you want to
+       handle the response returned.
+
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+         $ua-&gt;agent(&quot;$0/0.1 &quot; . $ua-&gt;agent);
+         # $ua-&gt;agent(&quot;Mozilla/8.0&quot;) # pretend we are very capable browser
+
+         $req = HTTP::Request-&gt;new(
+            GET =&gt; &#x27;http://search.cpan.org/dist/libwww-perl/&#x27;);
+         $req-&gt;header(&#x27;Accept&#x27; =&gt; &#x27;text/html&#x27;);
+
+         # send request
+         $res = $ua-&gt;request($req);
+
+         # check the outcome
+         if ($res-&gt;is_success) {
+            print $res-&gt;decoded_content;
+         }
+         else {
+            print &quot;Error: &quot; . $res-&gt;status_line . &quot;\n&quot;;
+         }
+
+       The lwp-request program (alias GET) that is distributed with the
+       library can also be used to fetch documents from WWW servers.
+
+HEAD
+       If you just want to check if a document is present (i.e. the URL is
+       valid) try to run code that looks like this:
+
+         use LWP::Simple;
+
+         if (head($url)) {
+            # ok document exists
+         }
+
+       The head() function really returns a list of meta-information about the
+       document.  The first three values of the list returned are the document
+       type, the size of the document, and the age of the document.
+
+       More control over the request or access to all header values returned
+       require that you use the object oriented interface described for GET
+       above.  Just s/GET/HEAD/g.
+
+POST
+       There is no simple procedural interface for posting data to a WWW
+       server.  You must use the object oriented interface for this. The most
+       common POST operation is to access a WWW form application:
+
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+
+         my $req = HTTP::Request-&gt;new(
+             POST =&gt; &#x27;https://rt.cpan.org/Public/Dist/Display.html&#x27;);
+         $req-&gt;content_type(&#x27;application/x-www-form-urlencoded&#x27;);
+         $req-&gt;content(&#x27;Status=Active&amp;Name=libwww-perl&#x27;);
+
+         my $res = $ua-&gt;request($req);
+         print $res-&gt;as_string;
+
+       Lazy people use the HTTP::Request::Common module to set up a suitable
+       POST request message (it handles all the escaping issues) and has a
+       suitable default for the content_type:
+
+         use HTTP::Request::Common qw(POST);
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+
+         my $req = POST &#x27;https://rt.cpan.org/Public/Dist/Display.html&#x27;,
+                       [ Status =&gt; &#x27;Active&#x27;, Name =&gt; &#x27;libwww-perl&#x27; ];
+
+         print $ua-&gt;request($req)-&gt;as_string;
+
+       The lwp-request program (alias POST) that is distributed with the
+       library can also be used for posting data.
+
+PROXIES
+       Some sites use proxies to go through fire wall machines, or just as
+       cache in order to improve performance.  Proxies can also be used for
+       accessing resources through protocols not supported directly (or
+       supported badly :-) by the libwww-perl library.
+
+       You should initialize your proxy setting before you start sending
+       requests:
+
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+         $ua-&gt;env_proxy; # initialize from environment variables
+         # or
+         $ua-&gt;proxy(ftp  =&gt; &#x27;http://proxy.myorg.com&#x27;);
+         $ua-&gt;proxy(wais =&gt; &#x27;http://proxy.myorg.com&#x27;);
+         $ua-&gt;no_proxy(qw(no se fi));
+
+         my $req = HTTP::Request-&gt;new(GET =&gt; &#x27;wais://xxx.com/&#x27;);
+         print $ua-&gt;request($req)-&gt;as_string;
+
+       The LWP::Simple interface will call env_proxy() for you automatically.
+       Applications that use the $ua-&gt;env_proxy() method will normally not use
+       the $ua-&gt;proxy() and $ua-&gt;no_proxy() methods.
+
+       Some proxies also require that you send it a username/password in order
+       to let requests through.  You should be able to add the required
+       header, with something like this:
+
+        use LWP::UserAgent;
+
+        $ua = LWP::UserAgent-&gt;new;
+        $ua-&gt;proxy([&#x27;http&#x27;, &#x27;ftp&#x27;] =&gt; &#x27;http://username:password@proxy.myorg.com&#x27;);
+
+        $req = HTTP::Request-&gt;new(&#x27;GET&#x27;,&quot;http://www.perl.com&quot;);
+
+        $res = $ua-&gt;request($req);
+        print $res-&gt;decoded_content if $res-&gt;is_success;
+
+       Replace &quot;proxy.myorg.com&quot;, &quot;username&quot; and &quot;password&quot; with something
+       suitable for your site.
+
+ACCESS TO PROTECTED DOCUMENTS
+       Documents protected by basic authorization can easily be accessed like
+       this:
+
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+         $req = HTTP::Request-&gt;new(GET =&gt; &#x27;http://www.linpro.no/secret/&#x27;);
+         $req-&gt;authorization_basic(&#x27;aas&#x27;, &#x27;mypassword&#x27;);
+         print $ua-&gt;request($req)-&gt;as_string;
+
+       The other alternative is to provide a subclass of LWP::UserAgent that
+       overrides the get_basic_credentials() method. Study the lwp-request
+       program for an example of this.
+
+COOKIES
+       Some sites like to play games with cookies.  By default LWP ignores
+       cookies provided by the servers it visits.  LWP will collect cookies
+       and respond to cookie requests if you set up a cookie jar. LWP doesn&#x27;t
+       provide a cookie jar itself, but if you install HTTP::CookieJar::LWP,
+       it can be used like this:
+
+         use LWP::UserAgent;
+         use HTTP::CookieJar::LWP;
+
+         $ua = LWP::UserAgent-&gt;new(
+             cookie_jar =&gt; HTTP::CookieJar::LWP-&gt;new,
+         );
+
+         # and then send requests just as you used to do
+         $res = $ua-&gt;request(HTTP::Request-&gt;new(GET =&gt; &quot;http://no.yahoo.com/&quot;));
+         print $res-&gt;status_line, &quot;\n&quot;;
+
+HTTPS
+       URLs with https scheme are accessed in exactly the same way as with
+       http scheme, provided that an SSL interface module for LWP has been
+       properly installed (see the README.SSL file found in the libwww-perl
+       distribution for more details).  If no SSL interface is installed for
+       LWP to use, then you will get &quot;501 Protocol scheme &#x27;https&#x27; is not
+       supported&quot; errors when accessing such URLs.
+
+       Here&#x27;s an example of fetching and printing a WWW page using SSL:
+
+         use LWP::UserAgent;
+
+         my $ua = LWP::UserAgent-&gt;new;
+         my $req = HTTP::Request-&gt;new(GET =&gt; &#x27;https://www.helsinki.fi/&#x27;);
+         my $res = $ua-&gt;request($req);
+         if ($res-&gt;is_success) {
+             print $res-&gt;as_string;
+         }
+         else {
+             print &quot;Failed: &quot;, $res-&gt;status_line, &quot;\n&quot;;
+         }
+
+MIRRORING
+       If you want to mirror documents from a WWW server, then try to run code
+       similar to this at regular intervals:
+
+         use LWP::Simple;
+
+         %mirrors = (
+            &#x27;http://www.sn.no/&#x27;                       =&gt; &#x27;sn.html&#x27;,
+            &#x27;http://www.perl.com/&#x27;                    =&gt; &#x27;perl.html&#x27;,
+            &#x27;http://search.cpan.org/distlibwww-perl/&#x27; =&gt; &#x27;lwp.html&#x27;,
+            &#x27;gopher://gopher.sn.no/&#x27;                  =&gt; &#x27;gopher.html&#x27;,
+         );
+
+         while (($url, $localfile) = each(%mirrors)) {
+            mirror($url, $localfile);
+         }
+
+       Or, as a perl one-liner:
+
+         perl -MLWP::Simple -e &#x27;mirror(&quot;http://www.perl.com/&quot;, &quot;perl.html&quot;)&#x27;;
+
+       The document will not be transferred unless it has been updated.
+
+LARGE DOCUMENTS
+       If the document you want to fetch is too large to be kept in memory,
+       then you have two alternatives.  You can instruct the library to write
+       the document content to a file (second $ua-&gt;request() argument is a
+       file name):
+
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+
+         my $req = HTTP::Request-&gt;new(GET =&gt;
+             &#x27;http://www.cpan.org/CPAN/authors/id/O/OA/OALDERS/libwww-perl-6.26.tar.gz&#x27;);
+         $res = $ua-&gt;request($req, &quot;libwww-perl.tar.gz&quot;);
+         if ($res-&gt;is_success) {
+            print &quot;ok\n&quot;;
+         }
+         else {
+            print $res-&gt;status_line, &quot;\n&quot;;
+         }
+
+       Or you can process the document as it arrives (second $ua-&gt;request()
+       argument is a code reference):
+
+         use LWP::UserAgent;
+         $ua = LWP::UserAgent-&gt;new;
+         $URL = &#x27;ftp://ftp.isc.org/pub/rfc/rfc-index.txt&#x27;;
+
+         my $expected_length;
+         my $bytes_received = 0;
+         my $res =
+            $ua-&gt;request(HTTP::Request-&gt;new(GET =&gt; $URL),
+                      sub {
+                          my($chunk, $res) = @_;
+                          $bytes_received += length($chunk);
+                          unless (defined $expected_length) {
+                             $expected_length = $res-&gt;content_length || 0;
+                          }
+                          if ($expected_length) {
+                               printf STDERR &quot;%d%% - &quot;,
+                                         100 * $bytes_received / $expected_length;
+                          }
+                          print STDERR &quot;$bytes_received bytes received\n&quot;;
+
+                          # XXX Should really do something with the chunk itself
+                          # print $chunk;
+                      });
+          print $res-&gt;status_line, &quot;\n&quot;;
+
+COPYRIGHT
+       Copyright 1996-2001, Gisle Aas
+
+       This library is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+perl v5.40.1                      2025-03-01                      lwpcook(3pm)
+</pre></body></html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-roc-source(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...c-source(7)  Miscellaneous Information Manual  libpipe...c-source(7)
+
+NAME
+       libpipewire-module-roc-source - ROC source
+
+DESCRIPTION
+       The roc-source module creates a PipeWire source that receives samples
+       from ROC sender and passes them to the sink it is connected to.
+
+       One can then connect it to any audio device.
+
+MODULE NAME
+       libpipewire-module-roc-source
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • source.props = {}: properties to be passed to the source stream
+
+       • source.name = &lt;str&gt;: node.name of the source
+
+       • local.ip = &lt;str&gt;: local sender ip
+
+       • local.source.port  =  &lt;str&gt;:  local  receiver TCP/UDP port for source
+         packets
+
+       • local.repair.port = &lt;str&gt;: local receiver TCP/UDP port  for  receiver
+         packets
+
+       • local.control.port  =  &lt;str&gt;: local receiver TCP/UDP port for control
+         packets
+
+       • sess.latency.msec = &lt;str&gt;: target network latency in milliseconds
+
+       • roc.resampler.backend = &lt;str&gt;:  Possible  values:  default,  builtin,
+         speex, speexdec.
+
+       • roc.resampler.profile   =  &lt;str&gt;:  Possible  values:  default,  high,
+         medium, low.
+
+       • roc.latency-tuner.backend = &lt;str&gt;: Possible values: default, niq
+
+       • roc.latency-tuner.profile = &lt;str&gt;: Possible values: default,  intact,
+         responsive, gradual
+
+       • fec.code = &lt;str&gt;: Possible values: default, disable, rs8m, ldpc
+
+       • resampler.profile = &lt;str&gt;: Deprecated, use roc.resampler.profile
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • node.name
+
+       • node.description
+
+       • media.name
+
+EXAMPLE CONFIGURATION
+        # ~/.config/pipewire/pipewire.conf.d/my-roc-source.conf
+
+        context.modules = [
+         {   name = libpipewire-module-roc-source
+             args = {
+                 local.ip = 0.0.0.0
+                 #roc.resampler.backend = default
+                 roc.resampler.profile = medium
+                 #roc.latency-tuner.backend = default
+                 #roc.latency-tuner.profile = default
+                 fec.code = disable
+                 sess.latency.msec = 5000
+                 local.source.port = 10001
+                 local.repair.port = 10002
+                 local.control.port = 10003
+                 source.name = &quot;ROC Source&quot;
+                 source.props = {
+                    node.name = &quot;roc-source&quot;
+                 }
+             }
+         }
+       ]
+
+PipeWire                             1.4.2               libpipe...c-source(7)
+</pre></body></html>

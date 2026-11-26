@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>btrfs-find-root(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>BTRFS-FIND-ROOT(8)                   BTRFS                  BTRFS-FIND-ROOT(8)
+
+NAME
+       btrfs-find-root - filter to find btrfs root
+
+SYNOPSIS
+       btrfs-find-root [options] &lt;device&gt;
+
+DESCRIPTION
+       btrfs-find-root  is  used to find the satisfied root, you can filter by
+       root tree&#x27;s objectid, generation, level.
+
+OPTIONS
+       -a     Search through all metadata extents, even the root has been  al‐
+              ready found.
+
+       -g &lt;generation&gt;
+              Filter  root  tree  by it&#x27;s original transaction id, tree root&#x27;s
+              generation in default.
+
+       -o &lt;objectid&gt;
+              Filter root tree by it&#x27;s objectid,tree root&#x27;s  objectid  in  de‐
+              fault.
+
+       -l &lt;level&gt;
+              Filter root tree by b-tree&#x27;s level, level 0 in default.
+
+EXIT STATUS
+       btrfs-find-root  will  return  0 if no error happened.  If any problems
+       happened, 1 will be returned.
+
+SEE ALSO
+       mkfs.btrfs(8)
+
+6.14                             Apr 17, 2025               BTRFS-FIND-ROOT(8)
+</pre></body></html>

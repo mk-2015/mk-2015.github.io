@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>memfrob(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>memfrob(3)                 Library Functions Manual                 memfrob(3)
+
+NAME
+       memfrob - frobnicate (obfuscate) a memory area
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #define _GNU_SOURCE             /* See feature_test_macros(7) */
+       #include &lt;string.h&gt;
+
+       void *memfrob(void s[.n], size_t n);
+
+DESCRIPTION
+       The  memfrob() function obfuscates the first n bytes of the memory area
+       s by exclusive-ORing each character with the number 42.  The effect can
+       be reversed by using memfrob() on the obfuscated memory area.
+
+       Note that this function is not a proper encryption routine as  the  XOR
+       constant is fixed, and is suitable only for hiding strings.
+
+RETURN VALUE
+       The memfrob() function returns a pointer to the obfuscated memory area.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       memfrob() T}   Thread safety  MT-Safe
+
+STANDARDS
+       GNU.
+
+SEE ALSO
+       bstring(3), strfry(3)
+
+Linux man-pages 6.9.1             2024-05-02                        memfrob(3)
+</pre></body></html>

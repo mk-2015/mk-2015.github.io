@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_DUMPABLE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_DUMPABLE(2const)                                PR_SET_DUMPABLE(2const)
+
+NAME
+       PR_SET_DUMPABLE - set the &quot;dumpable&quot; attribute of the calling process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_DUMPABLE, long dumpable);
+
+DESCRIPTION
+       Set  the  state  of  the &quot;dumpable&quot; attribute, which determines whether
+       core dumps are produced for the calling process upon delivery of a sig‐
+       nal whose default behavior is to produce a core dump.
+
+       dumpable must be either 0L (SUID_DUMP_DISABLE, process is not dumpable)
+       or 1L (SUID_DUMP_USER, process is dumpable).
+
+       Normally, the &quot;dumpable&quot; attribute is set to 1.  However, it  is  reset
+       to  the  current value contained in the file /proc/sys/fs/suid_dumpable
+       (which by default has the value 0), in the following circumstances:
+
+       •  The process&#x27;s effective user or group ID is changed.
+
+       •  The process&#x27;s filesystem user or group ID is  changed  (see  creden‐
+          tials(7)).
+
+       •  The  process executes (execve(2)) a set-user-ID or set-group-ID pro‐
+          gram, resulting in a change of either the effective user ID  or  the
+          effective group ID.
+
+       •  The  process  executes (execve(2)) a program that has file capabili‐
+          ties (see capabilities(7)), but only if the  permitted  capabilities
+          gained exceed those already permitted for the process.
+
+       Processes  that  are  not  dumpable  can  not be attached via ptrace(2)
+       PTRACE_ATTACH; see ptrace(2) for further details.
+
+       If a process is not dumpable, the ownership of files in  the  process&#x27;s
+       /proc/pid directory is affected as described in proc_pid(5).
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL arg2 is neither SUID_DUMP_DISABLE nor SUID_DUMP_USER.
+
+FILES
+       /proc/sys/fs/suid_dumpable
+
+       /proc/pid/
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.3.20.
+
+       Between Linux 2.6.13 and Linux 2.6.17, the value 2L was also permitted,
+       which caused any binary which normally would not be dumped to be dumped
+       readable by root only; for security reasons, this feature has been  re‐
+       moved.   (See  also  the  description  of /proc/sys/fs/suid_dumpable in
+       proc_sys_fs(5).)
+
+SEE ALSO
+       prctl(2), PR_SET_DUMPABLE(2const)
+
+Linux man-pages 6.9.1             2024-06-02           PR_SET_DUMPABLE(2const)
+</pre></body></html>

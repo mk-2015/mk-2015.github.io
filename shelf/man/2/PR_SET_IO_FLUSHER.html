@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_IO_FLUSHER(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_IO_FLUSHER(2const)                            PR_SET_IO_FLUSHER(2const)
+
+NAME
+       PR_SET_IO_FLUSHER - change the IO_FLUSHER state
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_IO_FLUSHER, long state, 0L, 0L, 0L);
+
+DESCRIPTION
+       If  a  user  process  is  involved in the block layer or filesystem I/O
+       path, and can allocate memory while processing I/O requests it must set
+       state to 1.  This will put the process in the IO_FLUSHER  state,  which
+       allows  it  special  treatment to make progress when allocating memory.
+       If state is 0, the process will clear the IO_FLUSHER state, and the de‐
+       fault behavior will be used.
+
+       The calling process must have the CAP_SYS_RESOURCE capability.
+
+       The IO_FLUSHER state is  inherited  by  a  child  process  created  via
+       fork(2) and is preserved across execve(2).
+
+       Examples  of IO_FLUSHER applications are FUSE daemons, SCSI device emu‐
+       lation daemons, and daemons that perform error handling like  multipath
+       path recovery applications.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL state is not a valid value.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 5.6.
+
+SEE ALSO
+       prctl(2), PR_GET_IO_FLUSHER(2const)
+
+Linux man-pages 6.9.1             2024-06-01         PR_SET_IO_FLUSHER(2const)
+</pre></body></html>

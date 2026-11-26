@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>rev(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>REV(1)                           User Commands                          REV(1)
+
+NAME
+       rev - reverse lines characterwise
+
+SYNOPSIS
+       rev [option] [file...]
+
+DESCRIPTION
+       The rev utility copies the specified files to standard output,
+       reversing the order of characters in every line. If no files are
+       specified, standard input is read.
+
+       This utility is a line-oriented tool and it uses in-memory allocated
+       buffer for a whole wide-char line. If the input file is huge and
+       without line breaks then allocating the memory for the file may be
+       unsuccessful.
+
+OPTIONS
+       -0, --zero
+           Zero termination. Use the byte &#x27;\0&#x27; as line separator.
+
+       -h, --help
+           Display help text and exit.
+
+       -V, --version
+           Display version and exit.
+
+SEE ALSO
+       tac(1)
+
+REPORTING BUGS
+       For bug reports, use the issue tracker
+       &lt;https://github.com/util-linux/util-linux/issues&gt;.
+
+AVAILABILITY
+       The rev command is part of the util-linux package which can be
+       downloaded from Linux Kernel Archive
+       &lt;https://www.kernel.org/pub/linux/utils/util-linux/&gt;.
+
+util-linux 2.41.5                 2026-06-16                            REV(1)
+</pre></body></html>

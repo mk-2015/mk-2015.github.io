@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ioctl_userfaultfd(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ioctl_userfaultfd(2)          System Calls Manual         ioctl_userfaultfd(2)
+
+NAME
+       ioctl_userfaultfd  -  create a file descriptor for handling page faults
+       in user space
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, int op, ...);
+
+DESCRIPTION
+       Various ioctl(2) operations can be performed on  a  userfaultfd  object
+       (created by a call to userfaultfd(2)) using calls of the form:
+
+           ioctl(fd, op, argp);
+
+       In  the  above,  fd is a file descriptor referring to a userfaultfd ob‐
+       ject, op is one of the operations listed below, and argp is  a  pointer
+       to a data structure that is specific to op.
+
+       The  various  ioctl(2) operations are described below.  The UFFDIO_API,
+       UFFDIO_REGISTER, and UFFDIO_UNREGISTER operations are used to configure
+       userfaultfd behavior.  These operations allow the caller to choose what
+       features will be enabled and what kinds of events will be delivered  to
+       the application.  The remaining operations are range operations.  These
+       operations enable the calling application to resolve page-fault events.
+
+       UFFDIO_API(2const)
+       UFFDIO_REGISTER(2const)
+       UFFDIO_UNREGISTER(2const)
+       UFFDIO_COPY(2const)
+       UFFDIO_ZEROPAGE(2const)
+       UFFDIO_WAKE(2const)
+       UFFDIO_WRITEPROTECT(2const)
+       UFFDIO_CONTINUE(2const)
+       UFFDIO_POISON(2const)
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       The following general errors can occur for all of  the  operations  de‐
+       scribed above:
+
+       EFAULT argp does not point to a valid memory address.
+
+       EINVAL (For  all operations except UFFDIO_API.)  The userfaultfd object
+              has not yet been enabled (via the UFFDIO_API operation).
+
+STANDARDS
+       Linux.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), mmap(2), userfaultfd(2)
+
+       linux.git/Documentation/admin-guide/mm/userfaultfd.rst
+
+Linux man-pages 6.9.1             2024-06-14              ioctl_userfaultfd(2)
+</pre></body></html>

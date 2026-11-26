@@ -1,0 +1,79 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFCreateDirectory(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFCREATEDIRECTORY(3tiff)          LibTIFF         TIFFCREATEDIRECTORY(3tiff)
+
+NAME
+       TIFFCreateDirectory  -  routines to create a directory and retrieve in‐
+       formation about directories
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFCreateDirectory(TIFF *tif)
+
+       int TIFFFreeDirectory(TIFF *tif)
+
+       int TIFFUnlinkDirectory(TIFF *tif, tdir_t dirn)
+
+DESCRIPTION
+       The following routines create or release a directory.
+
+       TIFFCreateDirectory() setup for a directory in a open TIFF  file.   The
+       newly   created   directory   will   not   exist   on   the  file  till
+       TIFFWriteDirectory(),   TIFFCheckpointDirectory(),    TIFFFlush()    or
+       TIFFClose()  is called.  TIFFWriteDirectory() also creates a new direc‐
+       tory, frees the *tif structure and sets up a new one.
+
+       TIFFFreeDirectory() releases allocated storage associated with a direc‐
+       tory, especially custom-fields.  However, the main part of  the  direc‐
+       tory is not touched. Routine TIFFCleanup() calls TIFFFreeDirectory() to
+       release the directory part of the tif structure.
+
+       TIFFUnlinkDirectory() unlink the specified directory from the directory
+       chain.   The parameter dirn specifies the subfile/directory as an inte‐
+       ger number, with the first directory numbered one (1).  This is differ‐
+       ent to TIFFSetDirectory() or TIFFCurrentDirectory() where the first di‐
+       rectory starts with zero (0).
+
+       Directory        query        functions         TIFFCurrentDirectory(),
+       TIFFCurrentDirOffset(),             TIFFLastDirectory()             and
+       TIFFNumberOfDirectories() retrieve information about directories in  an
+       open  TIFF file. Be aware that until a directory is not written to file
+       AND read back, the query functions won&#x27;t retrieve the correct  informa‐
+       tion!
+
+NOTES
+       Be aware:
+
+       • that  until  a  directory  is  not written to file AND read back, the
+         query functions won&#x27;t retrieve the correct information!
+
+       • that the newly created directory will not  exist  on  the  file  till
+         TIFFWriteDirectory(),   TIFFCheckpointDirectory(),   TIFFFlush()   or
+         TIFFClose() has been called.
+
+       • that TIFFCreateDirectory() and TIFFWriteDirectory() create a new  di‐
+         rectory, free the *tif structure and set up a new one.
+
+       • that  unlike TIFFWriteDirectory(), TIFFCheckpointDirectory() does not
+         free up the directory data structures in memory.
+
+       After libtiff version 4.6.0 TIFFCreateDirectory() also releases the di‐
+       rectory part of the tif structure by calling TIFFFreeDirectory(), which
+       should have been called by the user application before creating  a  new
+       directory.
+
+DIAGNOSTICS
+       All  error messages are directed to the TIFFErrorExtR() routine.  Like‐
+       wise, warning messages are directed to the TIFFWarningExtR() routine.
+
+SEE ALSO
+       libtiff  (3tiff),  TIFFCustomDirectory  (3tiff),   TIFFquery   (3tiff),
+       TIFFSetDirectory (3tiff), TIFFWriteDirectory (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026       TIFFCREATEDIRECTORY(3tiff)
+</pre></body></html>

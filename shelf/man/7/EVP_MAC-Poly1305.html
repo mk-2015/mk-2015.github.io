@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_MAC-Poly1305(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_MAC-POLY1305(7SSL)              OpenSSL             EVP_MAC-POLY1305(7SSL)
+
+NAME
+       EVP_MAC-Poly1305 - The Poly1305 EVP_MAC implementation
+
+DESCRIPTION
+       Support for computing Poly1305 MACs through the EVP_MAC API.
+
+   Identity
+       This implementation is identified with this name and properties, to be
+       used with EVP_MAC_fetch():
+
+       &quot;POLY1305&quot;, &quot;provider=default&quot;
+
+   Supported parameters
+       The   general   description   of  these  parameters  can  be  found  in
+       &quot;PARAMETERS&quot; in EVP_MAC(3).
+
+       The following parameter can be set with EVP_MAC_CTX_set_params():
+
+       &quot;key&quot; (OSSL_MAC_PARAM_KEY) &lt;octet string&gt;
+           Sets the MAC key.  Setting this parameter is identical to passing a
+           key to EVP_MAC_init(3).
+
+       The     following     parameters     can     be     retrieved      with
+       EVP_MAC_CTX_get_params():
+
+       &quot;size&quot; (OSSL_MAC_PARAM_SIZE) &lt;unsigned integer&gt;
+           Gets the MAC size.
+
+       The    &quot;size&quot;    parameter    can   also   be   retrieved   with   with
+       EVP_MAC_CTX_get_mac_size().  The length of the &quot;size&quot; parameter  should
+       not exceed that of an unsigned int.
+
+NOTES
+       The  OpenSSL  implementation  of  the  Poly 1305 MAC corresponds to RFC
+       7539.
+
+       It is critical to never reuse the key.  The security implication  noted
+       in RFC 8439 applies equally to the OpenSSL implementation.
+
+SEE ALSO
+       EVP_MAC_CTX_get_params(3),  EVP_MAC_CTX_set_params(3),  &quot;PARAMETERS&quot; in
+       EVP_MAC(3), OSSL_PARAM(3)
+
+COPYRIGHT
+       Copyright 2018-2021 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09            EVP_MAC-POLY1305(7SSL)
+</pre></body></html>

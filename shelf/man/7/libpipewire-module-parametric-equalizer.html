@@ -1,0 +1,100 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-parametric-equalizer(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...qualizer(7)  Miscellaneous Information Manual  libpipe...qualizer(7)
+
+NAME
+       libpipewire-module-parametric-equalizer - Parametric-Equalizer
+
+DESCRIPTION
+       The parametric-equalizer module loads parametric equalizer
+       configuration generated from the AutoEQ project or Squiglink.
+
+       Both the projects allow equalizing headphones or an in-ear monitor to a
+       target curve. While these generate a file for parametric equalization
+       for a given target, but this is not a format that can be directly given
+       to filter chain module.
+
+       A popular example of the above being EQ&#x27;ing to the Harman target curve
+       or EQ&#x27;ing one headphone/IEM to another.
+
+       For AutoEQ, see https://github.com/jaakkopasanen/AutoEq. For SquigLink,
+       see https://squig.link/.
+
+       Parametric equalizer configuration generated from AutoEQ or Squiglink
+       looks like below.
+
+       Preamp: -6.8 dB
+       Filter 1: ON PK Fc 21 Hz Gain 6.7 dB Q 1.100
+       Filter 2: ON PK Fc 85 Hz Gain 6.9 dB Q 3.000
+       Filter 3: ON PK Fc 110 Hz Gain -2.6 dB Q 2.700
+       Filter 4: ON PK Fc 210 Hz Gain 5.9 dB Q 2.100
+       Filter 5: ON PK Fc 710 Hz Gain -1.0 dB Q 0.600
+       Filter 6: ON PK Fc 1600 Hz Gain 2.3 dB Q 2.700
+
+       Fc, Gain and Q specify the frequency, gain and Q factor respectively.
+       The fourth column can be one of PK, LSC or HSC specifying peaking, low
+       shelf and high shelf filter respectively. More often than not only
+       peaking filters are involved.
+
+       This module parses a configuration like above and loads the filter
+       chain module with the above configuration translated to filter chain
+       arguments.
+
+MODULE NAME
+       libpipewire-module-parametric-equalizer
+
+MODULE OPTIONS
+       Options specific to the behaviour of this module
+
+       • equalizer.filepath = &lt;str&gt; path of the file with parametric EQ
+
+       • equalizer.description = &lt;str&gt;: Name which will show up in
+
+       • audio.channels = &lt;int&gt;: Number of audio channels, default 2
+
+       • audio.position = &lt;str&gt;: Channel map, default &#x27;[FL, FR]&#x27;
+
+       • remote.name   =   &lt;str&gt;:   environment   with  remote  name,  default
+         &#x27;pipewire-0&#x27;
+
+       • capture.props = {}: properties passed to the input stream, default  {
+         media.class  =  &#x27;Audio/Sink&#x27;,  node.name = &#x27;effect_input.eq&lt;number of
+         nodes&gt;&#x27; }
+
+       • playback.props = {}: properties passed to the output stream,  default
+         {  node.passive  =  true,  node.name  =  &#x27;effect_output.eq&lt;number  of
+         nodes&gt;&#x27; }
+
+GENERAL OPTIONS
+       Options with well-known behaviour:
+
+       • audio.channels
+
+       • audio.position
+
+       • remote.name
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-parametric-equalizer.conf
+
+       context.modules = [
+       {   name = libpipewire-module-parametric-equalizer
+           args = {
+               #remote.name = &quot;pipewire-0&quot;
+               #equalizer.filepath = &quot;/a/b/EQ.txt&quot;
+               #equalizer.description = &quot;Parametric EQ Sink&quot;
+               #audio.channels = 2
+               #audio.position = [FL, FR]
+               #capture.props = {
+               #  node.name = &quot;Parametric EQ input&quot;
+               #}
+               #playback.props = {
+               #  node.name = &quot;Parametric EQ output&quot;
+               #}
+           }
+       }
+       ]
+
+       Since
+           1.0.6
+
+PipeWire                             1.4.2               libpipe...qualizer(7)
+</pre></body></html>

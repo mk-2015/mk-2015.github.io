@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>mdoctorfat(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>mdoctorfat(1)               General Commands Manual              mdoctorfat(1)
+
+Name
+       mdoctorfat - doctors the allocation table of a file
+
+
+
+Note of warning
+       This  manpage  has  been  automatically generated from mtools&#x27;s texinfo
+       documentation, and may not be entirely accurate or complete.   See  the
+       end of this man page for details.
+
+Description
+       The mdoctorfat command was initially intended as a test/debugging tool.
+       It  allows  to  flag FAT clusters as bad blocks, and also to change the
+       clusters allocated to a file. No consistency check  is  done,  clusters
+       previously allocated to the file are not freed. Use at your own risk.
+
+       Syntax:
+
+       mdoctorfat [-o offset] -b drive clusters
+       mdoctorfat [-o offset] [-s size] file clusters
+
+
+       If  flag  -b  is  present, the command marks the clusters as bad blocks
+       rather than change the allocation of a file.
+
+       If flag -b is not present, the commands sets the clusters to  allocated
+       to the file.
+
+       If option -s is given in addition to the -b, this also changes the size
+       in bytes of the file.
+
+       The  cluster  list  is represented as a sequence of clusters or cluster
+       ranges. Example: 7-10 20 21-24. Each range needs to be a different  pa‐
+       rameter.
+
+       If  -o  is  given, this specifies an offset to be added to each cluster
+       (offset is expressed in number of clusters).
+
+See Also
+       Mtools&#x27; texinfo doc
+
+Viewing the texi doc
+       This manpage has been automatically  generated  from  mtools&#x27;s  texinfo
+       documentation.  However,  this  process is only approximative, and some
+       items, such as crossreferences, footnotes and indices are lost in  this
+       translation process.  Indeed, these items have no appropriate represen‐
+       tation  in  the manpage format.  Moreover, not all information has been
+       translated into the manpage version.  Thus I strongly advise you to use
+       the original texinfo doc.  See the end of this manpage for instructions
+       how to view the texinfo doc.
+
+       *      To generate a printable copy from the texinfo doc, run the  fol‐
+              lowing commands:
+
+                     ./configure; make dvi; dvips mtools.dvi
+
+
+
+       *      To generate a html copy,  run:
+
+                     ./configure; make html
+
+       A premade html can be found at `http://www.gnu.org/software/mtools/man‐
+       ual/mtools.html&#x27;
+
+       *      To  generate  an  info  copy (browsable using emacs&#x27; info mode),
+              run:
+
+                     ./configure; make info
+
+
+
+       The texinfo doc looks most pretty when printed or as html.  Indeed,  in
+       the  info  version  certain  examples  are difficult to read due to the
+       quoting conventions used in info.
+
+mtools-4.0.48                       22Feb25                      mdoctorfat(1)
+</pre></body></html>

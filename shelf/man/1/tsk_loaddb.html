@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>tsk_loaddb(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>TSK_LOADDB(1)               General Commands Manual              TSK_LOADDB(1)
+
+NAME
+       tsk_loaddb - populate a SQLite database with metadata from a disk image
+
+SYNOPSIS
+       tsk_loaddb  [-ahkvV] [ -i imgtype ] [ -b dev_sector_size ] [ -i imgtype
+       ] [ -d database ] image [images]
+
+DESCRIPTION
+       tsk_loaddb loads disk information from  image  to  a  SQLite  database.
+       This  database  can then be used by tools in other languages for analy‐
+       sis. By default, the database is stored in the same  directory  as  the
+       image with &quot;.db&quot; appended to the name or the database name can be spec‐
+       ified with &#x27;-d&#x27;.
+
+       The arguments are as follows:
+
+       -a     Adds  image  to  an  existing database instead of creating a new
+              one.  Requires that -d be also specified.
+
+       -d database
+              Path for the database (default is the same directory as the  im‐
+              age with name derived from image name
+
+       -v     verbose output to stderr
+
+       -V     Print version
+
+       -k     Don&#x27;t  create  block  data table.  This table maps each block to
+              the file that allocated it.  This option will make this  program
+              run faster.
+
+       -h     Calculate  MD5  hash  value for each file and store it in table.
+              This option will make the program run slower.
+
+       -i imgtype
+              The format of the image file, such as raw.   Use  &#x27;-i  list&#x27;  to
+              list  the  supported types.  If not given, autodetection methods
+              are used.
+
+       -b dev_sector_size
+              The size (in bytes) of the device sectors.  If  not  given,  au‐
+              todetection methods are used.
+
+       image [images]
+              The  disk or partition image to read, whose format is given with
+              &#x27;-i&#x27;.  Multiple image file names can be given if  the  image  is
+              split  into multiple segments.  If only one image file is given,
+              and its name is the first in a sequence (e.g., as  indicated  by
+              ending  in  &#x27;.001&#x27;),  subsequent image segments will be included
+              automatically.
+
+
+EXAMPLES
+       To load image data from image.dd to image.dd.db:
+
+            # tsk_loaddb ./image.dd
+
+
+
+AUTHOR
+       Brian Carrier &lt;carrier at sleuthkit dot org&gt;
+
+       Send documentation updates to &lt;doc-updates at sleuthkit dot org&gt;
+
+                                                                 TSK_LOADDB(1)
+</pre></body></html>

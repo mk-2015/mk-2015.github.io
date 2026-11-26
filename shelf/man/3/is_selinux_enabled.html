@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>is_selinux_enabled(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>is_selinux_enabled(3)      SELinux API documentation     is_selinux_enabled(3)
+
+NAME
+       is_selinux_enabled - check whether SELinux is enabled
+
+NAME
+       is_selinux_mls_enabled  -  check  whether SELinux is enabled for (Multi
+       Level Security) MLS
+
+SYNOPSIS
+       #include &lt;selinux/selinux.h&gt;
+
+       int is_selinux_enabled(void);
+
+       int is_selinux_mls_enabled(void);
+
+DESCRIPTION
+       is_selinux_enabled() returns 1 if SELinux is running or 0 if it is not.
+
+       is_selinux_mls_enabled() returns 1 if SELinux is capable of running  in
+       MLS mode or 0 if it is not.  To determine the policy in use on the sys‐
+       tem, use selinux_getpolicytype(3).
+
+SEE ALSO
+       selinux(8)
+
+russell@coker.com.au              7 Mar 2010             is_selinux_enabled(3)
+</pre></body></html>

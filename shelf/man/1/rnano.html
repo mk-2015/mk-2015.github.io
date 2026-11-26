@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>rnano(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>RNANO(1)                    General Commands Manual                   RNANO(1)
+
+NAME
+       rnano - a restricted nano
+
+
+SYNOPSIS
+       rnano [options] [[+line[,column]] file]...
+
+
+DESCRIPTION
+       rnano  runs  the  nano  editor in restricted mode.  This allows editing
+       only the specified file or files, and doesn&#x27;t allow the user access  to
+       the filesystem nor to a command shell.
+
+       In restricted mode, nano will:
+
+       • not make backups;
+
+       • not allow suspending;
+
+       • not allow spell checking;
+
+       • not read nor write the history files;
+
+       • not allow saving the current buffer under a different name;
+
+       • not allow inserting another file or opening a new buffer;
+
+       • not allow appending or prepending to any file.
+
+
+OPTIONS
+       -h, --help
+              Show the available command-line options and exit.
+
+       For all existing options, see the nano(1) man page.
+
+
+BUGS
+       Please report bugs via https://savannah.gnu.org/bugs/?group=nano.
+
+
+HOMEPAGE
+       https://nano-editor.org/
+
+
+SEE ALSO
+       nano(1)
+
+April 2025                        version 8.4                         RNANO(1)
+</pre></body></html>

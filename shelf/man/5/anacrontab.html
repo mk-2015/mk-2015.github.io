@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>anacrontab(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ANACRONTAB(5)                Anacron Users&#x27; Manual               ANACRONTAB(5)
+
+NAME
+       /etc/anacrontab - configuration file for anacron
+
+DESCRIPTION
+       The  file  /etc/anacrontab describes the jobs controlled by anacron(8).
+       Its lines can be of three kinds:   job-description  lines,  environment
+       assignments, or empty lines.
+
+       Job-description lines are of one of these two forms:
+
+          period  delay  job-identifier  command
+
+          @period_name delay job-identify command
+
+       The  period is specified in days, the delay in minutes. The job-identi‐
+       fier can contain any non-blank character, except slashes. It is used to
+       identify the job in Anacron messages, and as the  name  for  the  job&#x27;s
+       timestamp file. The command can be any shell command. The fields can be
+       separated by blank spaces or tabs. period_name can be set to monthly or
+       yearly.  This will ensure jobs are only run once a month, no matter the
+       number of days in this month, or the previous month; or analogously for
+       the year.
+
+       Environment assignment lines are of the form:
+
+          VAR = VALUE
+
+       Spaces around VAR are removed.  No  spaces  around  VALUE  are  allowed
+       (unless  you  want  them to be part of the value). The assignment takes
+       effect from the next line to the end of the file, or to  the  next  as‐
+       signment of the same variable.
+
+       Empty  lines  are either blank lines, line containing white-space only,
+       or lines with white-space followed by a &#x27;#&#x27; followed  by  an  arbitrary
+       comment.
+
+       You can continue a line onto the next line by ending it with a &#x27;\&#x27;.
+
+SEE ALSO
+       anacron(8)
+
+       The Anacron README file.
+
+AUTHOR
+       Itai Tzur &lt;itzur@actcom.co.il&gt;
+
+       Currently maintained by Lance Lin &lt;lq27267@gmail.com&gt;.
+
+Pascal Hakim                      2004-07-11                     ANACRONTAB(5)
+</pre></body></html>

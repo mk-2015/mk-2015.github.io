@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>iswalnum(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>iswalnum(3)                Library Functions Manual                iswalnum(3)
+
+NAME
+       iswalnum - test for alphanumeric wide character
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wctype.h&gt;
+
+       int iswalnum(wint_t wc);
+
+DESCRIPTION
+       The  iswalnum()  function is the wide-character equivalent of the isal‐
+       num(3) function.  It tests whether wc is a wide character belonging  to
+       the wide-character class &quot;alnum&quot;.
+
+       The  wide-character  class  &quot;alnum&quot; is a subclass of the wide-character
+       class &quot;graph&quot;, and therefore also  a  subclass  of  the  wide-character
+       class &quot;print&quot;.
+
+       Being  a subclass of the wide-character class &quot;print&quot;, the wide-charac‐
+       ter class &quot;alnum&quot; is disjoint from the wide-character class &quot;cntrl&quot;.
+
+       Being a subclass of the wide-character class &quot;graph&quot;, the  wide-charac‐
+       ter class &quot;alnum&quot; is disjoint from the wide-character class &quot;space&quot; and
+       its subclass &quot;blank&quot;.
+
+       The  wide-character  class  &quot;alnum&quot; is disjoint from the wide-character
+       class &quot;punct&quot;.
+
+       The wide-character class &quot;alnum&quot; is the  union  of  the  wide-character
+       classes  &quot;alpha&quot; and &quot;digit&quot;.  As such, it also contains the wide-char‐
+       acter class &quot;xdigit&quot;.
+
+       The wide-character class &quot;alnum&quot; always contains at least  the  letters
+       &#x27;A&#x27; to &#x27;Z&#x27;, &#x27;a&#x27; to &#x27;z&#x27;, and the digits &#x27;0&#x27; to &#x27;9&#x27;.
+
+RETURN VALUE
+       The  iswalnum()  function returns nonzero if wc is a wide character be‐
+       longing to the wide-character class  &quot;alnum&quot;.   Otherwise,  it  returns
+       zero.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       iswalnum() T}   Thread safety  MT-Safe locale
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+NOTES
+       The behavior of iswalnum() depends on the LC_CTYPE category of the
+       current locale.
+
+SEE ALSO
+       isalnum(3), iswctype(3)
+
+Linux man-pages 6.9.1             2024-05-02                       iswalnum(3)
+</pre></body></html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>berkeley_db5.3_svc(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BERKELEY_DB5.3_SVC(1)       General Commands Manual      BERKELEY_DB5.3_SVC(1)
+
+NAME
+       berkeley_db5.3_svc - Berkeley DB RPC server
+
+SYNOPSIS
+       berkeley_db5.3_svc  [-Vv] [-h home] [-I seconds] [-L file] [-t seconds]
+       [-T seconds]
+
+DESCRIPTION
+       The berkeley_db5.3_svc utility is the Berkeley DB RPC server.
+
+OPTIONS
+       -h     Add the specified home directory to the list of allowed home di‐
+              rectories that can be specified by the client.  The home  direc‐
+              tory should be an absolute pathname.  The last component of each
+              home  directory  specified  must  be  unique because that is how
+              clients specify which database environment they want to join.
+
+              Recovery will be run on each specified  environment  before  the
+              server begins accepting requests from clients.  For this reason,
+              only  one  copy  of the server program should ever be run at any
+              time because recovery must always be single-threaded.
+
+       -I     Set the default idle timeout  for  client  environments  to  the
+              specified number of seconds.  The default timeout is 24 hours.
+
+       -L     Log the execution of the berkeley_db5.3_svc utility to the spec‐
+              ified file in the following format, where ### is the process ID,
+              and the date is the time the utility was started.
+
+              berkeley_db5.3_svc: ### Wed Jun 15 01:23:45 EDT 1995
+
+              This  file will be removed if the berkeley_db5.3_svc utility ex‐
+              its gracefully.
+
+       -t     Set the default timeout for client resources (idle  transactions
+              and cursors) to the specified number of seconds.  When the time‐
+              out expires, if the resource is a transaction, it is aborted; if
+              the  resource is a cursor, it is closed.  The default timeout is
+              5 minutes.
+
+       -T     Set the maximum timeout allowed for client resources.   The  de‐
+              fault timeout is 20 minutes.  If a client application requests a
+              server  timeout  greater  than  the maximum timeout set for this
+              server, the client&#x27;s timeout will be capped at the maximum time‐
+              out value.
+
+       -V     Write the library version number to  the  standard  output,  and
+              exit.
+
+       -v     Run in verbose mode.
+
+       The  berkeley_db5.3_svc  utility exits 0 on success, and &gt;0 if an error
+       occurs.
+
+ENVIRONMENT
+       DB_HOME
+              If the -h option is not specified and the  environment  variable
+              DB_HOME  is set, it is used as the path of the database home, as
+              described in DB_ENV-&gt;open.
+
+AUTHORS
+       Sleepycat Software, Inc. This manual page was created based on the HTML
+       documentation for berkeley_db_svc from Sleepycat,  by  Thijs  Kinkhorst
+       &lt;thijs@kinkhorst.com&gt;,  for  the Debian system (but may be used by oth‐
+       ers).
+
+                                28 January 2005          BERKELEY_DB5.3_SVC(1)
+</pre></body></html>

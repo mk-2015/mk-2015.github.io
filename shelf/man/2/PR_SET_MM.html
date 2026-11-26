@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_MM(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_MM(2const)                                            PR_SET_MM(2const)
+
+NAME
+       PR_SET_MM - modify kernel memory map descriptor fields
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_MM, long op, ...);
+
+DESCRIPTION
+       Modify  certain  kernel  memory  map  descriptor  fields of the calling
+       process.  Usually these fields are set by the kernel and dynamic loader
+       (see ld.so(8) for more information) and a  regular  application  should
+       not use this feature.  However, there are cases, such as self-modifying
+       programs, where a program might find it useful to change its own memory
+       map.
+
+       The  calling  process  must  have the CAP_SYS_RESOURCE capability.  The
+       value in op is one of the options below.
+
+       PR_SET_MM_START_CODE
+       PR_SET_MM_END_CODE
+       PR_SET_MM_START_DATA
+       PR_SET_MM_END_DATA
+       PR_SET_MM_START_STACK
+       PR_SET_MM_START_BRK
+       PR_SET_MM_BRK
+       PR_SET_MM_ARG_START
+       PR_SET_MM_ARG_END
+       PR_SET_MM_ENV_START
+       PR_SET_MM_ENV_END
+       PR_SET_MM_AUXV
+       PR_SET_MM_EXE_FILE
+       PR_SET_MM_MAP
+       PR_SET_MM_MAP_SIZE
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL op is not a valid value.
+
+       EPERM  The caller does not have the CAP_SYS_RESOURCE capability.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.3.
+
+       Before  Linux  3.10,  this  feature  is available only if the kernel is
+       built with the CONFIG_CHECKPOINT_RESTORE option enabled.
+
+SEE ALSO
+       prctl(2),   PR_SET_MM_START_CODE(2const),   PR_SET_MM_END_CODE(2const),
+       PR_SET_MM_START_DATA(2const),               PR_SET_MM_END_DATA(2const),
+       PR_SET_MM_START_STACK(2const),             PR_SET_MM_START_BRK(2const),
+       PR_SET_MM_BRK(2const),                     PR_SET_MM_ARG_START(2const),
+       PR_SET_MM_ARG_END(2const),                 PR_SET_MM_ENV_START(2const),
+       PR_SET_MM_ENV_END(2const),                  PR_SET_MM_EXE_FILE(2const),
+       PR_SET_MM_MAP(2const), PR_SET_MM_MAP_SIZE(2const)
+
+Linux man-pages 6.9.1             2024-06-01                 PR_SET_MM(2const)
+</pre></body></html>

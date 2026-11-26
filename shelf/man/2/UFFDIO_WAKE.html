@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UFFDIO_WAKE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>UFFDIO_WAKE(2const)                                        UFFDIO_WAKE(2const)
+
+NAME
+       UFFDIO_WAKE - wake up a thread waiting for page-fault resolution
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, UFFDIO_WAKE, const struct uffdio_range *argp);
+
+DESCRIPTION
+       Wake  up  the  thread  waiting for page-fault resolution on a specified
+       memory address range.
+
+       The UFFDIO_WAKE operation is used in conjunction with  UFFDIO_COPY  and
+       UFFDIO_ZEROPAGE  operations  that have the UFFDIO_COPY_MODE_DONTWAKE or
+       UFFDIO_ZEROPAGE_MODE_DONTWAKE bit set in the mode field.  The userfault
+       monitor can perform several UFFDIO_COPY and UFFDIO_ZEROPAGE  operations
+       in  a  batch and then explicitly wake up the faulting thread using UFF‐
+       DIO_WAKE.
+
+RETURN VALUE
+       This ioctl(2) operation returns 0 on success.  On error, -1 is returned
+       and errno is set to indicate the error.
+
+ERRORS
+       EINVAL The start or the len field of the ufdio_range structure was  not
+              a  multiple  of  the  system  page size; or len was zero; or the
+              specified range was otherwise invalid.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.3.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), ioctl_userfaultfd(2), UFFDIO_REGISTER(2const), userfaultfd(2)
+
+       linux.git/Documentation/admin-guide/mm/userfaultfd.rst
+
+Linux man-pages 6.9.1             2024-06-14               UFFDIO_WAKE(2const)
+</pre></body></html>

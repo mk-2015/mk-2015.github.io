@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>URI::URL(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>URI::URL(3pm)         User Contributed Perl Documentation        URI::URL(3pm)
+
+NAME
+       URI::URL - Uniform Resource Locators
+
+SYNOPSIS
+        $u1 = URI::URL-&gt;new($str, $base);
+        $u2 = $u1-&gt;abs;
+
+DESCRIPTION
+       This module is provided for backwards compatibility with modules that
+       depend on the interface provided by the &quot;URI::URL&quot; class that used to
+       be distributed with the libwww-perl library.
+
+       The following differences exist compared to the &quot;URI&quot; class interface:
+
+       •  The  URI::URL  module  exports  the  url()  function as an alternate
+          constructor interface.
+
+       •  The constructor takes an optional $base  argument.   The  &quot;URI::URL&quot;
+          class is a subclass of &quot;URI::WithBase&quot;.
+
+       •  The    URI::URL-&gt;newlocal    class    method    is   the   same   as
+          URI::file-&gt;new_abs.
+
+       •  URI::URL::strict(1)
+
+       •  $url-&gt;print_on method
+
+       •  $url-&gt;crack method
+
+       •  $url-&gt;full_path: same as ($uri-&gt;abs_path || &quot;/&quot;)
+
+       •  $url-&gt;netloc: same as $uri-&gt;authority
+
+       •  $url-&gt;epath, $url-&gt;equery: same as $uri-&gt;path, $uri-&gt;query
+
+       •  $url-&gt;path and $url-&gt;query pass unescaped strings.
+
+       •  $url-&gt;path_components: same as  $uri-&gt;path_segments  (if  you  don&#x27;t
+          consider path segment parameters)
+
+       •  $url-&gt;params and $url-&gt;eparams methods
+
+       •  $url-&gt;base method.  See URI::WithBase.
+
+       •  $url-&gt;abs  and  $url-&gt;rel  have  an  optional  $base  argument.  See
+          URI::WithBase.
+
+       •  $url-&gt;frag: same as $uri-&gt;fragment
+
+       •  $url-&gt;keywords: same as $uri-&gt;query_keywords
+
+       •  $url-&gt;localpath and friends map to $uri-&gt;file.
+
+       •  $url-&gt;address and $url-&gt;encoded822addr: same as $uri-&gt;to for  mailto
+          URI
+
+       •  $url-&gt;groupart method for news URI
+
+       •  $url-&gt;article: same as $uri-&gt;message
+
+SEE ALSO
+       URI, URI::WithBase
+
+COPYRIGHT
+       Copyright 1998-2000 Gisle Aas.
+
+perl v5.38.2                      2024-10-09                     URI::URL(3pm)
+</pre></body></html>

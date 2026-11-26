@@ -1,0 +1,107 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-access(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...e-access(7)  Miscellaneous Information Manual  libpipe...e-access(7)
+
+NAME
+       libpipewire-module-access - Access
+
+DESCRIPTION
+       The access module performs access checks on clients.
+
+       The access check is only performed once per client, subsequent checks
+       return the same resolution.
+
+       Permissions assigned to a client are configured as arguments to this
+       module, see below. Permission management beyond unrestricted access is
+       delegated to an external agent, usually the session manager.
+
+       This module sets the pipewire.access as follows:
+
+       • If access.legacy module option is not enabled:
+
+       The  value  defined  for  the socket in access.socket module option, or
+       &#x27;default&#x27; if no value is defined.
+
+       • If access.legacy is enabled, the value is:
+
+         • &#x27;flatpak&#x27;: if client is a Flatpak client
+
+         • &#x27;unrestricted&#x27;: if pipewire.client.access client property is set to
+           &#x27;allowed&#x27;
+
+         • Value of pipewire.client.access client property, if set
+
+         • &#x27;unrestricted&#x27;: otherwise
+
+       If the resulting pipewire.access value is &#x27;unrestricted&#x27;,  this  module
+       will   give  the  client  all  permissions  to  access  all  resources.
+       Otherwise, the client will be forced to wait until an  external  actor,
+       such as the session manager, updates the client permissions.
+
+       For  connections  from  applications  running  inside  Flatpak, and not
+       mediated  by  other  clients  (eg.  portal  or   pipewire-pulse),   the
+       pipewire.access.portal.app_id  property  is  to the Flatpak application
+       ID, if found. In addition, pipewire.sec.flatpak is set to true.
+
+MODULE NAME
+       libpipewire-module-access
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • access.socket = { &#x27;socket-name&#x27; = &#x27;access-value&#x27;, ... }:
+
+       Socket-specific access permissions. Has the default value {  &#x27;CORENAME-
+       manager&#x27;:  &#x27;unrestricted&#x27;  } where CORENAME is the name of the PipeWire
+       core, usually pipewire-0.
+
+       • access.legacy = true: enable backward-compatible access mode.  Cannot
+         be enabled when using socket-based permissions.
+
+       If access.socket is not specified, has the default value true otherwise
+       false.
+
+       Warning
+           The  legacy  mode  is  deprecated.  The default value is subject to
+           change and the legacy  mode  may  be  removed  in  future  PipeWire
+           releases.
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • pipewire.access
+
+       • pipewire.client.access
+
+CONFIG OVERRIDE
+       A module.access.args config section can be added to override the module
+       arguments.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-access-args.conf
+
+       module.access.args = {
+            access.socket = {
+                pipewire-0 = &quot;default&quot;,
+                pipewire-0-manager = &quot;unrestricted&quot;,
+            }
+       }
+
+EXAMPLE CONFIGURATION
+        context.modules = [
+         {   name = libpipewire-module-access
+             args = {
+                 # Use separate socket for session manager applications,
+                 # and pipewire-0 for usual applications.
+                 access.socket = {
+                     pipewire-0 = &quot;default&quot;,
+                     pipewire-0-manager = &quot;unrestricted&quot;,
+                 }
+             }
+         }
+       ]
+
+       See also
+           pw_resource_error
+
+           pw_impl_client_update_permissions
+
+PipeWire                             1.4.2               libpipe...e-access(7)
+</pre></body></html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::IconList(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>IconList(3pm)         User Contributed Perl Documentation        IconList(3pm)
+
+NAME
+       Tk::IconList - an icon list widget
+
+SYNOPSIS
+           use Tk::IconList;
+           $il = $mw-&gt;IconList(-browsecmd =&gt; sub { ... },
+                               -command   =&gt; sub { ... })-&gt;pack;
+           $il-&gt;Add($icon1, $text1);
+           $il-&gt;Add($icon2, $text2);
+           $il-&gt;Arrange;
+           ...
+           $il-&gt;DeleteAll;
+
+DESCRIPTION
+   OPTIONS
+       -browsecmd
+       -command
+       -font
+           -item -foreground|-fg
+
+   METHODS
+       DeleteAll
+           Deletes  all  the  items  inside the canvas subwidget and reset the
+           IconList&#x27;s state.
+
+       Add($image, $text)
+           Adds an icon into the IconList with the designated image and text.
+
+       Arrange
+           Places the icons in a column-major arrangement.
+
+       Get Return the selected item.
+
+       Invoke
+           Gets called when the user invokes the IconList (usually by  double-
+           clicking or pressing the Return key) (internal method).
+
+       See($tag)
+           If  the item is not (completely) visible, scroll the canvas so that
+           it becomes visible (internal method).
+
+COPYRIGHT
+       The original tkfbox.tcl from Tcl/Tk is:
+
+       Copyright (c) 1994-1996 Sun Microsystems, Inc.
+
+       See  the  file   &quot;license.terms&quot;   for   information   on   usage   and
+       redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+       Translated to Perl/Tk by Slaven Rezic &lt;srezic@cpan.org&gt;.
+
+SEE ALSO
+       Tk::FBox.
+
+perl v5.40.1                      2025-04-13                     IconList(3pm)
+</pre></body></html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::ROText(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>ROText(3pm)           User Contributed Perl Documentation          ROText(3pm)
+
+NAME
+       Tk::ROText - &#x27;readonly&#x27; perl/Tk Text widget
+
+SYNOPSIS
+           use Tk::ROText;
+           ...
+           $ro = $mw-&gt;ROText(?options,...?);
+
+DESCRIPTION
+       This &quot;IS A&quot; text widget with all bindings removed that would alter the
+       contents of the text widget. The contents can still be modified via
+       method calls.
+
+   BINDINGS
+       Only read-only bindings from Tk::Text are available in Tk::ROText.
+       Additionally the following bindings are defined:
+
+       &lt;space&gt;
+           Move the cursor forward by one screenful.
+
+       &lt;BackSpace&gt;
+           Move the cursor backward by one screenful.
+
+KEYWORDS
+       widget, text, readonly
+
+SEE ALSO
+       Tk::Text
+
+perl v5.40.1                      2025-04-13                       ROText(3pm)
+</pre></body></html>

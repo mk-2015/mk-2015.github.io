@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ciptool(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>CIPTOOL(1)                Linux System Administration               CIPTOOL(1)
+
+NAME
+       ciptool - Bluetooth Common ISDN Access Profile (CIP)
+
+SYNOPSIS
+       ciptool [OPTIONS] COMMANDS
+
+DESCRIPTION
+       ciptool(1)  is used to set up, maintain, and inspect the CIP configura‐
+       tion of the Bluetooth subsystem in the Linux kernel.
+
+OPTIONS
+       -i &lt;hciX|BDADDR&gt;
+              The command is applied to device hciX , which must be  the  name
+              or the address of an installed Bluetooth device.
+
+              If  not  specified,  the command will be use the first available
+              Bluetooth device.
+
+       -h, --help
+              Show help options
+
+COMMANDS
+       show   Display information about the connected devices.
+
+       search Search for Bluetooth devices and connect to first one  that  of‐
+              fers CIP support.
+
+       connect &lt;BDADDR&gt; [PSM]
+              Connect  the  local device to the remote Bluetooth device on the
+              specified PSM number. If no PSM is specified,  it will  use  the
+              SDP to retrieve it from the remote device.
+
+       release [BDADDR]
+              Release  a  connection  to  the specific device. If no BDADDR is
+              given and only one device is connected this will be released.
+
+       loopback &lt;BDADDR&gt; [PSM]
+              Create a connection to the remote device for Bluetooth  testing.
+              This  command  will not provide a CAPI controller, because it is
+              only for testing the CAPI Message Transport Protocol.
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+AUTHOR
+       Marcel Holtmann &lt;marcel@holtmann.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                            June 3, 2003                       CIPTOOL(1)
+</pre></body></html>

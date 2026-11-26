@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>csin(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>csin(3)                    Library Functions Manual                    csin(3)
+
+NAME
+       csin, csinf, csinl - complex sine function
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double complex csin(double complex z);
+       float complex csinf(float complex z);
+       long double complex csinl(long double complex z);
+
+DESCRIPTION
+       These functions calculate the complex sine of z.
+
+       The complex sine function is defined as:
+
+           csin(z) = (exp(i * z) - exp(-i * z)) / (2 * i)
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       csin(), csinf(), csinl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       cabs(3), casin(3), ccos(3), ctan(3), complex(7)
+
+Linux man-pages 6.9.1             2024-05-02                           csin(3)
+</pre></body></html>

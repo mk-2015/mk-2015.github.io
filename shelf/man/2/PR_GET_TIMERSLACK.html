@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_GET_TIMERSLACK(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_GET_TIMERSLACK(2const)                            PR_GET_TIMERSLACK(2const)
+
+NAME
+       PR_GET_TIMERSLACK - get the &quot;current&quot; timer slack value for the calling
+       thread
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_GET_TIMERSLACK);
+
+DESCRIPTION
+       Return the &quot;current&quot; timer slack value of the calling thread.
+
+RETURN VALUE
+       On  success,  this  call returns the nonnegative value described above.
+       On error, -1 is returned, and errno is set to indicate the error.
+
+FILES
+       /proc/pid/timerslack_ns
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.28.
+
+SEE ALSO
+       signal(2), PR_SET_TIMERSLACK(2const), proc_pid_timerslack_ns(5)
+
+Linux man-pages 6.9.1             2024-06-02         PR_GET_TIMERSLACK(2const)
+</pre></body></html>

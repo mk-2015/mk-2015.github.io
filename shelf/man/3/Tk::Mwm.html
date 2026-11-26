@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Mwm(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Mwm(3pm)              User Contributed Perl Documentation             Mwm(3pm)
+
+NAME
+       Tk::Mwm - Communicate with the Motif(tm) window manager.
+
+SYNOPSIS
+           use Tk::Mwm;
+
+           $toplevel-&gt;mwmOption?(args)?
+
+           $toplevel-&gt;mwm(option ?,args?)
+
+DESCRIPTION
+       Interface to special extentions supported by mwm.
+
+METHODS
+       $toplevel-&gt;mwmDecoration?(?option??=&gt;value? ?,...?)?
+           When  no  options  are given, this method returns the values of all
+           the decorations options for the toplevel window with the $toplevel.
+           When only one option is given without  specifying  the  value,  the
+           current  value  of  that  option  is  returned.  When more than one
+           &quot;option-value&quot; pairs are  passed  to  this  method,  the  specified
+           values  will be assigned to the corresponding options. As a result,
+           the appearance of the Motif decorations around the toplevel  window
+           will  be changed.  Possible options are: -border, -menu, -maximize,
+           -minimize, -resizeh and -title. The value must be a Boolean  value.
+           The  values  returned by this command are undefined when the window
+           is not managed by mwm.
+
+       $toplevel-&gt;mwmIsmwmrunning
+           This returns value is true if mwm is running on  the  screen  where
+           the specified window is located, false otherwise.
+
+       $toplevel-&gt;mwmProtocol
+           When  no  additional  options  are  given,  this method returns all
+           protocols associated with this toplevel window.
+
+       $toplevel-&gt;mwmProtocol(activate =&gt; protocol_name)
+           Activate the mwm protocol message in mwm&#x27;s menu.
+
+       $toplevel-&gt;MwmProtocol(add =&gt; protocol_name, menu_message)
+           Add a new mwm  protocol  message  for  this  toplevel  window.  The
+           message   is   identified   by   the   string   name  specified  in
+           protocol_name.  A menu item  will  be  added  into  mwm&#x27;s  menu  as
+           specified  by  menu_message.   Once  a  new mwm protocol message is
+           added to a toplevel, it can be caught by the  TK  protocol  method.
+           Here is an example:
+
+               $toplevel-&gt;mwmProtocol(&#x27;add&#x27;   =&gt;   &#x27;MY_PRINT_HELLO&#x27;,   &#x27;&quot;Print
+           Hello&quot;  _H Ctrl&lt;Key&gt;H&#x27;);
+
+               $toplevel-&gt;protocol(&#x27;MY_PRINT_HELLO&#x27; =&gt; sub {print &quot;Hello&quot;});
+
+       $toplevel-&gt;mwmProtocol(&#x27;deactivate&#x27; =&gt; protocol_name)
+           Deactivate the mwm protocol message in mwm&#x27;s menu.
+
+       $toplevel-&gt;mwmProtocol(&#x27;delete&#x27; =&gt; protocol_name)
+           Delete the mwm protocol message from mwm&#x27;s menu. Please  note  that
+           the  window  manager protocol handler associated with this protocol
+           (by the protocol method) is not deleted automatically. You have  to
+           delete the protocol handle explicitly.  E.g.:
+
+               $mw-&gt;mwmProtocol(&#x27;delete&#x27; =&gt; &#x27;MY_PRINT_HELLO&#x27;);
+
+               $mw-&gt;protocol(&#x27;MY_PRINT_HELLO&#x27; =&gt; &#x27;&#x27;);
+
+BUGS
+       This  is  a  Tix  extension  which perl/Tk has adopted. It has not been
+       tested as perl/Tk&#x27;s author has not got  round  to  installing  a  Motif
+       Window Manager.
+
+       On some versions of mwm, the -border will not disappear unless -resizeh
+       is  turned  off.  Also,  the  -title  will  not disappear unless all of
+       -title, -menu, -maximize and -minimize are turned off.
+
+SEE ALSO
+       Tk::Wm Tk::tixWm Tk::Toplevel
+
+KEYWORDS
+       window manager, mwm, TIX
+
+AUTHOR
+       Ioi Kim Lam - ioi@graphics.cis.upenn.edu
+
+perl v5.40.1                      2025-04-13                          Mwm(3pm)
+</pre></body></html>

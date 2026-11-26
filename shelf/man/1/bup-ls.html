@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bup-ls(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>bup-ls(1)                                                            bup-ls(1)
+
+NAME
+       bup-ls - list the contents of a bup repository
+
+SYNOPSIS
+       bup ls [-r host:[path]] [OPTION...]  &lt;paths...&gt;
+
+DESCRIPTION
+       bup  ls  lists  files  and directories in your bup repository using the
+       same directory hierarchy as they would have with bup-fuse(1).
+
+       The top level directory contains the branch (corresponding  to  the  -n
+       option in bup save), the next level is the date of the backup, and sub‐
+       sequent levels correspond to files in the backup.
+
+       When  bup  ls  is asked to output on a tty, and -l is not specified, it
+       formats the output in columns so it can list as much as possible in  as
+       few  lines  as possible.  However, when -l is specified or bup is asked
+       to output to something other than a tty (say you pipe the output to an‐
+       other command, or you redirect it to a file), it will  print  one  file
+       name  per  line.   This makes the listing easier to parse with external
+       tools.
+
+       Note that bup ls doesn’t show hidden files by default and one needs  to
+       use  the  -a option to show them.  Files are hidden when their name be‐
+       gins with a dot.  For example, on the topmost level, the special direc‐
+       tories named .commit and .tag are hidden directories.
+
+       Once you have identified the file you want using bup ls, you  can  view
+       its contents using bup join or git show.
+
+OPTIONS
+       -r, --remote=host:[path]
+              list  information  for  the  repository at path on the indicated
+              host.  If path is omitted, uses the default path on  the  remote
+              server  (you  still need to include the `:&#x27;).  The connection to
+              the remote server will be made by SSH.  If you’d like to specify
+              the port, user,  or  private  key,  we  recommend  you  use  the
+              ~/.ssh/config file (ssh_config(5)).
+
+       -s, --hash
+              show hash for each file/directory.
+
+       -a, --all
+              show hidden files.
+
+       -A, --almost-all
+              show hidden files, except “.” and “..”.
+
+       -d, --directory
+              show information about directories themselves, rather than their
+              contents, and don’t follow symlinks.
+
+       -l     provide a detailed, long listing for each item.
+
+       -F, --classify
+              append  type indicator: dir/, symlink@, fifo|, socket=, and exe‐
+              cutable*.
+
+       --file-type
+              append type indicator: dir/, symlink@, fifo|, socket=.
+
+       --human-readable
+              print human readable file sizes (i.e. 3.9K, 4.7M).
+
+       --numeric-ids
+              display numeric IDs (user, group, etc.)  rather than names.
+
+EXAMPLES
+              bup ls /myserver/latest/etc/profile
+
+              bup ls -a /
+
+SEE ALSO
+       bup-join(1),   bup-fuse(1),   bup-ftp(1),   bup-save(1),   git-show(1),
+       ssh_config(5)
+
+BUP
+       Part of the bup(1) suite.
+
+AUTHORS
+       Avery Pennarun apenwarr@gmail.com
+
+Bup 0.33.7                        2025-01-11                         bup-ls(1)
+</pre></body></html>

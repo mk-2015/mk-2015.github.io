@@ -1,0 +1,98 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ModemManager(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>
+MODEMMANAGER(8)             System Manager&#x27;s Manual            MODEMMANAGER(8)
+
+NAME
+       ModemManager - mobile broadband modem management daemon
+
+
+SYNOPSIS
+       ModemManager [OPTION...]
+
+
+DESCRIPTION
+       ModemManager  provides  a unified high level API for communicating with
+       mobile broadband modems, regardless of the protocol used to communicate
+       with the actual device (Generic  AT,  vendor-specific  AT,  QCDM,  QMI,
+       MBIM...).
+
+       ModemManager  is a DBus-based system daemon and is not meant to be used
+       directly from the command line.
+
+
+APPLICATION OPTIONS
+       --filter-policy=&lt;policy&gt;
+              Specify which ports are probed and how:
+
+                &#x27;ALLOWLIST-ONLY&#x27;
+                       Only devices or ports explicitly allowlisted  with  the
+                       &#x27;ID_MM_DEVICE_PROCESS&#x27; udev tag are probed.
+
+                &#x27;STRICT&#x27;
+                       Only the TTY ports that are heuristically determined to
+                       be very likely to be modem ports are probed. Nay end up
+                       ignoring some devices.
+
+       --no-auto-scan
+              Fully disable udev-based auto-scan looking for devices.
+
+       --initial-kernel-events=&lt;filename&gt;
+              Specify  location  of  the file where the list of initial kernel
+              events is available. The ModemManager daemon will  process  this
+              file on startup.
+
+       --debug
+              Runs  ModemManager  with &quot;DEBUG&quot; log level and without daemoniz‐
+              ing. This is useful for debugging, as it directs log  output  to
+              the controlling terminal in addition to syslog.
+
+       -V, --version
+              Print the ModemManager software version and exit.
+
+       -h, --help
+              Show application options.
+
+
+LOGGING OPTIONS
+       --log-level=&lt;level&gt;
+              Sets how much information ModemManager sends to the log destina‐
+              tion  (usually syslog&#x27;s &quot;daemon&quot; facility). By default, only in‐
+              formational, warning, and error messages are logged. Given level
+              must be one of &quot;ERR&quot;, &quot;WARN&quot;, &quot;INFO&quot; or &quot;DEBUG&quot;.
+
+       --log-file=&lt;filename&gt;
+              Specify location of the file where ModemManager  will  dump  its
+              log messages, instead of syslog.
+
+       --log-journal
+              Output log message to the systemd journal.
+
+       --log-timestamps
+              Include absolute timestamps in the log output.
+
+       --log-relative-timestamps
+              Include timestamps, relative to the start time of the daemon, in
+              the log output.
+
+
+TEST OPTIONS
+       --test-session
+              Run  the  ModemManager  daemon in the Session bus instead of the
+              System bus.
+
+       --test-enable
+              Enable the Test DBus interface in the daemon.
+
+       --test-plugin-dir=[PATH]
+              Specify an alternate directory where the daemon should look  for
+              vendor plugins.
+
+
+AUTHOR
+       Aleksander Morgado &lt;aleksander@aleksander.es&gt;
+
+
+SEE ALSO
+       mmcli(1), NetworkManager(8)
+
+                               5 September 2014                MODEMMANAGER(8)
+</pre></body></html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::InputO(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>InputO(3pm)           User Contributed Perl Documentation          InputO(3pm)
+
+NAME
+       Tk::InputO - Create and manipulate TIX InputO widgets
+
+SYNOPSIS
+       $inputonly = $parent-&gt;InputO(?options?);
+
+STANDARD OPTIONS
+       Only the following three standard options are supported by InputO:
+
+       cursor    width     height
+
+       See Tk::options for details of the standard options.
+
+WIDGET-SPECIFIC OPTIONS
+       InputO does not have any widget specific options.
+
+DESCRIPTION
+       The InputO method creates a new window (given by the $widget argument)
+       and makes it into a InputO widget.  Additional options, described
+       above, may be specified on the command line or in the option database
+       to configure aspects of the InputO such as its cursor or width.
+
+       InputO widgets are not visible to the user. The only purpose of InputO
+       widgets are to accept inputs from the user, which can be done with the
+       bind method.
+
+WIDGET METHODS
+       The InputO method creates a widget object.  This object supports the
+       configure and cget methods described in Tk::options which can be used
+       to enquire and modify the options described above.  The widget also
+       inherits all the methods provided by the generic Tk::Widget class.
+
+BINDINGS
+       InputO widgets have no default bindings.
+
+perl v5.40.1                      2025-04-13                       InputO(3pm)
+</pre></body></html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Trace(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Tk::Trace(3pm)               perl/Tk Documentation              Tk::Trace(3pm)
+
+NAME
+       Tk::Trace - emulate Tcl/Tk trace functions.
+
+SYNOPSIS
+        use Tk::Trace
+
+        $mw-&gt;traceVariable(\$v, &#x27;wru&#x27; =&gt; [\&amp;update_meter, $scale]);
+        %vinfo = $mw-&gt;traceVinfo(\$v);
+        print &quot;Trace info  :\n  &quot;, join(&quot;\n  &quot;, @{$vinfo{-legible}}), &quot;\n&quot;;
+        $mw-&gt;traceVdelete(\$v);
+
+DESCRIPTION
+       This class module emulates the Tcl/Tk trace family of commands by
+       binding subroutines of your devising to Perl variables using simple
+       Tie::Watch features.
+
+       Callback format is patterned after the Perl/Tk scheme: supply either a
+       code reference, or, supply an array reference and pass the callback
+       code reference in the first element of the array, followed by callback
+       arguments.
+
+       User callbacks are passed these arguments:
+
+        $_[0]        = undef for a scalar, index/key for array/hash
+        $_[1]        = variable&#x27;s current (read), new (write), final (undef) value
+        $_[2]        = operation (r, w, or u)
+        $_[3 .. $#_] = optional user callback arguments
+
+       As a Trace user, you have an important responsibility when writing your
+       callback, since you control the final value assigned to the variable.
+       A typical callback might look like:
+
+        sub callback {
+           my($index, $value, $op, @args) = @_;
+           return if $op eq &#x27;u&#x27;;
+           # .... code which uses $value ...
+           return $value;     # variable&#x27;s final value
+        }
+
+       Note that the callback&#x27;s return value becomes the variable&#x27;s final
+       value, for either read or write traces.
+
+       For write operations, the variable is updated with its new value before
+       the callback is invoked.
+
+       Multiple read, write and undef callbacks can be attached to a variable,
+       which are invoked in reverse order of creation.
+
+METHODS
+       $mw-&gt;traceVariable(varRef, op =&gt; callback);
+           varRef  is  a  reference  to the scalar, array or hash variable you
+           wish to  trace.   op  is  the  trace  operation,  and  can  be  any
+           combination  of r for read, w for write, and u for undef.  callback
+           is a standard Perl/Tk callback, and is invoked, depending upon  the
+           value of op, whenever the variable is read, written, or destroyed.
+
+       %vinfo = $mw-&gt;traceVinfo(varRef);
+           Returns  a  hash  detailing the internals of the Trace object, with
+           these keys:
+
+            %vinfo = (
+                -variable =&gt;  varRef
+                -debug    =&gt;  &#x27;0&#x27;
+                -shadow   =&gt;  &#x27;1&#x27;
+                -value    =&gt;  &#x27;HELLO SCALAR&#x27;
+                -destroy  =&gt;  callback
+                -fetch    =&gt;  callback
+                -store    =&gt;  callback
+                -legible  =&gt;  above data formatted as a list of string, for printing
+            );
+
+           For array and hash Trace objects, the -value key is replaced with a
+           -ptr key which is a  reference  to  the  parallel  array  or  hash.
+           Additionally,  for  an array or hash, there are key/value pairs for
+           all the variable specific callbacks.
+
+       $mw-&gt;traceVdelete(\$v);
+           Stop tracing the variable.
+
+EXAMPLES
+        # Trace a Scale&#x27;s variable and move a meter in unison.
+
+        use Tk;
+        use Tk::widgets qw/Trace/;
+
+        $pi = 3.1415926;
+        $mw = MainWindow-&gt;new;
+        $c = $mw-&gt;Canvas( qw/-width 200 -height 110 -bd 2 -relief sunken/ )-&gt;grid;
+        $c-&gt;createLine( qw/100 100 10 100 -tag meter -arrow last -width 5/ );
+        $s = $mw-&gt;Scale( qw/-orient h -from 0 -to 100 -variable/ =&gt; \$v )-&gt;grid;
+        $mw-&gt;Label( -text =&gt; &#x27;Slide Me for 5 Seconds&#x27; )-&gt;grid;
+
+        $mw-&gt;traceVariable( \$v, &#x27;w&#x27; =&gt; [ \&amp;update_meter, $s ] );
+
+        $mw-&gt;after( 5000 =&gt; sub {
+            print &quot;Untrace time ...\n&quot;;
+            %vinfo = $s-&gt;traceVinfo( \$v );
+            print &quot;Watch info  :\n  &quot;, join(&quot;\n  &quot;, @{$vinfo{-legible}}), &quot;\n&quot;;
+            $c-&gt;traceVdelete( \$v );
+        });
+
+        MainLoop;
+
+        sub update_meter {
+            my( $index, $value, $op, @args ) = @_;
+            return if $op eq &#x27;u&#x27;;
+            $min = $s-&gt;cget( -from );
+            $max = $s-&gt;cget( -to );
+            $pos = $value / abs( $max - $min );
+            $x = 100.0 - 90.0 * ( cos( $pos * $pi ) );
+            $y = 100.0 - 90.0 * ( sin( $pos * $pi ) );
+            $c-&gt;coords( qw/meter 100 100/, $x, $y );
+            return $value;
+        }
+
+        # Predictive text entry.
+
+        use Tk;
+        use Tk::widgets qw/ LabEntry Trace /;
+        use strict;
+
+        my @words =  qw/radio television telephone turntable microphone/;
+
+        my $mw = MainWindow-&gt;new;
+
+        my $e = $mw-&gt;LabEntry(
+            qw/ -label Thing -width 40 /,
+            -labelPack    =&gt; [ qw/ -side left / ],
+            -textvariable =&gt; \my $thing,
+        );
+        my $t = $mw-&gt;Text( qw/ -height 10 -width 50 / );;
+
+        $t-&gt;pack( $e, qw/ -side top / );
+
+        $e-&gt;focus;
+        $e-&gt;traceVariable( \$thing, &#x27;w&#x27;, [ \&amp;trace_thing, $e, $t ] );
+
+        foreach my $k ( 1 .. 12 ) {
+            $e-&gt;bind( &quot;&lt;F${k}&gt;&quot; =&gt; [ \&amp;ins, $t, Ev(&#x27;K&#x27;) ] );
+        }
+        $e-&gt;bind( &#x27;&lt;Return&gt;&#x27; =&gt;
+                  sub {
+                      print &quot;$thing\n&quot;;
+                      $_[0]-&gt;delete( 0, &#x27;end&#x27; );
+                  }
+        );
+
+        MainLoop;
+
+        sub trace_thing {
+
+            my( $index, $value, $op, $e, $t ) = @_;
+
+            return unless $value;
+
+            $t-&gt;delete( qw/ 1.0 end / );
+            foreach my $w ( @words ) {
+                if ( $w =~ /^$value/ ) {
+                    $t-&gt;insert( &#x27;end&#x27;, &quot;$w\n&quot; );
+                }
+            }
+
+            return $value;
+
+        } # end trace_thing
+
+        sub ins {
+
+            my( $e, $t, $K ) = @_;
+
+            my( $index ) = $K =~ /^F(\d+)$/;
+
+            $e-&gt;delete( 0, &#x27;end&#x27; );
+            $e-&gt;insert( &#x27;end&#x27;, $t-&gt;get( &quot;$index.0&quot;, &quot;$index.0 lineend&quot; ) );
+            $t-&gt;delete( qw/ 1.0 end / );
+
+        } # end ins
+
+HISTORY
+        Stephen.O.Lidie@Lehigh.EDU, Lehigh University Computing Center, 2000/08/01
+        . Version 1.0, for Tk800.022.
+
+        sol0@Lehigh.EDU, Lehigh University Computing Center, 2003/09/22
+        . Version 1.1, for Tk804.025, add support for multiple traces of the same
+          type on the same variable.
+
+COPYRIGHT
+       Copyright (C) 2000 - 2003 Stephen O. Lidie. All rights reserved.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+Tk804.036                         2025-04-13                    Tk::Trace(3pm)
+</pre></body></html>

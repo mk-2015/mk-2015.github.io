@@ -1,0 +1,130 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>URI::otpauth(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>URI::otpauth(3pm)     User Contributed Perl Documentation    URI::otpauth(3pm)
+
+NAME
+       URI::otpauth - URI scheme for secret keys for OTP secrets.  Usually
+       found in QR codes
+
+VERSION
+       Version 5.29
+
+SYNOPSIS
+         use URI;
+
+         # optauth URI from textual uri
+         my $uri = URI-&gt;new( &#x27;otpauth://totp/Example:alice@google.com?secret=NFZS25DINFZV643VOAZXELLTGNRXEM3UH4&amp;issuer=Example&#x27; );
+
+         # same URI but created from arguments
+         my $uri = URI::otpauth-&gt;new( type =&gt; &#x27;totp&#x27;, issuer =&gt; &#x27;Example&#x27;, account_name =&gt; &#x27;alice@google.com&#x27;, secret =&gt; &#x27;is-this_sup3r-s3cr3t?&#x27; );
+
+DESCRIPTION
+       This URI scheme is defined in
+       &lt;https://github.com/google/google-authenticator/wiki/Key-Uri-Format/&gt;:
+
+SUBROUTINES/METHODS
+   &quot;new&quot;
+       Create a new URI::otpauth. The available arguments are listed below;
+
+       •   account_name  -  this  can  be  the account name (probably an email
+           address) used when authenticating  with  this  secret.   It  is  an
+           optional field.
+
+       •   algorithm    -    this   is   the   cryptographic   hash   function
+           &lt;https://en.wikipedia.org/wiki/Cryptographic_hash_function&gt;    that
+           should      be      used.       Current     values     are     SHA1
+           &lt;https://en.wikipedia.org/wiki/SHA-1&gt;,                       SHA256
+           &lt;https://en.wikipedia.org/wiki/SHA-2&gt;           or           SHA512
+           &lt;https://en.wikipedia.org/wiki/SHA-2&gt;.  It is an optional field and
+           will default to SHA1.
+
+       •   counter - this is only required when the type is HOTP.
+
+       •   digits       -       this       determines        the        length
+           &lt;https://github.com/google/google-authenticator/wiki/Key-Uri-
+           Format/#digits&gt;  of  the  code  presented  to  the  user.  It is an
+           optional field and will default to 6 digits.
+
+       •   issuer   -   this    can    be    the    application    /    system
+           &lt;https://github.com/google/google-authenticator/wiki/Key-Uri-
+           Format/#issuer&gt;  that  this  secret can be used to authenticate to.
+           It is an optional field.
+
+       •   label   -   this   is   the   issuer   and   the    account    name
+           &lt;https://github.com/google/google-authenticator/wiki/Key-Uri-
+           Format/#label&gt;  joined  with  a  &quot;:&quot;  character.  It is an optional
+           field.
+
+       •   period - this is the  period  that  the  TOTP  code  is  valid  for
+           &lt;https://github.com/google/google-authenticator/wiki/Key-Uri-
+           Format/#counter&gt;.   It  is an optional field and will default to 30
+           seconds.
+
+       •   secret         -         this          is          the          key
+           &lt;https://en.wikipedia.org/wiki/Key_(cryptography)&gt;  that  the  TOTP
+           &lt;https://en.wikipedia.org/wiki/Time-based_one-time_password&gt;/HOTP
+           &lt;https://en.wikipedia.org/wiki/HMAC-based_one-time_password&gt;
+           algorithm uses to derive the value.  It is an arbitrary byte string
+           and must remain private.  This field is mandatory.
+
+       •   type  -  this  can  be  &#x27;hotp  &lt;https://en.wikipedia.org/wiki/HMAC-
+           based_one-time_password&gt;&#x27;                  or                 &#x27;totp
+           &lt;https://en.wikipedia.org/wiki/Time-based_one-time_password&gt;&#x27;.
+           This field will default to &#x27;totp&#x27;.
+
+   &quot;algorithm&quot;
+       Get or set the algorithm of this otpauth URI.
+
+   &quot;account_name&quot;
+       Get or set the account_name of this otpauth URI.
+
+   &quot;counter&quot;
+       Get or set the counter of this otpauth URI.
+
+   &quot;digits&quot;
+       Get or set the digits of this otpauth URI.
+
+   &quot;issuer&quot;
+       Get or set the issuer of this otpauth URI.
+
+   &quot;label&quot;
+       Get or set the label of this otpauth URI.
+
+   &quot;period&quot;
+       Get or set the period of this otpauth URI.
+
+   &quot;secret&quot;
+       Get or set the secret of this otpauth URI.
+
+   &quot;type&quot;
+       Get or set the type of this otpauth URI.
+
+         my $type = $uri-&gt;type(&#x27;hotp&#x27;);
+
+CONFIGURATION AND ENVIRONMENT
+       URI::otpauth requires no configuration files or environment variables.
+
+DEPENDENCIES
+       URI
+
+DIAGNOSTICS
+       &quot;secret is a mandatory parameter for URI::otpauth&quot;
+           The secret parameter was not detected for  the  URI::otpauth-&gt;new()
+           method.
+
+INCOMPATIBILITIES
+       None reported.
+
+BUGS AND LIMITATIONS
+       To  report  a  bug,  or  view  the  current  list of bugs, please visit
+       &lt;https://github.com/libwww-perl/URI/issues&gt;
+
+AUTHOR
+       David Dick &quot;&lt;ddick@cpan.org&gt;&quot;
+
+LICENSE AND COPYRIGHT
+       Copyright (c) 2024, David Dick &quot;&lt;ddick@cpan.org&gt;&quot;.
+
+       This module is free software; you can redistribute it and/or modify  it
+       under the same terms as Perl itself. See perlartistic.
+
+perl v5.38.2                      2024-10-09                 URI::otpauth(3pm)
+</pre></body></html>

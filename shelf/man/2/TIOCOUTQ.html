@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCOUTQ(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>FIONREAD(2const)                                              FIONREAD(2const)
+
+NAME
+       FIONREAD,  TIOCINQ,  TIOCOUTQ, TCFLSH, TIOCSERGETLSR - buffer count and
+       flushing
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, FIONREAD, int *argp);
+       int ioctl(int fd, TIOCINQ, int *argp);
+       int ioctl(int fd, TIOCOUTQ, int *argp);
+       int ioctl(int fd, TCFLSH, int arg);
+       int ioctl(int fd, FIONREAD, int *argp);
+
+DESCRIPTION
+       FIONREAD
+              Get the number of bytes in the input buffer.
+
+       TIOCINQ
+              Same as FIONREAD.
+
+       TIOCOUTQ
+              Get the number of bytes in the output buffer.
+
+       TCFLSH Equivalent to tcflush(fd, arg).
+
+              See tcflush(3)  for  the  argument  values  TCIFLUSH,  TCOFLUSH,
+              TCIOFLUSH.
+
+       TIOCSERGETLSR
+              Get  line status register.  Status register has TIOCSER_TEMT bit
+              set when output buffer is empty and also hardware transmitter is
+              physically empty.
+
+              Does not have to be supported by all serial tty drivers.
+
+              tcdrain(3) does  not  wait  and  returns  immediately  when  TI‐
+              OCSER_TEMT bit is set.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2), tcflush(3), termios(3)
+
+Linux man-pages 6.9.1             2024-06-13                  FIONREAD(2const)
+</pre></body></html>

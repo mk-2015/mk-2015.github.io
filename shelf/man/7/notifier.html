@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>notifier(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>notifier(7)                      OpenPrinting                      notifier(7)
+
+NAME
+       notifier - cups notification interface
+
+SYNOPSIS
+       notifier recipient [ user-data ]
+
+DESCRIPTION
+       The  CUPS notifier interface provides a standard method for adding sup‐
+       port for new event notification methods to CUPS.  Each notifier  deliv‐
+       ers one or more IPP events from the standard input to the specified re‐
+       cipient.
+
+       Notifiers MUST read IPP messages from the standard input using the ipp‐
+       New() and ippReadFile() functions and exit on error.  Notifiers are en‐
+       couraged  to  exit  after a suitable period of inactivity, however they
+       may exit after reading the first message or stay running until an error
+       is seen.  Notifiers inherit the environment and  can  use  the  logging
+       mechanism documented in filter(7).
+
+SEE ALSO
+       cupsd(8), filter(7), CUPS Online Help (http://localhost:631/help)
+
+COPYRIGHT
+       Copyright © 2020-2024 by OpenPrinting.
+
+2021-02-28                           CUPS                          notifier(7)
+</pre></body></html>

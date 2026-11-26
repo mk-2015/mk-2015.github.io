@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFtile(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFTILE(3tiff)                     LibTIFF                    TIFFTILE(3tiff)
+
+NAME
+       TIFFtile - tile-related utility routines
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       void TIFFDefaultTileSize(TIFF *tif, uint32_t *tw, uint32_t *th)
+
+       tsize_t TIFFTileSize(TIFF *tif)
+
+       uint64_t TIFFTileSize64(TIFF *tif)
+
+       tsize_t TIFFTileRowSize(TIFF *tif)
+
+       uint64_t TIFFTileRowSize64(TIFF *tif)
+
+       tsize_t TIFFVTileSize(TIFF *tif, uint32_t nrows)
+
+       uint64_t TIFFVTileSize64(TIFF *tif, uint32_t nrows)
+
+       ttile_t TIFFComputeTile(TIFF *tif, uint32_t x, uint32_t y, uint32_t z,
+       tsample_t sample)
+
+       int TIFFCheckTile(TIFF *tif, uint32_t x, uint32_t y, uint32_t z, tsam‐
+       ple_t sample)
+
+       ttile_t TIFFNumberOfTiles(TIFF *tif)
+
+DESCRIPTION
+       TIFFDefaultTileSize()  returns  the pixel width and height of a reason‐
+       able-sized tile; suitable for setting up the TileWidth  and  TileLength
+       tags.   If  the  tw and th values passed in are non-zero, then they are
+       adjusted to reflect any compression-specific requirements. The returned
+       width and height are constrained to be a multiple of 16 pixels to  con‐
+       form with the TIFF specification.
+
+       TIFFTileSize()  returns  the  equivalent  size for a tile of data as it
+       would be returned in a call to TIFFReadTile() or as  it  would  be  ex‐
+       pected  in  a  call  to  TIFFWriteTile().   TIFFTileSize64()  returns a
+       uint64_t number.  If an error occurs, 0 is returned.
+
+       TIFFVTileSize() returns the number of bytes in a row-aligned tile  with
+       nrows of data.  TIFFVTileSize64() returns a uint64_t number.  If an er‐
+       ror occurs, 0 is returned.
+
+       TIFFTileRowSize()  returns  the  number  of bytes of a row of data in a
+       tile.  TIFFTileRowSize64() returns a uint64_t number.  If an error  oc‐
+       curs, 0 is returned.
+
+       TIFFComputeTile()  returns the tile that contains the specified coordi‐
+       nates. A valid tile is always returned; out-of-range coordinate  values
+       are  clamped to the bounds of the image. The x and y parameters are al‐
+       ways used in calculating a tile. The z parameter is used if  the  image
+       is  deeper than 1 slice (ImageDepth &gt; 1).  The sample parameter is used
+       only if data are organized in separate  planes  (PlanarConfiguration  =
+       2).
+
+       TIFFCheckTile()  returns  a  non-zero value if the supplied coordinates
+       are within the bounds of the image and zero otherwise. The x  parameter
+       is checked against the value of the ImageWidth tag.  The y parameter is
+       checked  against  the  value of the ImageLength tag. The z parameter is
+       checked against the value of the ImageDepth tag (if defined). The  sam‐
+       ple parameter is checked against the value of the SamplesPerPixel para‐
+       meter if the data are organized in separate planes.
+
+       TIFFNumberOfTiles() returns the number of tiles in the image.
+
+DIAGNOSTICS
+       None.
+
+SEE ALSO
+       TIFFReadEncodedTile   (3tiff),  TIFFReadRawTile  (3tiff),  TIFFReadTile
+       (3tiff),  TIFFWriteEncodedTile   (3tiff),   TIFFWriteRawTile   (3tiff),
+       TIFFWriteTile (3tiff), libtiff (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026                  TIFFTILE(3tiff)
+</pre></body></html>

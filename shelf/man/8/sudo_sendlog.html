@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sudo_sendlog(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>can  be  used to send the existing I/O log to a remote log server
+such as for central storage.  The options are  as  follows:  Only
+send the accept event, not the I/O associated with the log.  This
+can  be used to test the logging of accept events without any as‐
+sociated I/O.  The path to a certificate authority  bundle  file,
+in PEM format, to use instead of the system&#x27;s default certificate
+authority  database  when authenticating the log server.  The de‐
+fault is to use the system&#x27;s default certificate authority  data‐
+base.   The  path to the client&#x27;s certificate file in PEM format.
+This setting is required when the connection to  the  remote  log
+server  is secured with TLS.  Display a short help message to the
+standard output and exit.  Connect to the  specified  instead  of
+localhost.   Use  the  specified  when restarting a log transfer.
+The is reported by the server when it creates the remote I/O log.
+This option may only be used in conjunction with the option.  The
+path to the client&#x27;s private key file in PEM format.   This  set‐
+ting  is required when the connection to the remote log server is
+secured with TLS.  If specified, the  server&#x27;s  certificate  will
+not  be  verified during the TLS handshake.  By default, verifies
+that the server&#x27;s certificate is valid and that it  contains  ei‐
+ther  the  server&#x27;s host name or its IP address.  This setting is
+only supported when the connection to the remote  log  server  is
+secured  with  TLS.  Use the specified network when connecting to
+the log server instead of the default, port  30344.   Restart  an
+interrupted  connection to the log server.  The specified is used
+to tell the server the point in time at  which  to  continue  the
+log.  The is specified in the form and is usually the last commit
+point  received  from the server.  The option must also be speci‐
+fied when restarting a transfer.  Send a  reject  event  for  the
+command  using the specified even though it was actually accepted
+locally.  This can be used to test the logging of reject  events;
+no I/O will be sent.  Stop sending log records and close the con‐
+nection  when  is reached.  This can be used for testing purposes
+to send a partial I/O log to the server.   Partial  logs  can  be
+restarted  using the option.  The is an elapsed time specified in
+the form Open simultaneous connections to the log server and send
+the specified I/O log file on each one.  This  option  is  useful
+for performance testing.  Print the version and exit.  supports a
+flexible  debugging framework that is configured via lines in the
+file.  For more information on configuring refer to  its  manual.
+Sudo  front-end configuration Many people have worked on over the
+years; this version consists of code written  primarily  by:  See
+the      CONTRIBUTORS.md     file     in     the     distribution
+(https://www.sudo.ws/about/contributors/) for an exhaustive  list
+of people who have contributed to If you believe you have found a
+bug in you can either file a bug report in the sudo bug database,
+https://bugzilla.sudo.ws/,     or     open     an     issue    at
+https://github.com/sudo-project/sudo/issues.  If you would prefer
+to use email, messages may be sent to  the  sudo-workers  mailing
+list,  https://www.sudo.ws/mailman/listinfo/sudo-workers (public)
+or &lt;sudo@sudo.ws&gt; (private).  Please not report security vulnera‐
+bilities through public GitHub issues, Bugzilla or mailing lists.
+Instead, report them via email to &lt;Todd.Miller@sudo.ws&gt;.  You may
+encrypt your message with PGP if you would like,  using  the  key
+found  at https://www.sudo.ws/dist/PGPKEYS.  Limited free support
+is   available   via   the   sudo-users   mailing    list,    see
+https://www.sudo.ws/mailman/listinfo/sudo-users  to  subscribe or
+search the archives.  is provided and any express or implied war‐
+ranties, including, but not limited to, the implied warranties of
+merchantability and fitness for a  particular  purpose  are  dis‐
+claimed.    See   the   LICENSE.md   file   distributed  with  or
+https://www.sudo.ws/about/license/ for complete details.
+
+
+
+
+</pre></body></html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-pipe-tunnel(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...e-tunnel(7) Miscellaneous Information Manual libpipew...e-tunnel(7)
+
+NAME
+       libpipewire-module-pipe-tunnel - Unix Pipe Tunnel
+
+DESCRIPTION
+       The pipe-tunnel module provides a source or sink that tunnels all audio
+       to or from a unix pipe respectively.
+
+MODULE NAME
+       libpipewire-module-pipe-tunnel
+
+MODULE OPTIONS
+       • tunnel.mode: the desired tunnel to create. (Default playback)
+
+       • tunnel.may-pause: if the tunnel stream is allowed to pause on xrun
+
+       • pipe.filename: the filename of the pipe.
+
+       • stream.props: Extra properties for the local stream.
+
+       When  tunnel.mode is capture, a capture stream on the default source is
+       created. The samples captured from the source will be  written  to  the
+       pipe.
+
+       When tunnel.mode is sink, a sink node is created. Samples played on the
+       sink will be written to the pipe.
+
+       When  tunnel.mode is playback, a playback stream on the default sink is
+       created. The samples read from the pipe will be played on the sink.
+
+       When tunnel.mode is source, a source node is created. Samples read from
+       the the pipe will be made available on the source.
+
+       tunnel.may-pause allows the tunnel stream to become  inactive  (paused)
+       when there is no data in the fifo or when the fifo is full. For capture
+       and  playback  tunnel.mode this is by default true. For source and sink
+       tunnel.mode, this is by default false. A paused stream will consume  no
+       CPU and will resume when the fifo becomes readable or writable again.
+
+       When  pipe.filename  is not given, a default fifo in /tmp/fifo_input or
+       /tmp/fifo_output  will  be  created  that  can  be  written  and   read
+       respectively, depending on the selected tunnel.mode.
+
+GENERAL OPTIONS
+       Options with well-known behavior.
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • node.latency
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.virtual
+
+       • media.class
+
+       • target.object to specify the remote name or serial id to link to
+
+       When  not  otherwise  specified,  the  pipe will accept or produce a 16
+       bits, stereo, 48KHz sample stream.
+
+EXAMPLE CONFIGURATION OF A PIPE PLAYBACK STREAM
+       # ~/.config/pipewire/pipewire.conf.d/my-pipe-tunnel.conf
+
+       context.modules = [
+       {   name = libpipewire-module-pipe-tunnel
+           args = {
+               tunnel.mode = playback
+               #tunnel.may-pause = true
+               # Set the pipe name to tunnel to
+               pipe.filename = &quot;/tmp/fifo_output&quot;
+               #audio.format=&lt;sample format&gt;
+               #audio.rate=&lt;sample rate&gt;
+               #audio.channels=&lt;number of channels&gt;
+               #audio.position=&lt;channel map&gt;
+               #target.object=&lt;remote target node&gt;
+               stream.props = {
+                   # extra sink properties
+               }
+           }
+       }
+       ]
+
+PipeWire                             1.4.2              libpipew...e-tunnel(7)
+</pre></body></html>

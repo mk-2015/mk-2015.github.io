@@ -1,0 +1,71 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sd_bus_message_read_strv_extend(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>SD_BUS_MES..._READ_STRV(3) sd_bus_message_read_strv SD_BUS_MES..._READ_STRV(3)
+
+NAME
+       sd_bus_message_read_strv, sd_bus_message_read_strv_extend - Access an
+       array of strings in a message
+
+SYNOPSIS
+       #include &lt;systemd/sd-bus.h&gt;
+
+
+       int sd_bus_message_read_strv(sd_bus_message *m, char ***l);
+
+       int sd_bus_message_read_strv_extend(sd_bus_message *m, char ***l);
+
+DESCRIPTION
+       sd_bus_message_read_strv() reads an array of string-like items from the
+       message m. The &quot;read pointer&quot; in the message must be right before an
+       array of strings (D-Bus type &quot;as&quot;), object paths (D-Bus type &quot;ao&quot;), or
+       signatures (D-Bus type &quot;ag&quot;). On success, a pointer to a
+       NULL-terminated array of strings (strv) is returned in the output
+       parameter l. Note that ownership of this array is transferred to the
+       caller. Hence, the caller is responsible for freeing this array and its
+       contents. Also note that as a matter of optimization, if an empty array
+       is encountered a NULL pointer might be returned here, and should be
+       considered equivalent to an array with zero entries.
+
+       sd_bus_message_read_strv_extend() is similar, but the second parameter
+       is an input-output parameter. If *l is NULL, if behaves identically to
+       sd_bus_message_read_strv(). Otherwise, *l must point to a strv, which
+       will be reallocated and extended with additional strings. This function
+       is particularly useful when combining multiple lists of strings in a
+       message or messages into a single array of strings.
+
+RETURN VALUE
+       On success, these functions return a non-negative integer. On failure,
+       they return a negative errno-style error code.
+
+   Errors
+       Returned errors may indicate the following problems:
+
+       -EINVAL
+           m or l are NULL.
+
+           Added in version 246.
+
+       -EPERM
+           The message is not sealed.
+
+           Added in version 246.
+
+       -EBADMSG
+           The message cannot be parsed.
+
+           Added in version 246.
+
+       -ENXIO
+           The message &quot;read pointer&quot; is not right before an array of the
+           appropriate type.
+
+           Added in version 248.
+
+HISTORY
+       sd_bus_message_read_strv() was added in version 246.
+
+       sd_bus_message_read_strv_extend() was added in version 252.
+
+SEE ALSO
+       systemd(1), sd-bus(3), sd_bus_message_read(3)
+
+systemd 257.13                                      SD_BUS_MES..._READ_STRV(3)
+</pre></body></html>

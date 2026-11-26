@@ -1,0 +1,344 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-protocol-pulse(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...ol-pulse(7)  Miscellaneous Information Manual  libpipe...ol-pulse(7)
+
+NAME
+       libpipewire-module-protocol-pulse - Protocol Pulse
+
+DESCRIPTION
+       This module implements a complete PulseAudio server on top of PipeWire.
+
+       This is only the server implementation, client are expected to use the
+       original PulseAudio client library. This provides a high level of
+       compatibility with existing applications; in fact, all usual PulseAudio
+       tools such as pavucontrol, pactl, pamon, paplay should continue to work
+       as they did before.
+
+       This module is usually loaded as part of a standalone pipewire process,
+       called pipewire-pulse, with the pipewire-pulse.conf config file.
+
+       The pulse server implements a sample cache that is otherwise not
+       available in PipeWire.
+
+MODULE NAME
+       libpipewire-module-protocol-pulse
+
+MODULE OPTIONS
+       The module arguments can be the contents of the pulse.properties but it
+       is recommended to make a separate pulse.properties section in the
+       config file so that overrides can be done.
+
+PULSE.PROPERTIES
+       A config section with server properties can be given.
+
+       # ~/.config/pipewire/pipewire-pulse.conf.d/custom.conf
+
+       pulse.properties = {
+           # the addresses this server listens on
+           server.address = [
+               &quot;unix:native&quot;
+               #&quot;unix:/tmp/something&quot;              # absolute paths may be used
+               #&quot;tcp:4713&quot;                         # IPv4 and IPv6 on all addresses
+               #&quot;tcp:[::]:9999&quot;                    # IPv6 on all addresses
+               #&quot;tcp:127.0.0.1:8888&quot;               # IPv4 on a single address
+               #
+               #{ address = &quot;tcp:4713&quot;             # address
+               #  max-clients = 64                 # maximum number of clients
+               #  listen-backlog = 32              # backlog in the server listen queue
+               #  client.access = &quot;restricted&quot;     # permissions for clients
+               #}
+           ]
+           #server.dbus-name       = &quot;org.pulseaudio.Server&quot;
+           #pulse.allow-module-loading = true
+           #pulse.min.req          = 128/48000     # 2.7ms
+           #pulse.default.req      = 960/48000     # 20 milliseconds
+           #pulse.min.frag         = 128/48000     # 2.7ms
+           #pulse.default.frag     = 96000/48000   # 2 seconds
+           #pulse.default.tlength  = 96000/48000   # 2 seconds
+           #pulse.min.quantum      = 128/48000     # 2.7ms
+           #pulse.default.format   = F32
+           #pulse.default.position = [ FL FR ]
+           #pulse.idle.timeout     = 0
+       }
+
+       pulse.properties.rules = [
+           {   matches = [ { cpu.vm.name = !null } ]
+               actions = {
+                   update-props = {
+                       # These overrides are only applied when running in a vm.
+                       pulse.min.quantum = 1024/48000      # 22ms
+                   }
+               }
+           }
+       ]
+
+   Connection options
+       ...
+       server.address = [
+           &quot;unix:native&quot;
+           # &quot;tcp:4713&quot;
+       ]
+       ...
+
+       The addresses the server listens on when starting. Uncomment the
+       tcp:4713 entry to also make the server listen on a tcp socket. This is
+       equivalent to loading libpipewire-module-native-protocol-tcp.
+
+       There is also a slightly more verbose syntax with more options:
+
+       ....
+       server.address = [
+         {  address = &quot;tcp:4713&quot;             # address
+            max-clients = 64                 # maximum number of clients
+            listen-backlog = 32              # backlog in the server listen queue
+            client.access = &quot;restricted&quot;     # permissions for clients
+         }
+       ....
+
+       Use client.access to use one of the access methods to restrict the
+       permissions given to clients connected via this address.
+
+       By default network access is given the &#x27;restricted&#x27; permissions. The
+       session manager is responsible for assigning permission to clients with
+       restricted permissions (usually read-only permissions).
+
+       server.dbus-name       = &quot;org.pulseaudio.Server&quot;
+
+       The DBus name to reserve for the server. If you have multiple servers,
+       you might want to change the name.
+
+       pulse.allow-module-loading = true
+
+       By default, clients are allowed to load and unload modules. You can
+       disable this feature with this option.
+
+   Playback buffering options
+       pulse.min.req = 128/48000              # 2.7ms
+
+       The minimum amount of data to request for clients. The client requested
+       values will be clamped to this value. Lowering this value together with
+       tlength can decrease latency if the client wants this, but increase CPU
+       overhead.
+
+       pulse.default.req = 960/48000          # 20 milliseconds
+
+       The default amount of data to request for clients. If the client does
+       not specify any particular value, this default will be used. Lowering
+       this value together with tlength can decrease latency but increase CPU
+       overhead.
+
+       pulse.default.tlength = 96000/48000    # 2 seconds
+
+       The target amount of data to buffer on the server side. If the client
+       did not specify a value, this default will be used. Lower values can
+       decrease the latency.
+
+   Record buffering options
+       pulse.min.frag = 128/48000             # 2.7ms
+
+       The minimum allowed size of the capture buffer before it is sent to a
+       client. The requested value of the client will be clamped to this.
+       Lowering this value can reduce latency at the expense of more CPU
+       usage.
+
+       pulse.default.frag = 96000/48000       # 2 seconds
+
+       The default size of the capture buffer before it is sent to a client.
+       If the client did not specify any value, this default will be used.
+       Lowering this value can reduce latency at the expense of more CPU
+       usage.
+
+   Scheduling options
+       pulse.min.quantum = 128/48000          # 2.7ms
+
+       The minimum quantum (buffer size in samples) to use for pulseaudio
+       clients. This value is calculated based on the frag and req/tlength for
+       record and playback streams respectively and then clamped to this value
+       to ensure no pulseaudio client asks for too small quantums. Lowering
+       this value might decrease latency at the expense of more CPU usage.
+
+   Format options
+       pulse.default.format = F32
+
+       Some modules will default to this format when no other format was
+       given. This is equivalent to the PulseAudio default-sample-format
+       option in /etc/pulse/daemon.conf.
+
+       pulse.default.position = [ FL FR ]
+
+       Some modules will default to this channelmap (with its number of
+       channels). This is equivalent to the PulseAudio default-sample-channels
+       and default-channel-map options in /etc/pulse/daemon.conf.
+
+   Quirk options
+       pulse.fix.format = &quot;S16LE&quot;
+
+       When a stream uses the FIX_FORMAT flag, fixate the format to this
+       value. Normally the format would be fixed to the sink/source that the
+       stream connects to. When an invalid format (null or &#x27;&#x27;) is set, the
+       FIX_FORMAT flag is ignored.
+
+       pulse.fix.rate = 48000
+
+       When a stream uses the FIX_RATE flag, fixate the sample rate to this
+       value. Normally the rate would be fixed to the sink/source that the
+       stream connects to. When a 0 rate is set, the FIX_RATE flag is ignored.
+
+       pulse.fix.position = &quot;[ FL FR ]&quot;
+
+       When a stream uses the FIX_CHANNELS flag, fixate the channels to this
+       value. Normally the channels would be fixed to the sink/source that the
+       stream connects to. When an invalid position (null or &#x27;&#x27;) is set, the
+       FIX_CHANNELS flag is ignored.
+
+       pulse.idle.timeout = 0
+
+       Some clients are not sending data when they should and cause underruns.
+       When setting this option such clients will be set to paused if they
+       underrun for the given amount of seconds. This makes sure that sinks
+       can suspend and save battery power. When the client resumes, it will
+       unpause again. A value of 0 disables this feature.
+
+COMMAND EXECUTION
+       As part of the server startup sequence, a set of commands can be
+       executed. Currently, this can be used to load additional modules into
+       the server.
+
+       # Extra commands can be executed here.
+       #   load-module : loads a module with args and flags
+       #      args = &quot;&lt;module-name&gt; &lt;module-args&gt;&quot;
+       #      ( flags = [ &quot;no-fail&quot; ] )
+       #      ( condition = [ { &lt;key1&gt; = &lt;value1&gt;, ... } ... ] )
+       # conditions will check the pulse.properties key/values.
+       pulse.cmd = [
+           { cmd = &quot;load-module&quot; args = &quot;module-always-sink&quot; flags = [ ] }
+           #{ cmd = &quot;load-module&quot; args = &quot;module-switch-on-connect&quot; condition = [ { pulse.cmd.switch-on-connect = true } ]
+           #{ cmd = &quot;load-module&quot; args = &quot;module-gsettings&quot; flags = [ &quot;nofail&quot; ] }
+       ]
+
+DYNAMIC PROPERTIES
+       The pulse.properties can be dynamically updated with rules. It supports
+       an update-props action. The matches will be performed on the values in
+       context.properties.
+
+       pulse.properties.rules = [
+           {   matches = [ { cpu.vm.name = !null } ]
+               actions = {
+                   update-props = {
+                       # These overrides are only applied when running in a vm.
+                       pulse.min.quantum = 1024/48000      # 22ms
+                   }
+               }
+           }
+       ]
+
+       In the above example, when running in a VM, the rule will override the
+       properties in pulse.properties with the given values. This might be
+       interesting because VMs usually can&#x27;t support the low latency settings
+       that are possible on real hardware.
+
+STREAM SETTINGS AND RULES
+       Streams created by module-protocol-pulse will use the stream.properties
+       section and stream.rules sections as usual.
+
+APPLICATION SETTINGS (RULES)
+       The pulse protocol module supports generic config rules. It supports a
+       pulse.rules section with a quirks and an update-props action. These
+       rules operate on the client properties (not the stream properties, see
+       above).
+
+       # ~/.config/pipewire/pipewire-pulse.conf.d/custom.conf
+
+       pulse.rules = [
+           {
+               # skype does not want to use devices that don&#x27;t have an S16 sample format.
+               matches = [
+                    { application.process.binary = &quot;teams&quot; }
+                    { application.process.binary = &quot;teams-insiders&quot; }
+                    { application.process.binary = &quot;skypeforlinux&quot; }
+               ]
+               actions = { quirks = [ force-s16-info ] }
+           }
+           {
+               # speech dispatcher asks for too small latency and then underruns.
+               matches = [ { application.name = &quot;~speech-dispatcher*&quot; } ]
+               actions = {
+                   update-props = {
+                       pulse.min.req          = 1024/48000     # 21ms
+                       pulse.min.quantum      = 1024/48000     # 21ms
+                       pulse.idle.timeout     = 5              # pause after 5 seconds of underrun
+                   }
+               }
+           }
+       ]
+
+   Quirks
+       The quirks action takes an array of quirks to apply for the client.
+
+       • force-s16-info makes the sink and source introspect code pretend that
+         the  sample  format is S16 (16 bits) samples. Some application refuse
+         the sink/source if this is not the case.
+
+       • remove-capture-dont-move  Removes  the  DONT_MOVE  flag  on   capture
+         streams.  Some applications set this flag so that the stream can&#x27;t be
+         moved anymore with tools such as pavucontrol.
+
+       • block-source-volume  blocks  the  client  from  updating  any  source
+         volumes.  This  can  be  used  to  disable things like automatic gain
+         control.
+
+       • block-sink-volume blocks the client from updating any sink volumes.
+
+       • block-record-stream  blocks  the  client  from  creating  any  record
+         stream.
+
+       • block-playback-stream  blocks  the  client from creating any playback
+         stream.
+
+   update-props
+       Takes an object with the properties to update  on  the  client.  Common
+       actions  are  to  tweak  the  quantum  values.  You  can use the stream
+       specific keys in pulse.properties.
+
+   startup notification
+       A newline will be written into the notification  file  descriptor  when
+       the server has started if the following environment variable is set:
+
+       • PIPEWIRE_PULSE_NOTIFICATION_FD
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire-pulse.conf.d/custom.conf
+
+       context.modules = [
+       {   name = libpipewire-module-protocol-pulse
+           args = { }
+       }
+       ]
+
+       pulse.properties = {
+           server.address = [ &quot;unix:native&quot; ]
+       }
+
+       pulse.rules = [
+           {
+              # skype does not want to use devices that don&#x27;t have an S16 sample format.
+              matches = [
+                   { application.process.binary = &quot;teams&quot; }
+                   { application.process.binary = &quot;teams-insiders&quot; }
+                   { application.process.binary = &quot;skypeforlinux&quot; }
+              ]
+              actions = { quirks = [ force-s16-info ] }
+          }
+          {
+              # speech dispatcher asks for too small latency and then underruns.
+              matches = [ { application.name = &quot;~speech-dispatcher*&quot; } ]
+              actions = {
+                  update-props = {
+                      pulse.min.req          = 1024/48000     # 21ms
+                      pulse.min.quantum      = 1024/48000     # 21ms
+                      pulse.idle.timeout     = 5              # pause after 5 seconds of underrun
+                  }
+              }
+          }
+       ]
+
+PipeWire                             1.4.2               libpipe...ol-pulse(7)
+</pre></body></html>

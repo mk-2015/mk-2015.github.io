@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>usnjls(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>USNJLS(1)                   General Commands Manual                  USNJLS(1)
+
+NAME
+       usnjls - List the contents of a NTFS Update Sequence Number journal
+
+SYNOPSIS
+       usnjls  [-f  fstype  ]  [-vV]  [-i imgtype] [-o imgoffset] [-b dev_sec‐
+       tor_size] image [images] [inode]
+
+
+DESCRIPTION
+       usnjls lists the records in a NTFS Update Sequence Number Journal.   If
+       inode  is  given, then it will look there for a journal.  Otherwise, it
+       will use the default  location.   The  output  lists  the  USN  journal
+       records.
+
+
+ARGUMENTS
+       -f fstype
+              Specify  the  file  system type.  Use &#x27;-f list&#x27; to list the sup‐
+              ported file system types. If not  given,  autodetection  methods
+              are used.
+
+       -i imgtype
+              Identify  the type of image file, such as raw or split.  Use &#x27;-i
+              list&#x27; to list the supported types. If not  given,  autodetection
+              methods are used.
+
+       -o imgoffset
+              The sector offset where the file system starts in the image.
+
+       -b dev_sector_size
+              The  size,  in  bytes, of the underlying device sectors.  If not
+              given, the value in the image format is used (if it  exists)  or
+              512-bytes is assumed.
+
+       -l     Print  the output in long format describing the field values and
+              unpacking the data into human readable strings.
+
+       -m     Print the output in mactime format.
+
+       -V     Display version
+
+       -v     verbose output
+
+       image [images]
+              One (or more if split) disk or partition images whose format  is
+              given with &#x27;-i&#x27;.
+
+       [inode]
+              The inode where the Update Sequence Number Journal can be found.
+
+
+EXAMPLES
+       usnjls -f ntfs img.dd
+
+
+AUTHOR
+       Brian Carrier &lt;carrier at sleuthkit dot org&gt;
+
+       Send documentation updates to &lt;doc-updates at sleuthkit dot org&gt;
+
+                                                                     USNJLS(1)
+</pre></body></html>

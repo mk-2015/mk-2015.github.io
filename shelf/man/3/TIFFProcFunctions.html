@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFProcFunctions(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFPROCFUNCTIONS(3tiff)            LibTIFF           TIFFPROCFUNCTIONS(3tiff)
+
+NAME
+       TIFFProcFunctions - set TIFF processing functions
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       TIFFCloseProc TIFFGetCloseProc(TIFF *tif)
+
+       TIFFMapFileProc TIFFGetMapFileProc(TIFF *tif)
+
+       TIFFReadWriteProc TIFFGetReadProc(TIFF *tif)
+
+       TIFFSeekProc TIFFGetSeekProc(TIFF *tif)
+
+       TIFFSizeProc TIFFGetSizeProc(TIFF *tif)
+
+       TIFFUnmapFileProc TIFFGetUnmapFileProc(TIFF *tif)
+
+       TIFFReadWriteProc TIFFGetWriteProc(TIFF *tif)
+
+DESCRIPTION
+       The following routines return ?????? an open TIFF file.
+
+       TIFFGetCloseProc() returns a pointer to file close method.
+
+       TIFFGetMapFileProc() returns a pointer to memory mapping method.
+
+       TIFFGetReadProc() returns a pointer to file read method.
+
+       TIFFGetSeekProc() returns a pointer to file seek method.
+
+       TIFFGetSizeProc() returns a pointer to file size requesting method.
+
+       TIFFGetUnmapFileProc() returns a pointer to memory unmapping method.
+
+       TIFFGetWriteProc() returns a pointer to file write method.
+
+DIAGNOSTICS
+       None.
+
+SEE ALSO
+       libtiff (3tiff), TIFFOpen (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026         TIFFPROCFUNCTIONS(3tiff)
+</pre></body></html>

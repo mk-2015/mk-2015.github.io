@@ -1,0 +1,98 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_PKEY-X25519(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_PKEY-X25519(7SSL)               OpenSSL              EVP_PKEY-X25519(7SSL)
+
+NAME
+       EVP_PKEY-X25519, EVP_PKEY-X448, EVP_PKEY-ED25519, EVP_PKEY-ED448,
+       EVP_KEYMGMT-X25519, EVP_KEYMGMT-X448, EVP_KEYMGMT-ED25519,
+       EVP_KEYMGMT-ED448 - EVP_PKEY X25519, X448, ED25519 and ED448 keytype
+       and algorithm support
+
+DESCRIPTION
+       The X25519, X448, ED25519 and ED448 keytypes are implemented in
+       OpenSSL&#x27;s default and FIPS providers.  These implementations support
+       the associated key, containing the public key pub and the private key
+       priv.
+
+   Keygen Parameters
+       &quot;dhkem-ikm&quot; (OSSL_PKEY_PARAM_DHKEM_IKM) &lt;octet string&gt;
+           DHKEM  requires  the  generation  of  a  keypair using an input key
+           material (seed).  Use this to specify the  key  material  used  for
+           generation of the private key.  This value should not be reused for
+           other purposes.  It should have a length of at least 32 for X25519,
+           and 56 for X448.  This is only supported by X25519 and X448.
+
+       &quot;fips-indicator&quot; (OSSL_PKEY_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           This  getter  is  only  supported  by  X25519 and X448 for the FIPS
+           provider.  Since X25519 and X448 are unapproved in FIPS 140-3  this
+           getter return 0.
+
+           See  &quot;Common  Information  Parameters&quot;  in  provider-keymgmt(7) for
+           further information.
+
+       Use EVP_PKEY_CTX_set_params() after calling EVP_PKEY_keygen_init().
+
+   Common X25519, X448, ED25519 and ED448 parameters
+       In addition to the common parameters that all keytypes  should  support
+       (see &quot;Common parameters&quot; in provider-keymgmt(7)), the implementation of
+       these keytypes support the following.
+
+       &quot;group&quot; (OSSL_PKEY_PARAM_GROUP_NAME) &lt;UTF8 string&gt;
+           This  is  only supported by X25519 and X448. The group name must be
+           &quot;x25519&quot; or &quot;x448&quot; respectively for those algorithms. This is  only
+           present  for  consistency with other key exchange algorithms and is
+           typically not needed.
+
+       &quot;pub&quot; (OSSL_PKEY_PARAM_PUB_KEY) &lt;octet string&gt;
+           The public key value.
+
+       &quot;priv&quot; (OSSL_PKEY_PARAM_PRIV_KEY) &lt;octet string&gt;
+           The private key value.
+
+       &quot;encoded-pub-key&quot; (OSSL_PKEY_PARAM_ENCODED_PUBLIC_KEY) &lt;octet string&gt;
+           Used for getting and setting the encoding of a public key  for  the
+           X25519 and X448 key types. Public keys are expected be encoded in a
+           format as defined by RFC7748.
+
+   ED25519 and ED448 parameters
+       &quot;mandatory-digest&quot; (OSSL_PKEY_PARAM_MANDATORY_DIGEST) &lt;UTF8 string&gt;
+           The empty string, signifying that no digest may be specified.
+
+CONFORMING TO
+       RFC 8032
+       RFC 8410
+
+EXAMPLES
+       An EVP_PKEY context can be obtained by calling:
+
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;X25519&quot;, NULL);
+
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;X448&quot;, NULL);
+
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;ED25519&quot;, NULL);
+
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;ED448&quot;, NULL);
+
+       An X25519 key can be generated like this:
+
+           pkey = EVP_PKEY_Q_keygen(NULL, NULL, &quot;X25519&quot;);
+
+       An X448, ED25519, or ED448 key can be generated likewise.
+
+SEE ALSO
+       EVP_KEYMGMT(3),            EVP_PKEY(3),            provider-keymgmt(7),
+       EVP_KEYEXCH-X25519(7),  EVP_KEYEXCH-X448(7),  EVP_SIGNATURE-ED25519(7),
+       EVP_SIGNATURE-ED448(7)
+
+COPYRIGHT
+       Copyright 2020-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09             EVP_PKEY-X25519(7SSL)
+</pre></body></html>

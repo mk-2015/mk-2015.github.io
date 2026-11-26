@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_MCE_KILL(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_MCE_KILL(2const)                                        PR_MCE_KILL(2const)
+
+NAME
+       PR_MCE_KILL - set the machine check memory corruption kill policy
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_MCE_KILL, long op, ...);
+
+DESCRIPTION
+       Set  the  machine  check  memory corruption kill policy for the calling
+       thread.
+
+       op is one of the following operations:
+
+       PR_MCE_KILL_CLEAR
+       PR_MCE_KILL_SET
+
+       The policy is inherited by children.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL op is not a valid value.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.32.
+
+SEE ALSO
+       prctl(2),      PR_MCE_KILL_CLEAR(2const),      PR_MCE_KILL_SET(2const),
+       PR_MCE_KILL_GET(2const)
+
+Linux man-pages 6.9.1             2024-06-01               PR_MCE_KILL(2const)
+</pre></body></html>

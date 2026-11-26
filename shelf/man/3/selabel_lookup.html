@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>selabel_lookup(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>selabel_lookup(3)          SELinux API documentation         selabel_lookup(3)
+
+NAME
+       selabel_lookup - obtain SELinux security context from a string label
+
+SYNOPSIS
+       #include &lt;selinux/selinux.h&gt;
+       #include &lt;selinux/label.h&gt;
+
+       int selabel_lookup(struct selabel_handle *hnd,
+                          char **context,
+                          const char *key, int type);
+
+       int selabel_lookup_raw(struct selabel_handle *hnd,
+                              char **context,
+                              const char *key, int type);
+
+DESCRIPTION
+       selabel_lookup() performs a lookup operation on the handle hnd, return‐
+       ing the result in the memory pointed to by context, which must be freed
+       by  the  caller  using freecon(3).  The key and type parameters are the
+       inputs to the lookup operation and are  interpreted  according  to  the
+       specific backend that handle is open on.
+
+       selabel_lookup_raw()  behaves  identically to selabel_lookup() but does
+       not perform context translation.
+
+RETURN VALUE
+       On success, zero is returned.  On error, -1 is returned  and  errno  is
+       set appropriately.
+
+ERRORS
+       ENOENT No context corresponding to the input key and type was found.
+
+       EINVAL The key and/or type inputs are invalid, or the context being re‐
+              turned  failed  validation, or a regular expression in the data‐
+              base failed to compile.
+
+       ENOMEM An attempt to allocate memory failed.
+
+AUTHOR
+       Eamon Walsh &lt;ewalsh@tycho.nsa.gov&gt;
+
+SEE ALSO
+       selabel_open(3), selabel_stats(3), selinux_set_callback(3), selinux(8)
+
+                                  18 Jun 2007                selabel_lookup(3)
+</pre></body></html>

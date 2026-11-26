@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_ASYM_CIPHER-RSA(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_ASYM_CIPHER-RSA(7SSL)           OpenSSL          EVP_ASYM_CIPHER-RSA(7SSL)
+
+NAME
+       EVP_ASYM_CIPHER-RSA - RSA Asymmetric Cipher algorithm support
+
+DESCRIPTION
+       Asymmetric Cipher support for the RSA key type.
+
+   RSA Asymmetric Cipher parameters
+       &quot;pad-mode&quot; (OSSL_ASYM_CIPHER_PARAM_PAD_MODE) &lt;UTF8 string&gt;
+           The  default provider understands these RSA padding modes in string
+           form:
+
+           &quot;none&quot; (OSSL_PKEY_RSA_PAD_MODE_NONE)
+           &quot;oaep&quot; (OSSL_PKEY_RSA_PAD_MODE_OAEP)
+           &quot;pkcs1&quot; (OSSL_PKEY_RSA_PAD_MODE_PKCSV15)
+               This padding mode is no longer supported by the  FIPS  provider
+               for  key  agreement  and  key transport.  (This is a FIPS 140-3
+               requirement).    See   &quot;OPTIONS&quot;   in    openssl-fipsinstall(1)
+               -rsa_pkcs15_pad_disabled.
+
+           &quot;x931&quot; (OSSL_PKEY_RSA_PAD_MODE_X931)
+       &quot;pad-mode&quot; (OSSL_ASYM_CIPHER_PARAM_PAD_MODE) &lt;integer&gt;
+           The default provider understands these RSA padding modes in integer
+           form:
+
+           1 (RSA_PKCS1_PADDING)
+               This  padding  mode is no longer supported by the FIPS provider
+               for key agreement and key transport.  (This  is  a  FIPS  140-3
+               requirement)
+
+           3 (RSA_NO_PADDING)
+           4 (RSA_PKCS1_OAEP_PADDING)
+           5 (RSA_X931_PADDING)
+
+           See EVP_PKEY_CTX_set_rsa_padding(3) for further details.
+
+       &quot;digest&quot; (OSSL_ASYM_CIPHER_PARAM_OAEP_DIGEST) &lt;UTF8 string&gt;
+       &quot;digest-props&quot; (OSSL_ASYM_CIPHER_PARAM_OAEP_DIGEST_PROPS) &lt;UTF8 string&gt;
+       &quot;mgf1-digest&quot; (OSSL_ASYM_CIPHER_PARAM_MGF1_DIGEST) &lt;UTF8 string&gt;
+       &quot;mgf1-digest-props&quot; (OSSL_ASYM_CIPHER_PARAM_MGF1_DIGEST_PROPS) &lt;UTF8
+       string&gt;
+       &quot;oaep-label&quot; (OSSL_ASYM_CIPHER_PARAM_OAEP_LABEL) &lt;octet string&gt;
+       &quot;tls-client-version&quot; (OSSL_ASYM_CIPHER_PARAM_TLS_CLIENT_VERSION)
+       &lt;unsigned integer&gt;
+           See        RSA_PKCS1_WITH_TLS_PADDING       on       the       page
+           EVP_PKEY_CTX_set_rsa_padding(3).
+
+       &quot;tls-negotiated-version&quot; (OSSL_ASYM_CIPHER_PARAM_TLS_CLIENT_VERSION)
+       &lt;unsigned integer&gt;
+           See       RSA_PKCS1_WITH_TLS_PADDING       on       the        page
+           EVP_PKEY_CTX_set_rsa_padding(3).
+
+           See  &quot;Asymmetric  Cipher Parameters&quot; in provider-asym_cipher(7) for
+           more information.
+
+       The OpenSSL FIPS provider also supports the following parameters:
+
+       &quot;fips-indicator&quot; (OSSL_ASYM_CIPHER_PARAM_FIPS_APPROVED_INDICATOR)
+       &lt;integer&gt;
+       &quot;key-check&quot; (OSSL_ASYM_CIPHER_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           See &quot;Asymmetric Cipher Parameters&quot; in  provider-asym_cipher(7)  for
+           more information.
+
+       &quot;pkcs15-pad-disabled&quot;
+       (OSSL_ASYM_CIPHER_PARAM_FIPS_RSA_PKCS15_PAD_DISABLED) &lt;integer&gt;
+           The default value of 1 causes an error during encryption if the RSA
+           padding  mode  is set to &quot;pkcs1&quot;.  Setting this to zero will ignore
+           the error and set the approved &quot;fips-indicator&quot; to 0.  This  option
+           breaks  FIPS  compliance if it causes the approved &quot;fips-indicator&quot;
+           to return 0.
+
+SEE ALSO
+       EVP_PKEY-RSA(7),         EVP_PKEY(3),          provider-asym_cipher(7),
+       provider-keymgmt(7), OSSL_PROVIDER-default(7) OSSL_PROVIDER-FIPS(7)
+
+COPYRIGHT
+       Copyright 2022-2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09         EVP_ASYM_CIPHER-RSA(7SSL)
+</pre></body></html>

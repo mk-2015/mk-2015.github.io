@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>fwupdtool(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>fwupdtool(1)      standalone firmware update utility man page     fwupdtool(1)
+
+NAME
+       fwupdtool - standalone firmware update utility
+
+SYNOPSIS
+       fwupdtool [CMD]
+
+DESCRIPTION
+       This tool allows an administrator to use fwupd plugins directly without
+       using  the  daemon  process,  which may be faster or easier to use when
+       creating or debugging specific plugins.  For most  end-users,  fwupdmgr
+       is a more suitable program to use in almost all cases.
+
+       Additionally  fwupdtool  can  be  used to convert firmware from various
+       different formats, or to modify the images contained  inside  the  con‐
+       tainer  firmware  file.   For example, you can convert DFU or Intel HEX
+       firmware into the vendor-specific format.
+
+OPTIONS
+       The fwupdtool command takes various options depending  on  the  action.
+       Run  fwupdtool --help for the full list.  Note that some runtimes fail‐
+       ures can be ignored using --force.
+
+EXIT STATUS
+       Commands that successfully execute will return â0â, with generic  fail‐
+       ure as â1â.
+
+       There  are  also several other exit codes used: A return code of â2â is
+       used for commands that have no actions but were successfully  executed,
+       and â3â is used when a resource was not found.
+
+BUGS
+       See GitHub Issues: &lt;https://github.com/fwupd/fwupd/issues&gt;
+
+SEE ALSO
+       &lt;fwupdmgr(1)&gt; &lt;fwupd.conf(5)&gt;
+
+2.0.20                                                            fwupdtool(1)
+</pre></body></html>

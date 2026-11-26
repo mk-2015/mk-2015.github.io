@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCTTYGSTRUCT(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCTTYGSTRUCT(2const)                                  TIOCTTYGSTRUCT(2const)
+
+NAME
+       TIOCTTYGSTRUCT - kernel debugging
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCTTYGSTRUCT, struct tty_struct *argp);
+
+       #include &lt;linux/tty.h&gt;
+
+       struct tty_struct;
+
+DESCRIPTION
+       Get the tty_struct corresponding to fd.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+HISTORY
+       This operation was removed in Linux 2.5.67.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13            TIOCTTYGSTRUCT(2const)
+</pre></body></html>

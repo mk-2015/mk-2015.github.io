@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCSTI(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSTI(2const)                                                TIOCSTI(2const)
+
+NAME
+       TIOCSTI - faking input
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOCSTI */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCSTI, const char *argp);
+
+DESCRIPTION
+       Insert the given byte in the input queue.
+
+       Since  Linux 6.2, this operation may require the CAP_SYS_ADMIN capabil‐
+       ity (if the dev.tty.legacy_tiocsti sysctl variable is set to false).
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EPERM  Insufficient permission.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13                   TIOCSTI(2const)
+</pre></body></html>

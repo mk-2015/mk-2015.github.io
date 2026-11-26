@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::chooseColor(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>chooseColor(3pm)      User Contributed Perl Documentation     chooseColor(3pm)
+
+NAME
+       Tk::chooseColor - pops up a dialog box for the user to select a color.
+
+SYNOPSIS
+           $color = $widget-&gt;chooseColor?(-option=&gt;value, ...)?;
+
+DESCRIPTION
+       The method chooseColor is implemented as a perl wrapper on the core tk
+       &quot;command&quot; tk_chooseColor, and $widget is passed as the argument to the
+       hidden -parent option.  The implementation of internal tk_chooseColor
+       is platform specific, on Win32 it is a native dialog, and on UNIX/X11
+       it is implemented in terms of Tk::ColorEditor.
+
+       The chooseColor method pops up a dialog box for the user to select a
+       color. The following option-value pairs are possible as command line
+       arguments:
+
+       -initialcolor=&gt;color
+           Specifies the color to display in the color dialog when it pops up.
+           color must be in a form acceptable to the Tk_GetColor function.
+
+       -parent=&gt;$widget
+           Makes  $widget  the  logical  parent of the color dialog. The color
+           dialog is displayed on top of its parent window.
+
+       -title=&gt;titleString
+           Specifies a string to display as the title of the  dialog  box.  If
+           this  option  is  not  specified,  then  a  default  title  will be
+           displayed.
+
+       If the user selects a color, tk_chooseColor will return the name of the
+       color in a form acceptable to Tk_GetColor.  If  the  user  cancels  the
+       operation, the command will return undef.
+
+EXAMPLE
+        $widget-&gt;configure(-fg =&gt; $parent-&gt;chooseColor(-initialcolor =&gt; &#x27;gray&#x27;,
+                                                       -title =&gt; &quot;Choose color&quot;));
+
+KEYWORDS
+       color selection dialog
+
+perl v5.40.1                      2025-04-13                  chooseColor(3pm)
+</pre></body></html>

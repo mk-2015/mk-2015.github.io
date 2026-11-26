@@ -1,0 +1,722 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-filter-chain(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...er-chain(7)  Miscellaneous Information Manual  libpipe...er-chain(7)
+
+NAME
+       libpipewire-module-filter-chain - Filter-Chain
+
+DESCRIPTION
+       The filter-chain allows you to create an arbitrary processing graph
+       from LADSPA, LV2 and builtin filters.
+
+       This filter can be made into a virtual sink/source or between any 2
+       nodes in the graph.
+
+       The filter chain is built with 2 streams, a capture stream providing
+       the input to the filter chain and a playback stream sending out the
+       filtered stream to the next nodes in the graph.
+
+       Because both ends of the filter-chain are built with streams, the
+       session manager can manage the configuration and connection with the
+       sinks and sources automatically.
+
+MODULE NAME
+       libpipewire-module-filter-chain
+
+MODULE OPTIONS
+       • node.description: a human readable name for the filter chain
+
+       • filter.graph  =  []:  a  description  of the filter graph to run, see
+         below
+
+       • capture.props = {}: properties to be passed to the input stream
+
+       • playback.props = {}: properties to be passed to the output stream
+
+FILTER GRAPH DESCRIPTION
+       The general structure of the graph description is as follows:
+
+        filter.graph = {
+            nodes = [
+                {
+                    type = &lt;ladspa | lv2 | builtin | sofa&gt;
+                    name = &lt;name&gt;
+                    plugin = &lt;plugin&gt;
+                    label = &lt;label&gt;
+                    config = {
+                        &lt;configkey&gt; = &lt;value&gt; ...
+                    }
+                    control = {
+                        &lt;controlname|controlindex&gt; = &lt;value&gt; ...
+                    }
+                }
+                ...
+            ]
+            links = [
+                { output = &lt;portname&gt; input = &lt;portname&gt; }
+                ...
+            ]
+            inputs = [ &lt;portname&gt; ... ]
+            outputs = [ &lt;portname&gt; ... ]
+            capture.volumes = [
+                { control = &lt;portname&gt;  min = &lt;value&gt;  max = &lt;value&gt;  scale = &lt;scale&gt; } ...
+            ]
+            playback.volumes = [
+                { control = &lt;portname&gt;  min = &lt;value&gt;  max = &lt;value&gt;  scale = &lt;scale&gt; } ...
+            ]
+       }
+
+   Nodes
+       Nodes describe the processing filters in the graph.  Use  a  tool  like
+       lv2ls or listplugins to get a list of available plugins, labels and the
+       port names.
+
+       • type is one of ladspa, lv2, builtin, sofa or ebur128.
+
+       • name is the name for this node, you might need this later to refer to
+         this node and its ports when setting controls or making links.
+
+       • plugin is the type specific plugin name.
+
+         • For  LADSPA  plugins  it  will append .so to find the shared object
+           with that name in the LADSPA plugin path.
+
+         • For LV2, this is the plugin URI obtained with lv2ls.
+
+         • For builtin, sofa and ebur128 this is ignored
+
+       • label is the type specific filter inside the plugin.
+
+         • For LADSPA this is the label
+
+         • For LV2 this is unused
+
+         • For builtin, sofa and ebur128 this is the name of the filter to use
+
+       • config contains a filter specific configuration section. Some plugins
+         need this. (convolver, sofa, delay, ...)
+
+       • control contains the initial values for  the  control  ports  of  the
+         filter.  normally  these  are given with the port name but it is also
+         possible to give the control index as the key.
+
+   Links
+       Links can be made between ports of nodes.  The  portname  is  given  as
+       &lt;node_name&gt;:&lt;port_name&gt;.
+
+       You  can  tee the output of filters to multiple other filters. You need
+       to use a mixer if you want the output of multiple filters  to  go  into
+       one filter input port.
+
+       links can be omitted when the graph has just 1 filter.
+
+   Inputs and Outputs
+       These  are  the  entry  and exit ports into the graph definition. Their
+       number defines the number of channels used by the filter-chain.
+
+       The &lt;portname&gt; can be null when a channel is to be ignored.
+
+       Each input/output in the  graph  can  only  be  linked  to  one  filter
+       input/output.  You  need  to  use the copy builtin filter if the stream
+       signal needs to be routed to multiple filters.  You  need  to  use  the
+       mixer builtin plugin if multiple graph outputs need to go to one output
+       stream.
+
+       inputs  and outputs can be omitted, in which case the filter-chain will
+       use all inputs from the first filter and  all  outputs  from  the  last
+       filter  node.  The graph will then be duplicated as many times to match
+       the number of input/output channels of the streams.
+
+   Volumes
+       Normally the volume  of  the  sink/source  is  handled  by  the  stream
+       software   volume.   With   the  capture.volumes  and  playback.volumes
+       properties this can be handled by a control port in the graph  instead.
+       Use capture.volumes for the volume of the input of the filter (when for
+       example  used  as  a  sink). Use playback,volumes for the volume of the
+       output of the filter (when for example used as a source).
+
+       The min and max values (defaults 0.0 and 1.0) respectively can be  used
+       to scale and translate the volume min and max values.
+
+       Normally  the  control  values  are  linear  and it is assumed that the
+       plugin does not perform any scaling to the values. This can be  changed
+       with the scale property. By default this is linear but it can be set to
+       cubic when the control applies a cubic transformation.
+
+BUILTIN FILTERS
+       There  are  some useful builtin filters available. You select them with
+       the label of the filter node.
+
+   Mixer
+       Use the mixer plugin if you have multiple input signals that need to be
+       mixed together.
+
+       The mixer plugin has up to 8 input ports labeled &#x27;In 1&#x27; to &#x27;In  8&#x27;  and
+       each  with  a  gain  control  labeled &#x27;Gain 1&#x27; to &#x27;Gain 8&#x27;. There is an
+       output port labeled &#x27;Out&#x27;. Unused input ports will be ignored  and  not
+       cause overhead.
+
+   Copy
+       Use  the  copy  plugin  if  you  need  to copy a stream input signal to
+       multiple filters.
+
+       It has one input port &#x27;In&#x27; and one output port &#x27;Out&#x27;.
+
+   Biquads
+       Biquads can be used to do all kinds of filtering. They  are  also  used
+       when creating equalizers.
+
+       All  biquad  filters  have an input port &#x27;In&#x27; and an output port &#x27;Out&#x27;.
+       They have a &#x27;Freq&#x27;, &#x27;Q&#x27; and &#x27;Gain&#x27; control. Their  meaning  depends  on
+       the  particular  biquad that is used. The biquads also have &#x27;b0&#x27;, &#x27;b1&#x27;,
+       &#x27;b2&#x27;, &#x27;a0&#x27;, &#x27;a1&#x27; and &#x27;a2&#x27; ports  that  are  read-only  except  for  the
+       bq_raw  biquad,  which  can  configure  default values depending on the
+       graph rate and change those at runtime.
+
+       We  refer  to  https://arachnoid.com/BiQuadDesigner/index.html  for  an
+       explanation of the controls.
+
+       The following labels can be used:
+
+       • bq_lowpass a lowpass filter.
+
+       • bq_highpass a highpass filter.
+
+       • bq_bandpass a bandpass filter.
+
+       • bq_lowshelf a low shelf filter.
+
+       • bq_highshelf a high shelf filter.
+
+       • bq_peaking a peaking filter.
+
+       • bq_notch a notch filter.
+
+       • bq_allpass an allpass filter.
+
+       • bq_raw  a  raw  biquad  filter.  You need a config section to specify
+         coefficients per sample rate. The coefficients  of  the  sample  rate
+         closest to the graph rate are selected:
+
+       filter.graph = {
+           nodes = [
+               {
+                   type   = builtin
+                   name   = ...
+                   label  = bq_raw
+                   config = {
+                       coefficients = [
+                           { rate =  44100, b0=.., b1=.., b2=.., a0=.., a1=.., a2=.. },
+                           { rate =  48000, b0=.., b1=.., b2=.., a0=.., a1=.., a2=.. },
+                           { rate = 192000, b0=.., b1=.., b2=.., a0=.., a1=.., a2=.. }
+                       ]
+                   }
+                   ...
+               }
+           }
+           ...
+       }
+
+   Parametric EQ
+       The  parametric  EQ  chains  a  number  of biquads together. It is more
+       efficient than specifying a number of chained biquads and it  can  also
+       load configuration from a file.
+
+       The  parametric EQ supports multichannel processing and has 8 input and
+       8 output ports that don&#x27;t all need to be connected. The ports are named
+       In 1 to In 8 and Out 1 to Out 8.
+
+       filter.graph = {
+           nodes = [
+               {
+                   type   = builtin
+                   name   = ...
+                   label  = param_eq
+                   config = {
+                       filename = &quot;...&quot;
+                       #filename1 = &quot;...&quot;, filename2 = &quot;...&quot;, ...
+                       filters = [
+                           { type = ..., freq = ..., gain = ..., q = ... },
+                           { type = ..., freq = ..., gain = ..., q = ... },
+                           ....
+                       ]
+                       #filters1 = [ ... ], filters2 = [ ... ], ...
+                   }
+                   ...
+               }
+           }
+           ...
+       }
+
+       Either  a  filename  or  a  filters  array  can   be   specified.   The
+       configuration will be used for all channels. Alternatively filenameX or
+       filtersX where X is the channel number (between 1 and 8) can be used to
+       load a channel specific configuration.
+
+       The  filename  must  point  to  a  parametric  equalizer  configuration
+       generated from the AutoEQ project or Squiglink. Both the projects allow
+       equalizing headphones or an in-ear monitor to a target curve.
+
+       A popular example of the above being EQ&#x27;ing to the Harman target  curve
+       or EQ&#x27;ing one headphone/IEM to another.
+
+       For AutoEQ, see https://github.com/jaakkopasanen/AutoEq. For SquigLink,
+       see https://squig.link/.
+
+       Parametric  equalizer  configuration generated from AutoEQ or Squiglink
+       looks like below.
+
+       Preamp: -6.8 dB
+       Filter 1: ON PK Fc 21 Hz Gain 6.7 dB Q 1.100
+       Filter 2: ON PK Fc 85 Hz Gain 6.9 dB Q 3.000
+       Filter 3: ON PK Fc 110 Hz Gain -2.6 dB Q 2.700
+       Filter 4: ON PK Fc 210 Hz Gain 5.9 dB Q 2.100
+       Filter 5: ON PK Fc 710 Hz Gain -1.0 dB Q 0.600
+       Filter 6: ON PK Fc 1600 Hz Gain 2.3 dB Q 2.700
+
+       Fc, Gain and Q specify the frequency, gain and Q  factor  respectively.
+       The  fourth column can be one of PK, LSC or HSC specifying peaking, low
+       shelf and high shelf filter respectively.  More  often  than  not  only
+       peaking filters are involved.
+
+       The  filters  (or  channel  specific  filtersX  where  X is the channel
+       between 1 and 8) can contain an array of  filter  specification  object
+       with the following keys:
+
+       type  specifies  the  filter type, choose one from the available biquad
+       labels. freq is the frequency passed to the biquad. gain  is  the  gain
+       passed to the biquad. q is the Q passed to the biquad.
+
+       This makes it possible to also use the param eq without a file and with
+       all the available biquads.
+
+   Convolver
+       The  convolver can be used to apply an impulse response to a signal. It
+       is usually used for reverbs  or  virtual  surround.  The  convolver  is
+       implemented with a fast FFT implementation.
+
+       The  convolver  has  an  input  port  &#x27;In&#x27; and an output port &#x27;Out&#x27;. It
+       requires a config section in the node declaration in this format:
+
+       filter.graph = {
+           nodes = [
+               {
+                   type   = builtin
+                   name   = ...
+                   label  = convolver
+                   config = {
+                       blocksize = ...
+                       tailsize = ...
+                       gain = ...
+                       delay = ...
+                       filename = ...
+                       offset = ...
+                       length = ...
+                       channel = ...
+                       resample_quality = ...
+                   }
+                   ...
+               }
+           }
+           ...
+       }
+
+       • blocksize specifies the size of the blocks to use in the FFT. It is a
+         value between 64 and 256. When not specified, this value is  computed
+         automatically from the number of samples in the file.
+
+       • tailsize specifies the size of the tail blocks to use in the FFT.
+
+       • gain the overall gain to apply to the IR file.
+
+       • delay  The  extra  delay  to  add  to  the IR. A float number will be
+         interpreted as seconds, and integer as samples. Using  the  delay  in
+         seconds is independent of the graph and IR rate and is recommended.
+
+       • filename The IR to load or create. Possible values are:
+
+         • /hilbert creates a hilbert function that can be used to phase shift
+           the  signal by +/-90 degrees. The length will be used as the number
+           of coefficients.
+
+         • /dirac creates a Dirac function that can be used as gain.
+
+         • A filename to load as the IR.  This  needs  to  be  a  file  format
+           supported by sndfile.
+
+         • [  filename, ... ] an array of filenames. The file with the closest
+           samplerate match with the graph samplerate will be used.
+
+       • offset The sample offset in the file as the start of the IR.
+
+       • length The number of samples to use as the IR.
+
+       • channel The channel to use from the file as the IR.
+
+       • resample_quality The resample quality in case the IR does  not  match
+         the graph samplerate.
+
+   Delay
+       The delay can be used to delay a signal in time.
+
+       The  delay has an input port &#x27;In&#x27; and an output port &#x27;Out&#x27;. It also has
+       a &#x27;Delay (s)&#x27; control port. It requires a config section  in  the  node
+       declaration in this format:
+
+       filter.graph = {
+           nodes = [
+               {
+                   type   = builtin
+                   name   = ...
+                   label  = delay
+                   config = {
+                       &quot;max-delay&quot; = ...
+                   }
+                   control = {
+                       &quot;Delay (s)&quot; = ...
+                   }
+                   ...
+               }
+           }
+           ...
+       }
+
+       • max-delay  the  maximum  delay  in seconds. The &#x27;Delay (s)&#x27; parameter
+         will be clamped to this value.
+
+   Invert
+       The invert plugin can be used to invert the phase of the signal.
+
+       It has an input port &#x27;In&#x27; and an output port &#x27;Out&#x27;.
+
+   Clamp
+       The clamp plugin can be used to  clamp  samples  between  min  and  max
+       values.
+
+       It  has  an  input  port  &#x27;In&#x27;  and an output port &#x27;Out&#x27;. It also has a
+       &#x27;Control&#x27; and &#x27;Notify&#x27; port for the control values.
+
+       The final result is clamped to the &#x27;Min&#x27; and &#x27;Max&#x27; control values.
+
+   Linear
+       The linear plugin can be used  to  apply  a  linear  transformation  on
+       samples or control values.
+
+       It  has  an  input  port  &#x27;In&#x27;  and an output port &#x27;Out&#x27;. It also has a
+       &#x27;Control&#x27; and &#x27;Notify&#x27; port for the control values.
+
+       The control value &#x27;Mult&#x27; and &#x27;Add&#x27; are used  to  configure  the  linear
+       transform.  Each  sample  or control value will be calculated as: new =
+       old * Mult + Add.
+
+   Reciprocal
+       The recip plugin can be used  to  calculate  the  reciprocal  (1/x)  of
+       samples or control values.
+
+       It  has  an  input  port  &#x27;In&#x27;  and an output port &#x27;Out&#x27;. It also has a
+       &#x27;Control&#x27; and &#x27;Notify&#x27; port for the control values.
+
+   Abs
+       The abs plugin can be used to calculate the absolute value of samples.
+
+       It has an input port &#x27;In&#x27; and an output port &#x27;Out&#x27;.
+
+   Sqrt
+       The sqrt plugin can be used to calculate the square root of samples.
+
+       It has an input port &#x27;In&#x27; and an output port &#x27;Out&#x27;.
+
+   Exp
+       The exp plugin can be used to calculate  the  exponential  (base^x)  of
+       samples or control values.
+
+       It  has  an  input  port  &#x27;In&#x27;  and an output port &#x27;Out&#x27;. It also has a
+       &#x27;Control&#x27; and &#x27;Notify&#x27; port for the control values.
+
+       The control value &#x27;Base&#x27; is used to calculate base ^ x for each sample.
+
+   Log
+       The log plugin can be used to calculate the  logarithm  of  samples  or
+       control values.
+
+       It  has  an  input  port  &#x27;In&#x27;  and an output port &#x27;Out&#x27;. It also has a
+       &#x27;Control&#x27; and &#x27;Notify&#x27; port for the control values.
+
+       The control value &#x27;Base&#x27;, &#x27;M1&#x27; and &#x27;M2&#x27; are used to calculate out =  M2
+       * log2f(fabsf(in * M1)) / log2f(Base) for each sample.
+
+   Multiply
+       The mult plugin can be used to multiply samples together.
+
+       It has 8 input ports named &#x27;In 1&#x27; to &#x27;In 8&#x27; and an output port &#x27;Out&#x27;.
+
+       All input ports samples are multiplied together into the output. Unused
+       input ports will be ignored and not cause overhead.
+
+   Sine
+       The sine plugin generates a sine wave.
+
+       It has an output port &#x27;Out&#x27; and also a control output port &#x27;notify&#x27;.
+
+   Max
+       Use the max plugin if you need to select the max value of two channels.
+
+       It has two input ports &#x27;In 1&#x27; and &#x27;In 2&#x27; and one output port &#x27;Out&#x27;.
+
+   dcblock
+       Use the dcblock plugin implements a DC blocker.
+
+       It  has  8  input ports &#x27;In 1&#x27; to &#x27;In 8&#x27; and corresponding output ports
+       &#x27;Out 1&#x27; to &#x27;Out 8&#x27;. Not all ports need to be connected.
+
+       It also has 1 control input port &#x27;R&#x27;  that  controls  the  DC  block  R
+       factor.
+
+   Ramp
+       Use the ramp plugin creates a linear ramp from Start to Stop.
+
+       It  has  3  input  control ports &#x27;Start&#x27;, &#x27;Stop&#x27; and &#x27;Duration (s)&#x27;. It
+       also has one output port &#x27;Out&#x27;. A linear  ramp  will  be  created  from
+       &#x27;Start&#x27; to &#x27;Stop&#x27; for a duration given by the &#x27;Duration (s)&#x27; control in
+       (fractional)  seconds.  The  current value will be stored in the output
+       notify port &#x27;Current&#x27;.
+
+       The ramp output can, for example, be used as input for the mult  plugin
+       to create a volume ramp up or down. For more a more coarse volume ramp,
+       the &#x27;Current&#x27; value can be used in the linear plugin.
+
+SOFA FILTER
+       There is an optional builtin SOFA filter available.
+
+   Spatializer
+       The spatializer can be used to place the sound in a 3D space.
+
+       The  spatializer  has  an  input  port &#x27;In&#x27; and a stereo pair of output
+       ports called &#x27;Out L&#x27; and &#x27;Out R&#x27;. It requires a config section  in  the
+       node declaration in this format:
+
+       The  control can be changed at runtime to move the sounds around in the
+       3D space.
+
+       filter.graph = {
+           nodes = [
+               {
+                   type   = sofa
+                   name   = ...
+                   label  = spatializer
+                   config = {
+                       blocksize = ...
+                       tailsize = ...
+                       filename = ...
+                   }
+                   control = {
+                       &quot;Azimuth&quot; = ...
+                       &quot;Elevation&quot; = ...
+                       &quot;Radius&quot; = ...
+                   }
+                   ...
+               }
+           }
+           ...
+       }
+
+       • blocksize specifies the size of the blocks to use in the FFT. It is a
+         value between 64 and 256. When not specified, this value is  computed
+         automatically from the number of samples in the file.
+
+       • tailsize specifies the size of the tail blocks to use in the FFT.
+
+       • filename  The  SOFA file to load. SOFA files usually end in the .sofa
+         extension and contain the HRTF for the various spatial positions.
+
+       • Azimuth controls the azimuth, this is  the  direction  the  sound  is
+         coming  from in degrees between 0 and 360. 0 is straight ahead. 90 is
+         left, 180 behind, 270 right.
+
+       • Elevation controls the elevation, this is how high/low the signal  is
+         in degrees between -90 and 90. 0 is straight in front, 90 is directly
+         above and -90 directly below.
+
+       • Radius  controls  how far away the signal is as a value between 0 and
+         100. default is 1.0.
+
+EBUR128 FILTER
+       There is an optional EBU R128 filter available.
+
+   ebur128
+       The ebur128 plugin can be used to measure the loudness of a signal.
+
+       It has 7 input ports &#x27;In FL&#x27;, &#x27;In FR&#x27;, &#x27;In FC&#x27;, &#x27;In UNUSED&#x27;,  &#x27;In  SL&#x27;,
+       &#x27;In  SR&#x27;  and  &#x27;In  DUAL  MONO&#x27;,  corresponding  to the different input
+       channels for EBUR128. Not all ports  need  to  be  connected  for  this
+       filter.
+
+       The  input  signal is passed unmodified on the &#x27;Out FL&#x27;, &#x27;Out FR&#x27;, &#x27;Out
+       FC&#x27;, &#x27;Out UNUSED&#x27;, &#x27;Out SL&#x27;, &#x27;Out SR&#x27; and &#x27;Out DUAL MONO&#x27; output ports.
+
+       There are 7 output control ports that  contain  the  measured  loudness
+       information  and  that  can  be  used  to control the processing of the
+       audio. Some of these ports contain values in LUFS, or  &#x27;Loudness  Units
+       relative  to  Full  Scale&#x27;.  These  are negative values, closer to 0 is
+       louder. You can use the lufs2gain plugin to convert this value to again
+       to adjust a volume (See below).
+
+       The node also has an optional config section with extra configuration:
+
+       filter.graph = {
+           nodes = [
+               {
+                   type   = ebur128
+                   name   = ...
+                   label  = ebur128
+                   config = {
+                       max-history = ...
+                       max-window = ...
+                       use-histogram = ...
+                   }
+                   ...
+               }
+           }
+           ...
+       }
+
+       • max-history the maximum history to keep in (float)  seconds.  Default
+         to 10.0
+
+       • max-window  the maximum window to keep in (float) seconds. Default to
+         0.0 You will need to set this to some  value  to  get  &#x27;Window  LUFS&#x27;
+         output control values.
+
+       • use-histogram  uses  the  histogram  algorithm to calculate loudness.
+         Defaults to false.
+
+   lufs2gain
+       The lufs2gain plugin can be used to  convert  LUFS  control  values  to
+       gain. It needs a target LUFS control input to drive the conversion.
+
+       It  has 2 input control ports &#x27;LUFS&#x27; and &#x27;Target LUFS&#x27; and will produce
+       1 output control value &#x27;Gain&#x27;. This gain can be used as input  for  the
+       builtin linear node, for example, to adust the gain.
+
+GENERAL OPTIONS
+       Options  with  well-known  behavior.  Most  options can be added to the
+       global configuration or the individual streams:
+
+       • remote.name
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • media.name
+
+       • node.latency
+
+       • node.description
+
+       • node.group
+
+       • node.link.group
+
+       • node.virtual
+
+       • node.name : See notes below. If not specified, defaults  to  &#x27;filter-
+         chain-PID-MODULEID&#x27;.
+
+       Stream only properties:
+
+       • media.class
+
+       • node.name  :  if  not  given per stream, the global node.name will be
+         prefixed with &#x27;input.&#x27;  and  &#x27;output.&#x27;  to  generate  a  capture  and
+         playback stream node.name respectively.
+
+EXAMPLE CONFIGURATION OF A VIRTUAL SOURCE
+       This  example  uses  the  rnnoise LADSPA plugin to create a new virtual
+       source.
+
+       Run with pipewire -c filter-chain.conf. The configuration can  also  be
+       put under pipewire.conf.d/ to run it inside the PipeWire server.
+
+       # ~/.config/pipewire/filter-chain.conf.d/my-filter-chain-1.conf
+
+       context.modules = [
+       {   name = libpipewire-module-filter-chain
+           args = {
+               node.description =  &quot;Noise Canceling source&quot;
+               media.name =  &quot;Noise Canceling source&quot;
+               filter.graph = {
+                   nodes = [
+                       {
+                           type = ladspa
+                           name = rnnoise
+                           plugin = ladspa/librnnoise_ladspa
+                           label = noise_suppressor_stereo
+                           control = {
+                               &quot;VAD Threshold (%)&quot; 50.0
+                           }
+                       }
+                   ]
+               }
+               capture.props = {
+                   node.name =  &quot;capture.rnnoise_source&quot;
+                   node.passive = true
+               }
+               playback.props = {
+                   node.name =  &quot;rnnoise_source&quot;
+                   media.class = Audio/Source
+               }
+           }
+       }
+       ]
+
+EXAMPLE CONFIGURATION OF A DOLBY SURROUND ENCODER VIRTUAL SINK
+       This example uses the ladpsa surround encoder to encode a 5.1 signal to
+       a stereo Dolby Surround signal.
+
+       # ~/.config/pipewire/filter-chain.conf.d/my-filter-chain-2.conf
+
+       context.modules = [
+       {   name = libpipewire-module-filter-chain
+           args = {
+               node.description = &quot;Dolby Surround Sink&quot;
+               media.name       = &quot;Dolby Surround Sink&quot;
+               filter.graph = {
+                   nodes = [
+                       {
+                           type  = builtin
+                           name  = mixer
+                           label = mixer
+                           control = { &quot;Gain 1&quot; = 0.5 &quot;Gain 2&quot; = 0.5 }
+                       }
+                       {
+                           type   = ladspa
+                           name   = enc
+                           plugin = surround_encoder_1401
+                           label  = surroundEncoder
+                       }
+                   ]
+                   links = [
+                       { output = &quot;mixer:Out&quot; input = &quot;enc:S&quot; }
+                   ]
+                   inputs  = [ &quot;enc:L&quot; &quot;enc:R&quot; &quot;enc:C&quot; null &quot;mixer:In 1&quot; &quot;mixer:In 2&quot; ]
+                   outputs = [ &quot;enc:Lt&quot; &quot;enc:Rt&quot; ]
+               }
+               capture.props = {
+                   node.name      = &quot;effect_input.dolby_surround&quot;
+                   media.class    = Audio/Sink
+                   audio.channels = 6
+                   audio.position = [ FL FR FC LFE SL SR ]
+               }
+               playback.props = {
+                   node.name      = &quot;effect_output.dolby_surround&quot;
+                   node.passive   = true
+                   audio.channels = 2
+                   audio.position = [ FL FR ]
+               }
+           }
+       }
+       ]
+
+PipeWire                             1.4.2               libpipe...er-chain(7)
+</pre></body></html>

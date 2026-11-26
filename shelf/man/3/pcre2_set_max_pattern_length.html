@@ -1,0 +1,25 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pcre2_set_max_pattern_length(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>PCRE2_SET_...ERN_LENGTH(3) Library Functions Manual PCRE2_SET_...ERN_LENGTH(3)
+
+NAME
+       PCRE2 - Perl-compatible regular expressions (revised API)
+
+SYNOPSIS
+
+       #include &lt;pcre2.h&gt;
+
+       int pcre2_set_max_pattern_length(pcre2_compile_context *ccontext,
+         PCRE2_SIZE value);
+
+DESCRIPTION
+
+       This  function  sets, in a compile context, the maximum text length (in
+       code units) of the pattern that can be compiled. The result  is  always
+       zero.  If a longer pattern is passed to pcre2_compile() there is an im‐
+       mediate error return. The default is effectively unlimited,  being  the
+       largest value a PCRE2_SIZE variable can hold.
+
+       There is a complete description of the PCRE2 native API in the pcre2api
+       page and a description of the POSIX API in the pcre2posix page.
+
+PCRE2 10.46                     05 October 2016     PCRE2_SET_...ERN_LENGTH(3)
+</pre></body></html>

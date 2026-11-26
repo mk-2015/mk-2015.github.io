@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Changelog::Parse(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Changelog::Parse(3perl)    libdpkg-perl    Dpkg::Changelog::Parse(3perl)
+
+NAME
+       Dpkg::Changelog::Parse - generic changelog parser for
+       dpkg-parsechangelog
+
+DESCRIPTION
+       This module provides a set of functions which reproduce all the
+       features of dpkg-parsechangelog.
+
+FUNCTIONS
+       $fields = changelog_parse(%opts)
+           This  function  will parse a changelog. In list context, it returns
+           as many Dpkg::Control objects as the parser did create.  In  scalar
+           context,  it  will return only the first one. If the parser did not
+           return any data, it will return an empty list in  list  context  or
+           undef  on  scalar  context.  If the parser failed, it will die. Any
+           parse errors will be printed as warnings  on  standard  error,  but
+           this can be disabled by passing $opts{verbose} to 0.
+
+           The  parsing  itself  is  done  by a parser module (searched in the
+           standard perl library directories. That module is  named  according
+           to  the format that it is able to parse, with the name capitalized.
+           By default it is either Dpkg::Changelog::Debian (from the  &quot;debian&quot;
+           format)  or  the  format name looked up in the 40 last lines of the
+           changelog itself  (extracted  with  this  perl  regular  expression
+           &quot;\schangelog-format:\s+([0-9a-z]+)\W&quot;).  But  it  can be overridden
+           with $opts{changelogformat}.
+
+           All the other keys in %opts are  forwarded  to  the  parser  module
+           constructor.
+
+           Options:
+
+           file
+               Set the changelog file to parse.  Defaults to debian/changelog.
+
+           label
+               Set  the  changelog  name used in output messages.  Defaults to
+               $opts{file}.
+
+           compression
+               Set a boolean on whether to load the file  without  compression
+               support.   If  the file is the default compression is disabled,
+               otherwise the default is to enable compression.
+
+           changelogformat
+               Set the changelog input format to use.
+
+           format
+               Set the output format to use.  Defaults to &quot;dpkg&quot;.
+
+           verbose
+               Set whether to print any parse errors as warnings  to  standard
+               error.  Defaults to true.
+
+CHANGES
+   Version 2.01 (dpkg 1.20.6)
+       New option: &#x27;verbose&#x27; in changelog_parse().
+
+   Version 2.00 (dpkg 1.20.0)
+       Remove functions: changelog_parse_debian(), changelog_parse_plugin().
+
+       Remove warnings: For options &#x27;forceplugin&#x27;, &#x27;libdir&#x27;.
+
+   Version 1.03 (dpkg 1.19.0)
+       New option: &#x27;compression&#x27; in changelog_parse().
+
+   Version 1.02 (dpkg 1.18.8)
+       Deprecated             functions:             changelog_parse_debian(),
+       changelog_parse_plugin().
+
+       Obsolete options: forceplugin, libdir.
+
+   Version 1.01 (dpkg 1.18.2)
+       New functions: changelog_parse_debian(), changelog_parse_plugin().
+
+   Version 1.00 (dpkg 1.15.6)
+       Mark the module as public.
+
+1.22.22                           2026-03-06     Dpkg::Changelog::Parse(3perl)
+</pre></body></html>

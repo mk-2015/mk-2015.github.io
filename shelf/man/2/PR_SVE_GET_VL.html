@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SVE_GET_VL(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SVE_GET_VL(2const)                                    PR_SVE_GET_VL(2const)
+
+NAME
+       PR_SVE_GET_VL - get the thread&#x27;s SVE vector length
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SVE_GET_VL);
+
+DESCRIPTION
+       Get the thread&#x27;s current SVE vector length configuration.
+
+       This  operation  returns a nonnegative value that describes the current
+       configuration.  The bits corresponding  to  PR_SVE_VL_LEN_MASK  contain
+       the currently configured vector length in bytes.  The bit corresponding
+       to PR_SVE_VL_INHERIT indicates whether the vector length will be inher‐
+       ited across execve(2).
+
+RETURN VALUE
+       On  success,  PR_SVE_GET_VL,  return  the  nonnegative values described
+       above.  On error, -1 is returned, and errno is set to indicate the  er‐
+       ror.
+
+ERRORS
+       EINVAL SVE is not available on this platform.
+
+STANDARDS
+       Linux.  arm64 only.
+
+HISTORY
+       Linux 4.15 (arm64).
+
+CAVEATS
+       There  is  no way to determine whether there is a pending vector length
+       change that has not yet taken effect.
+
+SEE ALSO
+       prctl(2), PR_SVE_SET_VL(2const)
+
+       For  more  information,  see  the   kernel   source   file   Documenta‐
+       tion/arm64/sve.rst (or Documentation/arm64/sve.txt before Linux 5.3).
+
+Linux man-pages 6.9.1             2024-06-02             PR_SVE_GET_VL(2const)
+</pre></body></html>

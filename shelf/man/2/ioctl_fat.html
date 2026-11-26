@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ioctl_fat(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ioctl_fat(2)                  System Calls Manual                 ioctl_fat(2)
+
+NAME
+       ioctl_fat - manipulating the FAT filesystem
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, unsigned long op, ...);
+
+DESCRIPTION
+       The  ioctl(2) system call can be used to read and write metadata of FAT
+       filesystems that are not accessible using other system calls.  The fol‐
+       lowing op values are available.
+
+   Reading and setting file attributes
+       FAT_IOCTL_GET_ATTRIBUTES(2const)
+       FAT_IOCTL_SET_ATTRIBUTES(2const)
+
+   Reading the volume ID
+       FAT_IOCTL_GET_VOLUME_ID(2const)
+
+   Reading short filenames of a directory
+       VFAT_IOCTL_READDIR_BOTH(2const)
+       VFAT_IOCTL_READDIR_SHORT(2const)
+
+RETURN VALUE
+       On success, a nonnegative value is returned.  On error, -1 is returned,
+       and errno is set to indicate the error.
+
+ERRORS
+       ENOTTY The file descriptor fd does not refer to  an  object  in  a  FAT
+              filesystem.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       ioctl(2)
+
+Linux man-pages 6.9.1             2024-06-14                      ioctl_fat(2)
+</pre></body></html>

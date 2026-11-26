@@ -1,0 +1,156 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Deps::Simple(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Deps::Simple(3perl)        libdpkg-perl        Dpkg::Deps::Simple(3perl)
+
+NAME
+       Dpkg::Deps::Simple - represents a single dependency statement
+
+DESCRIPTION
+       This class represents a single dependency statement.  It has several
+       interesting properties:
+
+       package
+           The  package  name  (can  be  undef  if the dependency has not been
+           initialized or if the simplification of the dependency lead to  its
+           removal).
+
+       relation
+           The  relational  operator: &quot;=&quot;, &quot;&lt;&lt;&quot;, &quot;&lt;=&quot;, &quot;&gt;=&quot; or &quot;&gt;&gt;&quot;. It can be
+           undefined if the dependency had no  version  restriction.  In  that
+           case the following field is also undefined.
+
+       version
+           The version.
+
+       arches
+           The  list  of architectures where this dependency is applicable. It
+           is undefined when there&#x27;s no restriction, otherwise it is an  array
+           ref.   It  can  contain  an  exclusion  list,  in  that  case  each
+           architecture is prefixed with an exclamation mark.
+
+       archqual
+           The arch qualifier of the dependency (can  be  undef  if  there  is
+           none).  In the dependency &quot;python:any (&gt;= 2.6)&quot;, the arch qualifier
+           is &quot;any&quot;.
+
+       restrictions
+           The  restrictions formula for this dependency. It is undefined when
+           there is no restriction formula. Otherwise it is an array ref.
+
+METHODS
+       $dep = Dpkg::Deps::Simple-&gt;new([$dep[, %opts]]);
+           Creates a new object.
+
+           Options:
+
+           host_arch
+               Sets the host architecture.
+
+           build_arch
+               Sets the build architecture.
+
+           build_dep
+               Specifies  whether  the  parser  should  consider  it  a  build
+               dependency.  Defaults to 0.
+
+           tests_dep
+               Specifies  whether  the  parser  should  consider  it  a  tests
+               dependency.  Defaults to 0.
+
+               This  option  implicitly  (and  forcibly)  enables  &quot;build_dep&quot;
+               because  test  dependencies  are  based  on  build dependencies
+               (since dpkg 1.22.1).
+
+       $dep-&gt;reset()
+           Clears  any  dependency  information  stored  in   $dep   so   that
+           $dep-&gt;is_empty() returns true.
+
+       $dep-&gt;parse_string($dep_string)
+           Parses  the  dependency  string and modifies internal properties to
+           match the parsed dependency.
+
+       $dep-&gt;parse($fh, $desc)
+           Parse a dependency line from a filehandle.
+
+       $dep-&gt;load($filename)
+           Parse a dependency line from $filename.
+
+       $dep-&gt;output([$fh])
+       &quot;$dep&quot;
+           Returns a string representing the dependency. If  $fh  is  set,  it
+           prints the string to the filehandle.
+
+       $dep-&gt;save($filename)
+           Save the dependency into the given $filename.
+
+       $dep-&gt;implies($other_dep)
+           Returns 1 when $dep implies $other_dep. Returns 0 when $dep implies
+           NOT($other_dep).  Returns  undef when there is no implication. $dep
+           and $other_dep do not need to be of the same type.
+
+       $dep-&gt;get_deps()
+           Returns a list of sub-dependencies, which for this object it  means
+           it returns itself.
+
+       $dep-&gt;sort()
+           This method is a no-op for this object.
+
+       $dep-&gt;arch_is_concerned($arch)
+           Returns   true   if   the   dependency  applies  to  the  indicated
+           architecture.
+
+       $dep-&gt;reduce_arch($arch)
+           Simplifies the dependency to contain only information  relevant  to
+           the  given  architecture.  This object can be left empty after this
+           operation. This trims off  the  architecture  restriction  list  of
+           these objects.
+
+       $dep-&gt;has_arch_restriction()
+           Returns the package name if the dependency applies only to a subset
+           of architectures.
+
+       $dep-&gt;profile_is_concerned()
+           Returns true if the dependency applies to the indicated profile.
+
+       $dep-&gt;reduce_profiles()
+           Simplifies  the  dependency to contain only information relevant to
+           the given profile.  This  object  can  be  left  empty  after  this
+           operation.  This  trims  off  the  profile restriction list of this
+           object.
+
+       $dep-&gt;get_evaluation($facts)
+           Evaluates the dependency given a list of installed packages  and  a
+           list  of  virtual  packages  provided.  These lists are part of the
+           Dpkg::Deps::KnownFacts object given as parameters.
+
+           Returns 1 when it&#x27;s true,  0  when  it&#x27;s  false,  undef  when  some
+           information is lacking to conclude.
+
+       $dep-&gt;simplify_deps($facts, @assumed_deps)
+           Simplifies  the  dependency  as  much as possible given the list of
+           facts (see  class  Dpkg::Deps::KnownFacts)  and  a  list  of  other
+           dependencies that are known to be true.
+
+       $dep-&gt;is_empty()
+           Returns  true  if  the  dependency is empty and doesn&#x27;t contain any
+           useful information. This is true when the object has not  yet  been
+           initialized.
+
+       $dep-&gt;merge_union($other_dep)
+           Returns  true  if  $dep could be modified to represent the union of
+           both dependencies. Otherwise returns false.
+
+CHANGES
+   Version 1.02 (dpkg 1.17.10)
+       New      methods:      Add       $dep-&gt;profile_is_concerned()       and
+       $dep-&gt;reduce_profiles().
+
+   Version 1.01 (dpkg 1.16.1)
+       New method: Add $dep-&gt;reset().
+
+       New  property: recognizes the arch qualifier &quot;any&quot; and stores it in the
+       &quot;archqual&quot; property when present.
+
+   Version 1.00 (dpkg 1.15.6)
+       Mark the module as public.
+
+1.22.22                           2026-03-06         Dpkg::Deps::Simple(3perl)
+</pre></body></html>

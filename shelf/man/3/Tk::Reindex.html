@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Reindex(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Reindex(3pm)                 perl/Tk Documentation                Reindex(3pm)
+
+NAME
+       Tk::Reindex - change the base index of Text-like widgets
+
+SYNOPSIS
+           use Tk::ReindexedText;
+           $t1=$w-&gt;ReindexedText(-linestart =&gt; 2);
+
+           use Tk::ReindexedROText;
+           $t2=$w-&gt;ReindexedROText(-linestart =&gt; 0);
+
+DESCRIPTION
+       Creates a new widget class based on Text-like widgets that can redefine
+       the line number base (normally Text widgets start line numbers at 1),
+       or possibly other manipulations on indexes.
+
+STANDARD OPTIONS
+       The newly-defined widget takes all the same options as the base widget,
+       which defaults to Text.
+
+WIDGET-SPECIFIC OPTIONS
+       Name:   lineStart
+       Class:  LineStart
+       Switch: -linestart
+           Sets  the  line  number  of  the first line in the Text widget. The
+           default  -toindexcmd  and  -fromindexcmd  use  this   configuration
+           option.
+
+           -item Name:   toIndexCmd  fromIndexCmd
+
+           -item Class:  ToIndexCmd  FromIndexCmd
+
+           -item Switch: -toindexcmd -fromindexcmd
+
+           These  two options specify callbacks that are called with a list of
+           indexes and are responsible for translating  them  to/from  indexes
+           that  the  base  Text widget can understand. The callback is passed
+           the widget followed by a list of indexes, and should return a  list
+           of  translated  indexes.  -toindexcmd  should translate from &#x27;user&#x27;
+           indexes to  &#x27;native&#x27;  Text-compatible  indexes,  and  -fromindexcmd
+           should translate from &#x27;native&#x27; indexes to &#x27;user&#x27; indexes.
+
+           The  default  callbacks simply add/subtract the offset given by the
+           -linestart option for all indexes in &#x27;line.character&#x27; format.
+
+           It would probably be prudent to make these  functions  inverses  of
+           each other.
+
+CLASS METHODS
+       import
+           To make new Reindex widgets, this function should be called via use
+           with  the  name  of the Text-like base class that you are extending
+           with     &quot;Reindex&quot;     capability.       &#x27;use      base(Tk::Reindex
+           Tk::nameofbasewidget)&#x27; should also be specified for that widget.
+
+BUGS
+       I&#x27;ve  used  the  word  &quot;indexes&quot;  instead  of  &quot;indices&quot; throughout the
+       documentation.
+
+       All the built-in perl code for widget bindings &amp; methods will  use  the
+       new  &#x27;user&#x27;  indexes.   Which  means  all this index manipulation might
+       might break code that is trying to parse/manipulate  indexes.  Or  even
+       assume  that &#x27;1.0&#x27; is the beginning index.  Tk::Text::Contents comes to
+       mind.
+
+AUTHOR
+       Andrew Allen &lt;ada@fc.hp.com&gt;
+
+       This code may be distributed under the same conditions as Perl.
+
+Tk1.1                             2025-04-13                      Reindex(3pm)
+</pre></body></html>

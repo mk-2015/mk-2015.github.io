@@ -1,0 +1,499 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>git-interpret-trailers(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GIT-INTERPRET-TRAILERS(1)         Git Manual         GIT-INTERPRET-TRAILERS(1)
+
+NAME
+       git-interpret-trailers - Add or parse structured information in commit
+       messages
+
+SYNOPSIS
+       git interpret-trailers [--in-place] [--trim-empty]
+                               [(--trailer (&lt;key&gt;|&lt;key-alias&gt;)[(=|:)&lt;value&gt;])...]
+                               [--parse] [&lt;file&gt;...]
+
+
+DESCRIPTION
+       Add or parse trailer lines that look similar to RFC 822 e-mail headers,
+       at the end of the otherwise free-form part of a commit message. For
+       example, in the following commit message
+
+           subject
+
+           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+           Signed-off-by: Alice &lt;alice@example.com&gt;
+           Signed-off-by: Bob &lt;bob@example.com&gt;
+
+
+       the last two lines starting with &quot;Signed-off-by&quot; are trailers.
+
+       This command reads commit messages from either the &lt;file&gt; arguments or
+       the standard input if no &lt;file&gt; is specified. If --parse is specified,
+       the output consists of the parsed trailers coming from the input,
+       without influencing them with any command line options or configuration
+       variables.
+
+       Otherwise, this command applies trailer.* configuration variables
+       (which could potentially add new trailers, as well as reposition them),
+       as well as any command line arguments that can override configuration
+       variables (such as --trailer=... which could also add new trailers), to
+       each input file. The result is emitted on the standard output.
+
+       This command can also operate on the output of git-format-patch(1),
+       which is more elaborate than a plain commit message. Namely, such
+       output includes a commit message (as above), a &quot;---&quot; divider line, and
+       a patch part. For these inputs, the divider and patch parts are not
+       modified by this command and are emitted as is on the output, unless
+       --no-divider is specified.
+
+       Some configuration variables control the way the --trailer arguments
+       are applied to each input and the way any existing trailer in the input
+       is changed. They also make it possible to automatically add some
+       trailers.
+
+       By default, a &lt;key&gt;=&lt;value&gt; or &lt;key&gt;:&lt;value&gt; argument given using
+       --trailer will be appended after the existing trailers only if the last
+       trailer has a different (&lt;key&gt;, &lt;value&gt;) pair (or if there is no
+       existing trailer). The &lt;key&gt; and &lt;value&gt; parts will be trimmed to
+       remove starting and trailing whitespace, and the resulting trimmed
+       &lt;key&gt; and &lt;value&gt; will appear in the output like this:
+
+           key: value
+
+
+       This means that the trimmed &lt;key&gt; and &lt;value&gt; will be separated by &#x27;: &#x27;
+       (one colon followed by one space).
+
+       For convenience, a &lt;key-alias&gt; can be configured to make using
+       --trailer shorter to type on the command line. This can be configured
+       using the trailer.&lt;key-alias&gt;.key configuration variable. The
+       &lt;keyAlias&gt; must be a prefix of the full &lt;key&gt; string, although case
+       sensitivity does not matter. For example, if you have
+
+           trailer.sign.key &quot;Signed-off-by: &quot;
+
+
+       in your configuration, you only need to specify --trailer=&quot;sign: foo&quot;
+       on the command line instead of --trailer=&quot;Signed-off-by: foo&quot;.
+
+       By default the new trailer will appear at the end of all the existing
+       trailers. If there is no existing trailer, the new trailer will appear
+       at the end of the input. A blank line will be added before the new
+       trailer if there isn’t one already.
+
+       Existing trailers are extracted from the input by looking for a group
+       of one or more lines that (i) is all trailers, or (ii) contains at
+       least one Git-generated or user-configured trailer and consists of at
+       least 25% trailers. The group must be preceded by one or more empty (or
+       whitespace-only) lines. The group must either be at the end of the
+       input or be the last non-whitespace lines before a line that starts
+       with --- (followed by a space or the end of the line).
+
+       When reading trailers, there can be no whitespace before or inside the
+       &lt;key&gt;, but any number of regular space and tab characters are allowed
+       between the &lt;key&gt; and the separator. There can be whitespaces before,
+       inside or after the &lt;value&gt;. The &lt;value&gt; may be split over multiple
+       lines with each subsequent line starting with at least one whitespace,
+       like the &quot;folding&quot; in RFC 822. Example:
+
+           key: This is a very long value, with spaces and
+             newlines in it.
+
+
+       Note that trailers do not follow (nor are they intended to follow) many
+       of the rules for RFC 822 headers. For example they do not follow the
+       encoding rule.
+
+OPTIONS
+       --in-place
+           Edit the files in place.
+
+       --trim-empty
+           If the &lt;value&gt; part of any trailer contains only whitespace, the
+           whole trailer will be removed from the output. This applies to
+           existing trailers as well as new trailers.
+
+       --trailer &lt;key&gt;[(=|:)&lt;value&gt;]
+           Specify a (&lt;key&gt;, &lt;value&gt;) pair that should be applied as a trailer
+           to the inputs. See the description of this command.
+
+       --where &lt;placement&gt;, --no-where
+           Specify where all new trailers will be added. A setting provided
+           with --where overrides the trailer.where and any applicable
+           trailer.&lt;keyAlias&gt;.where configuration variables and applies to all
+           --trailer options until the next occurrence of --where or
+           --no-where. Upon encountering --no-where, clear the effect of any
+           previous use of --where, such that the relevant configuration
+           variables are no longer overridden. Possible placements are after,
+           before, end or start.
+
+       --if-exists &lt;action&gt;, --no-if-exists
+           Specify what action will be performed when there is already at
+           least one trailer with the same &lt;key&gt; in the input. A setting
+           provided with --if-exists overrides the trailer.ifExists and any
+           applicable trailer.&lt;keyAlias&gt;.ifExists configuration variables and
+           applies to all --trailer options until the next occurrence of
+           --if-exists or --no-if-exists. Upon encountering &#x27;--no-if-exists,
+           clear the effect of any previous use of &#x27;--if-exists, such that the
+           relevant configuration variables are no longer overridden. Possible
+           actions are addIfDifferent, addIfDifferentNeighbor, add, replace
+           and doNothing.
+
+       --if-missing &lt;action&gt;, --no-if-missing
+           Specify what action will be performed when there is no other
+           trailer with the same &lt;key&gt; in the input. A setting provided with
+           --if-missing overrides the trailer.ifMissing and any applicable
+           trailer.&lt;keyAlias&gt;.ifMissing configuration variables and applies to
+           all --trailer options until the next occurrence of --if-missing or
+           --no-if-missing. Upon encountering &#x27;--no-if-missing, clear the
+           effect of any previous use of &#x27;--if-missing, such that the relevant
+           configuration variables are no longer overridden. Possible actions
+           are doNothing or add.
+
+       --only-trailers
+           Output only the trailers, not any other parts of the input.
+
+       --only-input
+           Output only trailers that exist in the input; do not add any from
+           the command-line or by applying trailer.*  configuration variables.
+
+       --unfold
+           If a trailer has a value that runs over multiple lines (aka
+           &quot;folded&quot;), reformat the value into a single line.
+
+       --parse
+           A convenience alias for --only-trailers --only-input --unfold. This
+           makes it easier to only see the trailers coming from the input
+           without influencing them with any command line options or
+           configuration variables, while also making the output
+           machine-friendly with --unfold.
+
+       --no-divider
+           Do not treat --- as the end of the commit message. Use this when
+           you know your input contains just the commit message itself (and
+           not an email or the output of git format-patch).
+
+CONFIGURATION VARIABLES
+       trailer.separators
+           This option tells which characters are recognized as trailer
+           separators. By default only : is recognized as a trailer separator,
+           except that = is always accepted on the command line for
+           compatibility with other git commands.
+
+           The first character given by this option will be the default
+           character used when another separator is not specified in the
+           config for this trailer.
+
+           For example, if the value for this option is &quot;%=$&quot;, then only lines
+           using the format &lt;key&gt;&lt;sep&gt;&lt;value&gt; with &lt;sep&gt; containing %, = or $
+           and then spaces will be considered trailers. And % will be the
+           default separator used, so by default trailers will appear like:
+           &lt;key&gt;% &lt;value&gt; (one percent sign and one space will appear between
+           the key and the value).
+
+       trailer.where
+           This option tells where a new trailer will be added.
+
+           This can be end, which is the default, start, after or before.
+
+           If it is end, then each new trailer will appear at the end of the
+           existing trailers.
+
+           If it is start, then each new trailer will appear at the start,
+           instead of the end, of the existing trailers.
+
+           If it is after, then each new trailer will appear just after the
+           last trailer with the same &lt;key&gt;.
+
+           If it is before, then each new trailer will appear just before the
+           first trailer with the same &lt;key&gt;.
+
+       trailer.ifexists
+           This option makes it possible to choose what action will be
+           performed when there is already at least one trailer with the same
+           &lt;key&gt; in the input.
+
+           The valid values for this option are: addIfDifferentNeighbor (this
+           is the default), addIfDifferent, add, replace or doNothing.
+
+           With addIfDifferentNeighbor, a new trailer will be added only if no
+           trailer with the same (&lt;key&gt;, &lt;value&gt;) pair is above or below the
+           line where the new trailer will be added.
+
+           With addIfDifferent, a new trailer will be added only if no trailer
+           with the same (&lt;key&gt;, &lt;value&gt;) pair is already in the input.
+
+           With add, a new trailer will be added, even if some trailers with
+           the same (&lt;key&gt;, &lt;value&gt;) pair are already in the input.
+
+           With replace, an existing trailer with the same &lt;key&gt; will be
+           deleted and the new trailer will be added. The deleted trailer will
+           be the closest one (with the same &lt;key&gt;) to the place where the new
+           one will be added.
+
+           With doNothing, nothing will be done; that is no new trailer will
+           be added if there is already one with the same &lt;key&gt; in the input.
+
+       trailer.ifmissing
+           This option makes it possible to choose what action will be
+           performed when there is not yet any trailer with the same &lt;key&gt; in
+           the input.
+
+           The valid values for this option are: add (this is the default) and
+           doNothing.
+
+           With add, a new trailer will be added.
+
+           With doNothing, nothing will be done.
+
+       trailer.&lt;keyAlias&gt;.key
+           Defines a &lt;keyAlias&gt; for the &lt;key&gt;. The &lt;keyAlias&gt; must be a prefix
+           (case does not matter) of the &lt;key&gt;. For example, in git config
+           trailer.ack.key &quot;Acked-by&quot; the &quot;Acked-by&quot; is the &lt;key&gt; and the
+           &quot;ack&quot; is the &lt;keyAlias&gt;. This configuration allows the shorter
+           --trailer &quot;ack:...&quot;  invocation on the command line using the &quot;ack&quot;
+           &lt;keyAlias&gt; instead of the longer --trailer &quot;Acked-by:...&quot;.
+
+           At the end of the &lt;key&gt;, a separator can appear and then some space
+           characters. By default the only valid separator is :, but this can
+           be changed using the trailer.separators config variable.
+
+           If there is a separator in the key, then it overrides the default
+           separator when adding the trailer.
+
+       trailer.&lt;keyAlias&gt;.where
+           This option takes the same values as the trailer.where
+           configuration variable and it overrides what is specified by that
+           option for trailers with the specified &lt;keyAlias&gt;.
+
+       trailer.&lt;keyAlias&gt;.ifexists
+           This option takes the same values as the trailer.ifexists
+           configuration variable and it overrides what is specified by that
+           option for trailers with the specified &lt;keyAlias&gt;.
+
+       trailer.&lt;keyAlias&gt;.ifmissing
+           This option takes the same values as the trailer.ifmissing
+           configuration variable and it overrides what is specified by that
+           option for trailers with the specified &lt;keyAlias&gt;.
+
+       trailer.&lt;keyAlias&gt;.command
+           Deprecated in favor of trailer.&lt;keyAlias&gt;.cmd. This option behaves
+           in the same way as trailer.&lt;keyAlias&gt;.cmd, except that it doesn’t
+           pass anything as argument to the specified command. Instead the
+           first occurrence of substring $ARG is replaced by the &lt;value&gt; that
+           would be passed as argument.
+
+           Note that $ARG in the user’s command is only replaced once and that
+           the original way of replacing $ARG is not safe.
+
+           When both trailer.&lt;keyAlias&gt;.cmd and trailer.&lt;keyAlias&gt;.command are
+           given for the same &lt;keyAlias&gt;, trailer.&lt;keyAlias&gt;.cmd is used and
+           trailer.&lt;keyAlias&gt;.command is ignored.
+
+       trailer.&lt;keyAlias&gt;.cmd
+           This option can be used to specify a shell command that will be
+           called once to automatically add a trailer with the specified
+           &lt;keyAlias&gt;, and then called each time a --trailer
+           &lt;keyAlias&gt;=&lt;value&gt; argument is specified to modify the &lt;value&gt; of
+           the trailer that this option would produce.
+
+           When the specified command is first called to add a trailer with
+           the specified &lt;keyAlias&gt;, the behavior is as if a special --trailer
+           &lt;keyAlias&gt;=&lt;value&gt; argument was added at the beginning of the &quot;git
+           interpret-trailers&quot; command, where &lt;value&gt; is taken to be the
+           standard output of the command with any leading and trailing
+           whitespace trimmed off.
+
+           If some --trailer &lt;keyAlias&gt;=&lt;value&gt; arguments are also passed on
+           the command line, the command is called again once for each of
+           these arguments with the same &lt;keyAlias&gt;. And the &lt;value&gt; part of
+           these arguments, if any, will be passed to the command as its first
+           argument. This way the command can produce a &lt;value&gt; computed from
+           the &lt;value&gt; passed in the --trailer &lt;keyAlias&gt;=&lt;value&gt; argument.
+
+EXAMPLES
+       •   Configure a sign trailer with a Signed-off-by key, and then add two
+           of these trailers to a commit message file:
+
+               $ git config trailer.sign.key &quot;Signed-off-by&quot;
+               $ cat msg.txt
+               subject
+
+               body text
+               $ git interpret-trailers --trailer &#x27;sign: Alice &lt;alice@example.com&gt;&#x27; --trailer &#x27;sign: Bob &lt;bob@example.com&gt;&#x27; &lt;msg.txt
+               subject
+
+               body text
+
+               Signed-off-by: Alice &lt;alice@example.com&gt;
+               Signed-off-by: Bob &lt;bob@example.com&gt;
+
+
+       •   Use the --in-place option to edit a commit message file in place:
+
+               $ cat msg.txt
+               subject
+
+               body text
+
+               Signed-off-by: Bob &lt;bob@example.com&gt;
+               $ git interpret-trailers --trailer &#x27;Acked-by: Alice &lt;alice@example.com&gt;&#x27; --in-place msg.txt
+               $ cat msg.txt
+               subject
+
+               body text
+
+               Signed-off-by: Bob &lt;bob@example.com&gt;
+               Acked-by: Alice &lt;alice@example.com&gt;
+
+
+       •   Extract the last commit as a patch, and add a Cc and a Reviewed-by
+           trailer to it:
+
+               $ git format-patch -1
+               0001-foo.patch
+               $ git interpret-trailers --trailer &#x27;Cc: Alice &lt;alice@example.com&gt;&#x27; --trailer &#x27;Reviewed-by: Bob &lt;bob@example.com&gt;&#x27; 0001-foo.patch &gt;0001-bar.patch
+
+
+       •   Configure a sign trailer with a command to automatically add a
+           &#x27;Signed-off-by: &#x27; with the author information only if there is no
+           &#x27;Signed-off-by: &#x27; already, and show how it works:
+
+               $ cat msg1.txt
+               subject
+
+               body text
+               $ git config trailer.sign.key &quot;Signed-off-by: &quot;
+               $ git config trailer.sign.ifmissing add
+               $ git config trailer.sign.ifexists doNothing
+               $ git config trailer.sign.cmd &#x27;echo &quot;$(git config user.name) &lt;$(git config user.email)&gt;&quot;&#x27;
+               $ git interpret-trailers --trailer sign &lt;msg1.txt
+               subject
+
+               body text
+
+               Signed-off-by: Bob &lt;bob@example.com&gt;
+               $ cat msg2.txt
+               subject
+
+               body text
+
+               Signed-off-by: Alice &lt;alice@example.com&gt;
+               $ git interpret-trailers --trailer sign &lt;msg2.txt
+               subject
+
+               body text
+
+               Signed-off-by: Alice &lt;alice@example.com&gt;
+
+
+       •   Configure a fix trailer with a key that contains a # and no space
+           after this character, and show how it works:
+
+               $ git config trailer.separators &quot;:#&quot;
+               $ git config trailer.fix.key &quot;Fix #&quot;
+               $ echo &quot;subject&quot; | git interpret-trailers --trailer fix=42
+               subject
+
+               Fix #42
+
+
+       •   Configure a help trailer with a cmd use a script glog-find-author
+           which search specified author identity from git log in git
+           repository and show how it works:
+
+               $ cat ~/bin/glog-find-author
+               #!/bin/sh
+               test -n &quot;$1&quot; &amp;&amp; git log --author=&quot;$1&quot; --pretty=&quot;%an &lt;%ae&gt;&quot; -1 || true
+               $ cat msg.txt
+               subject
+
+               body text
+               $ git config trailer.help.key &quot;Helped-by: &quot;
+               $ git config trailer.help.ifExists &quot;addIfDifferentNeighbor&quot;
+               $ git config trailer.help.cmd &quot;~/bin/glog-find-author&quot;
+               $ git interpret-trailers --trailer=&quot;help:Junio&quot; --trailer=&quot;help:Couder&quot; &lt;msg.txt
+               subject
+
+               body text
+
+               Helped-by: Junio C Hamano &lt;gitster@pobox.com&gt;
+               Helped-by: Christian Couder &lt;christian.couder@gmail.com&gt;
+
+
+       •   Configure a ref trailer with a cmd use a script glog-grep to grep
+           last relevant commit from git log in the git repository and show
+           how it works:
+
+               $ cat ~/bin/glog-grep
+               #!/bin/sh
+               test -n &quot;$1&quot; &amp;&amp; git log --grep &quot;$1&quot; --pretty=reference -1 || true
+               $ cat msg.txt
+               subject
+
+               body text
+               $ git config trailer.ref.key &quot;Reference-to: &quot;
+               $ git config trailer.ref.ifExists &quot;replace&quot;
+               $ git config trailer.ref.cmd &quot;~/bin/glog-grep&quot;
+               $ git interpret-trailers --trailer=&quot;ref:Add copyright notices.&quot; &lt;msg.txt
+               subject
+
+               body text
+
+               Reference-to: 8bc9a0c769 (Add copyright notices., 2005-04-07)
+
+
+       •   Configure a see trailer with a command to show the subject of a
+           commit that is related, and show how it works:
+
+               $ cat msg.txt
+               subject
+
+               body text
+
+               see: HEAD~2
+               $ cat ~/bin/glog-ref
+               #!/bin/sh
+               git log -1 --oneline --format=&quot;%h (%s)&quot; --abbrev-commit --abbrev=14
+               $ git config trailer.see.key &quot;See-also: &quot;
+               $ git config trailer.see.ifExists &quot;replace&quot;
+               $ git config trailer.see.ifMissing &quot;doNothing&quot;
+               $ git config trailer.see.cmd &quot;glog-ref&quot;
+               $ git interpret-trailers --trailer=see &lt;msg.txt
+               subject
+
+               body text
+
+               See-also: fe3187489d69c4 (subject of related commit)
+
+
+       •   Configure a commit template with some trailers with empty values
+           (using sed to show and keep the trailing spaces at the end of the
+           trailers), then configure a commit-msg hook that uses git
+           interpret-trailers to remove trailers with empty values and to add
+           a git-version trailer:
+
+               $ cat temp.txt
+               ***subject***
+
+               ***message***
+
+               Fixes: Z
+               Cc: Z
+               Reviewed-by: Z
+               Signed-off-by: Z
+               $ sed -e &#x27;s/ Z$/ /&#x27; temp.txt &gt; commit_template.txt
+               $ git config commit.template commit_template.txt
+               $ cat .git/hooks/commit-msg
+               #!/bin/sh
+               git interpret-trailers --trim-empty --trailer &quot;git-version: \$(git describe)&quot; &quot;\$1&quot; &gt; &quot;\$1.new&quot;
+               mv &quot;\$1.new&quot; &quot;\$1&quot;
+               $ chmod +x .git/hooks/commit-msg
+
+
+SEE ALSO
+       git-commit(1), git-format-patch(1), git-config(1)
+
+GIT
+       Part of the git(1) suite
+
+Git 2.47.3                        07/30/2025         GIT-INTERPRET-TRAILERS(1)
+</pre></body></html>

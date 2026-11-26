@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::DropSite(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>DropSite(3pm)                perl/Tk Documentation               DropSite(3pm)
+
+NAME
+       Tk::DropSite - Receive side of Drag &amp; Drop abstraction
+
+SYNOPSIS
+        use Tk::DropSite qw(...);
+        $widget-&gt;DropSite(-entercommand =&gt; ...,
+                          -dropcommand  =&gt; ...,
+                          -motioncommand  =&gt; ...,
+                          -dropcommand  =&gt; ...,
+                         );
+
+DESCRIPTION
+       &quot;DropSite&quot; creates an object which represents a site on which things
+       may be &quot;Dropped&quot;.
+
+       A DropSite provides the following methods:
+
+       $site-&gt;Enter($token,$event)
+       $site-&gt;Leave($token,$event)
+       $site-&gt;Motion($token,$event)
+       $site-&gt;Drop($token,$event)
+
+Tk804.036                         2025-04-13                     DropSite(3pm)
+</pre></body></html>

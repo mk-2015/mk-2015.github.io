@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wcsncmp(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>wcsncmp(3)                 Library Functions Manual                 wcsncmp(3)
+
+NAME
+       wcsncmp - compare two fixed-size wide-character strings
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wchar.h&gt;
+
+       int wcsncmp(const wchar_t s1[.n], const wchar_t s2[.n], size_t n);
+
+DESCRIPTION
+       The   wcsncmp()  function  is  the  wide-character  equivalent  of  the
+       strncmp(3) function.  It compares the wide-character string pointed  to
+       by  s1  and  the  wide-character string pointed to by s2, but at most n
+       wide characters from each string.  In each string, the  comparison  ex‐
+       tends only up to the first occurrence of a null wide character (L&#x27;\0&#x27;),
+       if any.
+
+RETURN VALUE
+       The wcsncmp() function returns zero if the wide-character strings at s1
+       and  s2, truncated to at most length n, are equal.  It returns an inte‐
+       ger greater than zero if at the first differing position i (i &lt; n), the
+       corresponding wide-character s1[i] is greater than s2[i].   It  returns
+       an integer less than zero if at the first differing position i (i &lt; n),
+       the corresponding wide-character s1[i] is less than s2[i].
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       wcsncmp() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+SEE ALSO
+       strncmp(3), wcsncasecmp(3)
+
+Linux man-pages 6.9.1             2024-06-15                        wcsncmp(3)
+</pre></body></html>

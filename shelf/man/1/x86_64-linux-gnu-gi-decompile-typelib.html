@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>x86_64-linux-gnu-gi-decompile-typelib(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GI-DECOMPILE-TYPELIB(1)     General Commands Manual    GI-DECOMPILE-TYPELIB(1)
+
+NAME
+       gi-decompile-typelib - Typelib decompiler
+
+SYNOPSIS
+       gi-decompile-typelib [OPTIONâ¦] TYPELIB [TYPELIBâ¦]
+
+DESCRIPTION
+       gi-decompile-typelib is a GIR decompiler, using the repository API.  It
+       generates  GIR  XML files from the compiled binary typelib format.  The
+       output will be written to standard output unless the --output is speci‐
+       fied.
+
+       The binary typelib format stores a subset of the information  available
+       in  GIR XML, so not all typelibs can be decompiled in this way, and the
+       resulting GIR XML might be incomplete.
+
+       Normally, GIR XML should be generated from  source  code,  headers  and
+       shared libraries using  &lt;g-ir-scanner(1)&gt; instead of using this tool.
+
+       On  Debian-derived  systems,  each  architecture  provides a version of
+       gi-decompile-typelib prefixed with the DEB_HOST_GNU_TYPE from  dpkg-ar‐
+       chitecture(1),  for  example  arm-linux-gnueabihf-gi-decompile-typelib.
+       These architecture-prefixed names use appropriate search paths for  the
+       given  architecture,  and  should be used when cross-compiling.  Please
+       see  &lt;file:///usr/share/doc/gobject-introspection/README.Debian.gz&gt; for
+       more details.
+
+OPTIONS
+       --help Show help options.
+
+       --output FILENAME, -o FILENAME
+              Save the resulting output in FILENAME.
+
+       --includedir DIRECTORY
+              Add DIRECTORY to the search path for typelibs.  This option  can
+              be used more than once.  The first DIRECTORY on the command-line
+              will be searched first (highest precedence).
+
+       --all  Show all available information.
+
+       --version
+              Show programâs version number and exit.
+
+EXAMPLE
+       ::     $  libdir=/usr/lib/x86_64-linux-gnu     # or /usr/lib64 or simi‐
+              lar $ gi-decompile-typelib -o Gio-2.0.gir
+
+       System Message: ERROR/3 (../../../docs/reference/girepository/gi-decom‐
+       pile-typelib.rst:, line 93)
+              Unexpected indentation.
+                 $libdir/girepository-1.0/Gio-2.0.typelib
+
+              $ diff -u /usr/share/gir-1.0/Gio-2.0.gir Gio-2.0.gir
+
+       You will see that the original GIR XML contains much  more  information
+       than the decompiled typelib.
+
+BUGS
+       Report bugs at  &lt;https://gitlab.gnome.org/GNOME/glib/-/issues&gt;
+
+HOMEPAGE AND CONTACT
+        &lt;https://gi.readthedocs.io/&gt;
+
+AUTHORS
+       Matthias Clasen
+
+                                                       GI-DECOMPILE-TYPELIB(1)
+</pre></body></html>

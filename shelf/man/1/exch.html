@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>exch(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>EXCH(1)                          User Commands                         EXCH(1)
+
+NAME
+       exch - atomically exchanges paths between two files
+
+SYNOPSIS
+       exch oldpath newpath
+
+DESCRIPTION
+       exch atomically exchanges oldpath and newpath. exch is a simple command
+       wrapping RENAME_EXCHANGE of renameat2 system call.
+
+OPTIONS
+       -h, --help
+           Display help text and exit.
+
+       -V, --version
+           Display version and exit.
+
+EXIT STATUS
+       exch has the following exit status values:
+
+       0
+           success
+
+       1
+           unspecified failure
+
+AUTHORS
+       Masatake YAMATO &lt;yamato@redhat.com&gt;
+
+SEE ALSO
+       renameat2(2)
+
+REPORTING BUGS
+       For bug reports, use the issue tracker
+       &lt;https://github.com/util-linux/util-linux/issues&gt;.
+
+AVAILABILITY
+       The exch command is part of the util-linux package which can be
+       downloaded from Linux Kernel Archive
+       &lt;https://www.kernel.org/pub/linux/utils/util-linux/&gt;.
+
+util-linux 2.41.5                 2026-04-28                           EXCH(1)
+</pre></body></html>

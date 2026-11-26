@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::BuildAPI(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::BuildAPI(3perl)            libdpkg-perl            Dpkg::BuildAPI(3perl)
+
+NAME
+       Dpkg::BuildAPI - handle build API versions
+
+DESCRIPTION
+       The Dpkg::BuildAPI module provides functions to fetch the current dpkg
+       build API level.
+
+       Note: This is a private module, its API can change at any time.
+
+FUNCTIONS
+       $level = get_build_api([$ctrl])
+           Get   the   build   API   level,   from  the  environment  variable
+           DPKG_BUILD_API, or if not defined and a  $ctrl  Dpkg::Control::Info
+           object  passed as an argument, from its build dependency fields. If
+           no  $ctrl  object  gets  passed  the  previous  value  obtained  is
+           returned.
+
+       reset_build_api()
+           Reset the cached build API level.
+
+CHANGES
+   Version 0.xx
+       This is a private module.
+
+1.22.22                           2026-03-06             Dpkg::BuildAPI(3perl)
+</pre></body></html>

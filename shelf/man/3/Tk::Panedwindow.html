@@ -1,0 +1,250 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Panedwindow(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Panedwindow(3pm)      User Contributed Perl Documentation     Panedwindow(3pm)
+
+NAME
+       Tk::Panedwindow - Create and manipulate Panedwindow widgets
+
+SYNOPSIS
+       $panedwindow = $parent-&gt;Panedwindow(?options?);
+
+        -background    -height  -width
+        -borderwidth   -orient
+        -cursor        -relief
+
+WIDGET-SPECIFIC OPTIONS
+       Option:   -handlepad
+       Name:     handlePad
+       Class:    HandlePad
+           When sash handles are drawn, specifies the distance from the top or
+           left  end  of the sash (depending on the orientation of the widget)
+           at which to  draw  the  handle.   May  be  any  value  accepted  by
+           Tk_GetPixels.
+
+       Option:   -handlesize
+       Name:     handleSize
+       Class:    HandleSize
+           Specifies  the  side  length  of a sash handle.  Handles are always
+           drawn as squares.  May be any value accepted by Tk_GetPixels.
+
+       Option:   -opaqueresize
+       Name:     opaqueResize
+       Class:    OpaqueResize
+           Specifies whether panes should  be  resized  as  a  sash  is  moved
+           (true),  or if resizing should be deferred until the sash is placed
+           (false).
+
+       Option:   -sashcursor
+       Name:     sashCursor
+       Class:    SashCursor
+           Mouse cursor to use when over a sash.  If  null,  sb_h_double_arrow
+           will  be  used  for  horizontal Panedwindows, and sb_v_double_arrow
+           will be used for vertical Panedwindows.
+
+       Option:   -sashpad
+       Name:     sashPad
+       Class:    SashPad
+           Specifies the amount of padding to leave of each side  of  a  sash.
+           May be any value accepted by Tk_GetPixels.
+
+       Option:   -sashrelief
+       Name:     sashRelief
+       Class:    SashRelief
+           Relief  to  use when drawing a sash.  May be any of the standard Tk
+           relief values.
+
+       Option:   -sashwidth
+       Name:     sashWidth
+       Class:    SashWidth
+           Specifies the width of each sash.  May be  any  value  accepted  by
+           Tk_GetPixels.
+
+       Option:   -showhandle
+       Name:     showHandle
+       Class:    ShowHandle
+           Specifies  whether  sash handles should be shown.  May be any valid
+           boolean value.
+
+DESCRIPTION
+       The Panedwindow method creates a new window (given by the  $panedwindow
+       argument)  and makes it into a Panedwindow widget.  Additional options,
+       described above, may be specified on the command line or in the  option
+       database  to  configure  aspects of the Panedwindow such as its default
+       background color and relief.
+
+       A  Panedwindow  widget  contains  any   number   of   panes,   arranged
+       horizontally  or  vertically,  according  to  the  value of the -orient
+       option.  Each pane contains one widget,  and  each  pair  of  panes  is
+       separated  by  a  moveable  (via  mouse movements) sash.  Moving a sash
+       causes the widgets on either side of the sash to be resized.
+
+WIDGET METHODS
+       The Panedwindow method may be used to invoke various operations on  the
+       widget.  It has the following general form:
+
+        $widget-&gt;method(?arg arg ...?);
+
+       The following commands are possible for Panedwindow widgets:
+
+       $widget-&gt;add(?window ...? ?option value ...?);
+           Add  one  or  more  windows  to the Panedwindow, each in a separate
+           pane.  The arguments consist of the names of one  or  more  windows
+           followed  by  pairs  of  arguments  that  specify how to manage the
+           windows.  Option may  have  any  of  the  values  accepted  by  the
+           configure subcommand.
+
+       $widget-&gt;cget(option);
+           Returns  the  current  value  of  the configuration option given by
+           option.  Option  may  have  any  of  the  values  accepted  by  the
+           Panedwindow command.
+
+       $widget-&gt;configure(?option?, ?value, option, value, ...?);
+           Query  or  modify  the  configuration options of the widget.  If no
+           option is specified, returns a list describing all of the available
+           options for $widget  (see  Tk::configure  for  information  on  the
+           format  of  this list).  If option is specified with no value, then
+           the command returns a list describing the one  named  option  (this
+           list  will  be  identical to the corresponding sublist of the value
+           returned if no option is specified).  If one or  more  option-value
+           pairs  are  specified,  then  the command modifies the given widget
+           option(s) to have the given value(s);  in  this  case  the  command
+           returns an empty string. Option may have any of the values accepted
+           by the Panedwindow command.
+
+       $widget-&gt;forget(?window ...?);
+           Remove  the  pane  containing  $widget  from  the Panedwindow.  All
+           geometry management options for $widget will be forgotten.
+
+       $widget-&gt;identify(x, y);
+           Identify the Panedwindow component underneath the point given by  x
+           and  y,  in  window  coordinates.  If the point is over a sash or a
+           sash handle, the result is a two element list containing the  index
+           of  the  sash or handle, and a word indicating whether it is over a
+           sash or a handle, such as [0, &#x27;sash&#x27;] or  [2,  &#x27;handle&#x27;].   If  the
+           point  is  over any other part of the Panedwindow, the result is an
+           empty list.
+
+       $widget-&gt;proxy(?args?);
+           This command is used to query and change the position of  the  sash
+           proxy,  used for rubberband-style pane resizing. It can take any of
+           the following forms:
+
+           $widget-&gt;proxyCoord;
+               Return a list containing the x and y coordinates  of  the  most
+               recent proxy location.
+
+           $widget-&gt;proxyForget;
+               Remove the proxy from the display.
+
+           $widget-&gt;proxyPlace(x, y);
+               Place the proxy at the given x and y coordinates.
+
+       $widget-&gt;sash(?args?);
+           This  command is used to query and change the position of sashes in
+           the Panedwindow.  It can take any of the following forms:
+
+           $widget-&gt;sashCoord(index);
+               Return the current x and y coordinate pair for the  sash  given
+               by  index.   Index must be an integer between 0 and 1 less than
+               the number of panes in the Panedwindow.  The coordinates  given
+               are  those  of the top left corner of the region containing the
+               sash.  $widget-&gt;sashDragto(index, x, y) This  command  computes
+               the   difference   between   the   given  coordinates  and  the
+               coordinates given to the last sash coord command for the  given
+               sash.   It  then  moves that sash the computed difference.  The
+               return value is the empty string.
+
+           $widget-&gt;sashMark(index, x, y);
+               Records  x  and  y  for  the  sash  given  by  index;  used  in
+               conjunction with later dragto commands to move the sash.
+
+           $widget-&gt;sashPlace(index, x, y);
+               Place the sash given by index at the given coordinates.
+
+       $widget $widget-&gt;panecget(option);
+           Query  a  management  option  for $widget.  Option may be any value
+           allowed by the paneconfigure subcommand.
+
+       $widget $widget-&gt;paneconfigure(?option? ?value option value ...?);
+           Query or modify the management options for $widget.  If  no  option
+           is  specified,  returns  a  list  describing  all  of the available
+           options for $widget  (see  Tk::configure  for  information  on  the
+           format  of  this list).  If option is specified with no value, then
+           the command returns a list describing the one  named  option  (this
+           list  will  be  identical to the corresponding sublist of the value
+           returned if no option is specified).  If one or  more  option-value
+           pairs  are  specified,  then  the command modifies the given widget
+           option(s) to have the given value(s);  in  this  case  the  command
+           returns an empty string.  The following options are supported:
+
+           -after =&gt; $widget
+               Insert  the  window after the window specified.  $widget should
+               be the name of a window already managed by $widget.
+
+           -before =&gt; $widget
+               Insert the window before the window specified.  $widget  should
+               be the name of a window already managed by $widget.
+
+           -height =&gt; size
+               Specify  a height for the window.  The height will be the outer
+               dimension of the window including its border, if any.  If  size
+               is  an  empty  string, or if -height is not specified, then the
+               height  requested  internally  by  the  window  will  be   used
+               initially;  the height may later be adjusted by the movement of
+               sashes in the Panedwindow.  Size may be any value  accepted  by
+               Tk_GetPixels.
+
+           -minsize =&gt; n
+               Specifies  that the size of the window cannot be made less than
+               n.  This constraint only affects the size of the widget in  the
+               paned dimension -- the x dimension for horizontal Panedwindows,
+               the  y  dimension  for vertical Panedwindows.  May be any value
+               accepted by Tk_GetPixels.
+
+           -padx =&gt; n
+               Specifies a non-negative value indicating how much extra  space
+               to  leave  on  each side of the window in the X-direction.  The
+               value may have any of the forms accepted by Tk_GetPixels.
+
+           -pady =&gt; n
+               Specifies a non-negative value indicating how much extra  space
+               to  leave  on  each side of the window in the Y-direction.  The
+               value may have any of the forms accepted by Tk_GetPixels.
+
+           -sticky =&gt; style
+               If a window&#x27;s pane is larger than the requested  dimensions  of
+               the  window,  this  option may be used to position (or stretch)
+               the window within its pane.  Style  is a string  that  contains
+               zero  or  more  of the characters n, s, e or w.  The string can
+               optionally contains spaces or commas,  but  they  are  ignored.
+               Each letter refers to a side (north, south, east, or west) that
+               the  window  will &quot;stick&quot; to.  If both n and s (or e and w) are
+               specified, the window will be  stretched  to  fill  the  entire
+               height (or width) of its cavity.
+
+           -width =&gt; size
+               Specify  a  width  for the window.  The width will be the outer
+               dimension of the window including its border, if any.  If  size
+               is  an  empty  string,  or if -width is not specified, then the
+               width  requested  internally  by  the  window  will   be   used
+               initially;  the  width may later be adjusted by the movement of
+               sashes in the Panedwindow.  Size may be any value  accepted  by
+               Tk_GetPixels.
+
+       $widget-&gt;panes;
+           Returns an ordered list of the widgets managed by $widget.
+
+RESIZING PANES
+       A  pane is resized by grabbing the sash (or sash handle if present) and
+       dragging with  the  mouse.   This  is  accomplished  via  mouse  motion
+       bindings  on  the widget.  When a sash is moved, the sizes of the panes
+       on each side of the sash, and thus the  widgets  in  those  panes,  are
+       adjusted.
+
+       When  a  pane  is  resized from outside (eg, it is packed to expand and
+       fill, and the containing toplevel is resized), space is  added  to  the
+       final (rightmost or bottommost) pane in the window.
+
+KEYWORDS
+       Panedwindow, widget, geometry management
+
+perl v5.40.1                      2025-04-13                  Panedwindow(3pm)
+</pre></body></html>

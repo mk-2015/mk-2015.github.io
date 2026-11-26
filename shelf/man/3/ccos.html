@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ccos(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>ccos(3)                    Library Functions Manual                    ccos(3)
+
+NAME
+       ccos, ccosf, ccosl - complex cosine function
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double complex ccos(double complex z);
+       float complex ccosf(float complex z);
+       long double complex ccosl(long double complex z);
+
+DESCRIPTION
+       These functions calculate the complex cosine of z.
+
+       The complex cosine function is defined as:
+
+           ccos(z) = (exp(i * z) + exp(-i * z)) / 2
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       ccos(), ccosf(), ccosl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       cabs(3), cacos(3), csin(3), ctan(3), complex(7)
+
+Linux man-pages 6.9.1             2024-05-02                           ccos(3)
+</pre></body></html>

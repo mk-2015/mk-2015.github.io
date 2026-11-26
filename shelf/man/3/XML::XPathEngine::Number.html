@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>XML::XPathEngine::Number(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>XML::X...Number(3pm)  User Contributed Perl Documentation XML::X...Number(3pm)
+
+NAME
+       XML::XPathEngine::Number - Simple numeric values.
+
+DESCRIPTION
+       This class holds simple numeric values. It doesn&#x27;t support -0, +/-
+       Infinity, or NaN, as the XPath spec says it should, but I&#x27;m not hurting
+       anyone I don&#x27;t think.
+
+API
+   new($num)
+       Creates a new XML::XPathEngine::Number object, with the value in $num.
+       Does some rudimentary numeric checking on $num to ensure it actually is
+       a number.
+
+   value()
+       Also as overloaded stringification. Returns the numeric value held.
+
+perl v5.34.0                      2022-06-28              XML::X...Number(3pm)
+</pre></body></html>

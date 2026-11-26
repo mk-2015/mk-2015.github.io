@@ -1,0 +1,25 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>XML::Parser::Style::Objects(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Parser...bjects(3pm)  User Contributed Perl Documentation Parser...bjects(3pm)
+
+NAME
+       XML::Parser::Style::Objects - Objects styler parser
+
+SYNOPSIS
+         use XML::Parser;
+         my $p = XML::Parser-&gt;new(Style =&gt; &#x27;Objects&#x27;, Pkg =&gt; &#x27;MyNode&#x27;);
+         my $tree = $p-&gt;parsefile(&#x27;foo.xml&#x27;);
+
+DESCRIPTION
+       This module implements XML::Parser&#x27;s Objects style parser.
+
+       This is similar to the Tree style, except that a hash object is created
+       for each element. The corresponding object will be in the class whose
+       name is created by appending &quot;::&quot; and the element name to the package
+       set with the Pkg option. Non-markup text will be in the ::Characters
+       class. The contents of the corresponding object will be in an anonymous
+       array that is the value of the Kids property for that object.
+
+SEE ALSO
+       XML::Parser::Style::Tree
+
+perl v5.40.1                      2026-03-21              Parser...bjects(3pm)
+</pre></body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>dirname(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>DIRNAME(1)                       User Commands                      DIRNAME(1)
+
+NAME
+       dirname - strip last component from file name
+
+SYNOPSIS
+       dirname [OPTION] NAME...
+
+DESCRIPTION
+       Output each NAME with its last non-slash component and trailing slashes
+       removed;  if  NAME contains no /&#x27;s, output &#x27;.&#x27; (meaning the current di‐
+       rectory).
+
+       -z, --zero
+              end each output line with NUL, not newline
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+EXAMPLES
+       dirname /usr/bin/
+              -&gt; &quot;/usr&quot;
+
+       dirname dir1/str dir2/str
+              -&gt; &quot;dir1&quot; followed by &quot;dir2&quot;
+
+       dirname stdio.h
+              -&gt; &quot;.&quot;
+
+AUTHOR
+       Written by David MacKenzie and Jim Meyering.
+
+REPORTING BUGS
+       GNU coreutils online help: &lt;https://www.gnu.org/software/coreutils/&gt;
+       Report any translation bugs to &lt;https://translationproject.org/team/&gt;
+
+SEE ALSO
+       basename(1), readlink(1)
+
+       Full documentation &lt;https://www.gnu.org/software/coreutils/dirname&gt;
+       or available locally via: info &#x27;(coreutils) dirname invocation&#x27;
+
+       Packaged by Debian (9.7-3)
+       Copyright © 2025 Free Software Foundation, Inc.
+       License  GPLv3+:  GNU  GPL  version  3  or  later  &lt;https://gnu.org/li‐
+       censes/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+GNU coreutils 9.7                  June 2025                        DIRNAME(1)
+</pre></body></html>

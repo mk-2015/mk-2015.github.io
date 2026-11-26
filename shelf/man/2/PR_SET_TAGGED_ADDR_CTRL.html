@@ -1,0 +1,91 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_TAGGED_ADDR_CTRL(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_TAGGED_ADDR_CTRL(2const)                PR_SET_TAGGED_ADDR_CTRL(2const)
+
+NAME
+       PR_SET_TAGGED_ADDR_CTRL - control support for passing tagged user-space
+       addresses to the kernel
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_TAGGED_ADDR_CTRL, long mode, 0L, 0L, 0L);
+
+DESCRIPTION
+       Controls  support for passing tagged user-space addresses to the kernel
+       (i.e., addresses where bits 56—63 are not all zero).
+
+       The level of support is selected by support, which can be  one  of  the
+       following:
+
+       0L     Addresses  that are passed for the purpose of being dereferenced
+              by the kernel must be untagged.
+
+       PR_TAGGED_ADDR_ENABLE
+              Addresses that are passed for the purpose of being  dereferenced
+              by  the kernel may be tagged, with the exceptions summarized be‐
+              low.
+
+       On success, the mode specified in mode is set for the calling thread.
+
+       If prctl(PR_SET_TAGGED_ADDR_CTRL, 0L, 0L, 0L, 0L)  fails  with  EINVAL,
+       then all addresses passed to the kernel must be untagged.
+
+       Irrespective  of  which mode is set, addresses passed to certain inter‐
+       faces must always be untagged:
+
+       •  brk(2), mmap(2), shmat(2), shmdt(2), and the new_address argument of
+          mremap(2).
+
+          (Prior to Linux 5.6 these accepted tagged addresses, but the  behav‐
+          iour may not be what you expect.  Don&#x27;t rely on it.)
+
+       •  ‘polymorphic’  interfaces  that  accept  pointers to arbitrary types
+          cast to a void  *  or  other  generic  type,  specifically  prctl(),
+          ioctl(2),  and  in general setsockopt(2) (only certain specific set‐
+          sockopt(2) options allow tagged addresses).
+
+       This list of exclusions may shrink when moving from one kernel  version
+       to  a  later kernel version.  While the kernel may make some guarantees
+       for backwards compatibility reasons, for the purposes of  new  software
+       the  effect of passing tagged addresses to these interfaces is unspeci‐
+       fied.
+
+       The mode set by this call is inherited  across  fork(2)  and  clone(2).
+       The mode is reset by execve(2) to 0 (i.e., tagged addresses not permit‐
+       ted in the user/kernel ABI).
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL mode is invalid or unsupported.
+
+       EINVAL This feature is disabled via /proc/sys/abi/tagged_addr_disabled.
+
+FILES
+       /proc/sys/abi/tagged_addr_disabled
+
+STANDARDS
+       Linux.  arm64 only.
+
+HISTORY
+       Linux 5.4 (arm64).
+
+CAVEATS
+       This call is primarily intended for use by the run-time environment.  A
+       successful PR_SET_TAGGED_ADDR_CTRL call elsewhere may crash the calling
+       process.  The conditions for using it safely are complex and system-de‐
+       pendent.  Don&#x27;t use it unless you know what you are doing.
+
+SEE ALSO
+       prctl(2), PR_SET_TAGGED_ADDR_CTRL(2const)
+
+       For  more  information,  see  the   kernel   source   file   Documenta‐
+       tion/arm64/tagged-address-abi.rst.
+
+Linux man-pages 6.9.1             2024-06-01   PR_SET_TAGGED_ADDR_CTRL(2const)
+</pre></body></html>

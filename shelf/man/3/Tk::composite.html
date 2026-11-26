@@ -1,0 +1,154 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::composite(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>composite(3pm)        User Contributed Perl Documentation       composite(3pm)
+
+NAME
+       Tk::composite - Defining a new composite widget class
+
+SYNOPSIS
+           package Tk::MyNewWidget;
+
+           use Tk::widgets qw/ list of Tk widgets /;
+           use base qw/ Tk::Frame /;    # or Tk::Toplevel
+
+           Construct Tk::Widget &#x27;MyNewWidget&#x27;;
+
+           sub ClassInit {
+               my( $class, $mw ) = @_;
+               #... e.g., class bindings here ...
+               $class-&gt;SUPER::ClassInit( $mw );
+           }
+
+           sub Populate {
+               my( $self, $args ) = @_;
+
+               my $flag = delete $args-&gt;{-flag};
+               if( defined $flag ) {
+                   # handle -flag =&gt; xxx which can only be done at create
+                   # time the delete above ensures that new() does not try
+                   # and do  $self-&gt;configure( -flag =&gt; xxx );
+               }
+
+               $self-&gt;SUPER::Populate( $args );
+
+               $self = $self-&gt;Component( ... );
+
+               $self-&gt;Delegates( ... );
+
+               $self-&gt;ConfigSpecs(
+                   &#x27;-cursor&#x27;    =&gt; [ SELF, &#x27;cursor&#x27;, &#x27;Cursor&#x27;,   undef ],
+                   &#x27;-something&#x27; =&gt; [ METHOD, dbName,  dbClass, default ],
+                   &#x27;-text&#x27;      =&gt; [ $label, dbName,  dbClass, default ],
+                   &#x27;-heading&#x27;   =&gt; [ {-text =&gt; $head},
+                                       heading, Heading,  &#x27;My Heading&#x27; ],
+              );
+          }
+
+          sub something {
+              my( $self, $value) = @_;
+              if ( @_ &gt; 1 ) {
+                 # set it
+              }
+              return # current value
+          }
+
+          1;
+
+          __END__
+
+
+          =head1 NAME
+
+          Tk::Whatever - a whatever widget
+
+          =head1 SYNOPSIS
+
+            use Tk::Whatever;
+
+            $widget = $parent-&gt;Whatever(...);
+
+          =head1 DESCRIPTION
+
+          ...
+
+DESCRIPTION
+       The intention behind a composite is to create a higher-level widget,
+       sometimes called a &quot;super-widget&quot; or &quot;mega-widget&quot;.  Most often, a
+       composite will be built upon other widgets by using them, as opposed to
+       specializing on them.  For example, the supplied composite widget
+       LabEntry is made of an Entry and a Label; it is neither a kind-of Label
+       nor is it a kind-of Entry.
+
+       Most of the work of a composite widget consistd in creating subwidgets,
+       arranging to dispatch configure options to the proper subwidgets and
+       manage composite-specific configure options.
+
+GLORY DETAILS
+       Depending on your Perl/Tk knowledge this section may be enlighting or
+       confusing.
+
+   Composite Widget
+       Since Perl/Tk is heavilly using an object-oriented approach, it is no
+       suprise that creating a composite goes through a new() method.
+       However, the composite does not normally define a new() method itself:
+       it is usually sufficient to simply inherit it from Tk::Widget.
+
+       This is what happens when the composite uses
+
+           use base qw/ Tk::Frame /;  # or Tk::Toplevel
+
+       to specify its inheritance chain.  To complete the initialisation of
+       the widget, it must call the Construct method from class Widget.  That
+       method accepts the name of the new class to create, i.e. the package
+       name of your composite widget:
+
+           Construct Tk::Widget &#x27;MyNewWidget&#x27;;
+
+       Here, MyNewWidget is the package name (aka the widget&#x27;s class).  This
+       will define a constructor method for MyNewWidget, normally named after
+       the widget&#x27;s class.  Instanciating that composite in client code would
+       the look like:
+
+           $mw = MainWindow-&gt;new;       # creates a top-level MainWindow
+
+           $self = $mw-&gt;MyNewWidget();  # creates an instance of the
+                                        # composite widget MyNewWidget
+
+       Whenever a composite is instanciated in client code, Tk::Widget::new()
+       will be invoked via the widget&#x27;s class constructor.  That new method
+       will call
+
+           $self-&gt;Populate(\%args);
+
+       where %args is the arguments passed to the widget&#x27;s constructor.  Note
+       that Populate receives a reference to the hash array containing all
+       arguments.
+
+       Populate is typically defined in the composite class (package), which
+       creates the characteristic subwidgets of the class.
+
+   Creating Subwidgets
+       Subwidget creation happens usually in Populate().  The composite
+       usually calls the subwidget&#x27;s constructor method either directly, for
+       &quot;private&quot; subwidgets, or indirectly through the Component method for
+       subwidgets that should be advertised to clients.
+
+       Populate may call Delegates to direct calls to methods of chosen
+       subwidgets. For simple composites, typically most if not all methods
+       are directed to a single subwidget - e.g. ScrListbox directs all
+       methods to the core Listbox so that $composite-&gt;get(...) calls
+       $listbox-&gt;get(...).
+
+   Defining mega-widget options
+       Populate should also call ConfigSpecs() to specify the way that
+       configure-like options should be handled in the composite.  Once
+       Populate returns, method Tk::Frame::ConfigDefault walks through the
+       ConfigSpecs entries and populates %$args hash with defaults for options
+       from X resources (.Xdefaults, etc).
+
+       When  Populate returns to Tk::Widget::new(), a call to
+       $self-&gt;configure(%$args) is made which sets *all* the options.
+
+SEE ALSO
+       Tk::ConfigSpecs Tk::mega Tk::Derived
+
+perl v5.40.1                      2025-04-13                    composite(3pm)
+</pre></body></html>

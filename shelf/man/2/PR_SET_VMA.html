@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_VMA(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_VMA(2const)                                          PR_SET_VMA(2const)
+
+NAME
+       PR_SET_VMA - set an attribute for virtual memory areas
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_VMA, long attr, unsigned long addr, unsigned long size,
+                 const char *_Nullable val);
+
+DESCRIPTION
+       Sets  an  attribute specified in attr for virtual memory areas starting
+       from the address specified in addr and spanning the size  specified  in
+       size.  val specifies the value of the attribute to be set.
+
+       Note that assigning an attribute to a virtual memory area might prevent
+       it from being merged with adjacent virtual memory areas due to the dif‐
+       ference in that attribute&#x27;s value.
+
+       Currently, attr must be one of:
+
+       PR_SET_VMA_ANON_NAME
+              Set  a name for anonymous virtual memory areas.  val should be a
+              pointer to a null-terminated string containing  the  name.   The
+              name  length including null byte cannot exceed 80 bytes.  If val
+              is NULL, the name of the appropriate  anonymous  virtual  memory
+              areas  will be reset.  The name can contain only printable ascii
+              characters (isprint(3)), except &#x27;[&#x27;, &#x27;]&#x27;, &#x27;\&#x27;, &#x27;$&#x27;, and &#x27;`&#x27;.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL attr is not a valid attribute.
+
+       EINVAL addr is an invalid address.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 5.17.
+
+SEE ALSO
+       prctl(2)
+
+Linux man-pages 6.9.1             2024-06-15                PR_SET_VMA(2const)
+</pre></body></html>

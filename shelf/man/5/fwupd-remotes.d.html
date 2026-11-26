@@ -1,0 +1,135 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>fwupd-remotes.d(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>fwupd-remotes.d(5)            Remote File Format            fwupd-remotes.d(5)
+
+NAME
+       fwupd-remotes.d - remotes used for the fwupd daemon.
+
+SYNOPSIS
+       The  /etc/fwupd/remotes.d and /var/fwupd/remotes.d directories are used
+       to read information about remote metadata sources.   The  complete  de‐
+       scription  of  the  file  format and possible parameters are documented
+       here for reference purposes.
+
+FILE FORMAT
+       The file consists of a multiple sections with optional parameters.  Pa‐
+       rameters are of the form:
+
+       [section]
+       key = value
+
+
+       The  file is line-based, each newline-terminated line represents either
+       a comment, a section name or a parameter.
+
+       Section and parameter names are case sensitive.
+
+       Only the first equals sign in a parameter is  significant.   Whitespace
+       before  or  after  the first equals sign is discarded as is leading and
+       trailing whitespace in a parameter value.  Internal whitespace within a
+       parameter value is retained.
+
+       Any line beginning with a hash (#) character is ignored, as  are  lines
+       containing only whitespace.
+
+       The  values  following  the  equals sign in parameters are all either a
+       string (no quotes needed), unsigned integers, or a boolean,  which  may
+       be  given as true or false.  Case is not significant in boolean values,
+       but is preserved in string values.
+
+REMOTE PARAMETERS
+       The [fwupd Remote] section can contain the following parameters:
+
+       Enabled=false
+
+         If the remote should be considered when finding releases for devices.
+       Only enabled remotes are refreshed when using fwupdmgr refresh and when
+       considering what updates   are available for each  device.  This  value
+       can be modified using fwupdmgr enable-remote.
+
+       Title=
+
+         The single line description to show in any UI tools.
+
+       MetadataURI=
+
+         The URL of AppStream metadata to download and use. This should have a
+       suffix of .xml.gz for   legacy metadata and .xml.xz for the more modern
+       format.    Only prefixes of http://, https:// and file:// are supported
+       here.
+
+       FirmwareBaseURI=
+
+         The  optional base URL of the cabinet archives to download.    If not
+       specified the  MetadataURI  base  URL  is  used.     Only  prefixes  of
+       http://, https:// and file:// are supported here.
+
+       ApprovalRequired=false
+
+         If  set to true then only releases allow-listed with fwupdmgr set-ap‐
+       proved-firmware will show   in CLI and GUI tools.
+
+       ReportURI=
+
+         The endpoint to use for sending success reports for firmware obtained
+       from this remote,   or blank to disable this feature.
+
+       AutomaticReports=false
+
+         If true, automatically sent success  reports  for  firmware  obtained
+       from this remote after the   firmware update has completed.
+
+       AutomaticSecurityReports=false
+
+         If  true,  automatically sent HSI platform security reports when run‐
+       ning fwupdmgr security.
+
+       NoPhasedUpdates=false
+
+         If true, disregard the requirement check for random client phased de‐
+       ployment.
+
+         A systems eligibility to a phased update  is  determined  by  seeding
+       random  number  generator   with /etc/machine-id, the archive filename,
+       and the remote cache mtime. If the seed divides   by the  metadata-pro‐
+       vided phased_update value with no remainder then the release is consid‐
+       ered.    This also implies that the seed will be different on a differ‐
+       ent machine, for a different update   or if the metadata is refreshed.
+
+       OrderBefore=
+
+         This  remote  will  be  ordered before any remotes listed here, using
+       commas as the delimiter.
+
+         NOTE: When the same firmware release is available from  multiple  re‐
+       motes, the one with the   highest priority will be used.
+
+       OrderAfter=
+
+         This remote will be ordered after any remotes listed here, using com‐
+       mas as the delimiter.
+
+       Username=
+
+         The username to use for BASIC authentication when downloading metada‐
+       ta and firmware from this   remote, and for uploading success reports.
+
+       Password=
+
+         The  password  (although, in practice this will be a user *token*) to
+       use for BASIC  authentication    when  downloading  both  metadata  and
+       firmware from this remote, and for uploading success reports.
+
+       RefreshInterval=
+
+         The  time  in seconds after which the front end tools should re-down‐
+       load the metadata signature,   or 0 to re-download every time.
+
+NOTES
+       The basename of the path without the extension is used for  the  remote
+       ID.   For instance, the /etc/fwupd/remotes.d/lvfs.conf remote file will
+       have ID of lvfs.
+
+SEE ALSO
+       &lt;fwupd.conf(5)&gt;
+
+2.0.20                                                      fwupd-remotes.d(5)
+</pre></body></html>

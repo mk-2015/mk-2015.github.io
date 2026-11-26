@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>xkbvleds(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>xkbvleds(1)                 General Commands Manual                xkbvleds(1)
+
+NAME
+       xkbvleds - XKB extension user utility
+
+SYNOPSIS
+       xkbvleds [-indpy &lt;name&gt;] [-watch &lt;leds&gt;] [[-+]automatic] [[-+]explicit]
+       [[-+]name] [[-+]real] [[-+]virtual] [-intersection] [-union]
+
+DESCRIPTION
+       This  program  is used to display the state of LEDs on an XKB keyboard.
+       It reports the changes in the fundamental components of the  XKB  state
+       which  includes  the  effective compatibility state. The default set of
+       LEDs is -union +name +automatic +real.
+
+OPTIONS
+       -indpy &lt;name&gt;
+               Mask of LEDs to watch
+
+       -watch &lt;leds&gt;
+               turn on synchronization
+
+       ∓automatic
+               (Don&#x27;t) watch automatic LEDs
+
+       ∓explicit
+               (Don&#x27;t) watch explicit LEDs
+
+       ∓name   (Don&#x27;t) watch named LEDs
+
+       ∓real   (Don&#x27;t) watch real LEDs
+
+       ∓virtual
+               (Don&#x27;t) watch virtual LEDs
+
+       -intersection
+               Watch only LEDs in all desired sets
+
+       -union  Watch LEDs in any desired sets
+
+       -help   print list of options and exit
+
+       -version
+               print program version and exit
+
+X Version 11                    xkbutils 1.0.6                     xkbvleds(1)
+</pre></body></html>

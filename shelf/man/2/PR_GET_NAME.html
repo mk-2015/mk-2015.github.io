@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_GET_NAME(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_NAME(2const)                                        PR_SET_NAME(2const)
+
+NAME
+       PR_SET_NAME, PR_GET_NAME - operations on a process or thread
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_NAME, char name[16]);
+       int prctl(PR_GET_NAME, const char name[16]);
+
+DESCRIPTION
+       PR_SET_NAME
+              Set the name of the calling thread, using the value in the loca‐
+              tion pointed to by name.
+
+              The  name  can be up to 16 bytes long, including the terminating
+              null byte.  If the length of the string, including the terminat‐
+              ing null byte, exceeds 16 bytes, the string  is  silently  trun‐
+              cated.
+
+       PR_GET_NAME (since Linux 2.6.11)
+              Return  the name of the calling thread, in the buffer pointed to
+              by name.  The returned string will be null-terminated.
+
+       This is the same attribute that can be  set  via  pthread_setname_np(3)
+       and retrieved using pthread_getname_np(3).
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EFAULT name is an invalid address.
+
+FILES
+       /proc/self/task/tid/comm
+              The  attribute  is  likewise  accessible  via  this  file   (see
+              proc_pid_comm(5)),  where  tid  is  the thread ID of the calling
+              thread, as returned by gettid(2).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       PR_SET_NAME
+              Linux 2.6.9.
+
+       PR_GET_NAME
+              Linux 2.6.11.
+
+SEE ALSO
+       prctl(2),         pthread_setname_np(3),         pthread_getname_np(3),
+       proc_pid_comm(5)
+
+Linux man-pages 6.9.1             2024-06-02               PR_SET_NAME(2const)
+</pre></body></html>

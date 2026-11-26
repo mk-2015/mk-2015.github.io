@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>proc_pid_cwd(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>proc_pid_cwd(5)               File Formats Manual              proc_pid_cwd(5)
+
+NAME
+       /proc/pid/cwd - symbolic link to current working directory
+
+DESCRIPTION
+       /proc/pid/cwd
+              This  is a symbolic link to the current working directory of the
+              process.  To find out the current working directory  of  process
+              20, for instance, you can do this:
+
+                  $ cd /proc/20/cwd; pwd -P
+
+              In  a  multithreaded process, the contents of this symbolic link
+              are not available if the  main  thread  has  already  terminated
+              (typically by calling pthread_exit(3)).
+
+              Permission  to  dereference  or read (readlink(2)) this symbolic
+              link is governed by a ptrace  access  mode  PTRACE_MODE_READ_FS‐
+              CREDS check; see ptrace(2).
+
+SEE ALSO
+       proc(5)
+
+Linux man-pages 6.9.1             2024-05-02                   proc_pid_cwd(5)
+</pre></body></html>

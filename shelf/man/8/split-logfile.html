@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>split-logfile(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>SPLIT-LOGFILE(8)                 split-logfile                SPLIT-LOGFILE(8)
+
+NAME
+       split-logfile  -  Split combined virtual hosts access log into one file
+       per virtual host
+
+
+SYNOPSIS
+       split-logfile &lt; logfile
+
+
+SUMMARY
+       This script will take a combined Web server access log file  and  break
+       its  contents  into separate files.  It assumes that the first field of
+       each line is the virtual host identity (put there by  &quot;%v&quot;),  and  that
+       the logfiles should be named that+&quot;.log&quot; in the current directory.
+
+       The  combined  log  file  is read from stdin.  Records read will be ap‐
+       pended to any existing log files.
+
+
+EXAMPLES
+       split-logfile &lt; /var/log/apache2/other_vhosts_access.log
+
+Apache HTTP Server                2009-12-06                  SPLIT-LOGFILE(8)
+</pre></body></html>

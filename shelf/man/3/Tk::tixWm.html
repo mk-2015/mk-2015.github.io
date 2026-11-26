@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::tixWm(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>tixWm(3pm)            User Contributed Perl Documentation           tixWm(3pm)
+
+NAME
+       Tk::tixWm - Tix&#x27;s addition to the standard TK wm command.
+
+SYNOPSIS
+           $widget-&gt;wmCapture
+
+           $widget-&gt;wmRelease
+
+DESCRIPTION
+       The wmCapture and the wmRelease methods change the toplevel attribute
+       of Tk widgets.
+
+METHODS
+       $widget-&gt;wmCapture
+           Converts  the  toplevel  window  specified  by  $widget into a non-
+           toplevel widget. Normally this  command  is  called  to  convert  a
+           Toplevel  widget  into  a  Frame  widget. The newly-converted frame
+           widget is un-mapped from the screen. To make it appear  inside  its
+           parent,  you  must  call  a  geometry  manager  (e.g. grid or pack)
+           explicitly.
+
+       $widget-&gt;wmRelease
+           Makes the non-toplevel window specified by $widget into a  toplevel
+           widget.  Normally  this command is called to convert a Frame widget
+           into a Toplevel widget, but it can also be used on any non-toplevel
+           widget (e.g, label). The newly-converted toplevel window  is  in  a
+           withdrawn  state.  To  make  it appear on the screen, you must call
+           deiconify after calling wmRelease.
+
+           Any data associated with $widget via wm  methods  (icon,  protocol,
+           command etc.) are released, and must be re-established if window is
+           later re-captured.
+
+BUGS
+       wmCapture does not exist in the Win32 window manager code.
+
+       How  these  methods  interact with perl/Tk&#x27;s class hierarchy is not yet
+       clear.  In  particular  a  wmReleased  window  will  not  automatically
+       ``inherit&#x27;&#x27; the Tk::Wm methods, however a wmCaptured window still will.
+       (A released Label might make a good candidate for an Icon.)
+
+AUTHORS
+       Ioi  Kim  Lam  - ioi@graphics.cis.upenn.edu wrote original Tix version.
+       Updated for tk8.0, Win32 and perl by Nick Ing-Simmons.
+
+SEE ALSO
+       Tk::Wm Tk::Mwm Tk::Frame Tk::Toplevel
+
+KEYWORDS
+       window manager, wm, TIX
+
+perl v5.40.1                      2025-04-13                        tixWm(3pm)
+</pre></body></html>

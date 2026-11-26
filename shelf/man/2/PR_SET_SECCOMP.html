@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_SECCOMP(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_SECCOMP(2const)                                  PR_SET_SECCOMP(2const)
+
+NAME
+       PR_SET_SECCOMP - set the secure computing mode
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       [[deprecated]]
+       int prctl(PR_SET_SECCOMP, long mode, ...);
+
+       [[deprecated]]
+       int prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT);
+       [[deprecated]]
+       int prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+                 struct sock_fprog *filter);
+
+DESCRIPTION
+       Set  the  secure  computing  (seccomp)  mode for the calling thread, to
+       limit the available system calls.  The more  recent  seccomp(2)  system
+       call provides a superset of the functionality of PR_SET_SECCOMP, and is
+       the preferred interface for new applications.
+
+       The  seccomp  mode is selected via mode.  The seccomp constants are de‐
+       fined in &lt;linux/seccomp.h&gt;.  The following values can be specified:
+
+       SECCOMP_MODE_STRICT (since Linux 2.6.23)
+              See the description of SECCOMP_SET_MODE_STRICT in seccomp(2).
+
+              This operation is available only if  the  kernel  is  configured
+              with CONFIG_SECCOMP enabled.
+
+       SECCOMP_MODE_FILTER (since Linux 3.5)
+              The  allowed system calls are defined by a pointer to a Berkeley
+              Packet Filter passed in filter.  It can be  designed  to  filter
+              arbitrary  system  calls and system call arguments.  See the de‐
+              scription of SECCOMP_SET_MODE_FILTER in seccomp(2).
+
+              This operation is available only if  the  kernel  is  configured
+              with CONFIG_SECCOMP_FILTER enabled.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EACCES mode is SECCOMP_MODE_FILTER, but the process does not  have  the
+              CAP_SYS_ADMIN  capability  or  has  not set the no_new_privs at‐
+              tribute (see PR_SET_NO_NEW_PRIVS(2const)).
+
+       EFAULT mode is SECCOMP_MODE_FILTER, and filter is an invalid address.
+
+       EINVAL mode is not a valid value.
+
+       EINVAL The kernel was not configured with CONFIG_SECCOMP.
+
+       EINVAL mode is SECCOMP_MODE_FILTER, and the kernel was  not  configured
+              with CONFIG_SECCOMP_FILTER.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.23.
+
+SEE ALSO
+       prctl(2), PR_GET_SECCOMP(2const), seccomp(2)
+
+Linux man-pages 6.9.1             2024-06-02            PR_SET_SECCOMP(2const)
+</pre></body></html>

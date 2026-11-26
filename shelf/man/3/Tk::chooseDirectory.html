@@ -1,0 +1,78 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::chooseDirectory(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>chooseDirectory(3pm)  User Contributed Perl Documentation chooseDirectory(3pm)
+
+NAME
+       Tk::chooseDirectory - pops up a dialog box for the user to select a
+       directory.
+
+SYNOPSIS
+       $widget-&gt;chooseDirectory( ?option value ...? );
+
+DESCRIPTION
+       The method chooseDirectory is implemented as a perl wrapper on the core
+       tk &quot;command&quot; tk_chooseDirectory, and $widget is passed as the argument
+       to the hidden -parent option.
+
+       The chooseDirectory method pops up a dialog box for the user to select
+       a directory. The following option-value pairs are possible as command
+       line arguments:
+
+       -initialdir dirname
+           Specifies  that  the  directories  in directory should be displayed
+           when the dialog pops up. If this parameter is not  specified,  then
+           the  directories in the current working directory are displayed. If
+           the parameter specifies a relative  path,  the  return  value  will
+           convert the relative path to an absolute path.  This option may not
+           always  work  on  the  Macintosh.   This  is not a bug. Rather, the
+           General Controls control panel on the Mac allows the  end  user  to
+           override the application default directory.
+
+       -parent $widget
+           Makes  $widget  the  logical  parent  of  the dialog. The dialog is
+           displayed on top of its parent window.
+
+       -title titleString
+           Specifies a string to display as the title of the  dialog  box.  If
+           this  option  is  not  specified,  then  a  default  title  will be
+           displayed.
+
+       -mustexist boolean
+           Specifies whether the user may  specify  non-existant  directories.
+           If   this  parameter  is  true,  then  the  user  may  only  select
+           directories that already exist.  The default value is false.
+
+CAVEATS
+       Perl does not have a concept of encoded  filesystems  yet.  This  means
+       that  operations  on filenames like &quot;opendir&quot; and &quot;open&quot; still use byte
+       semantics. Tk however uses character semantics internally, which  means
+       that  you  can  get filenames with the UTF-8 flag set in functions like
+       &quot;chooseDirectory&quot;,  &quot;getOpenFile&quot;  and   similar.   It&#x27;s   the   user&#x27;s
+       responsibility  to  determine the encoding of the underlying filesystem
+       and convert the result into bytes, e.g.
+
+           use Encode;
+           ...
+           my $dir = $mw-&gt;chooseDirectory;
+           $dir = encode(&quot;windows-1252&quot;, $dir);
+           opendir DIR, $dir or die $!;
+           ...
+
+       See also &quot;When Unicode Does Not Happen&quot; in perlunicode and &quot;Unicode  in
+       Filenames&quot; in perltodo.
+
+EXAMPLE
+           my $dir = $mw-&gt;chooseDirectory(-initialdir =&gt; &#x27;~&#x27;,
+                                          -title =&gt; &#x27;Choose a directory&#x27;);
+           if (!defined $dir) {
+               warn &#x27;No directory selected&#x27;;
+           } else {
+               warn &quot;Selected $dir&quot;;
+           }
+
+SEE ALSO
+       Tk::getOpenFile, Tk::getOpenFile
+
+KEYWORDS
+       directory selection dialog
+
+perl v5.40.1                      2025-04-13              chooseDirectory(3pm)
+</pre></body></html>

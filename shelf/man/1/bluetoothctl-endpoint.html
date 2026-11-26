@@ -1,0 +1,168 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-endpoint(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-ENDPOINT(1)  Linux System Administration BLUETOOTHCTL-ENDPOINT(1)
+
+NAME
+       bluetoothctl-endpoint - Endpoint Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [endpoint.commands]
+
+ENDPOINT COMMANDS
+   list
+       List available endpoints.
+
+       Usage  &gt; list [local]
+
+   show
+       Endpoint information.
+
+       Usage  &gt; show [endpoint]
+
+   register
+       Register Endpoint.
+
+       Usage  &gt; register &lt;UUID&gt; &lt;codec[:company]&gt; [capabilities...]
+
+       Example LC3 BAP source
+              &gt;endpoint.register 00002bcb-0000-1000-8000-00805f9b34fb 0x06
+              &gt;Auto Accept (yes/no): y
+              &gt;Max Transports (auto/value): a
+              &gt;Locations: a
+              &gt;Supported Context (value): 3
+              &gt;Context (value): 3
+              &gt;CIG (auto/value): a
+              &gt;CIS (auto/value): a
+
+
+       Example LC3 BAP sink with extra capabilities
+              &gt;endpoint.register 00002bc9-0000-1000-8000-00805f9b34fb 0x06 &quot;0x03 0xe5 0x03 0x00 0x02 0xe6 0x07&quot;
+              &gt;Enter Metadata (value/no): n
+              &gt;Auto Accept (yes/no): y
+              &gt;Max Transports (auto/value): a
+              &gt;Locations: a
+              &gt;Supported Context (value): 3
+              &gt;Context (value): 3
+              &gt;CIG (auto/value): a
+              &gt;CIS (auto/value): a
+
+
+       Example LC3 BAP Broadcast source
+              &gt;endpoint.register 00001852-0000-1000-8000-00805f9b34fb 0x06
+              &gt;Auto Accept (yes/no): y
+              &gt;Max Transports (auto/value): a
+              &gt;Locations: 3
+              &gt;Supported Context (value): 1
+
+
+       Example LC3 BAP Broadcast sink
+              &gt;endpoint.register 00001851-0000-1000-8000-00805f9b34fb 0x06
+              &gt;Auto Accept (yes/no): y
+              &gt;Max Transports (auto/value): a
+              &gt;Locations: 3
+              &gt;Supported Context (value): 1
+
+
+       Note:
+
+       If  running  the  setup  with an audio server that has LE Audio support
+       (such as PipeWire) it will automatically register  endpoints  according
+       to the configured roles. For more details about configuring a Broadcast
+       Source with PipeWire check:
+        &lt;https://gitlab.freedesktop.org/pipewire/pipewire/-/blob/mas‐
+       ter/doc/dox/config/pipewire-props.7.md&gt;
+
+   unregister
+       Unregister Endpoint.
+
+       Usage  &gt; unregister &lt;UUID/object&gt;
+
+       Note:
+
+       If the endpoint was registered by an audio server, it can&#x27;t be unregis‐
+       tered  from  bluetoothctl.   This  must  be done by the audio server as
+       well.
+
+   config
+       Configure Endpoint.
+
+       Usage  &gt; config &lt;endpoint&gt; &lt;local endpoint&gt; [preset]
+
+       Note:
+
+       If the endpoint was registered by an audio server, it can&#x27;t be  config‐
+       ured from bluetoothctl.  This must be done by the audio server as well.
+
+   presets
+       List available presets.
+
+       Usage  &gt;  presets  &lt;endpoint&gt;/&lt;UUID&gt;  [codec[:company]] [preset] [codec
+              config] [metadata]
+
+       Example using endpoint
+              &gt;presets /local/endpoint/ep0 32_1_1
+              &gt;presets /local/endpoint/ep0
+              Preset 32_1_1
+              Configuration.**&gt;0: len 0x02 type 0x01
+              Configuration.Sampling Frequency: 32 Khz (0x06)
+              Configuration.**&gt;1: len 0x02 type 0x02
+              Configuration.Frame Duration: 7.5 ms (0x00)
+              Configuration.**&gt;2: len 0x03 type 0x04
+              Configuration.Frame Length: 60 (0x003c)
+
+
+       Example using UUID
+              &gt;presets 00002bc9-0000-1000-8000-00805f9b34fb 0x06 32_1_1
+              &gt;presets 00002bc9-0000-1000-8000-00805f9b34fb 0x06
+              ...
+              *32_1_1
+
+
+       Example setting up LC3 custom preset
+              &gt;presets 00002bc9-0000-1000-8000-00805f9b34fb 0x06 custom
+              &gt;[Codec] Enter frequency (Khz): 48
+              &gt;[Codec] Enter frame duration (ms): 10
+              &gt;[Codec] Enter channel allocation: 3
+              &gt;[Codec] Enter frame length: 100
+              &gt;[QoS] Enter Target Latency (Low, Balance, High): Low
+              &gt;[QoS] Enter SDU Interval (us): 1000
+              &gt;[QoS] Enter Framing (Unframed, Framed): Unframed
+              &gt;[QoS] Enter PHY (1M, 2M): 2M
+              &gt;[QoS] Enter Max SDU: 200
+              &gt;[QoS] Enter RTN: 3
+              &gt;[QoS] Enter Max Transport Latency (ms): 10
+              &gt;[QoS] Enter Presentation Delay (us): 20000
+              &gt;presets 00002bc9-0000-1000-8000-00805f9b34fb 0x06
+              ...
+              *custom
+
+
+       Example setting up LC3 custom preset with extra configuration
+              &gt;presets 00002bc9-0000-1000-8000-00805f9b34fb 0x06 custom &quot;0x03 0xe8 0x00 0x00 0x02 0xe9 0x00&quot;
+              &gt;[Codec] Enter frequency (Khz): 48
+              &gt;[Codec] Enter frame duration (ms): 10
+              &gt;[Codec] Enter channel allocation: 3
+              &gt;[Codec] Enter frame length: 100
+              &gt;[QoS] Enter Target Latency (Low, Balance, High): Low
+              &gt;[QoS] Enter SDU Interval (us): 1000
+              &gt;[QoS] Enter Framing (Unframed, Framed): Unframed
+              &gt;[QoS] Enter PHY (1M, 2M): 2M
+              &gt;[QoS] Enter Max SDU: 200
+              &gt;[QoS] Enter RTN: 3
+              &gt;[QoS] Enter Max Transport Latency (ms): 10
+              &gt;[QoS] Enter Presentation Delay (us): 20000
+              &gt;presets 00002bc9-0000-1000-8000-00805f9b34fb 0x06
+              ...
+              *custom
+
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                            November 2022        BLUETOOTHCTL-ENDPOINT(1)
+</pre></body></html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::overview(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>overview(3pm)         User Contributed Perl Documentation        overview(3pm)
+
+NAME
+       Tk::overview - An overview of an Object Oriented Tk8 extension for
+       perl5
+
+SYNOPSIS
+       &quot;use Tk;&quot;
+
+       &quot;$main = MainWindow-&gt;new();&quot;
+
+       &quot;$widget = $main-&gt;Widget(...);&quot;
+
+       &quot;$widget-&gt;pack(...);&quot;
+
+       ...
+
+       &quot;MainLoop;&quot;
+
+DESCRIPTION
+       In writing the perl Tk extension, the goals were to provide a complete
+       interface to the latest production version of John Ousterhout&#x27;s Tk,
+       while providing an Object Oriented interface to perl code.
+
+CONTENTS
+       The package is composed of three loosely connected parts:
+
+       pTk - Converted Tk source
+           The pTk sub-directory is a copy of the C code of Tk8.x, modified to
+           allow  use  by languages other than the original Tcl.  (The pTk can
+           be  read  as  &#x27;perl&#x27;  Tk  or  &#x27;portable&#x27;  Tk,  depending  on   your
+           sensibilities.)
+
+       Tk to Perl &#x27;Glue&#x27;
+           The  top  level directory provides Tk.xs and tkGlue.c which provide
+           the perl-callable interfaces to pTk
+
+       Perl code for &#x27;Widget&#x27; Classes
+           The  Tk  sub-directory  contains  the  various  perl  modules  that
+           comprise the &quot;Classes&quot; that are visible to Tk applications.
+
+           The  &quot;major&quot;  widgets  such  as  Tk::Text  are actually in separate
+           directories at the top level (e.g. Text/*  for  Tk::Text)  and  are
+           dynamically  loaded  as  needed  on platforms which support perl5&#x27;s
+           DynaLoader.
+
+CLASS HIERARCHY
+       package Tk; - the &#x27;base class&#x27;
+           All the &quot;command names&quot; documented in Tcl/Tk are made to look  like
+           perl  sub&#x27;s and reside in the Tk package. Their names are all lower
+           case.  Typically there are very few commands at  this  level  which
+           are called directly by applications.
+
+       package Tk::Widget; - the &#x27;Widget class&#x27;
+           There  are  no  actual objects of the Tk::Widget class; however all
+           the various Tk window &quot;widgets&quot; inherit from it,  and  it  in  turn
+           inherits all the core Tk functions from Tk.
+
+           Tk::Widget  provides  various  functions  and  interfaces which are
+           common to all Widgets.
+
+           A widget is represented to perl as a blessed reference to  a  hash.
+           There  are some members of the hash which are private to Tk and its
+           tkGlue  code.   Keys  starting   with   &#x27;.&#x27;   and   of   the   form
+           /^_[A-Z][A-Za-z_]+_$/  (i.e.  starting  and  ending  in  _ and with
+           first char after _ being upper case) should be considered  reserved
+           to Tk.
+
+       Tk::Button, Tk::Entry, Tk::Text ...
+           There is one class for each of the &quot;Tk&quot; widget item types.  Some of
+           them like Tk::Frame do very little indeed, and really only exist so
+           that  they  can  be derived from or so that focus or menu traversal
+           can discover the &quot;kind&quot; of window being processed.
+
+           Other classes, Tk::Text for example, provide a lot of methods  used
+           with  Tk&#x27;s &quot;bind&quot; to provide a rich keyboard/mouse interface to the
+           widgets&#x27; data.
+
+           These widget classes also include conversions of the Tcl  code  for
+           event  bindings,  keyboard  focus  traversal,  menu  bars, and menu
+           keyboard traversal. All the Tcl functions have been converted,  but
+           the names have changed (systematically) and they have been split up
+           between  the  various  classes  in  what  I  hope is an appropriate
+           manner.  Name changes are normally: dropping initial tk_ as the Tk-
+           ness is implicit in the Tk:: prefix,  and  similarly  dropping  say
+           Menu  from  the name if it has been moved the Tk::Menu class.  Thus
+           &#x27;proc tkMenuNextEntry&#x27; becomes  &#x27;sub  NextEntry&#x27;  in  the  Tk::Menu
+           package.
+
+       Tk::Image
+           This  does  for  Tk8.x&#x27;s &quot;images&quot; what Tk::Widget does for widgets.
+           Images are new to Tk8.x and  the  class  structure  is  not  mature
+           either.
+
+           There are three sub-classes Tk::Bitmap, Tk::Pixmap and Tk::Photo.
+
+           It  is  possible  to  create  dynamic  or  auto-loaded  image types
+           inherited from Tk::Image for other image  types  or  photo  formats
+           (e.g. support for TIFF format).
+
+       Composite Widgets
+           A  composite  is some kind of &#x27;frame&#x27; with subwidgets which give it
+           useful behaviour.  Tk::Dialog is an example of a  composite  widget
+           classes  built  from  the  basic Tk ones.  It is intended that user
+           code should not need to be aware  that  a  particular  class  is  a
+           composite, and create and configure such widgets in the same manner
+           as  any  other kind. The configure mechanism and the methods of the
+           class manipulate the subwidgets as required.
+
+           Composite  widgets  are  implemented  via  Tk::Frame  and  multiple
+           inheritance.    The   two   &#x27;frame&#x27;   base  classes  Tk::Frame  and
+           Tk::Toplevel include the  additional  class  Tk::Derived  in  their
+           inheritance.  Tk::Derived  provides  methods  to  allow  additional
+           configure options to be defined for a widget.
+
+           A Composite widget is typically defined as derived  from  Tk::Frame
+           or Tk::Toplevel (e.g. Tk::Dialog).
+
+perl v5.40.1                      2025-04-13                     overview(3pm)
+</pre></body></html>

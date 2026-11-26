@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pw-dot(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>pw-dot(1)                   General Commands Manual                  pw-dot(1)
+
+NAME
+       pw-dot - The PipeWire dot graph dump
+
+SYNOPSIS
+       pw-dot [options]
+
+DESCRIPTION
+       Create a .dot file of the PipeWire graph.
+
+       The .dot file can then be visualized with a tool like dotty or rendered
+       to a PNG file with dot -Tpng pw.dot -o pw.png.
+
+OPTIONS
+       -r | --remote=NAME
+           The name the remote instance to connect to. If left unspecified, a
+           connection is made to the default PipeWire instance.
+
+       -h | --help
+           Show help.
+
+       --version
+           Show version information.
+
+       -a | --all
+           Show all object types.
+
+       -s | --smart
+           Show linked objects only.
+
+       -d | --detail
+           Show all object properties.
+
+       -o FILE | --output=FILE
+           Output file name (Default pw.dot). Use - for stdout.
+
+       -L | --lr
+           Lay the graph from left to right, instead of dot&#x27;s default top to
+           bottom.
+
+       -9 | --90
+           Lay the graph using 90-degree angles in edges.
+
+AUTHORS
+       The PipeWire Developers
+       &lt;https://gitlab.freedesktop.org/pipewire/pipewire/issues&gt;; PipeWire is
+       available from &lt;https://pipewire.org&gt;
+
+SEE ALSO
+       pipewire(1), pw-cli(1), pw-mon(1),
+
+
+PipeWire                             1.4.2                           pw-dot(1)
+</pre></body></html>

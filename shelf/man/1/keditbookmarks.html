@@ -1,0 +1,194 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>keditbookmarks(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>KEDITBOOKMARKS(1)        Bookmark Organizer and Editor       KEDITBOOKMARKS(1)
+
+NAME
+       keditbookmarks - Bookmark Organizer and Editor
+
+SYNOPSIS
+       keditbookmarks [Qt-options] [KDE-options] [options] [file]
+
+DESCRIPTION
+       Bookmark Organizer and Editor
+
+OPTIONS
+
+
+   Arguments:
+       file   File to edit
+
+   Options:
+       --importmoz &lt;filename&gt;
+              Import bookmarks from a file in Mozilla format
+
+       --importns &lt;filename&gt;
+              Import  bookmarks from a file in Netscape (4.x and earlier) for‐
+              mat
+
+       --importie &lt;filename&gt;
+              Import bookmarks from a file in  Internet  Explorer&#x27;s  Favorites
+              format
+
+       --importopera &lt;filename&gt;
+              Import bookmarks from a file in Opera format
+
+       --exportmoz &lt;filename&gt;
+              Export bookmarks to a file in Mozilla format
+
+       --exportns &lt;filename&gt;
+              Export bookmarks to a file in Netscape (4.x and earlier) format
+
+       --exporthtml &lt;filename&gt;
+              Export bookmarks to a file in a printable HTML format
+
+       --exportie &lt;filename&gt;
+              Export bookmarks to a file in Internet Explorer&#x27;s Favorites for‐
+              mat
+
+       --exportopera &lt;filename&gt;
+              Export bookmarks to a file in Opera format
+
+       --address &lt;address&gt;
+              Open at the given position in the bookmarks file
+
+       --customcaption &lt;caption&gt;
+              Set the user-readable caption, for example &quot;Konsole&quot;
+
+       --nobrowser
+              Hide all browser related functions
+
+       --dbusObjectName &lt;name&gt;
+              A  unique name that represents this bookmark collection, usually
+              the kinstance name.  This should be  &quot;konqueror&quot;  for  the  Kon‐
+              queror  bookmarks,  &quot;kfile&quot; for KFileDialog bookmarks, etc.  The
+              final DBus object path is /KBookmarkManager/dbusObjectName
+
+
+
+   Generic options:
+       --help Show help about options
+
+       --help-qt
+              Show Qt specific options
+
+       --help-kde
+              Show KDE specific options
+
+       --help-all
+              Show all options
+
+       --author
+              Show author information
+
+       -v, --version
+              Show version information
+
+       --license
+              Show license information
+
+       --     End of options
+
+
+
+   KDE options:
+       --caption &lt;caption&gt;
+              Use &#x27;caption&#x27; as name in the titlebar
+
+       --icon &lt;icon&gt;
+              Use &#x27;icon&#x27; as the application icon
+
+       --config &lt;filename&gt;
+              Use alternative configuration file
+
+       --nocrashhandler
+              Disable crash handler, to get core dumps
+
+       --waitforwm
+              Waits for a WM_NET compatible windowmanager
+
+       --style &lt;style&gt;
+              sets the application GUI style
+
+       --geometry &lt;geometry&gt;
+              sets the client geometry of the main widget - see man X for  the
+              argument format
+
+
+
+   Qt options:
+       --display &lt;displayname&gt;
+              Use the X-server display &#x27;displayname&#x27;
+
+       --session &lt;sessionId&gt;
+              Restore the application for the given &#x27;sessionId&#x27;
+
+       --cmap Causes  the  application  to  install  a private color map on an
+              8-bit display
+
+       --ncols &lt;count&gt;
+              Limits the number of colors allocated in the color  cube  on  an
+              8-bit  display,  if  the  application  is  using  the  QApplica‐
+              tion::ManyColor color specification
+
+       --nograb
+              tells Qt to never grab the mouse or the keyboard
+
+       --dograb
+              running under a debugger can cause an implicit -nograb, use -do‐
+              grab to override
+
+       --sync switches to synchronous mode for debugging
+
+       --fn, --font &lt;fontname&gt;
+              defines the application font
+
+       --bg, --background &lt;color&gt;
+              sets the default background color  and  an  application  palette
+              (light and dark shades are calculated)
+
+       --fg, --foreground &lt;color&gt;
+              sets the default foreground color
+
+       --btn, --button &lt;color&gt;
+              sets the default button color
+
+       --name &lt;name&gt;
+              sets the application name
+
+       --title &lt;title&gt;
+              sets the application title (caption)
+
+       --visual TrueColor
+              forces  the  application  to  use a TrueColor visual on an 8-bit
+              display
+
+       --inputstyle &lt;inputstyle&gt;
+              sets XIM (X Input Method) input style. Possible values  are  on‐
+              thespot, overthespot, offthespot and root
+
+       --im &lt;XIM server&gt;
+              set XIM server
+
+       --noxim
+              disable XIM
+
+       --reverse
+              mirrors the whole layout of widgets
+
+       --stylesheet
+              &lt;file.qss&gt;    applies  the Qt stylesheet to the application wid‐
+              gets
+
+
+
+
+SEE ALSO
+       Full user documentation is available through the KDE Help Center.   You
+       can also enter the URL help:/keditbookmarks/ directly into konqueror or
+       you can run `khelpcenter help:/keditbookmarks/&#x27; from the command-line.
+
+AUTHORS
+       David Faure &lt;faure@kde.org&gt;
+       Alexander Kellett &lt;lypanov@kde.org&gt;
+
+
+K Desktop Environment              Aug 2008                  KEDITBOOKMARKS(1)
+</pre></body></html>

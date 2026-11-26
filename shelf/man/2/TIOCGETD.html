@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCGETD(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSETD(2const)                                              TIOCSETD(2const)
+
+NAME
+       TIOCGETD, TIOCSETD - get or set the line discipline of the terminal
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC*ETD constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCGETD, int *argp);
+       int ioctl(int fd, TIOCSETD, const int *argp);
+
+DESCRIPTION
+       TIOCGETD
+              Get the line discipline of the terminal.
+
+       TIOCSETD
+              Set the line discipline of the terminal.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13                  TIOCSETD(2const)
+</pre></body></html>

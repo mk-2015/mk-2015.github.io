@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net::DBus::Service(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Net::D...ervice(3pm)  User Contributed Perl Documentation Net::D...ervice(3pm)
+
+NAME
+       Net::DBus::Service - Provide a service to the bus for clients to use
+
+SYNOPSIS
+         package main;
+
+         use Net::DBus;
+
+         # Attach to the bus
+         my $bus = Net::DBus-&gt;find;
+
+         # Acquire a service &#x27;org.demo.Hello&#x27;
+         my $service = $bus-&gt;export_service(&quot;org.demo.Hello&quot;);
+
+         # Export our object within the service
+         my $object = Demo::HelloWorld-&gt;new($service);
+
+         ....rest of program...
+
+DESCRIPTION
+       This module represents a service which is exported to the message bus.
+       Once a service has been exported, it is possible to create and export
+       objects to the bus.
+
+METHODS
+       my $service = Net::DBus::Service-&gt;new($bus, $name);
+           Create  a  new  service,  attaching to the bus provided in the $bus
+           parameter, which should be an instance of the Net::DBus object. The
+           $name parameter is the qualified service name. It  is  not  usually
+           necessary  to  use  this constructor, since services can be created
+           via the &quot;export_service&quot; method on the Net::DBus object.
+
+           When $name is not specified or is &quot;undef&quot; then returned  handle  to
+           the  service  is  identified  only  by  the unique name of client&#x27;s
+           connection to the bus.
+
+       my $bus = $service-&gt;get_bus;
+           Retrieves the Net::DBus object to which this service is attached.
+
+       my $name = $service-&gt;get_service_name
+           Retrieves the qualified name by which this service is known on  the
+           bus.
+
+AUTHOR
+       Daniel P. Berrange
+
+COPYRIGHT
+       Copyright (C) 2005-2011 Daniel P. Berrange
+
+SEE ALSO
+       Net::DBus, Net::DBus::Object, Net::DBus::RemoteService
+
+perl v5.40.0                      2024-10-15              Net::D...ervice(3pm)
+</pre></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Tiler(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Tiler(3pm)            User Contributed Perl Documentation           Tiler(3pm)
+
+NAME
+       Tk::Tiler - Scrollable frame with sub-widgets arranged into rows
+
+SYNOPSIS
+         use Tk::Tiler;
+
+         my $tl = $parent-&gt;Scrolled(&#x27;Tiler&#x27;, -columns =&gt; n, -rows =&gt; n);
+
+         my $a  = $tl-&gt;Xxxxx(...);
+         my $b  = $tl-&gt;Xxxxx(...);
+         my $c  = $tl-&gt;Xxxxx(...);
+
+         $tl-&gt;Manage($a,$b,$c);
+
+DESCRIPTION
+       Tiler is derived form Tk::Frame. It is a geometry managing widget which
+       accepts widgets to manage. It places the widgets in a grid with as many
+       widgets as possible in a row. All the &quot;slots&quot; in the grid are the same
+       size, which is determined by the largest managed widget.
+
+       The grid may be scrolled vertically.
+
+perl v5.40.1                      2025-04-13                        Tiler(3pm)
+</pre></body></html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_GET_TIMING(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_GET_TIMING(2const)                                    PR_GET_TIMING(2const)
+
+NAME
+       PR_GET_TIMING - get the process timing mode
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_TIMING);
+
+DESCRIPTION
+       Return which process timing method is currently in use.
+
+RETURN VALUE
+       On  success,  PR_GET_TIMING  returns  the  nonnegative  value described
+       above.  On error, -1 is returned, and errno is set to indicate the  er‐
+       ror.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.0.
+
+SEE ALSO
+       prctl(2), PR_SET_TIMING(2const)
+
+Linux man-pages 6.9.1             2024-06-02             PR_GET_TIMING(2const)
+</pre></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::IO(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>IO(3pm)               User Contributed Perl Documentation              IO(3pm)
+
+NAME
+       Tk::IO - high level interface to Tk&#x27;s &#x27;fileevent&#x27; mechanism
+
+SYNOPSIS
+         my $fh = Tk::IO-&gt;new(-linecommand =&gt; callback, -childcommand =&gt; callback);
+         $fh-&gt;exec(&quot;command&quot;)
+         $fh-&gt;wait
+         $fh-&gt;kill
+
+WARNING
+       INTERFACES TO THIS MODULE MAY CHANGE AS PERL&#x27;S IO EVOLVES AND WITH PORT
+       OF TK4.1
+
+DESCRIPTION
+       Tk::IO is now layered on perl&#x27;s IO::Handle class. Interfaces have
+       changed, and are still evolving.
+
+       In theory C methods which enable non-blocking IO as in earlier Tk-b*
+       release(s) are still there. I have not changed them to use perl&#x27;s
+       additional Configure information, or tested them much.
+
+       Assumption is that exec is used to fork a child process and a callback
+       is called each time a complete line arrives up the implied pipe.
+
+       &quot;line&quot; should probably be defined in terms of perl&#x27;s input record
+       separator but is not yet.
+
+       The -childcommand callback is called when end-of-file occurs.
+
+       $fh-&gt;wait can be used to wait for child process while processing other
+       Tk events.
+
+       $fh-&gt;kill can be used to send signal to child process.
+
+BUGS
+       Still not finished.  Idea is to use &quot;exec&quot; to emulate &quot;system&quot; in a
+       non-blocking manner.
+
+perl v5.40.1                      2025-04-13                           IO(3pm)
+</pre></body></html>

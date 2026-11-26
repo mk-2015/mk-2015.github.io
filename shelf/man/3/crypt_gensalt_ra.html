@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>crypt_gensalt_ra(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>The and functions compile a string for use as the argument to and
+selects  the hashing method to use.  controls the processing cost
+of the hash; the valid range and exact meaning of depend  on  the
+hashing  method,  but  larger  numbers  correspond to more costly
+hashes in terms of CPU time and possibly  memory  usage.   should
+point  to  cryptographically random bytes for use as If is a null
+pointer, the best available hashing method will be selected.   if
+is  an  empty  string,  the  DES-based hashing method will be se‐
+lected; this method is unacceptably weak by modern standards.  If
+is 0, a low default cost will be selected.  If is a null pointer,
+an appropriate number of random bytes will be obtained  from  the
+operating system, and is ignored.  See for other strings that can
+be used as and valid values of for each.  and return a pointer to
+an  encoded  setting string.  This string will be entirely print‐
+able ASCII, and will not contain whitespace or the characters  or
+See  for  more  detail on the format of this string.  Upon error,
+they return a null pointer and set to an appropriate error  code.
+When  the functions succeed, the value of is unspecified and must
+not be relied upon.  places its result in a static storage  area,
+which  will  be overwritten by subsequent calls to It is not safe
+to call from multiple threads simultaneously.  However,  it  safe
+to  pass  the  string returned by directly to without copying it;
+each function has its own static storage area.  places its result
+in the supplied buffer, which has  bytes  of  storage  available.
+should  be  greater than or equal to allocates memory for its re‐
+sult using It should be freed with after use.  Upon error, in ad‐
+dition to returning a null pointer, and  will  write  an  invalid
+setting  string to their output buffer, if there is enough space;
+this string will begin with a and will not be equal to is invalid
+or not supported by this implementation; is invalid for  the  re‐
+quested  the  input  is  insufficient for the smallest valid salt
+with the requested only:  is  too  small  to  hold  the  compiled
+string.  Failed to allocate internal scratch memory.
+only: failed to allocate memory for the compiled string.  Obtain‐
+ing random bytes from the operating system failed.  This can only
+happen  when is a null pointer.  The following macros are defined
+by A null pointer can be  specified  as  the  argument.   A  null
+pointer  can be specified as the argument.  The functions and are
+not part of any  standard.   They  originate  with  the  Openwall
+project.   A function with the name also exists on Solaris 10 and
+newer, but its prototype and semantics differ.  The default  pre‐
+fix  and auto entropy features are available since libxcrypt ver‐
+sion 4.0.0.  Portable software can use  feature  test  macros  to
+find out whether null pointers can be used for the and arguments.
+The  set  of  supported  hashing methods varies considerably from
+system to system.  For an explanation of the terms used  in  this
+section, see allbox; lb lb lb l l l.  Interface       At‐
+tribute       Value T{ T}      Thread safety   MT-Unsafe
+race:crypt_gensalt T{ T}      Thread safety   MT-Safe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

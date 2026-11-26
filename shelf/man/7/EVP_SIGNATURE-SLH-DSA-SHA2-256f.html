@@ -1,0 +1,117 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_SIGNATURE-SLH-DSA-SHA2-256f(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_SIGNATURE-SLH-DSA(7SSL)         OpenSSL        EVP_SIGNATURE-SLH-DSA(7SSL)
+
+NAME
+       EVP_SIGNATURE-SLH-DSA, EVP_SIGNATURE-SLH-DSA-SHA2-128s,
+       EVP_SIGNATURE-SLH-DSA-SHA2-128f, EVP_SIGNATURE-SLH-DSA-SHA2-192s,
+       EVP_SIGNATURE-SLH-DSA-SHA2-192f, EVP_SIGNATURE-SLH-DSA-SHA2-256s,
+       EVP_SIGNATURE-SLH-DSA-SHA2-256f, EVP_SIGNATURE-SLH-DSA-SHAKE-128s,
+       EVP_SIGNATURE-SLH-DSA-SHAKE-128f, EVP_SIGNATURE-SLH-DSA-SHAKE-192s,
+       EVP_SIGNATURE-SLH-DSA-SHAKE-192f, EVP_SIGNATURE-SLH-DSA-SHAKE-256s,
+       EVP_SIGNATURE-SLH-DSA-SHAKE-256f - The EVP_PKEY SLH-DSA signature
+       implementations
+
+DESCRIPTION
+       The SLH-DSA-SHA2-128s, EVP_PKEY-SLH-DSA-SHA2-128f, SLH-DSA-SHA2-192s,
+       EVP_PKEY-SLH-DSA-SHA2-192f, SLH-DSA-SHA2-256s,
+       EVP_PKEY-SLH-DSA-SHA2-256f, SLH-DSA-SHAKE-128s,
+       EVP_PKEY-SLH-DSA-SHAKE-128f, SLH-DSA-SHAKE-192s,
+       EVP_PKEY-SLH-DSA-SHAKE-192f, SLH-DSA-SHAKE-256s and
+       EVP_PKEY-SLH-DSA-SHAKE-256f EVP_PKEY implementations supports key
+       generation, one-shot sign and verify using the SLH-DSA signature
+       schemes described in FIPS 205.
+
+       The different algorithms names correspond to the parameter sets defined
+       in FIPS 205 Section 11 Table 2.  &quot;s&quot; types have smaller signature
+       sizes, and the &quot;f&quot; variants are faster, (The signatures range from ~8K
+       to ~50K depending on the type chosen). There are 3 different security
+       categories also depending on the type.
+
+       EVP_SIGNATURE_fetch(3) can be used to explicitly fetch one of the 12
+       algorithms which can then be used with EVP_PKEY_sign_message_init(3),
+       EVP_PKEY_sign(3), EVP_PKEY_verify_message_init(3), and
+       EVP_PKEY_verify(3) to perform one-shot message signing or verification.
+
+       The normal signing process (called Pure SLH-DSA Signature Generation)
+       encodes the message internally as 0x00 || len(ctx) || ctx || message.
+       where ctx is some optional value of size 0x00..0xFF.  OpenSSL also
+       allows the message to not be encoded which is required for testing.
+       OpenSSL does not support Pre Hash SLH-DSA Signature Generation, but
+       this may be done by the user by doing Pre hash encoding externally and
+       then choosing the option to not encode the message.
+
+   SLH-DSA Signature Parameters
+       The &quot;context-string&quot; parameter, described below, can be used for both
+       signing and verification.  It may be set by passing an OSSL_PARAM array
+       to EVP_PKEY_sign_init_ex2(3) or EVP_PKEY_verify_init_ex2(3)
+
+       &quot;context-string&quot; (OSSL_SIGNATURE_PARAM_CONTEXT_STRING) &lt;octet string&gt;
+           A  string  of  octets with length at most 255. By default it is the
+           empty string.
+
+       The following parameters can be used when signing: They can be  set  by
+       passing an OSSL_PARAM array to EVP_PKEY_sign_init_ex2(3).
+
+       &quot;message-encoding&quot; (OSSL_SIGNATURE_PARAM_MESSAGE_ENCODING) &lt;integer&gt;
+           The  default value of 1 uses &#x27;Pure SLH-DSA Signature Generation&#x27; as
+           described above. Setting it to 0 does not encode the message, which
+           is used for testing, but can also be used  for  &#x27;Pre  Hash  SLH-DSA
+           Signature Generation&#x27;.
+
+       &quot;test-entropy&quot; (OSSL_SIGNATURE_PARAM_TEST_ENTROPY &lt;octet string
+           Used for testing to pass a optional random value.
+
+       &quot;deterministic&quot; (OSSL_SIGNATURE_PARAM_DETERMINISTIC) &lt;integer&gt;
+           The default value of 0 generates a random value (using a DRBG) this
+           is  used  when processing the message. Setting this to 1 causes the
+           private key seed to be used  instead.  This  value  is  ignored  if
+           &quot;test-entropy&quot; is set.
+
+       See EVP_PKEY-SLH-DSA(7) for information related to SLH-DSA keys.
+
+NOTES
+       For    backwards    compatibility    reasons   EVP_DigestSignInit_ex(),
+       EVP_DigestSign(), EVP_DigestVerifyInit_ex() and EVP_DigestVerify()  may
+       also be used, but the digest passed in mdname must be NULL.
+
+EXAMPLES
+       To sign a message using an SLH-DSA EVP_PKEY structure:
+
+           void do_sign(EVP_PKEY *key, unsigned char *msg, size_t msg_len)
+           {
+               size_t sig_len;
+               unsigned char *sig = NULL;
+               const OSSL_PARAM params[] = {
+                   OSSL_PARAM_octet_string(&quot;context-string&quot;, (unsigned char *)&quot;A context string&quot;, 33),
+                   OSSL_PARAM_END
+               };
+               EVP_PKEY_CTX *sctx = EVP_PKEY_CTX_new_from_pkey(NULL, pkey, NULL);
+               EVP_SIGNATURE *sig_alg = EVP_SIGNATURE_fetch(NULL, &quot;SLH-DSA-SHA2-128s&quot;, NULL);
+
+               EVP_PKEY_sign_message_init(sctx, sig_alg, params);
+               /* Calculate the required size for the signature by passing a NULL buffer. */
+               EVP_PKEY_sign(sctx, NULL, &amp;sig_len, msg, msg_len);
+               sig = OPENSSL_zalloc(sig_len);
+               EVP_PKEY_sign(sctx, sig, &amp;sig_len, msg, msg_len);
+               ...
+               OPENSSL_free(sig);
+               EVP_SIGNATURE_free(sig_alg);
+               EVP_PKEY_CTX_free(sctx);
+           }
+
+SEE ALSO
+       EVP_PKEY-SLH-DSA(7)       provider-signature(7),      EVP_PKEY_sign(3),
+       EVP_PKEY_verify(3),
+
+HISTORY
+       This functionality was added in OpenSSL 3.5.
+
+COPYRIGHT
+       Copyright 2024-2026 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09       EVP_SIGNATURE-SLH-DSA(7SSL)
+</pre></body></html>

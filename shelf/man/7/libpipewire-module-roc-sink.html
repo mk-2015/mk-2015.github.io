@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-roc-sink(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...roc-sink(7)  Miscellaneous Information Manual  libpipe...roc-sink(7)
+
+NAME
+       libpipewire-module-roc-sink - ROC sink
+
+DESCRIPTION
+       The roc-sink module creates a PipeWire sink that sends samples to a
+       preconfigured receiver address.
+
+       One can then connect an audio stream of any running application to that
+       sink or make it the default sink.
+
+MODULE NAME
+       libpipewire-module-roc-sink
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • sink.props = {}: properties to be passed to the sink stream
+
+       • sink.name = &lt;str&gt;: node.name of the sink
+
+       • remote.ip = &lt;str&gt;: remote receiver ip
+
+       • remote.source.port  =  &lt;str&gt;: remote receiver TCP/UDP port for source
+         packets
+
+       • remote.repair.port = &lt;str&gt;: remote receiver TCP/UDP port for receiver
+         packets
+
+       • remote.control.port = &lt;str&gt;: remote receiver TCP/UDP port for control
+         packets
+
+       • fec.code = &lt;str&gt;: Possible values: disable, rs8m, ldpc
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • node.name
+
+       • node.description
+
+       • media.name
+
+EXAMPLE CONFIGURATION
+        # ~/.config/pipewire/pipewire.conf.d/my-roc-sink.conf
+
+        context.modules = [
+         {   name = libpipewire-module-roc-sink
+             args = {
+                 fec.code = disable
+                 remote.ip = 192.168.0.244
+                 remote.source.port = 10001
+                 remote.repair.port = 10002
+                 remote.control.port = 10003
+                 sink.name = &quot;ROC Sink&quot;
+                 sink.props = {
+                    node.name = &quot;roc-sink&quot;
+                 }
+             }
+         }
+       ]
+
+PipeWire                             1.4.2               libpipe...roc-sink(7)
+</pre></body></html>

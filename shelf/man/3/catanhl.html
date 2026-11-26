@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>catanhl(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>catanh(3)                  Library Functions Manual                  catanh(3)
+
+NAME
+       catanh, catanhf, catanhl - complex arc tangents hyperbolic
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double complex catanh(double complex z);
+       float complex catanhf(float complex z);
+       long double complex catanhl(long double complex z);
+
+DESCRIPTION
+       These  functions calculate the complex arc hyperbolic tangent of z.  If
+       y = catanh(z), then z = ctanh(y).  The imaginary part of y is chosen in
+       the interval [-pi/2,pi/2].
+
+       One has:
+
+           catanh(z) = 0.5 * (clog(1 + z) - clog(1 - z))
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       catanh(), catanhf(), catanhl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+EXAMPLES
+       /* Link with &quot;-lm&quot; */
+
+       #include &lt;complex.h&gt;
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;unistd.h&gt;
+
+       int
+       main(int argc, char *argv[])
+       {
+           double complex z, c, f;
+
+           if (argc != 3) {
+               fprintf(stderr, &quot;Usage: %s &lt;real&gt; &lt;imag&gt;\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           z = atof(argv[1]) + atof(argv[2]) * I;
+
+           c = catanh(z);
+           printf(&quot;catanh() = %6.3f %6.3f*i\n&quot;, creal(c), cimag(c));
+
+           f = 0.5 * (clog(1 + z) - clog(1 - z));
+           printf(&quot;formula  = %6.3f %6.3f*i\n&quot;, creal(f), cimag(f));
+
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       atanh(3), cabs(3), cimag(3), ctanh(3), complex(7)
+
+Linux man-pages 6.9.1             2024-06-15                         catanh(3)
+</pre></body></html>

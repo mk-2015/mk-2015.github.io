@@ -1,0 +1,384 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>dracut.conf(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>DRACUT.CONF(5)                      dracut                      DRACUT.CONF(5)
+
+NAME
+       dracut.conf - configuration file(s) for dracut
+
+SYNOPSIS
+       /etc/dracut.conf /etc/dracut.conf.d/*.conf
+       /usr/lib/dracut/dracut.conf.d/*.conf
+
+DESCRIPTION
+       dracut.conf is loaded during the initialization phase of dracut.
+
+       *.conf files are read from /usr/lib/dracut/dracut.conf.d and
+       /etc/dracut.conf.d. Files with the same name in /etc/dracut.conf.d will
+       replace files in /usr/lib/dracut/dracut.conf.d.
+
+       The files are then read in alphanumerical order and will override
+       parameters set in /etc/dracut.conf. Each line specifies an attribute
+       and a value. A # indicates the beginning of a comment; the following
+       characters, up to the end of the line, are not interpreted.
+
+       dracut command line options will override any values set here.
+
+       Configuration files must have the extension .conf; other extensions are
+       ignored.
+
+CONFIGURATION OPTIONS
+       add_dracutmodules+=&quot; &lt;dracut modules&gt; &quot;
+           Add a space-separated list of dracut modules to call when building
+           the initramfs. Modules are located in /usr/lib/dracut/modules.d.
+
+       force_add_dracutmodules+=&quot; &lt;dracut modules&gt; &quot;
+           Force to add a space-separated list of dracut modules to the
+           default set of modules, when host-only mode is specified. This
+           parameter can be specified multiple times.
+
+       omit_dracutmodules+=&quot; &lt;dracut modules&gt; &quot;
+           Omit a space-separated list of dracut modules to call when building
+           the initramfs. Modules are located in /usr/lib/dracut/modules.d.
+
+               Warning
+               Avoid manually omitting dracut modules, as you may
+               inadvertently remove essential ones that dracut can’t detect or
+               warn you about. Using this option is not recommended and is at
+               your own risk.
+
+       dracutmodules+=&quot; &lt;dracut modules&gt; &quot;
+           Specify a space-separated list of dracut modules to call when
+           building the initramfs. Modules are located in
+           /usr/lib/dracut/modules.d. This option forces dracut to only
+           include the specified dracut modules. In most cases the
+           &quot;add_dracutmodules&quot; option is what you want to use. This option is
+           not recommended to use (use at your own risk).
+
+       add_drivers+=&quot; &lt;kernel modules&gt; &quot;
+           Specify a space-separated list of kernel modules to add to the
+           initramfs. The kernel modules have to be specified without the
+           &quot;.ko&quot; suffix.
+
+       force_drivers+=&quot; &lt;list of kernel modules&gt; &quot;
+           See add_drivers above. But in this case it is ensured that the
+           drivers are tried to be loaded early via modprobe.
+
+       omit_drivers+=&quot; &lt;kernel modules&gt; &quot;
+           Specify a space-separated list of kernel modules not to add to the
+           initramfs. The kernel modules have to be specified without the
+           &quot;.ko&quot; suffix.
+
+       drivers+=&quot; &lt;kernel modules&gt; &quot;
+           Specify a space-separated list of kernel modules to exclusively
+           include in the initramfs. The kernel modules have to be specified
+           without the &quot;.ko&quot; suffix. This option forces dracut to only include
+           the specified kernel modules. In most cases the &quot;--add-drivers&quot;
+           option is what you want to use. This option is not recommended to
+           use (use at your own risk).
+
+       filesystems+=&quot; &lt;filesystem names&gt; &quot;
+           Specify a space-separated list of kernel filesystem modules to
+           exclusively include in the generic initramfs.
+
+       drivers_dir=&quot;&lt;kernel modules directory&gt;&quot;
+           Specify the directory where to look for kernel modules.
+
+       fw_dir+=&quot; :&lt;dir&gt;[:&lt;dir&gt; ...] &quot;
+           Specify additional colon-separated list of directories where to
+           look for firmware files.
+
+       libdirs+=&quot; &lt;dir&gt;[ &lt;dir&gt; ...] &quot;
+           Specify a space-separated list of directories where to look for
+           libraries.
+
+       install_items+=&quot; &lt;file&gt;[ &lt;file&gt; ...] &quot;
+           Specify additional files to include in the initramfs, separated by
+           spaces.
+
+       install_optional_items+=&quot; &lt;file&gt;[ &lt;file&gt; ...] &quot;
+           Specify additional files to include in the initramfs, separated by
+           spaces, if they exist.
+
+       compress=&quot;{cat|bzip2|lzma|xz|gzip|lzop|lz4|zstd|&lt;compressor [args
+       ...]&gt;}&quot;
+           Compress the generated initramfs using the passed compression
+           program.
+
+           If you pass it just the name of a compression program, it will call
+           that program with known-working arguments.
+
+           If you pass arguments, it will be called with exactly those
+           arguments.
+
+           Depending on what you pass, this may result in an initramfs that
+           the kernel cannot decompress.
+
+           To disable compression, use &quot;cat&quot;.
+
+       squash_compress=&quot;{&lt;compressor [args ...]&gt;}&quot;
+           Compress the squashfs image using the passed compressor and
+           compressor specific options for mksquashfs. You can refer to
+           mksquashfs manual for supported compressors and compressor specific
+           options.
+
+           If squash module is not called when building the initramfs, this
+           option will not take effect.
+
+       do_strip=&quot;{yes|no}&quot;
+           Strip binaries in the initramfs (default=yes).
+
+       aggressive_strip=&quot;{yes|no}&quot;
+           Strip more than just debug symbol and sections, for a smaller
+           initramfs build. The &quot;do_strip=yes&quot; option must also be specified
+           (default=no).
+
+       do_hardlink=&quot;{yes|no}&quot;
+           Hardlink files in the initramfs (default=yes).
+
+       prefix=&quot; &lt;directory&gt; &quot;
+           Prefix initramfs files with &lt;directory&gt;.
+
+       hostonly=&quot;{yes|no}&quot;
+           Host-only mode: Install only what is needed for booting the local
+           host instead of a generic host and generate host-specific
+           configuration (default=no).
+
+       hostonly_mode=&quot;{sloppy|strict}&quot;
+           Specify the host-only mode to use (default=sloppy).
+
+           In &quot;sloppy&quot; host-only mode, extra drivers and modules will be
+           installed, so minor hardware change won’t make the image unbootable
+           (e.g. changed keyboard), and the image is still portable among
+           similar hosts.
+
+           With &quot;strict&quot; mode enabled, anything not necessary for booting the
+           local host in its current state will not be included, and modules
+           may make additional efforts to save more space. Minor changes in
+           hardware or environment can make the image unbootable.
+
+       hostonly_cmdline=&quot;{yes|no}&quot;
+           If set to &quot;yes&quot;, store the kernel command line arguments needed in
+           the initramfs. If hostonly=&quot;yes&quot; and this option is not configured,
+           it’s automatically set to &quot;yes&quot;.
+
+       hostonly_nics+=&quot; [&lt;nic&gt;[ &lt;nic&gt; ...]] &quot;
+           Only enable listed NICs in the initramfs. The list can be empty, so
+           other modules can install only the necessary network drivers.
+
+       persistent_policy=&quot;&lt;policy&gt;&quot;
+           Use &lt;policy&gt; to address disks and partitions.  &lt;policy&gt; can be any
+           directory name found in /dev/disk (e.g. &quot;by-uuid&quot;, &quot;by-label&quot;), or
+           &quot;mapper&quot; to use /dev/mapper device names (default=mapper).
+
+       tmpdir=&quot;&lt;temporary directory&gt;&quot;
+           Specify temporary directory to use.
+
+               Warning
+               If chrooted to another root other than the real root device,
+               use --fstab and provide a valid /etc/fstab.
+
+       use_fstab=&quot;{yes|no}&quot;
+           Use /etc/fstab instead of /proc/self/mountinfo (default=no).
+
+       add_fstab+=&quot; &lt;filename&gt; &quot;
+           Add entries of &lt;filename&gt; to the initramfs /etc/fstab.
+
+       add_device+=&quot; &lt;device&gt; &quot;
+           Bring up &lt;device&gt; in initramfs, &lt;device&gt; should be the device name.
+           This can be useful in host-only mode for resume support when your
+           swap is on LVM an encrypted partition.
+
+       mdadmconf=&quot;{yes|no}&quot;
+           Include local /etc/mdadm.conf (default=no).
+
+       lvmconf=&quot;{yes|no}&quot;
+           Include local /etc/lvm/lvm.conf (default=no).
+
+       fscks=&quot; &lt;fsck tools&gt; &quot;
+           Add a space-separated list of fsck tools.
+
+           If nothing is specified, the default is umount mount /sbin/fsck*
+           xfs_db xfs_check xfs_repair e2fsck jfs_fsck btrfsck.
+
+           The installation is opportunistic (non-existing tools are ignored).
+
+       nofscks=&quot;{yes|no}&quot;
+           If specified, inhibit installation of any fsck tools (default=no).
+
+       ro_mnt=&quot;{yes|no}&quot;
+           Mount / and /usr read-only by default (default=no).
+
+       kernel_cmdline=&quot;parameters&quot;
+           Specify default kernel command line parameters. Despite its name,
+           this command only sets initrd parameters.
+
+       kernel_only=&quot;{yes|no}&quot;
+           Only install kernel drivers and firmware files (default=no).
+
+       no_kernel=&quot;{yes|no}&quot;
+           Do not install kernel drivers and firmware files (default=no).
+
+       acpi_override=&quot;{yes|no}&quot;
+
+               Caution
+               Only use this if you know what you are doing!
+           Override BIOS provided ACPI tables. For further documentation read
+           Documentation/acpi/initrd_table_override.txt[1] in the kernel
+           sources. Search for ACPI table files (must have .aml suffix) in
+           acpi_table_dir= directory (see below) and add them to a separate
+           uncompressed cpio archive.
+
+           This cpio archive gets glued (concatenated, uncompressed one must
+           be the first one) to the compressed cpio archive. The first,
+           uncompressed cpio archive is for data which the kernel must be able
+           to access very early (and cannot make use of uncompress algorithms
+           yet) like microcode or ACPI tables
+
+           (default=no).
+
+       acpi_table_dir=&quot;&lt;dir&gt;&quot;
+           Directory to search for ACPI tables if acpi_override= is set to
+           yes.
+
+       early_microcode=&quot;{yes|no}&quot;
+           Combine early microcode with ramdisk (default=yes).
+
+       stdloglvl=&quot;{0-6}&quot;
+           Specify logging level for standard error (default=4).
+
+           Table 1. Logging Levels allbox tab(:); lt lt lt lt lt lt lt lt lt
+           lt lt lt lt lt.  T{ 0 T}:T{ suppress any messages T} T{ 1 T}:T{
+           only fatal errors T} T{ 2 T}:T{ all errors T} T{ 3 T}:T{ warnings
+           T} T{ 4 T}:T{ info T} T{ 5 T}:T{ debug info (here starts lots of
+           output) T} T{ 6 T}:T{ trace info (and even more) T}
+
+
+       sysloglvl=&quot;{0-6}&quot;
+           Specify logging level for syslog (default=0).
+
+       fileloglvl=&quot;{0-6}&quot;
+           Specify logging level for logfile (default=4).
+
+       logfile=&quot;&lt;file&gt;&quot;
+           Path to logfile.
+
+       sshkey=&quot;&lt;file&gt;&quot;
+           SSH key file used with ssh-client module.
+
+       show_modules=&quot;{yes|no}&quot;
+           Print the name of the included modules to standard output during
+           build (default=no).
+
+       i18n_vars=&quot;&lt;variable mapping&gt;&quot;
+           Distribution specific variable mapping. See
+           dracut/modules.d/10i18n/README for a detailed description.
+
+       i18n_default_font=&quot;&lt;fontname&gt;&quot;
+           The font &lt;fontname&gt; to install, if not specified otherwise. Default
+           is &quot;eurlatgr&quot;.
+
+       i18n_install_all=&quot;{yes|no}&quot;
+           Install everything regardless of generic or host-only mode
+           (default=no).
+
+       reproducible=&quot;{yes|no}&quot;
+           Create reproducible images (default=no).
+
+       noimageifnotneeded=&quot;{yes|no}&quot;
+           Do not create an image in host-only mode, if no kernel driver is
+           needed and no /etc/cmdline/*.conf will be generated into the
+           initramfs (default=no).
+
+       loginstall=&quot;&lt;directory&gt;&quot;
+           Log all files installed from the host to &lt;directory&gt;.
+
+       uefi=&quot;{yes|no}&quot;
+           Instead of creating an initramfs image, dracut will create an UEFI
+           executable, which can be executed by an UEFI BIOS (default=no).
+
+           The default output filename is
+           &lt;EFI&gt;/EFI/Linux/linux-$kernel$-&lt;MACHINE_ID&gt;-&lt;BUILD_ID&gt;.efi. &lt;EFI&gt;
+           might be /efi, /boot or /boot/efi depending on where the ESP
+           partition is mounted. The &lt;BUILD_ID&gt; is taken from BUILD_ID in
+           /usr/lib/os-release or if it exists /etc/os-release and is left
+           out, if BUILD_ID is non-existent or empty.
+
+       machine_id=&quot;{yes|no}&quot;
+           Affects the default output filename of the UEFI executable,
+           including the &lt;MACHINE_ID&gt; part (default=yes).
+
+       uefi_stub=&quot;&lt;file&gt;&quot;
+           Specifies the UEFI stub loader, which will load the attached
+           kernel, initramfs and kernel command line and boots the kernel. The
+           default is
+           /lib/systemd/boot/efi/linux&lt;EFI-MACHINE-TYPE-NAME&gt;.efi.stub.
+
+       uefi_splash_image=&quot;&lt;file&gt;&quot;
+           Specifies the UEFI stub loader’s splash image. Requires bitmap
+           (.bmp) image format.
+
+       uefi_secureboot_cert=&quot;&lt;file&gt;&quot;, uefi_secureboot_key=&quot;&lt;file&gt;&quot;
+           Specifies a certificate and corresponding key, which are used to
+           sign the created UEFI executable. Requires both certificate and key
+           need to be specified and sbsign to be installed.
+
+       uefi_secureboot_engine=&quot;parameter&quot;
+           Specifies an engine to use when signing the created UEFI
+           executable. E.g. &quot;pkcs11&quot;
+
+       kernel_image=&quot;&lt;file&gt;&quot;
+           Specifies the kernel image, which to include in the UEFI
+           executable. The default is /lib/modules/&lt;KERNEL-VERSION&gt;/vmlinuz or
+           /boot/vmlinuz-&lt;KERNEL-VERSION&gt;.
+
+       sbat=&quot;parameters&quot;
+           Specifies the SBAT parameters, which to include in the UEFI
+           executable. By default the default SBAT string added is
+           +sbat,1,SBAT
+           Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md+.
+
+       enhanced_cpio=&quot;{yes|no}&quot;
+           Attempt to use the dracut-cpio binary, which optimizes archive
+           creation for copy-on-write filesystems (default=no).
+
+           When specified, initramfs archives are also padded to ensure
+           optimal data alignment for extent sharing. To retain reflink data
+           deduplication benefits, this should be used alongside the
+           compress=&quot;cat&quot; and do_strip=&quot;no&quot; parameters, with initramfs source
+           files, tmpdir staging area and destination all on the same
+           copy-on-write capable file-system.
+
+       parallel=&quot;{yes|no}&quot;
+           If set to yes, try to execute tasks in parallel (currently only
+           supported for --regenerate-all).
+
+       initrdname=&quot;&lt;filepattern&gt;&quot;
+           Specifies the file name for the generated initramfs if it is not
+           set otherwise.
+
+           The initrdname configuration option is required to match the
+           initr*${kernel}* file pattern and only one file with this pattern
+           should exists in the directory where initramfs is loaded from.
+
+           Defaults to initrd.img-${kernel}.
+
+FILES
+       /etc/dracut.conf
+           Old configuration file. It is recommended to use individual files
+           in /etc/dracut.conf.d/.
+
+       /etc/dracut.conf.d/
+           Any /etc/dracut.conf.d/*.conf file can override the values in
+           /etc/dracut.conf. The configuration files are read in
+           alphanumerical order.
+
+AUTHOR
+       Harald Hoyer
+
+SEE ALSO
+       dracut(8) dracut.cmdline(7)
+
+NOTES
+        1. Documentation/acpi/initrd_table_override.txt
+           https://www.kernel.org/doc/Documentation/acpi/initrd_table_override.txt
+
+dracut 106-6                      04/11/2025                    DRACUT.CONF(5)
+</pre></body></html>

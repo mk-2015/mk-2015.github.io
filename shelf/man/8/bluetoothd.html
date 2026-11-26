@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothd(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>BLUETOOTHD(8)             System management commands             BLUETOOTHD(8)
+
+NAME
+       bluetoothd - Bluetooth daemon
+
+SYNOPSIS
+       bluetoothd [--version] | [--help]
+
+       bluetoothd  [--nodetach]  [--compat] [--experimental] [--debug=&lt;files&gt;]
+       [--plugin=&lt;plugins&gt;] [--noplugin=&lt;plugins&gt;]
+
+DESCRIPTION
+       This manual page documents briefly the bluetoothd daemon, which manages
+       all the Bluetooth devices. bluetoothd can also provide a number of ser‐
+       vices via the D-Bus message bus system.
+
+OPTIONS
+       -v, --version
+              Print bluetoothd version and exit.
+
+       -h, --help
+              Print bluetoothd options and exit.
+
+       -n, --nodetach
+              Enable logging in foreground. Directs log output to the control‐
+              ling terminal in addition to syslog.
+
+       -f, --configfile
+              Specifies an explicit config file path instead of relying on the
+              default path(/etc/bluetooth/main.conf) for the config file.
+
+       -d, --debug=&lt;file1&gt;:&lt;file2&gt;:...
+              Sets  how  much information bluetoothd sends to the log destina‐
+              tion (usually syslog&#x27;s &quot;daemon&quot; facility). If the  file  options
+              are  omitted,  then  debugging  information  from all the source
+              files are printed. If file options are present, then only  debug
+              prints  from  that  source file are printed. The option can be a
+              pattern containing &quot;*&quot; and &quot;?&quot; characters.
+
+              Example: --debug=src/adapter.c:src/agent.c
+
+       -p, --plugin=&lt;plugin1&gt;,&lt;plugin2&gt;,..
+              Load these plugins only. The option can be a pattern  containing
+              &quot;*&quot; and &quot;?&quot; characters.
+
+       -P, --noplugin=&lt;plugin1&gt;,&lt;plugin2&gt;,..
+              Never load these plugins. The option can be a pattern containing
+              &quot;*&quot; and &quot;?&quot;  characters.
+
+       -C, --compat
+              Provide deprecated command line interfaces.
+
+       -E, --experimental
+              Enable  D-Bus experimental interfaces.  These interfaces are not
+              guaranteed to be compatible or present in future releases.
+
+       -T, --testing
+              Enable D-Bus testing  interfaces.   These  interfaces  are  only
+              meant  for  test  validation  of the internals of bluetoothd and
+              shall not never be used by anything other than that.
+
+       -K, --kernel=&lt;uuid1&gt;,&lt;uuid2&gt;,...
+              Enable Kernel experimental features.  Kernel  experimental  fea‐
+              tures  are  considered  unstable  and may be removed from future
+              kernel releases.
+
+FILES
+       /etc/bluetooth/main.conf
+              Location of the global configuration file.
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+AUTHOR
+       Marcel Holtmann, Philipp Matthias Hahn, Fredrik Noring
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                             March, 2004                    BLUETOOTHD(8)
+</pre></body></html>

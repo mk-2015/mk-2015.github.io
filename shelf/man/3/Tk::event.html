@@ -1,0 +1,313 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::event(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>event(3pm)            User Contributed Perl Documentation           event(3pm)
+
+NAME
+       Tk::event - Miscellaneous event facilities: define virtual events and
+       generate events
+
+SYNOPSIS
+       $widget-&gt;eventAction(?arg, arg, ...?);
+
+DESCRIPTION
+       The eventAction methods provides several facilities for dealing with
+       window system events, such as defining virtual events and synthesizing
+       events.  Virtual events are shared by all widgets of the same
+       MainWindow.  Different MainWindows can have different virtual event.
+
+       The following methods are currently supported:
+
+       $widget-&gt;eventAdd(&#x27;&lt;&lt;virtual&gt;&gt;&#x27;, sequence ?,sequence, ...?)
+           Associates  the  virtual  event  virtual  with  the  physical event
+           sequence(s) given by the sequence arguments, so  that  the  virtual
+           event  will  trigger  whenever  any  one  of  the sequences occurs.
+           Virtual may be any string value and sequence may have  any  of  the
+           values  allowed  for  the sequence argument to the bind method.  If
+           virtual is already defined, the new physical event sequences add to
+           the existing sequences for the event.
+
+       $widget-&gt;eventDelete(&#x27;&lt;&lt;virtual&gt;&gt;&#x27; ?,sequence, sequence, ...?)
+           Deletes each of  the  sequences  from  those  associated  with  the
+           virtual  event  given  by virtual.  Virtual may be any string value
+           and sequence may have any of the values allowed  for  the  sequence
+           argument   to   the  bind  method.   Any  sequences  not  currently
+           associated with virtual are ignored.  If no  sequence  argument  is
+           provided,  all physical event sequences are removed for virtual, so
+           that the virtual event will not trigger anymore.
+
+       $widget-&gt;eventGenerate(event ?,option =&gt; value, option =&gt; value, ...?)
+           Generates a window event and arranges for it to be  processed  just
+           as  if  it had come from the window system.  $window is a reference
+           to the window  for  which  the  event  will  be  generated.   Event
+           provides a basic description of the event, such as &lt;Shift-Button-2&gt;
+           or  &lt;&lt;Paste&gt;&gt;.   If  Window is empty the whole screen is meant, and
+           coordinates are relative to the screen.  Event may have any of  the
+           forms  allowed  for the sequence argument of the bind method except
+           that it must consist of a single event  pattern,  not  a  sequence.
+           Option-value  pairs may be used to specify additional attributes of
+           the event, such as the x and y mouse position; see  &quot;EVENT  FIELDS&quot;
+           below.   If  the  -when  option  is  not  specified,  the  event is
+           processed immediately:  all of the  handlers  for  the  event  will
+           complete  before  the  eventGenerate  method returns.  If the -when
+           option is specified then it determines when the event is processed.
+
+       $widget-&gt;eventInfo(?&#x27;&lt;&lt;virtual&gt;&gt;&#x27;?)
+           Returns information  about  virtual  events.   If  the  &lt;&lt;virtual&gt;&gt;
+           argument  is omitted, the return value is a list of all the virtual
+           events that are currently defined.   If  &lt;&lt;virtual&gt;&gt;  is  specified
+           then  the  return  value  is a list whose elements are the physical
+           event sequences currently defined for the given virtual event;   if
+           the virtual event is not defined then undef is returned.
+
+EVENT FIELDS
+       The  following  options  are  supported  for  the eventGenerate method.
+       These correspond to the ``%&#x27;&#x27; expansions allowed  in  binding  callback
+       for the bind method.
+
+       -above =&gt; window
+           Window  specifies the above field for the event, either as a window
+           path name or as an integer window id.  Valid for Configure  events.
+           Corresponds to the %a substitution for binding scripts.
+
+       -borderwidth =&gt; size
+           Size  must  be  a  screen  distance;  it specifies the border_width
+           field for the event.  Valid for Configure events.   Corresponds  to
+           the %B substitution for binding scripts.
+
+       -button =&gt; number
+           Number  must  be  an  integer;  it specifies the detail field for a
+           ButtonPress or ButtonRelease event, overriding any  button   number
+           provided  in  the  base  event  argument.   Corresponds  to  the %b
+           substitution for binding scripts.
+
+       -count =&gt; number
+           Number must be an integer;  it specifies the count  field  for  the
+           event.    Valid   for   Expose   events.   Corresponds  to  the  %c
+           substitution for binding scripts.
+
+       -delta =&gt; number
+           number must be an integer; it specifies the  delta  field  for  the
+           MouseWheel  event.  The delta refers to the direction and magnitude
+           the mouse wheel was rotated.   Note  the  value  is  not  a  screen
+           distance  but  are  units  of motion in the mouse wheel.  Typically
+           these values are multiples of 120.  For example, 120 should  scroll
+           the  text  widget  up 4 lines and -240 would scroll the text widget
+           down 8 lines.   Of  course,  other  widgets  may  define  different
+           behaviors for mouse wheel motion.  This field corresponds to the %D
+           substitution for binding scripts.
+
+       -detail =&gt; detail
+           Detail  specifies the detail field for the event and must be one of
+           the following:
+
+            NotifyAncestor         NotifyNonlinearVirtual
+            NotifyDetailNone       NotifyPointer
+            NotifyInferior         NotifyPointerRoot
+            NotifyNonlinear        NotifyVirtual
+
+           Valid for Enter, Leave, FocusIn and FocusOut  events.   Corresponds
+           to the %d substitution for binding scripts.
+
+       -focus boolean
+           Boolean  must be a boolean value;  it specifies the focus field for
+           the event.  Valid for Enter and Leave events.  Corresponds  to  the
+           %f substitution for binding scripts.
+
+       -height size
+           Size  must be a screen distance;  it specifies the height field for
+           the event.  Valid for Configure  events.   Corresponds  to  the  %h
+           substitution for binding scripts.
+
+       -keycode number
+           Number  must be an integer;  it specifies the keycode field for the
+           event.   Valid  for KeyPress and KeyRelease events.  Corresponds to
+           the %k substitution for binding scripts.
+
+       -keysym name
+           Name must be the name of a valid  keysym,  such  as  g,  space,  or
+           Return;   its  corresponding  keycode  value is used as the keycode
+           field for event, overriding any detail specified in the base  event
+           argument.   Valid  for KeyPress and KeyRelease events.  Corresponds
+           to the %K substitution for binding scripts.
+
+       -mode notify
+           Notify specifies the mode field for the event and must  be  one  of
+           NotifyNormal,   NotifyGrab,  NotifyUngrab,  or  NotifyWhileGrabbed.
+           Valid for Enter, Leave, FocusIn, and FocusOut events.   Corresponds
+           to the %m substitution for binding scripts.
+
+       -override boolean
+           Boolean    must   be   a   boolean   value;    it   specifies   the
+           override_redirect field for the event.  Valid  for  Map,  Reparent,
+           and  Configure  events.   Corresponds  to  the  %o substitution for
+           binding scripts.
+
+       -place where
+           Where specifies the place field for the event;  it must  be  either
+           PlaceOnTop   or   PlaceOnBottom.    Valid   for  Circulate  events.
+           Corresponds to the %p substitution for binding scripts.
+
+       -root window
+           Window must be either a window  path  name  or  an  integer  window
+           identifier;   it specifies the root field for the event.  Valid for
+           KeyPress, KeyRelease, ButtonPress, ButtonRelease, Enter, Leave, and
+           Motion events.  Corresponds to  the  %R  substitution  for  binding
+           scripts.
+
+       -rootx coord
+           Coord must be a screen distance;  it specifies the x_root field for
+           the   event.    Valid   for   KeyPress,   KeyRelease,  ButtonPress,
+           ButtonRelease, Enter, Leave, and Motion events.  Corresponds to the
+           %X substitution for binding scripts.
+
+       -rooty coord
+           Coord must be a screen distance;  it specifies the y_root field for
+           the  event.    Valid   for   KeyPress,   KeyRelease,   ButtonPress,
+           ButtonRelease, Enter, Leave, and Motion events.  Corresponds to the
+           %Y substitution for binding scripts.
+
+       -sendevent boolean
+           Boolean must be a boolean value;  it specifies the send_event field
+           for  the  event.   Valid  for  all  events.   Corresponds to the %E
+           substitution for binding scripts.
+
+       -serial number
+           Number must be an integer;  it specifies the serial field  for  the
+           event.   Valid  for all events.  Corresponds to the %# substitution
+           for binding scripts.
+
+       -state state
+           State specifies the state  field  for  the  event.   For  KeyPress,
+           KeyRelease,  ButtonPress,  ButtonRelease,  Enter, Leave, and Motion
+           events it must be an integer value.  For Visibility events it  must
+           be  one  of  VisibilityUnobscured,  VisibilityPartiallyObscured, or
+           VisibilityFullyObscured.  This option overrides any modifiers  such
+           as Meta or Control specified in the base event.  Corresponds to the
+           %s substitution for binding scripts.
+
+       -subwindow window
+           Window  specifies  the  subwindow  field for the event, either as a
+           path name for a Tk widget  or  as  an  integer  window  identifier.
+           Valid  for KeyPress, KeyRelease, ButtonPress, ButtonRelease, Enter,
+           Leave, and Motion events.  Similar to %S substitution  for  binding
+           scripts.
+
+       -time integer
+           Integer  must be an integer value;  it specifies the time field for
+           the  event.    Valid   for   KeyPress,   KeyRelease,   ButtonPress,
+           ButtonRelease,   Enter,   Leave,   Motion,   and  Property  events.
+           Corresponds to the %t substitution for binding scripts.
+
+       -warp boolean
+           boolean must be a boolean value;  it specifies whether  the  screen
+           pointer  should be warped as well.  Valid for KeyPress, KeyRelease,
+           ButtonPress, ButtonRelease, and Motion events.
+
+       -width size
+           Size must be a screen distance;  it specifies the width  field  for
+           the  event.   Valid  for  Configure  events.  Corresponds to the %w
+           substitution for binding scripts.
+
+       -when when
+           When determines when the event will be processed;  it must have one
+           of the following values:
+
+           now     Process the event immediately, before the command  returns.
+                   This also happens if the -when option is omitted.
+
+           tail    Place  the event on perl/Tk&#x27;s event queue behind any events
+                   already queued for this application.
+
+           head    Place the event at the front of perl/Tk&#x27;s event  queue,  so
+                   that  it  will  be  handled before any other events already
+                   queued.
+
+           mark    Place the event at the front of perl/Tk&#x27;s event  queue  but
+                   behind  any  other  events  already queued with -when mark.
+                   This option is useful when generating a  series  of  events
+                   that  should  be processed in order but at the front of the
+                   queue.
+
+       -x coord
+           Coord must be a screen distance;  it specifies the x field for  the
+           event.  Valid for KeyPress, KeyRelease, ButtonPress, ButtonRelease,
+           Motion,  Enter,  Leave,  Expose,  Configure,  Gravity, and Reparent
+           events.   Corresponds  to  the  the  %x  substitution  for  binding
+           scripts.   If  Window  is  empty  the coordinate is relative to the
+           screen, and this option corresponds  to  the  %X  substitution  for
+           binding scripts.
+
+       -y coord
+           Coord  must be a screen distance;  it specifies the y field for the
+           event.  Valid for KeyPress, KeyRelease, ButtonPress, ButtonRelease,
+           Motion, Enter, Leave,  Expose,  Configure,  Gravity,  and  Reparent
+           events.   Corresponds  to  the  the  %y  substitution  for  binding
+           scripts.  If Window is empty the  coordinate  is  relative  to  the
+           screen,  and  this  option  corresponds  to the %Y substitution for
+           binding scripts.
+
+           Any options that are not specified when  generating  an  event  are
+           filled  with  the  value 0, except for serial, which is filled with
+           the next X event serial number.
+
+VIRTUAL EVENT EXAMPLES
+       In order for a virtual  event  binding  to  trigger,  two  things  must
+       happen.   First,  the  virtual  event must be defined with the eventAdd
+       method.  Second, a binding must be created for the virtual  event  with
+       the bind method.  Consider the following virtual event definitions:
+
+        $widget-&gt;eventAdd(&#x27;&lt;&lt;Paste&gt;&gt;&#x27; =&gt; &#x27;&lt;Control-y&gt;&#x27;);
+        $widget-&gt;eventAdd(&#x27;&lt;&lt;Paste&gt;&gt;&#x27; =&gt; &#x27;&lt;Button-2&gt;&#x27;);
+        $widget-&gt;eventAdd(&#x27;&lt;&lt;Save&gt;&gt;&#x27; =&gt; &#x27;&lt;Control-X&gt;&lt;Control-S&gt;&#x27;);
+        $widget-&gt;eventAdd(&#x27;&lt;&lt;Save&gt;&gt;&#x27; =&gt; &#x27;&lt;Shift-F12&gt;&#x27;);
+
+       In the bind method, a virtual event can be bound like any other builtin
+       event type as follows:
+
+        $entry-&gt;bind(&#x27;Tk::Entry&#x27;, &#x27;&lt;&lt;Paste&gt;&gt;&#x27; =&gt; sub {
+                       $entry-&gt;Insert($entry-&gt;selectionGet) });
+
+       The  double  angle brackets are used to specify that a virtual event is
+       being bound.  If the user types Control-y or presses button 2, or if  a
+       &lt;&lt;Paste&gt;&gt;  virtual  event  is  synthesized with eventGenerate, then the
+       &lt;&lt;Paste&gt;&gt; binding will be invoked.
+
+       If a virtual binding has the exact same sequence as a separate physical
+       binding, then the physical binding will take precedence.  Consider  the
+       following example:
+
+        $mw-&gt;eventAdd(&#x27;&lt;&lt;Paste&gt;&gt;&#x27; =&gt; &#x27;&lt;Control-y&gt;&#x27;,&#x27;&lt;Meta-Control-y&gt;&#x27;);
+        $mw-&gt;bind(&#x27;Tk::Entry&#x27;, &#x27;&lt;Control-y&gt;&#x27; =&gt; sub{print &#x27;Control-y&#x27;});
+        $mw-&gt;bind(&#x27;Tk::Entry&#x27;, &#x27;&lt;&lt;Paste&gt;&gt;&#x27;   =&gt; sub{print &#x27;Paste&#x27;});
+
+       When  the user types Control-y the &lt;Control-y&gt; binding will be invoked,
+       because a physical event is considered more  specific  than  a  virtual
+       event,  all  other  things  being  equal.  However, when the user types
+       Meta-Control-y the &lt;&lt;Paste&gt;&gt; binding will be invoked, because the  Meta
+       modifier in the physical pattern associated with the virtual binding is
+       more specific than the &lt;Control-y&gt; sequence for the physical event.
+
+       Bindings  on  a  virtual  event may be created before the virtual event
+       exists.  Indeed, the virtual event never actually needs to be  defined,
+       for  instance,  on  platforms  where  the  specific virtual event would
+       meaningless or ungeneratable.
+
+       When a definition of a virtual event changes at run time,  all  windows
+       will  respond  immediately  to  the  new definition.  Starting from the
+       preceding example, if the following code is executed:
+
+        $entry-&gt;bind(ref($entry), &#x27;&lt;Control-y&gt;&#x27; =&gt; undef);
+        $entry-&gt;eventAdd(&#x27;&lt;&lt;Paste&gt;&gt;&#x27; =&gt; &#x27;&lt;Key-F6&gt;&#x27;);
+
+       the behavior will  change  such  in  two  ways.   First,  the  shadowed
+       &lt;&lt;Paste&gt;&gt;  binding will emerge.  Typing Control-y will no longer invoke
+       the  &lt;Control-y&gt;  binding,  but  instead  invoke  the   virtual   event
+       &lt;&lt;Paste&gt;&gt;.   Second,  pressing  the  F6  key  will  now also invoke the
+       &lt;&lt;Paste&gt;&gt; binding.
+
+SEE ALSO
+       Tk::bind Tk::callbacks
+
+KEYWORDS
+       event, binding, define, handle, virtual event
+
+perl v5.40.1                      2025-04-13                        event(3pm)
+</pre></body></html>

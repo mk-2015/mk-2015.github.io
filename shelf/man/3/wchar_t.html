@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wchar_t(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>wchar_t(3type)                                                  wchar_t(3type)
+
+NAME
+       wchar_t - wide-character type
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;stddef.h&gt;
+
+       typedef /* ... */  wchar_t;
+
+       #include &lt;stdint.h&gt;
+
+       #define WCHAR_WIDTH  /* ... */
+       #define WCHAR_MAX    /* ... */
+       #define WCHAR_MIN    /* ... */
+
+DESCRIPTION
+       wchar_t  is a type used for storing a wide character.  It is an integer
+       type.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       C99, POSIX.1-2001.
+
+       The WCHAR_WIDTH macro was added in C23.
+
+NOTES
+       The following headers also provide this type: &lt;inttypes.h&gt;, &lt;stdlib.h&gt;,
+       &lt;wchar.h&gt;, &lt;wctype.h&gt;.
+
+       The following header also provides these macros: &lt;wchar.h&gt;.
+
+SEE ALSO
+       wint_t(3type), fputwc(3)
+
+Linux man-pages 6.9.1             2024-05-03                    wchar_t(3type)
+</pre></body></html>

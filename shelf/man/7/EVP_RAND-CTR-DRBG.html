@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_RAND-CTR-DRBG(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_RAND-CTR-DRBG(7SSL)             OpenSSL            EVP_RAND-CTR-DRBG(7SSL)
+
+NAME
+       EVP_RAND-CTR-DRBG - The CTR DRBG EVP_RAND implementation
+
+DESCRIPTION
+       Support for the counter deterministic random bit generator through the
+       EVP_RAND API.
+
+   Identity
+       &quot;CTR-DRBG&quot; is the name for this implementation; it can be used with the
+       EVP_RAND_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;state&quot; (OSSL_RAND_PARAM_STATE) &lt;integer&gt;
+       &quot;strength&quot; (OSSL_RAND_PARAM_STRENGTH) &lt;unsigned integer&gt;
+       &quot;max_request&quot; (OSSL_RAND_PARAM_MAX_REQUEST) &lt;unsigned integer&gt;
+       &quot;reseed_requests&quot; (OSSL_DRBG_PARAM_RESEED_REQUESTS) &lt;unsigned integer&gt;
+       &quot;reseed_time_interval&quot; (OSSL_DRBG_PARAM_RESEED_TIME_INTERVAL) &lt;integer&gt;
+       &quot;min_entropylen&quot; (OSSL_DRBG_PARAM_MIN_ENTROPYLEN) &lt;unsigned integer&gt;
+       &quot;max_entropylen&quot; (OSSL_DRBG_PARAM_MAX_ENTROPYLEN) &lt;unsigned integer&gt;
+       &quot;min_noncelen&quot; (OSSL_DRBG_PARAM_MIN_NONCELEN) &lt;unsigned integer&gt;
+       &quot;max_noncelen&quot; (OSSL_DRBG_PARAM_MAX_NONCELEN) &lt;unsigned integer&gt;
+       &quot;max_perslen&quot; (OSSL_DRBG_PARAM_MAX_PERSLEN) &lt;unsigned integer&gt;
+       &quot;max_adinlen&quot; (OSSL_DRBG_PARAM_MAX_ADINLEN) &lt;unsigned integer&gt;
+       &quot;reseed_counter&quot; (OSSL_DRBG_PARAM_RESEED_COUNTER) &lt;unsigned integer&gt;
+       &quot;properties&quot; (OSSL_DRBG_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+       &quot;cipher&quot; (OSSL_DRBG_PARAM_CIPHER) &lt;UTF8 string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_RAND(3).
+
+       &quot;use_derivation_function&quot; (OSSL_DRBG_PARAM_USE_DF) &lt;integer&gt;
+           This  Boolean  indicates if a derivation function should be used or
+           not.  A nonzero value (the default) uses the  derivation  function.
+           A zero value does not.
+
+NOTES
+       A context for CTR DRBG can be obtained by calling:
+
+        EVP_RAND *rand = EVP_RAND_fetch(NULL, &quot;CTR-DRBG&quot;, NULL);
+        EVP_RAND_CTX *rctx = EVP_RAND_CTX_new(rand, NULL);
+
+       The  default  CTR-DRBG  implementation  attempts  to fetch the required
+       internal algorithms from the provider  they  are  built  into  (eg  the
+       default  provider)  regardless  of  the properties provided. Should the
+       provider not implement the required algorithms then properties will  be
+       used to find a different implementation.
+
+EXAMPLES
+        EVP_RAND *rand;
+        EVP_RAND_CTX *rctx;
+        unsigned char bytes[100];
+        OSSL_PARAM params[2], *p = params;
+        unsigned int strength = 128;
+
+        rand = EVP_RAND_fetch(NULL, &quot;CTR-DRBG&quot;, NULL);
+        rctx = EVP_RAND_CTX_new(rand, NULL);
+        EVP_RAND_free(rand);
+
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_DRBG_PARAM_CIPHER,
+                                                SN_aes_256_ctr, 0);
+        *p = OSSL_PARAM_construct_end();
+        EVP_RAND_instantiate(rctx, strength, 0, NULL, 0, params);
+
+        EVP_RAND_generate(rctx, bytes, sizeof(bytes), strength, 0, NULL, 0);
+
+        EVP_RAND_CTX_free(rctx);
+
+CONFORMING TO
+       NIST SP 800-90A and SP 800-90B
+
+SEE ALSO
+       EVP_RAND(3), &quot;PARAMETERS&quot; in EVP_RAND(3)
+
+COPYRIGHT
+       Copyright 2020-2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09           EVP_RAND-CTR-DRBG(7SSL)
+</pre></body></html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>cmatrix(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>CMatrix(1)                  General Commands Manual                 CMatrix(1)
+
+NAME
+       CMatrix - simulates the display from &quot;The Matrix&quot;
+
+SYNOPSIS
+       cmatrix [-abBflohnsmVx] [-u update] [-C color]
+
+DESCRIPTION
+       Shows a scrolling &#x27;Matrix&#x27; like screen in Linux
+
+   OPTIONS
+       -a     Asynchronous scroll
+
+       -b     Bold characters on
+
+       -B     All bold characters (overrides -b)
+
+       -f     Force the linux $TERM type to be on
+
+       -l     Linux mode (sets &quot;matrix.fnt&quot; font in console)
+
+       -o     Use old-style scrolling
+
+       -h, -? Print usage and exit
+
+       -n     No bold characters (overrides -b and -B)
+
+       -s     &quot;Screensaver&quot; mode, exits on first keystroke
+
+       -m     &quot;Lambda&quot; mode, every character becomes a lambda
+
+       -x     X window mode, use if your xterm is using mtx.pcf
+
+       -V     Print version information and exit
+
+       -u delay
+              Screen update delay 0 - 9, default 4
+
+       -C color
+              Use  this  color  for  matrix (default green).  Valid colors are
+              green, red, blue, white, yellow, cyan, magenta and black.
+
+   KEYSTROKES
+       The following keystrokes are available during execution (unavailable in
+       -s mode)
+
+       a      Toggle asynchronous scroll
+
+       b      Random bold characters
+
+       B      All bold characters
+
+       n      Turn off bold characters
+
+       0-9    Adjust update speed
+
+       ! @ # $ % ^ &amp; )
+              Change the color of the matrix to the corresponding color:  !  -
+              red, @ - green, # - yellow, $ - blue, % - magenta, ^ - cyan, &amp; -
+              white, ) - black.
+
+       q      Quit the program
+
+BUGS
+       This  program  is very CPU intensive.  Don&#x27;t be surprised if it eats up
+       over 40% of your CPU at times.
+
+HOMEPAGE
+       http://www.github.com/abishekvashok/cmatrix
+
+                                Mon May 3 1999                      CMatrix(1)
+</pre></body></html>

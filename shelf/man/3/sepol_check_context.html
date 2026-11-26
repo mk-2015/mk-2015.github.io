@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sepol_check_context(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>sepol...ontext(3)  SE Linux binary policy API documentation  sepol...ontext(3)
+
+NAME
+       sepol_check_context  - Check the validity of a security context against
+       a binary policy.
+
+SYNOPSIS
+       #include &lt;sepol/sepol.h&gt;
+
+       int sepol_check_context(const char *context);
+
+       int sepol_set_policydb_from_file(FILE *fp);
+
+
+DESCRIPTION
+       sepol_check_context checks the validity of a security context against a
+       binary  policy  previously  loaded  from  a  file  via  sepol_set_poli‐
+       cydb_from_file.   It is used by setfiles -c to validate a file contexts
+       configuration against the binary policy upon policy builds.  For  vali‐
+       dating a context against the active policy on a SELinux system, use se‐
+       curity_check_context from libselinux instead.
+
+
+RETURN VALUE
+       Returns 0 on success or -1 with errno set otherwise.
+
+stephen.smalley.work@gmail.com   15 March 2005               sepol...ontext(3)
+</pre></body></html>

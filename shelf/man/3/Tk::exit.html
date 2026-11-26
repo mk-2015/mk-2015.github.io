@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::exit(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>exit(3pm)             User Contributed Perl Documentation            exit(3pm)
+
+NAME
+       Tk::exit - End the application
+
+SYNOPSIS
+           use Tk qw(exit);
+           ...
+           B&lt;exit&gt;?(I&lt;returnCode&gt;)?;
+
+DESCRIPTION
+       Terminate the process, returning returnCode to the system as the exit
+       status.  If returnCode isn&#x27;t specified then it defaults to 0.
+
+       If calling &quot;exit&quot; from code invoked via a Tk callback then this Tk
+       version of &quot;exit&quot; cleans up more reliably than using the perl &quot;exit&quot;.
+
+CAVEATS
+       Using &quot;exit&quot; from a forked process will terminate both the child
+       process and the parent process. As &quot;Tk::exit&quot; is imported by default
+       one should use &quot;CORE::exit&quot; in the forked process instead.
+
+KEYWORDS
+       exit, process
+
+perl v5.40.1                      2025-04-13                         exit(3pm)
+</pre></body></html>

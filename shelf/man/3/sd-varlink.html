@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sd-varlink(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>SD-VARLINK(3)                     sd-varlink                     SD-VARLINK(3)
+
+NAME
+       sd-varlink - APIs for Varlink IPC
+
+SYNOPSIS
+       #include &lt;systemd/sd-varlink.h&gt;
+
+
+       pkg-config --cflags --libs libsystemd
+
+DESCRIPTION
+       sd-varlink.h is part of libsystemd(3) and provides APIs for
+       implementing Varlink IPC clients and services. See https://varlink.org/
+       for more information about Varlink IPC.
+
+       Varlink IPC uses JSON[1] as marshalling format. The sd-varlink API
+       relies on the sd-json(3) API for JSON serialization, deserialization
+       and manipulation.
+
+       The varlinkctl(1) tool makes the functionality implemented by
+       sd-varlink available from the command line.
+
+NOTES
+       Functions described here are available as a shared library, which can
+       be compiled against and linked to with the libsystemd pkg-config(1)
+       file.
+
+       The code described here uses getenv(3), which is declared to be not
+       multi-thread-safe. This means that the code calling the functions
+       described here must not call setenv(3) from a parallel thread. It is
+       recommended to only do calls to setenv() from an early phase of the
+       program when no other threads have been started.
+
+SEE ALSO
+       systemd(1), sd-event(3), sd-json(3), varlinkctl(1), sd-bus(3), pkg-
+       config(1)
+
+NOTES
+        1. JSON
+           https://json.org/
+
+systemd 257.13                                                   SD-VARLINK(3)
+</pre></body></html>

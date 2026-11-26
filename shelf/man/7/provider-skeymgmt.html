@@ -1,0 +1,173 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>provider-skeymgmt(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>PROVIDER-SKEYMGMT(7SSL)             OpenSSL            PROVIDER-SKEYMGMT(7SSL)
+
+NAME
+       provider-skeymgmt - The SKEYMGMT library &lt;-&gt; provider functions
+
+SYNOPSIS
+        #include &lt;openssl/core_dispatch.h&gt;
+
+        /*
+         * None of these are actual functions, but are displayed like this for
+         * the function signatures for functions that are offered as function
+         * pointers in OSSL_DISPATCH arrays.
+         */
+
+        /* Key object destruction */
+        void OSSL_FUNC_skeymgmt_free(void *keydata);
+
+        /* Key object import and export functions */
+        void *OSSL_FUNC_skeymgmt_import(void *provctx, int selection,
+                                        const OSSL_PARAM params[]);
+        int OSSL_FUNC_skeymgmt_export(void *keydata, int selection,
+                                      OSSL_CALLBACK *param_cb, void *cbarg);
+        void *OSSL_FUNC_skeymgmt_generate(void *provctx,
+                                          const OSSL_PARAM params[]);
+        const OSSL_PARAM *OSSL_FUNC_skeymgmt_gen_settable_params(void *provctx);
+        const OSSL_PARAM *OSSL_FUNC_skeymgmt_imp_settable_params(void *provctx);
+        const char *OSSL_FUNC_skeymgmt_get_key_id(void *keydata);
+
+DESCRIPTION
+       The SKEYMGMT operation doesn&#x27;t have much public visibility in the
+       OpenSSL libraries, rather it is an internal operation that is designed
+       to work with operations that use opaque symmetric keys objects.
+
+       The SKEYMGMT operation shares knowledge with the operations it works
+       with, therefore the SKEYMGMT and the algorithms which use it must
+       belong to the same provider.  The OpenSSL libraries will ensure that
+       they do.
+
+       The primary responsibility of the SKEYMGMT operation is to hold the
+       provider side key data for the OpenSSL library EVP_SKEY structure.
+
+       All &quot;functions&quot; mentioned here are passed as function pointers between
+       libcrypto and the provider in OSSL_DISPATCH(3) arrays via
+       OSSL_ALGORITHM(3) arrays that are returned by the provider&#x27;s
+       provider_query_operation() function (see &quot;Provider Functions&quot; in
+       provider-base(7)).
+
+       All these &quot;functions&quot; have a corresponding function type definition
+       named OSSL_FUNC_{name}_fn, and a helper function to retrieve the
+       function pointer from a OSSL_DISPATCH(3) element named
+       OSSL_FUNC_{name}.
+
+       OSSL_DISPATCH(3) arrays are indexed by numbers that are provided as
+       macros in openssl-core_dispatch.h(7), as follows:
+
+        OSSL_FUNC_skeymgmt_free                 OSSL_FUNC_SKEYMGMT_FREE
+
+        OSSL_FUNC_skeymgmt_import               OSSL_FUNC_SKEYMGMT_IMPORT
+        OSSL_FUNC_skeymgmt_export               OSSL_FUNC_SKEYMGMT_EXPORT
+
+        OSSL_FUNC_skeymgmt_generate             OSSL_FUNC_SKEYMGMT_GENERATE
+
+        OSSL_FUNC_skeymgmt_get_key_id           OSSL_FUNC_SKEYMGMT_GET_KEY_ID
+        OSSL_FUNC_skeymgmt_imp_settable_params  OSSL_FUNC_SKEYMGMT_IMP_SETTABLE_PARAMS
+        OSSL_FUNC_skeymgmt_gen_settable_params  OSSL_FUNC_SKEYMGMT_GEN_SETTABLE_PARAMS
+
+       The SKEYMGMT management is inspired by KEYMGMT but is simpler.
+
+   Key Objects
+       A key object is a collection of data for an symmetric key, and is
+       represented as keydata in this manual.
+
+       The exact contents of a key object are defined by the provider, and it
+       is assumed that different operations in one and the same provider use
+       the exact same structure to represent this collection of data, so that
+       for example, a key object that has been created using the SKEYMGMT
+       interface can be passed as is to other algorithms from the same
+       provider operations, such as OSSL_FUNC_mac_init_opaque() (see
+       provider-mac(7)).
+
+       With the export SKEYMGMT function, it&#x27;s possible to select a specific
+       subset of data to handle, governed by the bits in a selection
+       indicator.  The bits are:
+
+       OSSL_SKEYMGMT_SELECT_SECRET_KEY
+           Indicating  that the secret key raw bytes in a key object should be
+           included.
+
+       OSSL_SKEYMGMT_SELECT_PARAMETERS
+           Indicating that the parameters in a key object should be included.
+
+       Combined selector bits are also defined for easier use:
+
+       OSSL_SKEYMGMT_SELECT_ALL
+           Indicating that everything in a key object should be included.
+
+       The exact interpretation of those bits or how they combine is  left  to
+       each function where you can specify a selector.
+
+   Destructing Function
+       OSSL_FUNC_skeymgmt_free() should free the passed keydata.
+
+   Key Object Import and Export Functions
+       OSSL_FUNC_skeymgmt_import() should import data into keydata with values
+       taken  from  the  OSSL_PARAM(3)  array params. It allocates the keydata
+       object (there is no separate allocation function).
+
+       OSSL_FUNC_skeymgmt_imp_settable_params() returns a list  of  parameters
+       that can be provided to the OSSL_FUNC_skeymgmt_import() function.
+
+       OSSL_FUNC_skeymgmt_export()   should   extract   values   indicated  by
+       selection from keydata, create an OSSL_PARAM(3)  array  with  them  and
+       call  param_cb  with that array as well as the given cbarg.  The passed
+       OSSL_PARAM(3) array is transient and is  freed  upon  the  return  from
+       param_cb.
+
+   Key Object Generation Functions
+       OSSL_FUNC_skeymgmt_generate() creates a new key according to the values
+       taken  from  the  OSSL_PARAM(3)  array params. It allocates the keydata
+       object.
+
+       OSSL_FUNC_skeymgmt_gen_settable_params() returns a list  of  parameters
+       that can be provided to the OSSL_FUNC_skeymgmt_generate() function.
+
+   Key Object Information functions
+       OSSL_FUNC_skeymgmt_get_key_id()   returns   a   NUL-terminated   string
+       identifying the particular key. The returned string will be freed by  a
+       call  to  EVP_SKEY_free() so callers need to copy it themselves if they
+       want to preserve the value past the key lifetime.  The purpose of  this
+       function  is providing a printable string that can help users to access
+       the specific key.  The content of this string is provider-specific.
+
+   Common Import and Export Parameters
+       See OSSL_PARAM(3) for further details on the parameters structure.
+
+       Common information parameters currently recognised by built-in skeymgmt
+       algorithms are as follows:
+
+       &quot;raw-bytes&quot; (SKEY_PARAM_RAW_BYTES) &lt;octet string&gt;
+           The value represents symmetric key as a byte array.
+
+       &quot;key-length&quot; (SKEY_PARAM_KEY_LENGTH) &lt;integer&gt;
+           The value is the byte length of the given key.
+
+RETURN VALUES
+       OSSL_FUNC_skeymgmt_import() and OSSL_FUNC_skeymgmt_generate() return  a
+       pointer to an allocated object on success and NULL on error.
+
+       OSSL_FUNC_skeymgmt_export() returns 1 for success or 0 on error.
+
+       OSSL_FUNC_skeymgmt_get_key_id()  returns  a  pointer  to a 0-terminated
+       string or NULL.
+
+       OSSL_FUNC_skeymgmt_gen_settable_params()                            and
+       OSSL_FUNC_skeymgmt_imp_settable_params()  return references to an array
+       of OSSL_PARAM which can be NULL if there are no settable parameters.
+
+SEE ALSO
+       provider(7), EVP_SKEY(3), EVP_KEYMGMT(3)
+
+HISTORY
+       The SKEYMGMT interface was introduced in OpenSSL 3.5.
+
+COPYRIGHT
+       Copyright 2024-2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09           PROVIDER-SKEYMGMT(7SSL)
+</pre></body></html>

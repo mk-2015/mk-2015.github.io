@@ -1,0 +1,209 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Tree(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Tree(3pm)             User Contributed Perl Documentation            Tree(3pm)
+
+NAME
+       Tk::Tree - Create and manipulate Tree widgets
+
+SYNOPSIS
+           use Tk::Tree;
+
+           $tree = $parent-&gt;Tree(?options?);
+
+SUPER-CLASS
+       The Tree class is derived from the HList class and inherits all the
+       methods, options and subwidgets of its super-class.  A Tree widget is
+       not scrolled by default.
+
+STANDARD OPTIONS
+       Tree supports all the standard options of an HList widget.  See
+       Tk::options for details on the standard options.
+
+WIDGET-SPECIFIC OPTIONS
+       Name:          browseCmd
+       Class:         BrowseCmd
+       Switch:        -browsecmd
+           Specifies  a callback to call whenever the user browses on an entry
+           (usually by single-clicking on the entry). The callback  is  called
+           with one argument, the pathname of the entry.
+
+       Name:          closeCmd
+       Class:         CloseCmd
+       Switch:        -closecmd
+           Specifies  a  callback to call whenever an entry needs to be closed
+           (See &quot;BINDINGS&quot; below). This method is called  with  one  argument,
+           the  pathname  of the entry. This method should perform appropriate
+           actions to close the specified entry. If the  -closecmd  option  is
+           not  specified,  the  default  closing  action is to hide all child
+           entries of the specified entry.
+
+       Name:          command
+       Class:         Command
+       Switch:        -command
+           Specifies a callback to call whenever the user activates  an  entry
+           (usually  by  double-clicking on the entry). The callback is called
+           with one argument, the pathname of the entry.
+
+       Name:          ignoreInvoke
+       Class:         IgnoreInvoke
+       Switch:        -ignoreinvoke
+           A Boolean value that specifies when a branch should  be  opened  or
+           closed.  A  branch  will  always  be opened or closed when the user
+           presses the (+) and (-) indicators. However, when the user  invokes
+           a branch (by doublc-clicking or pressing &lt;Return&gt;), the branch will
+           be  opened  or  closed  only  if -ignoreinvoke is set to false (the
+           default setting).
+
+       Name:          openCmd
+       Class:         OpenCmd
+       Switch:        -opencmd
+           Specifies a callback to call whenever an entry needs to  be  opened
+           (See  &quot;BINDINGS&quot;  below).  This method is called with one argument,
+           the pathname of the entry. This method should  perform  appropriate
+           actions  to open the specified entry. If the -opencmd option is not
+           specified, the default opening action is  to  show  all  the  child
+           entries of the specified entry.
+
+DESCRIPTION
+       The  Tree  method  creates a new window and makes it into a Tree widget
+       and return a reference to it.  Additional options, described above, may
+       be specified on the command line or in the option database to configure
+       aspects of the Tree widget such as its cursor and relief.
+
+       The Tree widget can be used to display  hierarchical  data  in  a  tree
+       form.  The  user  can adjust the view of the tree by opening or closing
+       parts of the tree.
+
+       To display a static tree structure, you can add the  entries  into  the
+       Tree  widget  and  hide  any  entries as desired. Then you can call the
+       autosetmode method. This will set up the Tree widget so that it handles
+       all the open and close events automatically.  the demonstration program
+       Tixish/examples/perl-tix-tree).
+
+       The above method is not applicable if you want to  maintain  a  dynamic
+       tree  structure,  i.e,  you do not know all the entries in the tree and
+       you need to add or delete entries subsequently. To do this, you  should
+       first  create  the  entries  in  the Tree widget. Then, use the setmode
+       method to indicate the entries that can be opened or  closed,  and  use
+       the  -opencmd  and  -closecmd options to handle the opening and closing
+       events.      (Please      see      the      demonstration       program
+       Tixish/examples/perl-tix-dyntree).
+
+       Use either
+
+           $parent-&gt;Scrolled(&#x27;Tree&#x27;, ... );
+
+       or
+
+           $parent-&gt;ScrlTree( ... );
+
+       to create a scrolled Tree. See Tk::Scrolled for details.
+
+WIDGET METHODS
+       The  Tree  method  creates  a  widget object.  This object supports the
+       configure and cget methods described in Tk::options which can  be  used
+       to  enquire  and  modify  the options described above.  The widget also
+       inherits all the methods provided by the generic Tk::Widget class.
+
+       The following additional methods are available for Tree widgets:
+
+       $tree-&gt;add_pathimage(treeRegExp [, openImg, closeImg])
+           This method defines images for a given path (images must be in  xpm
+           format).  The  path  can  be  determined  by  a  simplified regular
+           expression. There are just three metasymbols:
+
+           ^   at the beginning of the &quot;treeRegExp&quot; same as  in  Perl  regular
+               expressions
+
+           *   anything
+
+           $   at  the  end  of  the &quot;TreeRegExp&quot;, the same as in Perl regular
+               expressions
+
+           Examples:
+
+             $tree-&gt;add_pathimage(&#x27;^root&#x27;,&#x27;openfolder&#x27;,&#x27;folder&#x27;);
+
+           matches &quot;root&quot;, &quot;root.foo&quot;, &quot;root.bar&quot;, but not &quot;foo.root&quot;
+
+             $tree-&gt;add_pathimage(&#x27;root.*.class&#x27;,&#x27;openfolder&#x27;,&#x27;folder&#x27;);
+
+           matches  all  paths  containing  &quot;root.&lt;anything&gt;.class&quot;,  but  not
+           &quot;root.&lt;anything&gt;.&lt;anything&gt;.class&quot;  &quot;*&quot; is one part of the path. If
+           you want to use a wildcard for two steps, you have to use &quot;*.*&quot;.
+
+             $tree-&gt;add_pathimage(&#x27;class$&#x27;,&#x27;openfolder&#x27;,&#x27;folder&#x27;);
+
+           This matches all path with &quot;class&quot; at the end.
+
+       $tree-&gt;autosetmode
+           This method calls the setmode method for all the  entries  in  this
+           Tree  widget:  if an entry has no child entries, its mode is set to
+           none. Otherwise, if the entry has any  hidden  child  entries,  its
+           mode is set to open; otherwise its mode is set to close.
+
+       $tree-&gt;child_entries([$path][,$depth])
+           This  method  returns  in  list  context an array that contains all
+           pathnames of subentries within the given path. In scalar context it
+           returns the number of subentries in the given path.
+
+             Example:
+               root
+                | foo
+                | bar
+                |  | bar1
+                |  | bar2
+
+             my @childentries = $tree-&gt;child_entries(&#x27;root.bar&#x27;);
+             # returns (root.bar.bar1, root.bar.bar2)
+
+             my $nr_of_subentries = $tree-&gt;child_entries(&#x27;root&#x27;,2);
+             # returns 4
+
+           If $path is omitted, all it is assumed, that the entry above &#x27;root&#x27;
+           is meant. $depth defines the numbers of levels.
+
+       $tree-&gt;close(entryPath)
+           Close the entry given by entryPath if its mode is close.
+
+       $tree-&gt;getmode(entryPath)
+           Returns the current mode of the entry given by entryPath.
+
+       $tree-&gt;open(entryPath)
+           Open the entry given by entryPath if its mode is open.
+
+       $tree-&gt;setmode(entryPath, mode)
+           This method  is  used  to  indicate  whether  the  entry  given  by
+           entryPath  has  children  entries  and  whether  the  children  are
+           visible. mode must be one of open, close or none. If mode is set to
+           open, a (+) indicator is drawn next to the entry. If mode is set to
+           close, a (-) indicator is drawn next to the entry. If mode  is  set
+           to  none,  no  indicators will be drawn for this entry. The default
+           mode is none. The open mode indicates the entry has hidden children
+           and this entry can be opened by the user. The close mode  indicates
+           that  all  the  children of the entry are now visible and the entry
+           can be closed by the user.
+
+BINDINGS
+       The basic mouse and keyboard bindings of the Tree widget are  the  same
+       as  the  bindings of the HList widget.  In addition, the entries can be
+       opened or closed under the following conditions:
+
+       [1] If the mode of the entry is open, it can be opened by  clicking  on
+           its (+) indicator.
+
+       [2] If  the mode of the entry is close, it can be closed by clicking on
+           its (-) indicator.
+
+SEE ALSO
+       Tk::HList
+
+AUTHOR
+       Perl/TK version by Chris  Dean  &lt;ctdean@cogit.com&gt;.   Original  Tcl/Tix
+       version by Ioi Kim Lam.
+
+       Additions by Renee Baecker &lt;module@renee-baecker.de&gt;
+
+ACKNOWLEDGEMENTS
+       Thanks to Achim Bohnet &lt;ach@mpe.mpg.de&gt; for all his help.
+
+perl v5.40.1                      2025-04-13                         Tree(3pm)
+</pre></body></html>

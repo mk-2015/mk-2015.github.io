@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-jackdbus-detect(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...s-detect(7) Miscellaneous Information Manual libpipew...s-detect(7)
+
+NAME
+       libpipewire-module-jackdbus-detect - JACK DBus detect
+
+DESCRIPTION
+       Automatically creates a sink/source when a jackdbus server is started
+       and connect to JACK.
+
+MODULE NAME
+       libpipewire-module-jackdbus-detect
+
+MODULE OPTIONS
+       There are no module-specific options, all arguments are passed to JACK
+       Tunnel.
+
+CONFIG OVERRIDE
+       A module.jackdbus-detect.args config section can be added to override
+       the module arguments.
+
+       # ~/.config/pipewire/pipewire.conf.d/my-jack-dbus-detect-args.conf
+
+       module.jackdbus-detect.args = {
+           #tunnel.mode    = duplex
+       }
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-jack-dbus-detect.conf
+
+       context.modules = [
+        {   name = libpipewire-module-jackdbus-detect
+            args {
+               #jack.server    = null
+               #tunnel.mode    = duplex
+               #audio.channels = 2
+               #audio.position = [ FL FR ]
+               source.props = {
+                   # extra sink properties
+               }
+               sink.props = {
+                   # extra sink properties
+               }
+            }
+        }
+       ]
+
+PipeWire                             1.4.2              libpipew...s-detect(7)
+</pre></body></html>

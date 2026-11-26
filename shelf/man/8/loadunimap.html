@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>loadunimap(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>LOADUNIMAP(8)               System Manager&#x27;s Manual              LOADUNIMAP(8)
+
+NAME
+       loadunimap - load the kernel unicode-to-font mapping table
+
+SYNOPSIS
+       loadunimap [options] [map]
+
+DESCRIPTION
+       The  loadunimap command is obsolete - its function is now built-in into
+       setfont(8).  However, for backwards compatibility it is still available
+       as a separate command.
+
+       The program loadunimap loads the specified map in the  kernel  unicode-
+       to-font  mapping  table.   If  no map is given def mapping table is as‐
+       sumed.  The default extension (that can be omitted) is .uni.
+
+       On Linux 2.6.1 and later one can specify the console device  using  the
+       -C option.
+
+       Usually  one  does  not call loadunimap directly - its function is also
+       built into setfont(8).
+
+OPTIONS
+       -o, --output=FILE
+              save the old map to the FILE.
+
+       -C, --console=DEV
+              the console device to be used.
+
+       -V, --version
+              print version number.
+
+       -h, --help
+              print this usage message.
+
+FILES
+       /usr/share/unimaps
+              The default directory for unicode mappings.
+
+       /usr/share/unimaps/def.uni
+              The default mapping file.
+
+AUTHORS
+       Andries Brouwer &lt;aeb@cwi.nl&gt;
+
+SEE ALSO
+       mapscrn(8), setfont(8)
+
+
+kbd                             24 October 2024                  LOADUNIMAP(8)
+</pre></body></html>

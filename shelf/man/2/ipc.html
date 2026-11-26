@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ipc(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ipc(2)                        System Calls Manual                       ipc(2)
+
+NAME
+       ipc - System V IPC system calls
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/ipc.h&gt;        /* Definition of needed constants */
+       #include &lt;sys/syscall.h&gt;      /* Definition of SYS_* constants */
+       #include &lt;unistd.h&gt;
+
+       int syscall(SYS_ipc, unsigned int call, int first,
+                   unsigned long second, unsigned long third, void *ptr,
+                   long fifth);
+
+       Note:  glibc  provides  no  wrapper for ipc(), necessitating the use of
+       syscall(2).
+
+DESCRIPTION
+       ipc() is a common kernel entry point for the  System V  IPC  calls  for
+       messages,  semaphores,  and  shared  memory.  call determines which IPC
+       function to invoke; the other arguments are passed through to  the  ap‐
+       propriate call.
+
+       User-space  programs  should  call  the  appropriate functions by their
+       usual names.  Only standard library  implementors  and  kernel  hackers
+       need to know about ipc().
+
+VERSIONS
+       On some architectures—for example x86-64 and ARM—there is no ipc() sys‐
+       tem  call;  instead,  msgctl(2), semctl(2), shmctl(2), and so on really
+       are implemented as separate system calls.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       msgctl(2), msgget(2), msgrcv(2), msgsnd(2), semctl(2),  semget(2),  se‐
+       mop(2),   semtimedop(2),   shmat(2),  shmctl(2),  shmdt(2),  shmget(2),
+       sysvipc(7)
+
+Linux man-pages 6.9.1             2024-05-02                            ipc(2)
+</pre></body></html>

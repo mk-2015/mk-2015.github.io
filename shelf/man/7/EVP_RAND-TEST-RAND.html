@@ -1,0 +1,97 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_RAND-TEST-RAND(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_RAND-TEST-RAND(7SSL)            OpenSSL           EVP_RAND-TEST-RAND(7SSL)
+
+NAME
+       EVP_RAND-TEST-RAND - The test EVP_RAND implementation
+
+DESCRIPTION
+       Support for a test generator through the EVP_RAND API. This generator
+       is for test purposes only, it does not generate random numbers.
+
+   Identity
+       &quot;TEST-RAND&quot; is the name for this implementation; it can be used with
+       the EVP_RAND_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;state&quot; (OSSL_RAND_PARAM_STATE) &lt;integer&gt;
+       &quot;fips-indicator&quot; (OSSL_RAND_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           These parameter works as described in &quot;PARAMETERS&quot; in EVP_RAND(3).
+
+       &quot;strength&quot; (OSSL_RAND_PARAM_STRENGTH) &lt;unsigned integer&gt;
+       &quot;reseed_requests&quot; (OSSL_DRBG_PARAM_RESEED_REQUESTS) &lt;unsigned integer&gt;
+       &quot;reseed_time_interval&quot; (OSSL_DRBG_PARAM_RESEED_TIME_INTERVAL) &lt;integer&gt;
+       &quot;max_request&quot; (OSSL_DRBG_PARAM_RESEED_REQUESTS) &lt;unsigned integer&gt;
+       &quot;min_entropylen&quot; (OSSL_DRBG_PARAM_MIN_ENTROPYLEN) &lt;unsigned integer&gt;
+       &quot;max_entropylen&quot; (OSSL_DRBG_PARAM_MAX_ENTROPYLEN) &lt;unsigned integer&gt;
+       &quot;min_noncelen&quot; (OSSL_DRBG_PARAM_MIN_NONCELEN) &lt;unsigned integer&gt;
+       &quot;max_noncelen&quot; (OSSL_DRBG_PARAM_MAX_NONCELEN) &lt;unsigned integer&gt;
+       &quot;max_perslen&quot; (OSSL_DRBG_PARAM_MAX_PERSLEN) &lt;unsigned integer&gt;
+       &quot;max_adinlen&quot; (OSSL_DRBG_PARAM_MAX_ADINLEN) &lt;unsigned integer&gt;
+       &quot;reseed_counter&quot; (OSSL_DRBG_PARAM_RESEED_COUNTER) &lt;unsigned integer&gt;
+           These  parameters work as described in &quot;PARAMETERS&quot; in EVP_RAND(3),
+           except that they can all be set as well as read.
+
+       &quot;test_entropy&quot; (OSSL_RAND_PARAM_TEST_ENTROPY) &lt;octet string&gt;
+           Sets the bytes returned when the test generator is sent an  entropy
+           request.  The current position is remembered across generate calls.
+           If  there are insufficient data present to satisfy a call, an error
+           is returned.
+
+       &quot;test_nonce&quot; (OSSL_RAND_PARAM_TEST_NONCE) &lt;octet string&gt;
+           Sets the bytes returned when the test generator  is  sent  a  nonce
+           request.  Each nonce request will return all of the bytes.
+
+       &quot;generate&quot; (OSSL_RAND_PARAM_GENERATE) &lt;integer&gt;
+           If  this parameter is zero, it will only emit the nonce and entropy
+           data supplied via the aforementioned  parameters.   Otherwise,  low
+           quality  non-cryptographic  pseudorandom  output is produced.  This
+           parameter defaults to zero.
+
+NOTES
+       A context for a test generator can be obtained by calling:
+
+        EVP_RAND *rand = EVP_RAND_fetch(NULL, &quot;TEST-RAND&quot;, NULL);
+        EVP_RAND_CTX *rctx = EVP_RAND_CTX_new(rand, NULL);
+
+EXAMPLES
+        EVP_RAND *rand;
+        EVP_RAND_CTX *rctx;
+        unsigned char bytes[100];
+        OSSL_PARAM params[4], *p = params;
+        unsigned char entropy[1000] = { ... };
+        unsigned char nonce[20] = { ... };
+        unsigned int strength = 48;
+
+        rand = EVP_RAND_fetch(NULL, &quot;TEST-RAND&quot;, NULL);
+        rctx = EVP_RAND_CTX_new(rand, NULL);
+        EVP_RAND_free(rand);
+
+        *p++ = OSSL_PARAM_construct_uint(OSSL_RAND_PARAM_STRENGTH, &amp;strength);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_RAND_PARAM_TEST_ENTROPY,
+                                                 entropy, sizeof(entropy));
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_RAND_PARAM_TEST_NONCE,
+                                                 nonce, sizeof(nonce));
+        *p = OSSL_PARAM_construct_end();
+        EVP_RAND_instantiate(rctx, strength, 0, NULL, 0, params);
+
+        EVP_RAND_generate(rctx, bytes, sizeof(bytes), strength, 0, NULL, 0);
+
+        EVP_RAND_CTX_free(rctx);
+
+SEE ALSO
+       EVP_RAND(3), &quot;PARAMETERS&quot; in EVP_RAND(3)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2020-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09          EVP_RAND-TEST-RAND(7SSL)
+</pre></body></html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-netjack2-driver(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...2-driver(7) Miscellaneous Information Manual libpipew...2-driver(7)
+
+NAME
+       libpipewire-module-netjack2-driver - Netjack2 driver
+
+DESCRIPTION
+       The netjack2-driver module provides a source or sink that is following
+       a netjack2 manager.
+
+MODULE NAME
+       libpipewire-module-netjack2-driver
+
+MODULE OPTIONS
+       • driver.mode: the driver mode, sink|source|duplex, default duplex
+
+       • local.ifname = &lt;str&gt;: interface name to use
+
+       • net.ip =&lt;str&gt;: multicast IP address, default &#x27;225.3.19.154&#x27;
+
+       • net.port =&lt;int&gt;: control port, default 19000
+
+       • net.mtu = &lt;int&gt;: MTU to use, default 1500
+
+       • net.ttl = &lt;int&gt;: TTL to use, default 1
+
+       • net.loop = &lt;bool&gt;: loopback multicast, default false
+
+       • source.ip =&lt;str&gt;: IP address to bind to, default &#x27;0.0.0.0&#x27;
+
+       • source.port =&lt;int&gt;: port to bind to, default 0 (allocate)
+
+       • netjack2.client-name: the name of the NETJACK2 client.
+
+       • netjack2.save: if jack port connections should be save automatically.
+         Can also be placed per stream.
+
+       • netjack2.latency: the latency in cycles, default 2
+
+       • audio.channels:  the  number of audio ports. Can also be added to the
+         stream props.
+
+       • midi.ports: the number of midi ports. Can also be added to the stream
+         props.
+
+       • source.props: Extra properties for the source filter.
+
+       • sink.props: Extra properties for the sink filter.
+
+GENERAL OPTIONS
+       Options with well-known behavior.
+
+       • remote.name
+
+       • audio.channels
+
+       • audio.position
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.virtual
+
+       • media.class
+
+       • target.object to specify the remote node.name or serial.id to link to
+
+EXAMPLE CONFIGURATION OF A DUPLEX SINK/SOURCE
+       # ~/.config/pipewire/pipewire.conf.d/my-netjack2-driver.conf
+
+       context.modules = [
+       {   name = libpipewire-module-netjack2-driver
+           args = {
+               #driver.mode          = duplex
+               #netjack2.client-name = PipeWire
+               #netjack2.save        = false
+               #netjack2.latency     = 2
+               #midi.ports           = 0
+               #audio.channels       = 2
+               #audio.position       = [ FL FR ]
+               source.props = {
+                   # extra sink properties
+               }
+               sink.props = {
+                   # extra sink properties
+               }
+           }
+       }
+       ]
+
+PipeWire                             1.4.2              libpipew...2-driver(7)
+</pre></body></html>

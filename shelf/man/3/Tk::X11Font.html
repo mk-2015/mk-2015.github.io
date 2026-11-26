@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::X11Font(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>X11Font(3pm)          User Contributed Perl Documentation         X11Font(3pm)
+
+NAME
+       Tk::Font - a class for finding X Fonts
+
+SYNOPSIS
+        use Tk::X11Font;
+
+        $font = $widget-&gt;X11Font(foundry =&gt; &#x27;adobe&#x27;,
+                              family  =&gt; &#x27;times&#x27;,
+                              point   =&gt; 120
+                             );
+
+        $font = $widget-&gt;X11Font(&#x27;*-courier-medium-r-normal-*-*&#x27;);
+
+DESCRIPTION
+          This module can be use to interrogate the X server what fonts are
+          available.
+
+METHODS
+   Foundry( [ $val ] )
+   Family( [ $val ] )
+   Weight( [ $val ] )
+   Slant( [ $val ] )
+   Swidth( [ $val ] )
+   Adstyle( [ $val ] )
+   Pixel( [ $val ] )
+   Point( [ $val ] )
+   Xres( [ $val ] )
+   Yres( [ $val ] )
+   Space( [ $val ] )
+   Avgwidth( [ $val ] )
+   Registry( [ $val ] )
+   Encoding( [ $val ] )
+       Set the given field in the font name to $val if given and return the
+       current or previous value
+
+   Name( [ $max ] )
+       In a list context it returns a list of all font names that match the
+       fields given. It will return a maximum of $max names, or 128 if $max is
+       not given.
+
+       In a scalar contex it returns the first matching name or undef
+
+   Clone( [ key =&gt; value, [ ...]] )
+       Create a duplicate of the curent font object and modify the given
+       fields
+
+AUTHOR
+       Graham Barr &lt;Graham.Barr@tiuk.ti.com&gt;
+
+HISTORY
+       11-Jan-96 Initial version
+
+       08-Nov-98 Renamed for Tk800.012
+
+COPYRIGHT
+       Copyright (c) 1995-1996 Graham Barr. All rights reserved. This program
+       is free software; you can redistribute it and/or modify it under the
+       same terms as Perl itself.
+
+perl v5.40.1                      2025-04-13                      X11Font(3pm)
+</pre></body></html>

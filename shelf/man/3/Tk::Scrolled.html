@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Scrolled(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Scrolled(3pm)         User Contributed Perl Documentation        Scrolled(3pm)
+
+NAME
+       Tk::Scrolled - Create a widget with attached scrollbar(s)
+
+SYNOPSIS
+           $whatever = $parent-&gt;Scrolled(Whatever ?,-scrollbars=&gt;where?
+       ?,...?);
+
+DESCRIPTION
+       To stop a flood of ScrlWhatever widgets Perl/Tk introcuded the special
+       constructor Scrolled.  Scrolled creates a widget of the given Class
+       Whatever with attached scrollbar(s).
+
+OPTIONS
+       All options beside -scrollbars explained below are passed to the
+       Whatever widget constructor.
+
+       -scrollbars
+           Expects  as  argument  the  position where the scrollbars should be
+           created:  w, e or n, s or a combination of them.   If  the  one  or
+           both  positions are prefixed with o the scrollbar will only show up
+           if there is a &#x27;real&#x27; need to scroll.
+
+ADVERTISED SUBWIDGETS
+       See &quot;Subwidget&quot; in Tk::mega how to use advertised widgets.
+
+       scrolled
+           the scrolled widget
+
+       widget
+           same as scrolled above.  widget is the kind  of  widget  passed  to
+           scrolled as first argument in all lowercase.
+
+       xscrollbar
+           the Scrollbar widget used for horizontal scrolling (if it exists)
+
+       yscrollbar
+           the Scrollbar widget used for vertical scrolling (if it exists)
+
+       corner
+           a frame in the corner between the vertical and horizontal scrolbar
+
+BUGS
+       If a widget does not support -{x,y}scrollcommand options, Scrolled does
+       not  complain  if  the  specified  widget  class does not support them.
+       E.g.,
+
+           $parent-&gt;Scrolled(&#x27;Button&#x27;, ...)
+
+       One does not get  an  error  message  or  warning  when  one  tries  to
+       configure scrollbars after the widget construction:
+
+           $ascrolled-&gt;configure(-scrollbars =&gt; &#x27;e&#x27;);
+
+SEE ALSO
+       Tk::Scrollbar
+
+KEYWORDS
+       scrolled, scrollbar
+
+perl v5.40.1                      2025-04-13                     Scrolled(3pm)
+</pre></body></html>

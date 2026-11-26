@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Dialog(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dialog(3pm)           User Contributed Perl Documentation          Dialog(3pm)
+
+NAME
+       Tk::Dialog - Create modal dialog and wait for a response.
+
+SYNOPSIS
+           $dialog = $parent-&gt;Dialog(-option =&gt; value, ... );
+
+DESCRIPTION
+       This procedure is part of the Tk script library - its arguments
+       describe a dialog box.  After creating a dialog box, Dialog waits for
+       the user to select one of the Buttons either by clicking on the Button
+       with the mouse or by typing return to invoke the default Button (if
+       any).  Then it returns the text string of the selected Button.
+
+       While waiting for the user to respond, Dialog sets a local grab.  This
+       prevents the user from interacting with the application in any way
+       except to invoke the dialog box.  See the Show() method.
+
+OPTIONS
+       The following option/value pairs are supported:
+
+       -title
+           Text to appear in the window manager&#x27;s title bar for the dialog.
+
+       -text
+           Message to appear in the top portion of the Dialog.
+
+       -bitmap
+           If  non-empty,  specifies a bitmap to display in the top portion of
+           the Dialog, to the left of the text.  If this is  an  empty  string
+           then no bitmap is displayed in the Dialog.
+
+       -default_button
+           Text label string of the Button that displays the default ring.
+
+       -buttons
+           A  reference  to  a  list  of  Button  label  strings.  Each string
+           specifies text to display in a Button, in order from left to right.
+
+METHODS
+       $answer = $dialog-&gt;Show(?-global?);
+           This method displays the Dialog, waits for the user&#x27;s response, and
+           stores the text string of  the  selected  Button  in  $answer.   If
+           -global   is  specified  a  global  (rather  than  local)  grab  is
+           performed.
+
+           The actual Dialog is  shown  using  the  Popup  method.  Any  other
+           options  supplied  to  Show are passed to Popup, and can be used to
+           position the Dialog  on  the  screen.  Please  read  Tk::Popup  for
+           details.
+
+ADVERTISED WIDGETS
+       Because  Tk::Dialog  is a subclass of Tk::DialogBox it inherits all the
+       advertised subwidgets of its superclass:  e.g.  &quot;B_button-text&quot;,  where
+       &#x27;button-text&#x27;  is  a  Button&#x27;s  -text  value.  Additionally, Tk::Dialog
+       advertises:
+
+       message
+           The dialog&#x27;s Label widget containing the message text.
+
+       bitmap
+           The dialog&#x27;s Label widget containing the bitmap image.
+
+EXAMPLE
+       $dialog = $mw-&gt;Dialog(-text =&gt; &#x27;Save  File?&#x27;,  -bitmap  =&gt;  &#x27;question&#x27;,
+       -title  =&gt;  &#x27;Save  File  Dialog&#x27;, -default_button =&gt; &#x27;Yes&#x27;, -buttons =&gt;
+       [qw/Yes No Cancel/);
+
+KEYWORDS
+       bitmap, dialog, modal, messageBox
+
+perl v5.40.1                      2025-04-13                       Dialog(3pm)
+</pre></body></html>

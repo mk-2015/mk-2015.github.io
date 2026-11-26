@@ -1,0 +1,153 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>guestfs-release-notes-1.54(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>guestfs-re...notes-1.54(1)  Virtualization Support  guestfs-re...notes-1.54(1)
+
+NAME
+       guestfs-release-notes - libguestfs Release Notes
+
+RELEASE NOTES FOR LIBGUESTFS 1.54
+       These are the release notes for libguestfs stable release 1.54.  This
+       describes the major changes since 1.52.
+
+       Libguestfs 1.54.0 was released on 8 October 2024.
+
+   Inspection
+       Add detection of Circle Linux (Bella Zhang).
+
+       Add support for LoongArch (liuxiang).
+
+       Add detection of Kylin (grass-lu).
+
+       Add detection of openEuler (Wang Guoquan).
+
+       &quot;PARTUUID&quot; and &quot;PARTLABEL&quot; are now resolved in guest /etc/fstab.
+
+   API
+       New APIs &quot;findfs_partuuid&quot; and &quot;findfs_partlabel&quot;.  These can be used
+       to efficiently look up a filesystem by its GPT partition UUID or label.
+
+       Support for the following inactive or infrequently used device types
+       has been removed: Gluster, Sheepdog, TFTP.
+
+       Add GOST R34.11-94 message digest algorithm to checksum APIs (Alexey
+       Shabalin).
+
+       Allow &quot;nbd+unix://&quot; URIs (NBD over Unix domain socket) in guestfish and
+       other places.
+
+       Various &quot;part_*&quot; (partition) APIs related to GPT have been
+       reimplemented to use util-linux sfdisk instead of sgdisk.  Util-linux
+       is more widely available, so this reduces dependencies in the common
+       case.  One optional API remains that still uses sgdisk.  (Thanks
+       Yongkui Guo).
+
+       Add &quot;cipher&quot; suboption to &quot;cryptsetup_open&quot; (Jonatan PÃ¥lsson).
+
+       Because of a bug, the &quot;part_get_gpt_attributes&quot; API could truncate the
+       return value from 64 to 32 bits.  This has been fixed.
+
+   Build changes
+       Fix btrfs compatibility with kernel changes in Linux 6.7.
+
+       Removed some compatibility code for versions of util-linux (sfdisk)
+       prior to 2014.
+
+       Pass CFLAGS through when building the Perl bindings.  In particular
+       this means that -g should be passed through correctly, enabling
+       debugging symbols.
+
+       Fix build on macOS (Antonio Caggiano).
+
+   Internals
+       Libguestfs will now no longer recommend using
+       &quot;LIBGUESTFS_BACKEND=direct&quot;.  This was shown previously when libvirt
+       failed to start the appliance.  However it is felt that this now does
+       more harm than good.
+
+       Fix generation of virt-customize --chown parameter (Yongkui Guo).
+
+       In the appliance, reduce boot time when dhcp isn&#x27;t needed (Olaf
+       Hering).
+
+       A deadlock in the appliance caused by a regression in Linux 6.11 has
+       been worked around.  The deadlock was also fixed in Linux 6.12.
+
+   Bugs fixed
+       https://bugzilla.redhat.com/2303267
+           Rare  hangs  while  starting  the  appliance,  at  &#x27;echo noop&#x27; into
+           /sys/block/{h,s,ub,v}d*/queue/scheduler
+
+       https://issues.redhat.com/browse/RHEL-35998
+           Drop dependency from libguestfs -&gt; gdisk
+
+       https://issues.redhat.com/browse/RHEL-46596
+           libguestfs   inspection   does   not    know    about    /etc/fstab
+           PARTLABEL=&lt;label&gt;
+
+       https://github.com/libguestfs/libguestfs/issues/136
+           1.52.0:  btrfs  related  c_api/tests  are failing (unable to create
+           quota group: Invalid argument)
+
+       https://github.com/libguestfs/libguestfs/issues/138
+           Python how-to incorrect exception name
+
+       https://github.com/libguestfs/libguestfs/issues/145
+            1.52.1: Rust test 410_close_event fails
+
+SEE ALSO
+       guestfs-examples(1),      guestfs-faq(1),       guestfs-performance(1),
+       guestfs-recipes(1),   guestfs-testing(1),   guestfs(3),   guestfish(1),
+       http://libguestfs.org/
+
+AUTHORS
+       Alexey Shabalin
+       Andi Chandler
+       Antonio Caggiano
+       Bella Zhang
+       grass-lu
+       Jonatan PÃ¥lsson
+       JÃ¼rgen HÃ¶tzel
+       liuxiang
+       Olaf Hering
+       Richard W.M. Jones
+       Wang Guoquan
+       Yuri Chornoivan
+       zhanchun li
+
+COPYRIGHT
+       Copyright (C) 2009-2024 Red Hat Inc.
+
+LICENSE
+       This program is free software; you can redistribute it and/or modify it
+       under the terms of the GNU General Public License as published  by  the
+       Free  Software Foundation; either version 2 of the License, or (at your
+       option) any later version.
+
+       This program is distributed in the hope that it  will  be  useful,  but
+       WITHOUT   ANY   WARRANTY;   without   even   the  implied  warranty  of
+       MERCHANTABILITY or FITNESS FOR  A  PARTICULAR  PURPOSE.   See  the  GNU
+       General Public License for more details.
+
+       You should have received a copy of the GNU General Public License along
+       with this program; if not, write to the Free Software Foundation, Inc.,
+       51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+BUGS
+       To   get   a   list   of   bugs  against  libguestfs,  use  this  link:
+       https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&amp;product=Virtualization+Tools
+
+       To  report   a   new   bug   against   libguestfs,   use   this   link:
+       https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&amp;product=Virtualization+Tools
+
+       When reporting a bug, please supply:
+
+       •   The version of libguestfs.
+
+       •   Where  you  got  libguestfs  (eg. which Linux distro, compiled from
+           source, etc)
+
+       •   Describe the bug accurately and give a way to reproduce it.
+
+       •   Run libguestfs-test-tool(1) and paste the complete, unedited output
+           into the bug report.
+
+libguestfs-1.54.1                 2025-02-18        guestfs-re...notes-1.54(1)
+</pre></body></html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Widget(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Widget(3pm)           User Contributed Perl Documentation          Widget(3pm)
+
+NAME
+       Tk::Widget - Base class of all widgets
+
+SYNOPSIS
+          package Tk::Whatever;
+          require Tk::Widget;
+          @ISA = qw(Tk::Widget);
+          Construct Tk::Widget &#x27;Whatever&#x27;;
+
+          sub Tk_cmd { \&amp;Tk::whatever }
+
+          $widget-&gt;method(?arg, arg, ...?)
+
+DESCRIPTION
+       The Tk::Widget is an abstract base class for all Tk widgets.
+
+       Generic methods available to all widgets include the methods based on
+       core &quot;winfo&quot; mechanism and are used to retrieve information about
+       windows managed by Tk. They can take any of a number of different
+       forms, depending on the method.  The legal forms are:
+
+       $widget-&gt;appname?(newName)?
+           If  newName  isn&#x27;t  specified,  this method returns the name of the
+           application (the  name  that  may  be  used  in  send  commands  to
+           communicate  with  the application).  If newName is specified, then
+           the name of the application is changed to newName.   If  the  given
+           name  is  already  in  use, then a suffix of the form `` #2&#x27;&#x27; or ``
+           #3&#x27;&#x27; is appended in order to make the name  unique.   The  method&#x27;s
+           result  is the name actually chosen.  newName should not start with
+           a capital letter.  This  will  interfere  with  option  processing,
+           since names starting with capitals are assumed to be classes;  as a
+           result,   Tk  may  not  be  able  to  find  some  options  for  the
+           application.  If sends have been  disabled  by  deleting  the  send
+           command,  this  command  will  re-enable them and recreate the send
+           command.
+
+       $widget-&gt;atom(name)
+           Returns a decimal string giving the integer identifier for the atom
+           whose name is name.  If no atom exists with the name  name  then  a
+           new one is created.
+
+       $widget-&gt;atomname(id)
+           Returns  the  textual name for the atom whose integer identifier is
+           id.  This command is the inverse of the $widget-&gt;atom command.   It
+           generates an error if no such atom exists.
+
+       $widget-&gt;bell( ?-nice? );
+           This  command rings the bell on the display for $widget and returns
+           an  empty  string.   The  command  uses  the  current  bell-related
+           settings  for the display, which may be modified with programs such
+           as xset.
+
+           If -nice  is  not specified, this command also  resets  the  screen
+           saver  for  the  screen.   Some screen savers will ignore this, but
+           others  will reset so that the screen becomes visible again.
+
+       $widget-&gt;bindDump
+           This command returns  a  list  of  strings  suitable  for  printing
+           detailing  binding  information for a widget.  It prints a widget&#x27;s
+           bindtags.  For  each  binding  tag  it  prints  all  the  bindings,
+           comprised  of  the  event  descriptor  and  the callback.  Callback
+           arguments are printed, and Tk::Ev objects are expanded.
+
+       $widget-&gt;Busy?(?-recurse =&gt; 1?,-option =&gt; value?)?
+           This method  configures  a  -cursor  option  for  $widget  and  (if
+           -recurse  =  1&gt; is specified) all its descendants. The cursor to be
+           set may be passed as -cursor =  cursor&gt;  or  defaults  to  &#x27;watch&#x27;.
+           Additional  configure options are applied to $widget only.  It also
+           adds a special tag  &#x27;Busy&#x27;  to  the  bindtags  of  the  widgets  so
+           configured   so   that    KeyPress,   KeyRelease,  ButtonPress  and
+           ButtonRelease events are ignored (with press  events  generating  a
+           call  to  bell).  It  then  acquires a local grab for $widget.  The
+           state of the widgets  and  the  grab  is  restored  by  a  call  to
+           $widget-&gt;Unbusy.
+
+       $widget-&gt;caret( ?-x =&gt; x?, ?-y =&gt; y?, ?-height =&gt; height? );
+           Sets  and  queries  the  caret  location  for  the  display  of the
+           specified Tk window window.  The caret is  the  per-display  cursor
+           location  used  for  indicating  global  focus (e.g. to comply with
+           Microsoft Accessibility guidelines), as well as for location of the
+           over-the-spot XIM (X Input Methods) or Windows IME windows.  If  no
+           options  are  specified, the last values used for setting the caret
+           are return in  option-value  pair  format.   -x  and  -y  represent
+           window-relative  coordinates,  and  -height  is  the  height of the
+           current cursor location, or the height of the specified  window  if
+           none is given.
+
+       $widget-&gt;cells
+           Returns  a  decimal  string giving the number of cells in the color
+           map for $widget.
+
+       $widget-&gt;children
+           $widget-&gt;children Returns a list containing  all  the  children  of
+           $widget.   The  list  is  in stacking order, with the lowest window
+           first.  Top-level windows are returned as children of their logical
+           parents.
+
+       $widget-&gt;class
+           Returns the class name for $widget.
+
+       $widget-&gt;colormapfull
+           Returns 1 if the colormap for  $widget  is  known  to  be  full,  0
+           otherwise.   The  colormap  for a window is ``known&#x27;&#x27; to be full if
+           the last attempt to allocate a new color on that window failed  and
+           this  application hasn&#x27;t freed any colors in the colormap since the
+           failed allocation.
+
+       $widget-&gt;ConfigSpecs
+           Used to perform delegated option configuration for  a  mega-widget.
+           Returns,      in     Tk::Derived::ConfigSpecs     notation     (see
+           Tk::ConfigSpecs), all possible options for a widget. For example,
+
+            $s = $self-&gt;Scale;
+            $self-&gt;ConfigSpecs(
+                $s-&gt;ConfigSpecs,
+                .... more ConfigSpecs specifications
+            );
+
+           returns a hash of all Tk::Scale options, delegated  to  $s  -  e.g.
+           some representative examples:
+
+            -bigincrement =&gt; [$s, bigIncrement, BigIncrement, 0, 0]
+            -digits       =&gt; [$s, digits, Digits, 0, 0]
+            -sliderlength =&gt; [$s, sliderLength, SliderLength, 10m, 30]
+            -troughcolor  =&gt; [$s, troughColor, Background, #c3c3c3, #c3c3c3]
+
+           This   provides   an  easy  means  of  populating  a  mega-widget&#x27;s
+           ConfigSpecs with initializers.
+
+       $widget-&gt;containing(rootX,rootY)
+           Returns the window containing the point given by rootX  and  rootY.
+           RootX  and  rootY  are  specified  in  screen units (i.e.  any form
+           acceptable to Tk_GetPixels) in the coordinate system  of  the  root
+           window  (if  a  virtual-root  window  manager  is  in  use then the
+           coordinate system of the virtual  root  window  is  used).   If  no
+           window  in this application contains the point then an empty string
+           is returned.  In selecting  the  containing  window,  children  are
+           given  higher  priority than parents and among siblings the highest
+           one in the stacking order is chosen.
+
+       $widget-&gt;depth
+           Returns a decimal string giving the depth  of  $widget  (number  of
+           bits per pixel).
+
+       $widget-&gt;destroy
+           This  command  deletes  the window related to $widget, plus all its
+           descendants.  If all the MainWindows are deleted  then  the  entire
+           application will be destroyed.
+
+           The  perl  object $widget continues to exist while references to it
+           still exist, e.g. until variable goes out of  scope.   However  any
+           attempt to use Tk methods on the object will fail.  Exists($widget)
+           will return false on such objects.
+
+           Note however that while a window exists for $widget the perl object
+           is  maintained  (due  to  &quot;references&quot;  in  perl/Tk internals) even
+           though original variables may have gone out  of  scope.   (Normally
+           this is intuitive.)
+
+       Exists($widget)
+           Returns 1 if there exists a window for $widget, 0 if no such window
+           exists.
+
+       $widget-&gt;font(option?, arg, arg, ...?)
+           Create and inspect fonts. See Tk::Font for further details.
+
+       $widget-&gt;fpixels(number)
+           Returns  a  floating-point  value  giving  the  number of pixels in
+           $widget corresponding to the distance given by number.  Number  may
+           be specified in any of the forms acceptable to Tk_GetScreenMM, such
+           as ``2.0c&#x27;&#x27; or ``1i&#x27;&#x27;.  The return value may be fractional;  for an
+           integer value, use $widget-&gt;pixels.
+
+       $widget-&gt;Getimage(name)
+           Given name, look for an image file with that base name and return a
+           Tk::Image.  File extensions are tried in this order: xpm, gif, ppm,
+           xbm  until  a  valid  iamge  is found.  If no image is found, try a
+           builtin image with that name.
+
+       $widget-&gt;geometry
+           Returns the geometry for $widget,  in  the  form  widthxheight+x+y.
+           All dimensions are in pixels.
+
+       $widget-&gt;height
+           Returns a decimal string giving $widget&#x27;s height in pixels.  When a
+           window  is  first  created  its height will be 1 pixel;  the height
+           will eventually be changed by a geometry  manager  to  fulfill  the
+           window&#x27;s  needs.   If  you  need  the true height immediately after
+           creating a widget, invoke update to force the geometry  manager  to
+           arrange it, or use $widget-&gt;reqheight to get the window&#x27;s requested
+           height instead of its actual height.
+
+       $widget-&gt;id
+           Returns  a  hexadecimal string giving a low-level platform-specific
+           identifier for $widget.  On Unix platforms, this is  the  X  window
+           identifier.   Under  Windows,  this  is  the  Windows HWND.  On the
+           Macintosh the value has no meaning outside Tk.
+
+       $widget-&gt;idletasks
+           One of two methods which are used to bring the application ``up  to
+           date&#x27;&#x27; by entering the event loop repeated until all pending events
+           (including idle callbacks) have been processed.
+
+           If  the idletasks method is specified, then no new events or errors
+           are  processed;  only  idle  callbacks  are  invoked.  This  causes
+           operations  that are normally deferred, such as display updates and
+           window layout calculations, to be performed immediately.
+
+           The idletasks command is useful in scripts where changes have  been
+           made  to  the  application&#x27;s  state  and  you want those changes to
+           appear on the display immediately,  rather  than  waiting  for  the
+           script  to  complete.  Most  display  updates are performed as idle
+           callbacks, so idletasks will cause them to run. However, there  are
+           some  kinds of updates that only happen in response to events, such
+           as those triggered by window size changes; these updates  will  not
+           occur in idletasks.
+
+       $widget-&gt;interps
+           Returns  a list whose members are the names of all Tcl interpreters
+           (e.g.  all  Tk-based  applications)  currently  registered  for   a
+           particular  display.   The  return  value  refers to the display of
+           $widget.
+
+       $widget-&gt;ismapped
+           Returns 1 if $widget is currently mapped, 0 otherwise.
+
+       $widget-&gt;lower(?belowThis?)
+           If the belowThis  argument  is  omitted  then  the  command  lowers
+           $widget  so  that  it  is below all of its siblings in the stacking
+           order (it will be obscured by any siblings that overlap it and will
+           not obscure any siblings).  If belowThis is specified then it  must
+           be the path name of a window that is either a sibling of $widget or
+           the  descendant  of  a  sibling of $widget.  In this case the lower
+           command will insert $widget into  the  stacking  order  just  below
+           belowThis  (or  the  ancestor  of  belowThis  that  is a sibling of
+           $widget); this could end up either raising or lowering $widget.
+
+       $widget-&gt;MapWindow
+           Cause $widget to be &quot;mapped&quot; i.e. made visible on the display.  May
+           confuse the geometry manager (pack, grid, place, ...)  that  thinks
+           it is managing the widget.
+
+       $widget-&gt;manager
+           Returns  the name of the geometry manager currently responsible for
+           $widget, or an  empty  string  if  $widget  isn&#x27;t  managed  by  any
+           geometry  manager.   The name is usually the name of the method for
+           the geometry manager, such as  pack  or  place.   If  the  geometry
+           manager  is  a  widget,  such  as canvases or text, the name is the
+           widget&#x27;s class command, such as canvas.
+
+       $widget-&gt;name
+           Returns $widget&#x27;s name (i.e. its name within its parent, as opposed
+           to its full path name).  The command $mainwin-&gt;name will return the
+           name of the application.
+
+       $widget-&gt;OnDestroy(callback);
+           OnDestroy accepts a standard perl/Tk  callback.   When  the  window
+           associated  with $widget is destroyed then the callback is invoked.
+           Unlike  $widget-&gt;bind(&#x27;&lt;Destroy&gt;&#x27;,...)   the  widgets  methods  are
+           still  available when callback is executed, so (for example) a Text
+           widget can save its contents to a file.
+
+           OnDestroy was required for new after mechanism.
+
+       $widget-&gt;parent
+           Returns $widget&#x27;s parent, or an empty string if $widget is the main
+           window of the application.
+
+       $widget-&gt;PathName
+           Returns the Tk path name of $widget. This is  the  inverse  of  the
+           &quot;Widget&quot; method. (This is an import from the C interface.)
+
+       $widget-&gt;pathname(id)
+           Returns  an  object  whose  X  identifier is id.  The identifier is
+           looked up on the  display  of  $widget.   Id  must  be  a  decimal,
+           hexadecimal,  or  octal  integer and must correspond to a window in
+           the invoking application, or an error occurs which can  be  trapped
+           with  &quot;eval  { }&quot; or &quot;Tk::catch { }&quot;.  If the window belongs to the
+           application, but is not an object  (for  example  wrapper  windows,
+           HList header, etc.) then &quot;undef&quot; is returned.
+
+       $widget-&gt;pixels(number)
+           Returns  the  number  of  pixels  in  $widget  corresponding to the
+           distance given by number.  Number may be specified in  any  of  the
+           forms  acceptable to Tk_GetPixels, such as ``2.0c&#x27;&#x27; or ``1i&#x27;&#x27;.  The
+           result is rounded to the nearest integer value;  for  a  fractional
+           result, use $widget-&gt;fpixels.
+
+       $widget-&gt;pointerx
+           If  the mouse pointer is on the same screen as $widget, returns the
+           pointer&#x27;s x coordinate, measured in pixels  in  the  screen&#x27;s  root
+           window.   If  a  virtual  root  window is in use on the screen, the
+           position is measured in the virtual root.   If  the  mouse  pointer
+           isn&#x27;t on the same screen as $widget then -1 is returned.
+
+       $widget-&gt;pointerxy
+           If  the  mouse  pointer is on the same screen as $widget, returns a
+           list with two elements, which are the pointer&#x27;s x and y coordinates
+           measured in pixels in the screen&#x27;s root window.  If a virtual  root
+           window  is  in  use  on the screen, the position is computed in the
+           virtual root.  If the mouse pointer isn&#x27;t on  the  same  screen  as
+           $widget then both of the returned coordinates are -1.
+
+       $widget-&gt;pointery
+           If  the mouse pointer is on the same screen as $widget, returns the
+           pointer&#x27;s y coordinate, measured in pixels  in  the  screen&#x27;s  root
+           window.   If  a  virtual  root  window is in use on the screen, the
+           position is computed in the virtual root.   If  the  mouse  pointer
+           isn&#x27;t on the same screen as $widget then -1 is returned.
+
+       $widget-&gt;raise(?aboveThis?)
+           If  the  aboveThis  argument  is  omitted  then  the command raises
+           $widget so that it is above all of its  siblings  in  the  stacking
+           order (it will not be obscured by any siblings and will obscure any
+           siblings  that overlap it).  If aboveThis is specified then it must
+           be the path name of a window that is either a sibling of $widget or
+           the descendant of a sibling of $widget.  In  this  case  the  raise
+           command  will  insert  $widget  into  the stacking order just above
+           aboveThis (or the ancestor  of  aboveThis  that  is  a  sibling  of
+           $widget); this could end up either raising or lowering $widget.
+
+       $widget-&gt;reqheight
+           Returns  a  decimal  string  giving  $widget&#x27;s requested height, in
+           pixels.  This is the value used by $widget&#x27;s  geometry  manager  to
+           compute its geometry.
+
+       $widget-&gt;reqwidth
+           Returns  a  decimal  string  giving  $widget&#x27;s  requested width, in
+           pixels.  This is the value used by $widget&#x27;s  geometry  manager  to
+           compute its geometry.
+
+       $widget-&gt;rgb(color)
+           Returns  a list containing three decimal values, which are the red,
+           green, and blue intensities that correspond to color in the  window
+           given  by  $widget.   Color  may  be  specified in any of the forms
+           acceptable for a color option.
+
+       $widget-&gt;rootx
+           Returns a decimal string  giving  the  x-coordinate,  in  the  root
+           window  of the screen, of the upper-left corner of $widget&#x27;s border
+           (or $widget if it has no border).
+
+       $widget-&gt;rooty
+           Returns a decimal string  giving  the  y-coordinate,  in  the  root
+           window  of the screen, of the upper-left corner of $widget&#x27;s border
+           (or $widget if it has no border).
+
+       $widget-&gt;scaling?(number)?
+           Sets and queries the current scaling factor used by Tk  to  convert
+           between   physical   units   (for   example,   points,  inches,  or
+           millimeters) and pixels.  The number argument is a  floating  point
+           number  that  specifies the number of pixels per point on $widget&#x27;s
+           display. If the number argument is omitted, the  current  value  of
+           the scaling factor is returned.
+
+           A ``point&#x27;&#x27; is a unit of measurement equal to 1/72 inch.  A scaling
+           factor of 1.0 corresponds to 1 pixel per point, which is equivalent
+           to  a standard 72 dpi monitor.  A scaling factor of 1.25 would mean
+           1.25 pixels per point, which is the setting for a 90  dpi  monitor;
+           setting  the scaling factor to 1.25 on a 72 dpi monitor would cause
+           everything in the application to be displayed 1.25 times  as  large
+           as  normal.   The  initial value for the scaling factor is set when
+           the application  starts,  based  on  properties  of  the  installed
+           monitor  (as reported via the window system), but it can be changed
+           at any time.  Measurements made after the scaling factor is changed
+           will use the new  scaling  factor,  but  it  is  undefined  whether
+           existing  widgets will resize themselves dynamically to accommodate
+           the new scaling factor.
+
+       $widget-&gt;screen
+           Returns the name of the screen associated with $widget, in the form
+           displayName.screenIndex.
+
+       $widget-&gt;screencells
+           Returns a decimal string giving the number of cells in the  default
+           color map for $widget&#x27;s screen.
+
+       $widget-&gt;screendepth
+           Returns  a  decimal  string  giving the depth of the root window of
+           $widget&#x27;s screen (number of bits per pixel).
+
+       $widget-&gt;screenheight
+           Returns a decimal string giving the height of $widget&#x27;s screen,  in
+           pixels.
+
+       $widget-&gt;screenmmheight
+           Returns  a decimal string giving the height of $widget&#x27;s screen, in
+           millimeters.
+
+       $widget-&gt;screenmmwidth
+           Returns a decimal string giving the width of $widget&#x27;s  screen,  in
+           millimeters.
+
+       $widget-&gt;screenvisual
+           Returns one of the following strings to indicate the default visual
+           class  for  $widget&#x27;s  screen: directcolor, grayscale, pseudocolor,
+           staticcolor, staticgray, or truecolor.
+
+       $widget-&gt;screenwidth
+           Returns a decimal string giving the width of $widget&#x27;s  screen,  in
+           pixels.
+
+       $widget-&gt;server
+           Returns  a  string  containing  information  about  the  server for
+           $widget&#x27;s display.  The exact format of this string may  vary  from
+           platform  to  platform.   For  X  servers  the  string has the form
+           ``XmajorRminor vendor vendorVersion&#x27;&#x27; where major and minor are the
+           version and revision numbers provided by the server (e.g.,  X11R5),
+           vendor  is the name of the vendor for the server, and vendorRelease
+           is an integer release number provided by the server.
+
+       $widget-&gt;toplevel
+           Returns the reference of the top-level window containing $widget.
+
+       $widget-&gt;Unbusy
+           Restores widget state after a call to  $widget-&gt;Busy.
+
+       $widget-&gt;UnmapWindow
+           Cause $widget to be &quot;unmapped&quot; i.e. removed from the display.  This
+           does for  any  widget  what  $widget-&gt;withdraw  does  for  toplevel
+           widgets.  May confuse the geometry manager (pack, grid, place, ...)
+           that thinks it is managing the widget.
+
+       $widget-&gt;update
+           One of two methods which are used to bring the application ``up  to
+           date&#x27;&#x27; by entering the event loop repeated until all pending events
+           (including idle callbacks) have been processed.
+
+           The  update  method is useful in scripts where you are performing a
+           long-running computation but you  still  want  the  application  to
+           respond  to  events  such as user interactions; if you occasionally
+           call update then user input will be processed during the next  call
+           to update.
+
+       $widget-&gt;useinputmethods( ?boolean? )
+           Sets  and  queries  the state of whether Tk should use XIM (X Input
+           Methods) for filtering events.  The resulting  state  is  returned.
+           XIM   is   used   in some locales (ie: Japanese, Korean), to handle
+           special input devices.  This feature is only  significant   on   X.
+           If   XIM  support  is not available, this will always return 0.  If
+           the  boolean   argument   is   omitted,   the   current   state  is
+           returned.  This is turned on by default for the main display.
+
+       $widget-&gt;viewable
+           Returns  1  if  $widget  and  all  of  its ancestors up through the
+           nearest toplevel window are mapped.  Returns  0  if  any  of  these
+           windows are not mapped.
+
+       $widget-&gt;visual
+           Returns  one  of the following strings to indicate the visual class
+           for  $widget:  directcolor,  grayscale,  pseudocolor,  staticcolor,
+           staticgray, or truecolor.
+
+       $widget-&gt;visualid
+           Returns the X identifier for the visual for $widget.
+
+       $widget-&gt;visualsavailable(?includeids?)
+           Returns  a  list  whose elements describe the visuals available for
+           $widget&#x27;s screen.  Each element consists of a visual class followed
+           by an integer depth.  The class has the same form  as  returned  by
+           $widget-&gt;visual.   The  depth gives the number of bits per pixel in
+           the visual.  In addition, if the includeids argument  is  provided,
+           then the depth is followed by the X identifier for the visual.
+
+       $widget-&gt;vrootheight
+           Returns  the  height  of  the  virtual  root window associated with
+           $widget if there is one;  otherwise returns the height of $widget&#x27;s
+           screen.
+
+       $widget-&gt;vrootwidth
+           Returns the width  of  the  virtual  root  window  associated  with
+           $widget  if there is one;  otherwise returns the width of $widget&#x27;s
+           screen.
+
+       $widget-&gt;vrootx
+           Returns the x-offset of the virtual  root  window  associated  with
+           $widget,  relative  to  the  root  window  of  its screen.  This is
+           normally either zero or negative.  Returns 0 if there is no virtual
+           root window for $widget.
+
+       $widget-&gt;vrooty
+           Returns the y-offset of the virtual  root  window  associated  with
+           $widget,  relative  to  the  root  window  of  its screen.  This is
+           normally either zero or negative.  Returns 0 if there is no virtual
+           root window for $widget.
+
+       $widget-&gt;waitVariable(\$name)
+       $widget-&gt;waitVisibility
+       $widget-&gt;waitWindow
+           The tk wait methods wait for one of several things to happen,  then
+           it  returns  without taking any other actions.  The return value is
+           always an empty string.  waitVariable expects a reference to a perl
+           variable and the command waits for that variable  to  be  modified.
+           This  form  is  typically  used  to  wait  for  a  user  to  finish
+           interacting with a dialog which sets the variable as part (possibly
+           final) part of the interaction.  waitVisibility waits for a  change
+           in  $widget&#x27;s  visibility  state  (as indicated by the arrival of a
+           VisibilityNotify event).  This form is typically used to wait for a
+           newly-created window to appear on the  screen  before  taking  some
+           action.   waitWindow  waits for $widget to be destroyed.  This form
+           is typically used to wait for a user to finish interacting  with  a
+           dialog  box before using the result of that interaction.  Note that
+           creating and destroying the window each time a dialog  is  required
+           makes  code  modular  but  imposes overhead which can be avoided by
+           withdrawing the window instead and using waitVisibility.
+
+           While the tk wait methods are waiting they processes events in  the
+           normal fashion, so the application will continue to respond to user
+           interactions.  If an event handler invokes tkwait again, the nested
+           call to tkwait must complete before the outer call can complete.
+
+       $widget-&gt;Walk(proc?, arg, ...?)
+           Traverse a widget hierarchy starting at $widget while executing the
+           subroutine  proc  to  every  visited widget. The arguments arg, ...
+           are supplied to the subroutine.
+
+       $widget-&gt;Widget(pathname)
+           Returns the widget reference for the given Tk path name, or &quot;undef&quot;
+           if the path name does not match a Tk widget. This is the inverse of
+           the &quot;PathName&quot; method. (This is an import from the C interface.)
+
+       $widget-&gt;width
+           Returns a decimal string giving $widget&#x27;s width in pixels.  When  a
+           window  is first created its width will be 1 pixel;  the width will
+           eventually be changed by a geometry manager to fulfill the window&#x27;s
+           needs.  If you need the true width  immediately  after  creating  a
+           widget,  invoke update to force the geometry manager to arrange it,
+           or use  $widget-&gt;reqwidth  to  get  the  window&#x27;s  requested  width
+           instead of its actual width.
+
+       $widget-&gt;windowingsystem
+           Returns  the  current  Tk windowing system, one of x11 (X11-based),
+           win32 (MS Windows), classic (Mac OS Classic), or aqua  (Mac  OS   X
+           Aqua).
+
+       $widget-&gt;x
+           Returns  a  decimal  string  giving  the x-coordinate, in $widget&#x27;s
+           parent, of the upper-left corner of $widget&#x27;s border (or $widget if
+           it has no border).
+
+       $widget-&gt;y
+           Returns a decimal string  giving  the  y-coordinate,  in  $widget&#x27;s
+           parent, of the upper-left corner of $widget&#x27;s border (or $widget if
+           it has no border).
+
+CAVEATS
+       The above documentation on generic methods is incomplete.
+
+KEYWORDS
+       atom,  children,  class,  geometry,  height,  identifier,  information,
+       interpreters, mapped, parent, path name, screen, virtual  root,  width,
+       window
+
+perl v5.40.1                      2025-04-13                       Widget(3pm)
+</pre></body></html>

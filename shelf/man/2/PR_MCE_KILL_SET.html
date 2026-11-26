@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_MCE_KILL_SET(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_MCE_KILL_SET(2const)                                PR_MCE_KILL_SET(2const)
+
+NAME
+       PR_MCE_KILL_SET - set the machine check memory corruption kill policy
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_MCE_KILL, PR_MCE_KILL_SET, long pol, 0L, 0L);
+
+DESCRIPTION
+       Use a thread-specific memory corruption kill policy.
+
+       pol  defines whether the policy is early kill (PR_MCE_KILL_EARLY), late
+       kill (PR_MCE_KILL_LATE), or the  system-wide  default  (PR_MCE_KILL_DE‐
+       FAULT).
+
+       Early  kill  means  that the thread receives a SIGBUS signal as soon as
+       hardware memory corruption is detected inside its address space.
+
+       In late kill mode, the process is killed only when it accesses  a  cor‐
+       rupted  page.  See sigaction(2) for more information on the SIGBUS sig‐
+       nal.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL pol is not a valid value.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.32.
+
+SEE ALSO
+       prctl(2), PR_MCE_KILL(2const)
+
+Linux man-pages 6.9.1             2024-06-01           PR_MCE_KILL_SET(2const)
+</pre></body></html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-raop-sink(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...aop-sink(7) Miscellaneous Information Manual libpipew...aop-sink(7)
+
+NAME
+       libpipewire-module-raop-sink - AirPlay Sink
+
+DESCRIPTION
+       Creates a new Sink to stream to an Airplay device.
+
+       Normally this sink is automatically created with RAOP Discover with the
+       right parameters but it is possible to manually create a RAOP sink as
+       well.
+
+MODULE NAME
+       libpipewire-module-raop-sink
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • raop.ip: The ip address of the remote end.
+
+       • raop.port: The port of the remote end.
+
+       • raop.name: The name of the remote end.
+
+       • raop.hostname: The hostname of the remote end.
+
+       • raop.transport:  The  data  transport  to use, one of &#x27;udp&#x27; or &#x27;tcp&#x27;.
+         Defaults to &#x27;udp&#x27;.
+
+       • raop.encryption.type: The encryption type  to  use.  One  of  &#x27;none&#x27;,
+         &#x27;RSA&#x27; or &#x27;auth_setup&#x27;. Default is &#x27;none&#x27;.
+
+       • raop.audio.codec: The audio codec to use. Needs to be &#x27;PCM&#x27;. Defaults
+         to &#x27;PCM&#x27;.
+
+       • raop.password: The password to use.
+
+       • stream.props = {}: properties to be passed to the sink stream
+
+       Options with well-known behavior.
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.latency
+
+       • node.virtual
+
+       • media.class
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-raop-sink.conf
+
+       context.modules = [
+       {   name = libpipewire-module-raop-sink
+           args = {
+               # Set the remote address to tunnel to
+               raop.ip = &quot;127.0.0.1&quot;
+               raop.port = 8190
+               raop.name = &quot;my-raop-device&quot;
+               raop.hostname = &quot;My Service&quot;
+               #raop.transport = &quot;udp&quot;
+               raop.encryption.type = &quot;RSA&quot;
+               #raop.audio.codec = &quot;PCM&quot;
+               #raop.password = &quot;****&quot;
+               #audio.format = &quot;S16&quot;
+               #audio.rate = 44100
+               #audio.channels = 2
+               #audio.position = [ FL FR ]
+               stream.props = {
+                   # extra sink properties
+               }
+           }
+       }
+       ]
+
+SEE ALSO
+       RAOP Discover
+
+
+PipeWire                             1.4.2              libpipew...aop-sink(7)
+</pre></body></html>

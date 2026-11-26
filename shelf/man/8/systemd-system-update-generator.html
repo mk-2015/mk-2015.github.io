@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>systemd-system-update-generator(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>SYSTEMD-...GENERATOR(8) systemd-system-update-generatorSYSTEMD-...GENERATOR(8)
+
+NAME
+       systemd-system-update-generator - Generator for redirecting boot to
+       offline update mode
+
+SYNOPSIS
+       /usr/lib/systemd/system-generators/systemd-system-update-generator
+
+DESCRIPTION
+       systemd-system-update-generator is a generator that automatically
+       redirects the boot process to system-update.target, if /system-update
+       or /etc/system-update exists. This is required to implement the logic
+       explained in the systemd.offline-updates(7).
+
+       systemd-system-update-generator implements systemd.generator(7).
+
+SEE ALSO
+       systemd(1), systemd.special(7)
+
+systemd 257.13                                         SYSTEMD-...GENERATOR(8)
+</pre></body></html>

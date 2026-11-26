@@ -1,0 +1,114 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>getdelim(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>getline(3)                 Library Functions Manual                 getline(3)
+
+NAME
+       getline, getdelim - delimited string input
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;stdio.h&gt;
+
+       ssize_t getline(char **restrict lineptr, size_t *restrict n,
+                       FILE *restrict stream);
+       ssize_t getdelim(char **restrict lineptr, size_t *restrict n,
+                       int delim, FILE *restrict stream);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       getline(), getdelim():
+           Since glibc 2.10:
+               _POSIX_C_SOURCE &gt;= 200809L
+           Before glibc 2.10:
+               _GNU_SOURCE
+
+DESCRIPTION
+       getline()  reads an entire line from stream, storing the address of the
+       buffer containing the text into *lineptr.  The  buffer  is  null-termi‐
+       nated and includes the newline character, if one was found.
+
+       If  *lineptr  is set to NULL before the call, then getline() will allo‐
+       cate a buffer for storing the line.  This buffer should be freed by the
+       user program even if getline() failed.
+
+       Alternatively, before calling getline(), *lineptr can contain a pointer
+       to a malloc(3)-allocated buffer *n bytes in size.  If the buffer is not
+       large enough to hold the line, getline() resizes  it  with  realloc(3),
+       updating *lineptr and *n as necessary.
+
+       In  either  case, on a successful call, *lineptr and *n will be updated
+       to reflect the buffer address and allocated size respectively.
+
+       getdelim() works like getline(), except that  a  line  delimiter  other
+       than  newline can be specified as the delimiter argument.  As with get‐
+       line(), a delimiter character is not added if one was  not  present  in
+       the input before end of file was reached.
+
+RETURN VALUE
+       On  success,  getline()  and getdelim() return the number of characters
+       read, including the delimiter character, but not including  the  termi‐
+       nating  null  byte  (&#x27;\0&#x27;).   This value can be used to handle embedded
+       null bytes in the line read.
+
+       Both functions return -1 on failure to read a line  (including  end-of-
+       file  condition).   In the event of a failure, errno is set to indicate
+       the error.
+
+       If *lineptr was set to NULL before the call, then the buffer should  be
+       freed by the user program even on failure.
+
+ERRORS
+       EINVAL Bad arguments (n or lineptr is NULL, or stream is not valid).
+
+       ENOMEM Allocation or reallocation of the line buffer failed.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       getline(), getdelim() T}   Thread safety  MT-Safe
+
+STANDARDS
+       POSIX.1-2008.
+
+HISTORY
+       GNU, POSIX.1-2008.
+
+EXAMPLES
+       #define _GNU_SOURCE
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+
+       int
+       main(int argc, char *argv[])
+       {
+           FILE *stream;
+           char *line = NULL;
+           size_t len = 0;
+           ssize_t nread;
+
+           if (argc != 2) {
+               fprintf(stderr, &quot;Usage: %s &lt;file&gt;\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           stream = fopen(argv[1], &quot;r&quot;);
+           if (stream == NULL) {
+               perror(&quot;fopen&quot;);
+               exit(EXIT_FAILURE);
+           }
+
+           while ((nread = getline(&amp;line, &amp;len, stream)) != -1) {
+               printf(&quot;Retrieved line of length %zd:\n&quot;, nread);
+               fwrite(line, nread, 1, stdout);
+           }
+
+           free(line);
+           fclose(stream);
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       read(2), fgets(3), fopen(3), fread(3), scanf(3)
+
+Linux man-pages 6.9.1             2024-06-15                        getline(3)
+</pre></body></html>

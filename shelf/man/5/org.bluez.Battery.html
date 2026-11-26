@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.Battery(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ.BATTERY(5)      Linux System Administration     ORG.BLUEZ.BATTERY(5)
+
+NAME
+       org.bluez.Battery - BlueZ D-Bus Battery API documentation
+
+INTERFACE
+       Service
+              org.bluez
+
+       Interface
+              org.bluez.Battery1
+
+       Object path
+              [variable prefix]/{hci0,hci1,...}/dev_XX_XX_XX_XX_XX_XX
+
+   Properties
+   byte Percentage [readonly]
+          The percentage of battery left as an unsigned 8-bit integer.
+
+   string Source [readonly, optional]
+          Describes where the battery information comes from.
+
+          This  property is informational only and may be useful for debugging
+          purposes.
+
+          Providers from org.bluez.BatteryProvider(5) may  make  use  of  this
+          property  to indicate where the battery report comes from (e.g. &quot;HFP
+          1.7&quot;, &quot;HID&quot;, or the profile UUID).
+
+BlueZ                            October 2023             ORG.BLUEZ.BATTERY(5)
+</pre></body></html>

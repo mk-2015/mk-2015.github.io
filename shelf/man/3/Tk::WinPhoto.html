@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::WinPhoto(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>WinPhoto(3pm)                perl/Tk Documentation               WinPhoto(3pm)
+
+NAME
+       Tk::WinPhoto - Load a Photo image from a window
+
+SYNOPSIS
+         use Tk;
+         use Tk::WinPhoto;
+
+         my $image = $mw-&gt;Photo(-format =&gt; &#x27;Window&#x27;, -data =&gt; oct($mw-&gt;id));
+         $image-&gt;write($path_name, -format =&gt; &#x27;BMP|PPM|XPM&#x27;);
+
+DESCRIPTION
+       This is an extension for Tk800.* which will load a Photo image from a
+       snapshot of an X window specified by the -data option.
+
+       The window must exist and be visible. Because the code allows you to
+       capture windows not owned by Tk it does not attempt to enforce this. If
+       you are capturing one of Tk&#x27;s windows then use &quot;$w-&gt;update&quot;.
+
+       If window is mapped, but obscured by other windows then what is
+       captured is the rectangle the window would occupy. This can be
+       considered a feature.  For Tk-owned windows &quot;$w-&gt;raise&quot; can used to
+       bring window forward.
+
+       Once the Photo is loaded it can be saved using &quot;$image-&gt;write(-format
+       =&gt; ...)&quot; using any of formats which support writing.
+
+AUTHOR
+       Nick Ing-Simmons &lt;nick@ni-s.u-net.com&gt;
+
+Tk804.036                         2025-04-13                     WinPhoto(3pm)
+</pre></body></html>

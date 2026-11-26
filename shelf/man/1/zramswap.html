@@ -1,0 +1,59 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>zramswap(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>zramswap(1)                 General Commands Manual                zramswap(1)
+
+NAME
+       zramswap - configure swap on zram
+
+SYNOPSIS
+       zramswap [OPTION]
+
+DESCRIPTION
+       zram  is  a  Linux  feature  that  allows  a  user to create compressed
+       ramdisks.
+
+       zramswap sets up swap in zram, which effectively allows you to compress
+       memory.
+
+       Common use cases:
+
+       On machines with low memory, mitigates the tedious situation where  the
+       machine  is  out  of memory and then it starts swapping to disk only to
+       lose a large amount of disk bandwidth.
+
+       On machines where the main swap file is on flash memory,  zramswap  may
+       only  provide marginal performance increase (especially on fast SSD me‐
+       dia), however, it will prevent some amount of wear on your  flash  mem‐
+       ory.  zramswap  is  especially  beneficial  if  your  main  flash is on
+       SD/MMC/CF card.
+
+       On servers that run many virtual machines or containers,  zramswap  al‐
+       lows you to optimise memory usage by swapping out data that&#x27;s not often
+       accessed,  but  when  a  user  needs to access it, it will be available
+       fast. It allows you to overcommit on memory with a  negligible  hit  on
+       your  application  performance (and often an improvement in performance
+       where you can use more main memory for filesystem cache).
+
+
+OPTIONS
+       Usage: zramswap [OPTION]
+
+       ZRAMSWAP Options
+
+        start
+              Sets up zram swap.
+
+        stop
+              Tears down zram swap.
+
+        status
+              Displays zram swap usage and compression ratio.
+
+
+REPORTING BUGS
+       Please file issues at: https://salsa.debian.org/jcc/zram-tools/issues
+
+
+AUTHORS
+       This manual page was written by Jonathan Carter &lt;jcarter@linux.com&gt;
+
+zramswap                          2018-10-04                       zramswap(1)
+</pre></body></html>

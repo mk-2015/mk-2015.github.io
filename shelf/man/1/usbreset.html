@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>usbreset(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>usbreset(1)                   Linux USB Utilities                  usbreset(1)
+
+NAME
+       usbreset - send a USB port reset to a USB device
+
+SYNOPSIS
+       usbreset [ device ]
+
+
+DESCRIPTION
+       usbreset  is a utility that performs resets on USB devices.  It is par‐
+       ticularly useful for situations where a USB device is  unresponsive  or
+       exhibits erratic behavior.  The USB device to be reset can be specified
+       in one of three formats:
+
+       VVVV:PPPP
+              Reset by vendor and product IDs
+
+       BBB/DDD
+              Reset by bus and device number
+
+       Product
+              Reset by product name
+
+       When run without any arguments, usbreset provides usage information and
+       a  list  of  connected  USB devices, including their vendor and product
+       IDs, bus and device numbers, and product names.
+
+
+RETURN VALUE
+       If the specified device is not found, a non-zero exit code is returned.
+
+
+EXAMPLES
+       Reset device with vendor ID 1234 and product ID 5678:
+              usbreset 1234:5678
+
+
+       Reset device 002 on bus 001:
+              usbreset 001:002
+
+
+       Reset device named USB2.0 Hub:
+              usbreset &quot;USB2.0 Hub&quot;
+
+
+SEE ALSO
+       lsusb(8).
+
+
+AUTHOR
+       Alan Stern &lt;stern@rowland.harvard.edu&gt;
+
+usbutils                        04 January 2024                    usbreset(1)
+</pre></body></html>

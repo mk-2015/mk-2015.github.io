@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-monitor(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-MONITOR(1)   Linux System Administration  BLUETOOTHCTL-MONITOR(1)
+
+NAME
+       bluetoothctl-monitor - Monitor Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [monitor.commands]
+
+MONITOR COMMANDS
+   set-rssi-threshold
+       Set RSSI threshold parameter
+
+       Usage  &gt; set-rssi-threshold &lt;low_threshold&gt; &lt;high_threshold&gt;
+
+   set-rssi-timeout
+       Set RSSI timeout parameter
+
+       Usage  &gt; set-rssi-timeout &lt;low_timeout&gt; &lt;high_timeout&gt;
+
+   set-rssi-sampling-period
+       Set RSSI sampling period parameter
+
+       Usage  &gt; set-rssi-timeout &lt;low_timeout&gt; &lt;high_timeout&gt;
+
+   add-or-pattern
+       Register &#x27;or pattern&#x27; type monitor with the specified RSSI parameters
+
+       Usage  &gt; add-or-pattern [patterns=pattern1 pattern2 ...]
+
+   get-pattern
+       Get advertisement monitor
+
+       Usage  &gt; get-pattern &lt;monitor-id/all&gt;
+
+   remove-pattern
+       Remove advertisement monitor
+
+       Usage  &gt; remove-pattern &lt;monitor-id/all&gt;
+
+   get-supported-info
+       Get  advertisement  manager  supported  features  and supported monitor
+       types
+
+       Usage  &gt; get-supported-info
+
+   print-usage
+       Print the command usage
+
+       Usage  &gt; print-usage &lt;add-or-pattern&gt;
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                              July 2023           BLUETOOTHCTL-MONITOR(1)
+</pre></body></html>

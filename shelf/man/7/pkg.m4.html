@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pkg.m4(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>is  a  collection of autoconf macros which help to configure com‐
+piler and linker flags for development  libraries.   This  allows
+build  systems to detect other dependencies and use them with the
+system toolchain.  Checks that the version of the autoconf macros
+in use is at least MIN-VERSION.  This can be  used  to  ensure  a
+particular macro will be available.  Checks for an implementation
+of  which  is  at  least  MIN-VERSION or newer.  Checks whether a
+given module set exists, and if so, defines  and  variables  pre‐
+fixed by with the output from and respectively.  The optional and
+arguments are shell fragments that should be executed if the mod‐
+ule set is found or not found.  If is not defined, the macro will
+be  executed  to locate a implementation.  The macro provides the
+same behaviour as with static linking enabled via the flag.   De‐
+fines  the variable $pkgconfigdir as the location where a package
+should install pkg-config .pc files.  By default the directory is
+$libdir/pkgconfig, but the default can be changed by passing  the
+parameter.  This value can be overridden with the configure para‐
+meter.  Defines the variable $noarch_pkgconfigdir as the location
+where  a package should install pkg-config .pc files.  By default
+the directory is  $datadir/pkgconfig,  but  the  default  can  be
+changed  by  passing the parameter.  This value can be overridden
+with the configure parameter.  Retrieves the value of  the  vari‐
+able  from and stores it in the variable.  Note that repeated us‐
+age of is not recommended as the check will  be  skipped  if  the
+variable  is  already set.  Prepares a &quot;--with-&quot; configure option
+using the lowercase name, merging the behaviour of and in a  sin‐
+gle macro.  Convenience macro to trigger after a is exported as a
+make  variable.   Convenience macro to trigger and after a is ex‐
+ported as a make variable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

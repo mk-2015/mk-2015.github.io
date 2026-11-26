@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>readfile(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>READFILE(3am)              GNU Awk Extension Modules             READFILE(3am)
+
+NAME
+       readfile - return the entire contents of a file as a string
+
+SYNOPSIS
+       @load &quot;readfile&quot;
+
+       result = readfile(&quot;/some/path&quot;)
+
+       For making whole files be single records:
+
+       @load &quot;readfile&quot;
+       BEGIN { PROCINFO[&quot;readfile&quot;] = 1 }
+
+DESCRIPTION
+       The  readfile  extension  adds a single function named readfile().  The
+       argument is the name of the file to read.  The return value is a string
+       containing the entire contents of the requested file.
+
+       Upon error, the function returns the empty string and sets ERRNO.
+
+       In  addition,  it  adds  an  input  parser   that   is   activated   if
+       PROCINFO[&quot;readfile&quot;]  exists.   When  activated, each input file is re‐
+       turned in its entirety as $0.  RT is set to the null string.
+
+EXAMPLE
+       @load &quot;readfile&quot;
+       ...
+       contents = readfile(&quot;/path/to/file&quot;);
+       if (contents == &quot;&quot; &amp;&amp; ERRNO != &quot;&quot;) {
+           print(&quot;problem reading file&quot;, ERRNO) &gt; &quot;/dev/stderr&quot;
+           ...
+       }
+
+SEE ALSO
+       GAWK:  Effective   AWK   Programming,   filefuncs(3am),   fnmatch(3am),
+       fork(3am),  inplace(3am),  ordchr(3am),  readdir(3am),  revoutput(3am),
+       rwarray(3am), time(3am).
+
+AUTHOR
+       Arnold Robbins, arnold@skeeve.com.
+
+COPYING PERMISSIONS
+       Copyright © 2012, 2013, 2014, 2018, Free Software Foundation, Inc.
+
+       Permission is granted to make and distribute verbatim  copies  of  this
+       manual  page  provided  the copyright notice and this permission notice
+       are preserved on all copies.
+
+       Permission is granted to copy and distribute modified versions of  this
+       manual  page  under  the conditions for verbatim copying, provided that
+       the entire resulting derived work is distributed under the terms  of  a
+       permission notice identical to this one.
+
+       Permission  is granted to copy and distribute translations of this man‐
+       ual page into another language, under the above conditions for modified
+       versions, except that this permission notice may be stated in a  trans‐
+       lation approved by the Foundation.
+
+Free Software Foundation          Feb 02 2018                    READFILE(3am)
+</pre></body></html>

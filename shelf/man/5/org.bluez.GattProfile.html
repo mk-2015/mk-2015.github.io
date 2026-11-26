@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.GattProfile(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ.GATTPROFILE(5)  Linux System Administration ORG.BLUEZ.GATTPROFILE(5)
+
+NAME
+       org.bluez.GattProfile - BlueZ D-Bus GattProfile API documentation
+
+DESCRIPTION
+       Local  profile  (GATT client) instance. By registering this type of ob‐
+       ject an application effectively indicates support for a  specific  GATT
+       profile and requests automatic connections to be established to devices
+       supporting it.
+
+INTERFACE
+       Service
+              &lt;application dependent&gt;
+
+       Interface
+              org.bluez.GattProfile1
+
+       Object path
+              &lt;application dependent&gt;
+
+   Methods
+   void Release()
+          This method gets called when the service daemon unregisters the pro‐
+          file.  The profile can use it to do cleanup tasks.  There is no need
+          to unregister the profile, because when this method gets  called  it
+          has already been unregistered.
+
+   Properties
+   array{string} UUIDs [read-only]
+          128-bit GATT service UUIDs to auto connect.
+
+BlueZ                            October 2023         ORG.BLUEZ.GATTPROFILE(5)
+</pre></body></html>

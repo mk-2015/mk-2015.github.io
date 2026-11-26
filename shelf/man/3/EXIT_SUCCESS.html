@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EXIT_SUCCESS(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>EXIT_SUCCESS(3const)                                      EXIT_SUCCESS(3const)
+
+NAME
+       EXIT_SUCCESS, EXIT_FAILURE - termination status constants
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;stdlib.h&gt;
+
+       #define EXIT_SUCCESS  0
+       #define EXIT_FAILURE  /* nonzero */
+
+DESCRIPTION
+       EXIT_SUCCESS  and  EXIT_FAILURE represent a successful and unsuccessful
+       exit status respectively, and can be used as arguments to  the  exit(3)
+       function.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       C89, POSIX.1-2001.
+
+EXAMPLES
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+
+       int
+       main(int argc, char *argv[])
+       {
+           FILE *fp;
+
+           if (argc != 2) {
+               fprintf(stderr, &quot;Usage: %s &lt;file&gt;\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           fp = fopen(argv[1], &quot;r&quot;);
+           if (fp == NULL) {
+               perror(argv[1]);
+               exit(EXIT_FAILURE);
+           }
+
+           /* Other code omitted */
+
+           fclose(fp);
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       exit(3), sysexits.h(3head)
+
+Linux man-pages 6.9.1             2024-06-15              EXIT_SUCCESS(3const)
+</pre></body></html>

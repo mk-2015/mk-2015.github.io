@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_MM_EXE_FILE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_MM_EXE_FILE(2const)                          PR_SET_MM_EXE_FILE(2const)
+
+NAME
+       PR_SET_MM_EXE_FILE - modify kernel memory map descriptor fields
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_MM, PR_SET_MM_EXE_FILE, long fd, 0L, 0L);
+
+DESCRIPTION
+       Supersede  the /proc/pid/exe symbolic link with a new one pointing to a
+       new executable file identified by the file descriptor provided  in  the
+       fd  argument.   The  file  descriptor should be obtained with a regular
+       open(2) call.
+
+       To change the symbolic link, one needs to unmap all existing executable
+       memory areas, including those created by the kernel itself (for example
+       the kernel usually creates at least one executable memory area for  the
+       ELF .text section).
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EACCES The file is not executable.
+
+       EBADF  The file descriptor passed in fd is not valid.
+
+       EBUSY  This the second attempt to  change  the  /proc/pid/exe  symbolic
+              link.
+
+FILES
+       /proc/pid/exe
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.5.
+
+       In  Linux 4.9 and earlier, the PR_SET_MM_EXE_FILE operation can be per‐
+       formed only once in a process&#x27;s lifetime; attempting to perform the op‐
+       eration a second time results in the error EPERM.  This restriction was
+       enforced for security reasons that were subsequently  deemed  specious,
+       and  the  restriction was removed in Linux 4.10 because some user-space
+       applications needed to perform this operation more than once.
+
+SEE ALSO
+       prctl(2), PR_SET_MM(2const), proc_pid_exe(5)
+
+Linux man-pages 6.9.1             2024-06-01        PR_SET_MM_EXE_FILE(2const)
+</pre></body></html>

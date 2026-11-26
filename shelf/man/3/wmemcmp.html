@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wmemcmp(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>wmemcmp(3)                 Library Functions Manual                 wmemcmp(3)
+
+NAME
+       wmemcmp - compare two arrays of wide-characters
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wchar.h&gt;
+
+       int wmemcmp(const wchar_t s1[.n], const wchar_t s2[.n], size_t n);
+
+DESCRIPTION
+       The  wmemcmp()  function  is  the wide-character equivalent of the mem‐
+       cmp(3) function.  It compares the n wide-characters starting at s1  and
+       the n wide-characters starting at s2.
+
+RETURN VALUE
+       The  wmemcmp()  function  returns  zero if the wide-character arrays of
+       size n at s1 and s2 are equal.  It returns an integer greater than zero
+       if at the first differing position i (i &lt; n), the  corresponding  wide-
+       character s1[i] is greater than s2[i].  It returns an integer less than
+       zero  if  at  the first differing position i (i &lt; n), the corresponding
+       wide-character s1[i] is less than s2[i].
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       wmemcmp() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+SEE ALSO
+       memcmp(3), wcscmp(3)
+
+Linux man-pages 6.9.1             2024-05-02                        wmemcmp(3)
+</pre></body></html>

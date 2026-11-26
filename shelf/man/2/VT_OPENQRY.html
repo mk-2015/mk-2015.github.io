@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VT_OPENQRY(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ioctl_vt(2)                   System Calls Manual                  ioctl_vt(2)
+
+NAME
+       ioctl_vt - ioctls for console terminal and virtual consoles
+
+SYNOPSIS
+       #include &lt;linux/vt.h&gt;  /* Definition of VT_* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, unsigned long op, void *argp);
+
+DESCRIPTION
+       The following Linux-specific ioctl(2) operations are supported for con‐
+       sole terminals and virtual consoles.
+
+       VT_OPENQRY
+              Returns  the  first available (non-opened) console.  argp points
+              to an int which is set to the number of the vt (1  &lt;=  *argp  &lt;=
+              MAX_NR_CONSOLES).
+
+       VT_GETMODE
+              Get mode of active vt.  argp points to a
+
+                  struct vt_mode {
+                      char  mode;    /* vt mode */
+                      char  waitv;   /* if set, hang on writes if not active */
+                      short relsig;  /* signal to raise on release op */
+                      short acqsig;  /* signal to raise on acquisition */
+                      short frsig;   /* unused (set to 0) */
+                  };
+
+              which  is  set to the mode of the active vt.  mode is set to one
+              of   these   values:   l   l.    VT_AUTO   auto   vt   switching
+              VT_PROCESS     process  controls switching VT_ACKACQ acknowledge
+              switch
+
+       VT_SETMODE
+              Set mode of active vt.  argp points to a struct vt_mode.
+
+       VT_GETSTATE
+              Get global vt state info.  argp points to a
+
+                  struct vt_stat {
+                      unsigned short v_active;  /* active vt */
+                      unsigned short v_signal;  /* signal to send */
+                      unsigned short v_state;   /* vt bit mask */
+                  };
+
+              For each vt in use, the corresponding bit in the v_state  member
+              is set.  (Linux 1.0 through Linux 1.1.92.)
+
+       VT_RELDISP
+              Release a display.
+
+       VT_ACTIVATE
+              Switch to vt argp (1 &lt;= argp &lt;= MAX_NR_CONSOLES).
+
+       VT_WAITACTIVE
+              Wait until vt argp has been activated.
+
+       VT_DISALLOCATE
+              Deallocate  the  memory  associated  with vt argp.  (Since Linux
+              1.1.54.)
+
+       VT_RESIZE
+              Set the kernel&#x27;s idea of screensize.  argp points to a
+
+                  struct vt_sizes {
+                      unsigned short v_rows;       /* # rows */
+                      unsigned short v_cols;       /* # columns */
+                      unsigned short v_scrollsize; /* no longer used */
+                  };
+
+              Note that this does  not  change  the  videomode.   See  resize‐
+              cons(8).  (Since Linux 1.1.54.)
+
+       VT_RESIZEX
+              Set the kernel&#x27;s idea of various screen parameters.  argp points
+              to a
+
+                  struct vt_consize {
+                      unsigned short v_rows;  /* number of rows */
+                      unsigned short v_cols;  /* number of columns */
+                      unsigned short v_vlin;  /* number of pixel rows
+                                                 on screen */
+                      unsigned short v_clin;  /* number of pixel rows
+                                                 per character */
+                      unsigned short v_vcol;  /* number of pixel columns
+                                                 on screen */
+                      unsigned short v_ccol;  /* number of pixel columns
+                                                 per character */
+                  };
+
+              Any parameter may be set to zero, indicating &quot;no change&quot;, but if
+              multiple parameters are set, they must be self-consistent.  Note
+              that  this  does  not  change the videomode.  See resizecons(8).
+              (Since Linux 1.3.3.)
+
+RETURN VALUE
+       On success, 0 is returned (except where indicated).  On failure, -1  is
+       returned, and errno is set to indicate the error.
+
+ERRORS
+       EINVAL argp is invalid.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       ioctl(2), ioctl_console(2)
+
+Linux man-pages 6.9.1             2024-06-13                       ioctl_vt(2)
+</pre></body></html>

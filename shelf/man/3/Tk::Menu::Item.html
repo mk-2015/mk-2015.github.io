@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Menu::Item(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Menu::Item(3pm)       User Contributed Perl Documentation      Menu::Item(3pm)
+
+NAME
+       Tk::Menu::Item - Base class for Menu items
+
+SYNOPSIS
+          require Tk::Menu::Item;
+
+          my $but = $menu-&gt;Button(...);
+          $but-&gt;configure(...);
+          my $what = $but-&gt;cget();
+
+          package Whatever;
+          require Tk::Menu::Item;
+          @ISA = qw(Tk::Menu::Item);
+
+          sub PreInit
+          {
+           my ($class,$menu,$info) = @_;
+           $info-&gt;{&#x27;-xxxxx&#x27;} = ...
+           my $y = delete $info-&gt;{&#x27;-yyyy&#x27;};
+          }
+
+DESCRIPTION
+       Tk::Menu::Item is the base class from which Tk::Menu::Button,
+       Tk::Menu::Cascade, Tk::Menu::Radiobutton and Tk::Menu::Checkbutton are
+       derived.  There is also a Tk::Menu::Separator.
+
+       Constructors are declared so that $menu-&gt;Button(...) etc. do what you
+       would expect.
+
+       The &quot;-label&quot; option is pre-processed allowing ~ to be prefixed to the
+       character to derive a &quot;-underline&quot; value. Thus
+
+           $menu-&gt;Button(-label =&gt; &#x27;Goto ~Home&#x27;,...)
+
+           is equivalent to
+
+           $menu-&gt;Button(-label =&gt; &#x27;Goto Home&#x27;, -underline =&gt; 6, ...)
+
+       The &quot;Cascade&quot; menu item creates a sub-menu and accepts these options:
+
+       -menuitems
+           A  list of items for the sub-menu.  Within this list (which is also
+           accepted by Menu and Menubutton) the first  two  elements  of  each
+           item should be the &quot;constructor&quot; name and the label:
+
+               -menuitems =&gt; [
+                              [Button      =&gt; &#x27;~Quit&#x27;, -command =&gt; [destroy =&gt; $mw]],
+                              [Checkbutton =&gt; &#x27;~Oil&#x27;,  -variable =&gt; \$oil],
+                             ]
+
+       -postcommand
+           A callback to be invoked before posting the menu.
+
+       -tearoff
+           Specifies whether sub-menu can be torn-off or not.
+
+       -menuvar
+           Scalar reference that will be set to the newly-created sub-menu.
+
+       The returned object is currently a blessed reference to an array of two
+       items:  the  containing  Menu and the &#x27;label&#x27;.  Methods &quot;configure&quot; and
+       &quot;cget&quot; are mapped onto underlying &quot;entryconfigure&quot; and &quot;entrycget&quot;.
+
+       The main purpose of the OO interface is to allow derived  item  classes
+       to  be  defined  which  pre-set the options used to create a more basic
+       item.
+
+BUGS
+       This OO interface is very new. Using  the  label  as  the  &quot;key&quot;  is  a
+       problem for separaror items which don&#x27;t have one. The alternative would
+       be  to  use  an  index into the menu but that is a problem if items are
+       deleted (or inserted other than at the end).
+
+       There should probably be a PostInit entry point too, or a  more  widget
+       like defered &#x27;configure&#x27;.
+
+perl v5.40.1                      2025-04-13                   Menu::Item(3pm)
+</pre></body></html>

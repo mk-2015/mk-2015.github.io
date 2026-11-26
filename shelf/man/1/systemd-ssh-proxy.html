@@ -1,0 +1,87 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>systemd-ssh-proxy(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>SYSTEMD-SSH-PROXY(1)           systemd-ssh-proxy          SYSTEMD-SSH-PROXY(1)
+
+NAME
+       systemd-ssh-proxy - SSH client plugin for connecting to AF_VSOCK and
+       AF_UNIX sockets
+
+SYNOPSIS
+       Host unix/* vsock/* vsock-mux/*
+           ProxyCommand /usr/lib/systemd/systemd-ssh-proxy %h %p
+           ProxyUseFdpass yes
+
+
+       /usr/lib/systemd/systemd-ssh-proxy [ADDRESS] [PORT]
+
+DESCRIPTION
+       systemd-ssh-proxy is a small &quot;proxy&quot; plugin for the ssh(1) tool that
+       allows connecting to AF_UNIX and AF_VSOCK sockets. It implements the
+       interface defined by ssh&#x27;s ProxyCommand configuration option. It&#x27;s
+       supposed to be used with an ssh_config(5) configuration fragment like
+       the following:
+
+           Host unix/* vsock/* vsock-mux/*
+               ProxyCommand /usr/lib/systemd/systemd-ssh-proxy %h %p
+               ProxyUseFdpass yes
+               CheckHostIP no
+
+           Host .host
+               ProxyCommand /usr/lib/systemd/systemd-ssh-proxy unix/run/ssh-unix-local/socket %p
+               ProxyUseFdpass yes
+               CheckHostIP no
+
+       A configuration fragment along these lines is by default installed into
+       /etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf.
+
+       With this in place, SSH connections to host string &quot;unix/&quot; followed by
+       an absolute AF_UNIX file system path to a socket will be directed to
+       the specified socket, which must be of type SOCK_STREAM. Similar, SSH
+       connections to &quot;vsock/&quot; followed by an AF_VSOCK CID will result in an
+       SSH connection made to that CID.  &quot;vsock-mux/&quot; followed by an absolute
+       AF_UNIX file system path to a socket is similar but for
+       cloud-hypervisor/firecracker which do not allow direct AF_VSOCK
+       communication between the host and guests, and provide their own
+       multiplexer over AF_UNIX sockets. See cloud-hypervisor VSOCK support[1]
+       and Using the Firecracker Virtio-vsock Device[2].
+
+       Moreover, connecting to &quot;.host&quot; will connect to the local host via SSH,
+       without involving networking.
+
+       This tool is supposed to be used together with systemd-ssh-generator(8)
+       which when run inside a VM or container will bind SSH to suitable
+       addresses.  systemd-ssh-generator is supposed to run in the container
+       or VM guest, and systemd-ssh-proxy is run on the host, in order to
+       connect to the container or VM guest.
+
+EXIT STATUS
+       On success, 0 is returned, a non-zero failure code otherwise.
+
+EXAMPLES
+       Example 1. Talk to a local VM with CID 4711
+
+           ssh vsock/4711
+
+       Example 2. Talk to a VM guest hosted with cloud-hypervisor/firecracker
+
+           ssh vsock-mux/run/vm-1234.sock
+
+       Example 3. Talk to the local host via ssh
+
+           ssh .host
+
+       or equivalent:
+
+           ssh unix/run/ssh-unix-local/socket
+
+SEE ALSO
+       systemd(1), systemd-ssh-generator(8), vsock(7), unix(7), ssh(1),
+       sshd(8)
+
+NOTES
+        1. cloud-hypervisor VSOCK support
+           https://github.com/cloud-hypervisor/cloud-hypervisor/blob/main/docs/vsock.md
+
+        2. Using the Firecracker Virtio-vsock Device
+           https://github.com/firecracker-microvm/firecracker/blob/main/docs/vsock.md
+
+systemd 257.13                                            SYSTEMD-SSH-PROXY(1)
+</pre></body></html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>dhcpcd(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>is  an  implementation  of  the DHCP client specified in gets the
+host information IP address, routes, etc from a DHCP  server  and
+configures  the  network  of  the machine on which it is running.
+then runs the configuration script which writes  DNS  information
+to  if  available,  otherwise directly to If the hostname is cur‐
+rently blank, (null) or localhost, or is YES or TRUE  or  1  then
+sets  the  hostname to the one supplied by the DHCP server.  then
+daemonises and waits for the lease renewal  time  to  lapse.   It
+will  then  attempt to renew its lease and reconfigure if the new
+lease changes when the lease begins to expire or the DHCP  server
+sends a message to renew early.  If any interface reports a work‐
+ing carrier then will try to obtain a lease before forking to the
+background,  otherwise  it  will fork right away.  This behaviour
+can be modified with the and options.  is also an  implementation
+of the BOOTP client specified in is also an implementation of the
+IPv6  Router Solicitor as specified in and is also an implementa‐
+tion of the IPv6 Privacy Extensions to AutoConf as  specified  in
+This feature needs to be enabled in the kernel and will start us‐
+ing it.  is also an implementation of the DHCPv6 client as speci‐
+fied  in  By default, only starts DHCPv6 when instructed to do so
+by an IPV6 Router Advertisement.  If no Identity  Association  is
+configured, then a Non-temporary Address is requested.  If failed
+to obtain a lease, it probes for a valid IPv4LL address aka Zero‐
+Conf,  aka APIPA Once obtained it restarts the process of looking
+for a DHCP server to get a proper address.   When  using  IPv4LL,
+nearly  always  succeeds  and  returns an exit code of 0.  In the
+rare case it fails, it normally means that there is a reverse ARP
+proxy installed which always defeats IPv4LL probing.  To  disable
+this  behaviour, you can use the option.  If a list of interfaces
+are given on the command line, then only works with those  inter‐
+faces, otherwise discovers available Ethernet interfaces that can
+be  configured.  When is not limited to one interface on the com‐
+mand line, it is running in Manager mode.   The  project  expects
+dhcpcd  to  be  running this way.  If a single interface is given
+then only works for that interface and runs  as  a  separate  in‐
+stance  to  other  processes.   The option is enabled in this in‐
+stance to maintain compatibility with older  versions.   Using  a
+single interface, optionally further limited to an address proto‐
+col,  also  affects the and options, where the same interface and
+any address protocol will need to be specified, as a lack  of  an
+interface  will  imply  Manager mode which this is not.  To force
+starting in Manager mode with only one interface, the option  can
+be  used.  Interfaces are preferred by carrier, DHCP lease/IPv4LL
+and then lowest metric.  For systems that support route  metrics,
+each  route will be tagged with the metric, otherwise changes the
+routes to use the interface with the same route  and  the  lowest
+metric.   See  options  below for controlling which interfaces we
+allow and deny through the use of patterns.  Non-ethernet  inter‐
+faces and some virtual ethernet interfaces such as TAP and bridge
+are  ignored  by  default, as is the FireWire interface.  To work
+with these devices they either need to be specified on  the  com‐
+mand line, be listed in or have an interface directive in runs or
+the script specified by the option.  This script runs each script
+found  in  in a lexical order.  The default installation supplies
+the scripts and You can disable each script by using the  option.
+See for details on how these scripts work.  currently ignores the
+exit  code  of the script.  More scripts are supplied in and need
+to be copied to if you intend to  use  them.   For  example,  you
+could  install  so that can lookup the hostname of the IP address
+in DNS if no hostname is given by the lease and one  is  not  al‐
+ready set.  You can fine-tune the behaviour of with the following
+options:  Background  immediately.   This  is  useful for startup
+scripts which don&#x27;t disable link  messages  for  carrier  status.
+Use this instead of the default Use a DHCP Unique Identifier.  If
+a  system  UUID is available, that will be used to create a DUID-
+UUID, otherwise if persistent storage is available then  a  DUID-
+LLT  (link  local address + time) is generated, otherwise DUID-LL
+is generated (link local address).  The DUID type can  be  hinted
+as  an  optional parameter if the file does not exist.  If not or
+then will be converted from 00:11:22:33 format.  This,  plus  the
+IAID  will  be used as the The DUID generated will be held in and
+should not be copied to other hosts.  This file also takes prece‐
+dence over the above rules except for setting a value.  Echo  de‐
+bug messages to the stderr and syslog.  If cannot obtain a lease,
+then  try to use the last lease acquired for the interface.  Same
+as the above, but the lease will be retained even if it  expires.
+will give it up if any other host tries to claim it for their own
+via  ARP.   This violates RFC 2131, section 3.7, which states the
+lease should be dropped once it has expired.  Push to  the  envi‐
+ronment  for  use in For example, you can force the hostname hook
+to always set the hostname with will re-apply IP address, routing
+and run for each interface.  This is useful so that a  3rd  party
+such as PPP or VPN can change the routing table and / or DNS, etc
+and then instruct to put things back afterwards.  does not read a
+new  configuration  when  this happens - you should rebind if you
+need that functionality.  Requests that the  DHCP  server  update
+DNS  using FQDN instead of just a hostname.  Valid values for are
+disable, none, ptr and both.  itself never does any DNS  updates.
+encodes  the  FQDN  hostname  as specified in Specify a config to
+load instead of always processes the config file before any  com‐
+mand  line options.  Sends to the DHCP server so it can be regis‐
+tered in DNS.  If is an empty  string  then  the  current  system
+hostname is sent.  If is a FQDN (i.e., contains a .) then it will
+be  encoded  as  such.   Send  the If the string is of the format
+01:02:03 then it is encoded as hex.  For interfaces  whose  hard‐
+ware address is longer than 8 bytes, or if the is an empty string
+then  sends a default of the hardware family and the hardware ad‐
+dress.   Override  the  DHCPv4  field  sent.   The   default   is
+dhcpcd-&lt;version&gt;:&lt;os&gt;:&lt;machine&gt;:&lt;platform&gt;.   For  example If not
+set then none is sent.  Some badly configured DHCP servers reject
+unknown vendorclassids.  To work around it, try  and  impersonate
+Windows by using the MSFT vendorclassid.  Writes to the specified
+still  writes  to The is reopened when receives the signal.  This
+causes an existing process running on the to  release  its  lease
+and  de-configure  the regardless of the option.  If no is speci‐
+fied then this applies to all interfaces in Manager mode.  If  no
+interfaces  are left running, will exit.  Request a lease time of
+represents an infinite lease time.  By default does  not  request
+any  lease  time  and  leaves it in the hands of the DHCP server.
+Start in Manager mode even if only one interface specified on the
+command line.  See the Multiple Interfaces section  above.   Met‐
+rics  are  used  to  prefer an interface over another one, lowest
+wins.  will supply a default metric of 1000 + This will be offset
+by 2000 for  wireless  interfaces,  with  additional  offsets  of
+1000000  for IPv4LL and 2000000 for roaming interfaces.  Notifies
+to reload its configuration and rebind the  specified  If  no  is
+specified  then  this  applies to all interfaces in Manager mode.
+If is not running, then it starts up as normal.  Notifies to  re‐
+new  existing  addresses on the specified If no is specified then
+this applies to all interfaces in Manager mode.  If is  not  run‐
+ning,  then it starts up as normal.  Unlike the option above, the
+configuration for is not reloaded.  Request the DHCP variable for
+use in de-configures the when it exits unless this option is  en‐
+abled.  Sometimes, this isn&#x27;t desirable if, for example, you have
+root  mounted  over  NFS  or SSH clients connect to this host and
+they need to be notified of the host shutting down.  You can  use
+this option to stop this from happening.  Request the in the DHCP
+DISCOVER  message.  There is no guarantee this is the address the
+DHCP server will actually give.  If no is given  then  the  first
+address  currently  assigned  to  the  is  used.  Behaves like as
+above, but sends a DHCP INFORM instead of DISCOVER/REQUEST.  This
+does not get a lease as such, just notifies the  DHCP  server  of
+the  in use.  You should also include the optional network number
+in case the address is not already configured on  the  interface.
+remains  running and pretends it has an infinite lease.  will not
+de-configure the interface when it exits.  If fails to contact  a
+DHCP  server then it returns a failure instead of falling back on
+IPv4LL.  Performs a DHCPv6 Information Request.   No  address  is
+requested or specified, but all other DHCPv6 options are allowed.
+This is normally performed automatically when the IPv6 Router Ad‐
+vertises that the client should perform this operation.  This op‐
+tion  is  only  needed when is not processing IPv6RA messages and
+the need for DHCPv6 Information  Request  exists.   Configures  a
+static  DHCP  If  you set then will not attempt to obtain a lease
+and just use the value for the address  with  an  infinite  lease
+time.   Here  is  an  example  which configures a static address,
+routes and DNS.  You cannot presently set static  DHCPv6  values.
+Use the option instead.  Timeout after instead of the default 30.
+On  timeout, will exit if the option has been given, otherwise it
+will fork into the background and keep on trying.  A setting of 0
+causes to wait forever to get a lease.  Tags the  DHCPv4  message
+with  the  userclass DHCP servers use this to give members of the
+class DHCP options other than the default, without having to know
+things like hardware address or hostname.   Add  an  encapsulated
+vendor  option.  should be between 1 and 254 inclusive.  To add a
+raw vendor string, omit but keep the comma.  Examples.   Set  the
+vendor  option  01  with an IP address.  Set the vendor option 02
+with a hex code.  Set the vendor option 03 with an IP address  as
+a  string.   Set  un-encapsulated  vendor  option to hello world.
+Display both program version and copyright information.  then ex‐
+its before doing any configuration.  Wait for an  address  to  be
+assigned  before forking to the background.  Does not take an ar‐
+gument, unlike the below option.  Wait for an address to  be  as‐
+signed  before  forking  to  the background.  4 means wait for an
+IPv4 address to be assigned.  6 means wait for an IPv6 address to
+be assigned.  If no argument is given, will wait for any  address
+protocol  to  be  assigned.  It is possible to wait for more than
+one address protocol and will only fork to  the  background  when
+all waiting conditions are satisfied.  This will signal an exist‐
+ing process running on the to exit.  If no is specified, then the
+above  is applied to all interfaces in Manager mode.  See the op‐
+tion to control configuration persistence on exit, which  is  en‐
+abled  by  default  in  then waits until this process has exited.
+Allow seconds before moving to the discover phase if we  have  an
+old  lease to use.  Allow seconds before starting fallback states
+from the discover phase.  IPv4LL is started when the first  time‐
+out  is  reached.  The default is 5 seconds.  A setting of 0 sec‐
+onds causes to skip the reboot phase and go  straight  into  dis‐
+cover.   This has no effect on DHCPv6 other than skipping the re‐
+boot phase.  will try to do as much as it can by  default.   How‐
+ever,  there  are  sometimes  situations where you don&#x27;t want the
+things to be configured exactly how the DHCP server wants.   Here
+are  some  options  that  deal with turning these bits off.  Note
+that when is restricted to a single interface then the  interface
+also needs to be specified when asking to exit using the command‐
+line.   If  the  protocol is restricted as well then the protocol
+needs to be included with the exit instruction.  Exit after  con‐
+figuring  an  interface.   Use the option to specify which proto‐
+col(s) to configure before exiting.  Configure IPv4  only.   Con‐
+figure  IPv6  only.   Don&#x27;t  request or claim the address by ARP.
+This also disables IPv4LL.  Don&#x27;t run in the background  when  we
+acquire  a  lease.   This  is mainly useful for running under the
+control of another process, such as a debugger or a network  man‐
+ager.   Don&#x27;t  run  this hook script.  Matches full name, or pre‐
+fixed with 2 numbers optionally  ending  with  So  to  stop  from
+touching  your  DNS settings you would do:- Don&#x27;t set any default
+routes.  Use the last four bytes of the hardware address  as  the
+DHCP  xid  instead of a randomly generated number.  Instructs the
+DHCP server to broadcast replies back to  the  client.   Normally
+this  is  only  set for non-Ethernet interfaces, such as FireWire
+and InfiniBand.  In most instances, will set this  automatically.
+Don&#x27;t  receive link messages for carrier status.  You should only
+have to use this with buggy device drivers or running  through  a
+network  manager.   Don&#x27;t use IPv4LL (aka APIPA, aka Bonjour, aka
+ZeroConf).  Removes the from the DHCP message before  processing.
+Print  the  will  use  based on command-line arguments to stdout.
+Requires the to be present in all DHCP  messages,  otherwise  the
+message  is  ignored.   To  enforce  that  only  responds to DHCP
+servers and not BOOTP servers, you can Quiet on the command line,
+only warnings and errors will be displayed.  If  this  option  is
+used  another  time  then  all console output is disabled.  These
+messages are still logged via On receipt of  DHCP  messages  just
+call with the reason of TEST which echos the DHCP variables found
+in the message to the console.  The interface configuration isn&#x27;t
+touched  and  neither are any configuration files.  The option is
+not sent in TEST mode so that the server does not  lease  an  ad‐
+dress.   To test INFORM the interface needs to be configured with
+the desired address before starting Dumps the current  lease  for
+the  to  stdout.   If no is given then all interfaces are dumped.
+Use the or flags to specify an address family.   If  a  lease  is
+piped  in via standard input then use the special interface named
+to dump it.  In this case, specifying an address family is manda‐
+tory.  Display a list of option codes,  the  associated  variable
+and encoding for use in Variables are prefixed with new_ and old_
+unless  the  option number is -.  Variables without an option are
+part of the DHCP message and cannot be directly requested.   Only
+accept  packets  from  is  ignored if is set.  Ignore all packets
+from When discovering interfaces, the  interface  name  must  not
+match which is a space or comma separated list of patterns passed
+to  When  discovering  interfaces,  the interface name must match
+which is a space or comma separated list of patterns passed to If
+the same interface is matched in then it is still denied.   Don&#x27;t
+start  any  interfaces  other than those specified on the command
+line.  This allows to be started in Manager mode  and  then  wait
+for subsequent commands to start each interface as required.  Al‐
+lows  to configure the system.  This is the default behaviour and
+sets will not configure the system at all.  This is only  of  use
+if the that calls at each network event configures the system in‐
+stead.  This is different from mode in that it&#x27;s not one shot and
+the  only change to the environment is the addition of Don&#x27;t load
+any management modules.  Some interfaces require configuration by
+3rd parties, such as PPP or VPN.  When an interface configuration
+in is marked as STATIC or INFORM without  an  address  then  will
+monitor  the  interface until an address is added or removed from
+it and act accordingly.  For  point  to  point  interfaces  (like
+PPP),  a  default route to its destination is automatically added
+to the configuration.  If the point to point interface is config‐
+ured for INFORM, then unicasts INFORM to the destination,  other‐
+wise  it  defaults to STATIC.  requires a Berkeley Packet Filter,
+or BPF device on BSD based systems and a Linux Socket Filter,  or
+LPF device on Linux based systems for all IPv4 configuration.  If
+restricting  to  a single interface and optionally address family
+via the command-line then all further calls to to rebind,  recon‐
+figure or exit need to include the same restrictive flags so that
+knows  which process to signal.  Some DHCP servers implement Cli‐
+entID filtering.  If is replacing an in-use DHCP client then  you
+might  need to adjust the clientid option sends to match.  If us‐
+ing a DUID in place of the ClientID, edit accordingly.   Configu‐
+ration  file for dhcpcd.  If you always use the same options, put
+them here.  Bourne shell script that is run to configure  or  de-
+configure  an  interface.  Linux management modules.  A directory
+containing Bourne shell scripts that are run by the above script.
+Each script can be disabled by using the option described  above.
+Text  file  that  holds the DUID used to identify the host.  Text
+file that holds a secret key known only to the host.  The  actual
+DHCP  message  sent  by the server.  We use this when reading the
+last lease and use the file&#x27;s mtime as when it was  issued.   The
+actual DHCPv6 message sent by the server.  We use this when read‐
+ing  the  last  lease and use the file&#x27;s mtime as when it was is‐
+sued.  Stores the monotonic counter used in the field in  Authen‐
+tication  Options.   Stores the PID of running on all interfaces.
+Stores the PID of running on the Control socket  to  the  manager
+daemon.   Unprivileged  socket to the manager daemon, only allows
+state retrieval.  Control socket to per  interface  daemon.   Un‐
+privileged  socket to per interface daemon, only allows state re‐
+trieval.   RFC 951,  RFC 1534,  RFC 2104,   RFC 2131,   RFC 2132,
+RFC 2563,   RFC 2855,  RFC 3004,  RFC 3118,  RFC 3203,  RFC 3315,
+RFC 3361,  RFC 3633,  RFC 3396,  RFC 3397,  RFC 3442,   RFC 3495,
+RFC 3925,   RFC 3927,  RFC 4039,  RFC 4075,  RFC 4242,  RFC 4361,
+RFC 4390,  RFC 4702,  RFC 4074,  RFC 4861,  RFC 4833,   RFC 4941,
+RFC 5227,   RFC 5942,  RFC 5969,  RFC 6106,  RFC 6334,  RFC 6355,
+RFC 6603, RFC 6704, RFC 7217, RFC 7550, RFC 7844.  Please  report
+them to
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

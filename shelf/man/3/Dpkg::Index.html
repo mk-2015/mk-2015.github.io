@@ -1,0 +1,161 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Index(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Index(3perl)               libdpkg-perl               Dpkg::Index(3perl)
+
+NAME
+       Dpkg::Index - generic index of control information
+
+DESCRIPTION
+       This class represent a set of Dpkg::Control objects.
+
+METHODS
+       $index = Dpkg::Index-&gt;new(%opts)
+           Creates a new empty index. See set_options() for more details.
+
+       $index-&gt;set_options(%opts)
+           Change the value of some options.
+
+           Options:
+
+           type
+               Set  the  deb822 control type, used to setup default values for
+               other options.
+
+           item_opts
+               Set  a  hash  reference  that  will  be  passed  to  the   item
+               constructor  in  the  $index-&gt;new_item() method.  The index can
+               only contain one item with a given key.
+
+           unique_tuple_key
+               Set a boolean requesting whether the default key should be  the
+               unique tuple (default to true).
+
+           get_key_func
+               Set  a  function  returning  a  key  for  the  item  passed  in
+               parameters.
+
+               The default depends on the type:
+
+               •   for CTRL_TMPL_SRC, it is the Source field;
+
+               •   for CTRL_REPO_SRC  and  CTRL_DSC  it  is  the  Package  and
+                   Version     fields    (concatenated    with    &quot;_&quot;)    when
+                   unique_tuple_key is true (the default),  or  otherwise  the
+                   Package field;
+
+               •   for CTRL_TMPL_PKG it is simply the Package field;
+
+               •   for  CTRL_REPO_PKG  and CTRL_DEB it is the Package, Version
+                   and  Architecture  fields  (concatenated  with  &quot;_&quot;)   when
+                   unique_tuple_key  is  true  (the  default) or otherwise the
+                   Package field;
+
+               •   for CTRL_CHANGELOG it is the Source and the Version  fields
+                   (concatenated with an intermediary &quot;_&quot;);
+
+               •   for  CTRL_TESTS is an integer index (0-based) corresponding
+                   to the Tests or Test-Command field stanza;
+
+               •   for  CTRL_FILE_CHANGES  it  is  the  Source,  Version   and
+                   Architecture fields (concatenated with &quot;_&quot;);
+
+               •   for CTRL_FILE_VENDOR it is the Vendor field;
+
+               •   for  CTRL_FILE_STATUS  it  is  the Package and Architecture
+                   fields (concatenated with &quot;_&quot;);
+
+               •   otherwise it is the Package field by default.
+
+       $index-&gt;get_type()
+           Returns the type  of  control  information  stored.  See  the  type
+           parameter set during new().
+
+       $index-&gt;add($item, [$key])
+           Add  a new item in the index. If the $key parameter is omitted, the
+           key  will  be  generated  with  the  get_key_func   function   (see
+           set_options() for details).
+
+       $index-&gt;parse($fh, $desc)
+           Reads  the  filehandle  and  creates  all items parsed. When called
+           multiple times, the parsed stanzas are accumulated.
+
+           Returns the number of items parsed.
+
+       $index-&gt;load($file)
+           Reads the file and creates all items parsed. Returns the number  of
+           items parsed. Handles compressed files transparently based on their
+           extensions.
+
+       $item = $index-&gt;new_item()
+           Creates  a  new  item. Mainly useful for derived objects that would
+           want to override this  method  to  return  something  else  than  a
+           Dpkg::Control object.
+
+       $item = $index-&gt;get_by_key($key)
+           Returns the item identified by $key or undef.
+
+       @keys = $index-&gt;get_keys(%criteria)
+           Returns the keys of items that matches all the criteria. The key of
+           the  %criteria hash is a field name and the value is either a regex
+           that needs to match the field value, or a reference to  a  function
+           that  must  return true and that receives the field value as single
+           parameter, or a scalar that must be equal to the field value.
+
+       @items = $index-&gt;get(%criteria)
+           Returns all the items that matches all the criteria.
+
+       $index-&gt;remove_by_key($key)
+           Remove the item identified by the given key.
+
+       @items = $index-&gt;remove(%criteria)
+           Returns and removes all the items that matches all the criteria.
+
+       $index-&gt;merge($other_index, %opts)
+           Merge the entries of the other index. While merging,  the  keys  of
+           the  merged  index  are  used,  they are not re-computed. It&#x27;s your
+           responsibility to ensure that they have been computed with the same
+           function.
+
+           Options:
+
+           keep_keys
+               Set whether to  re-compute  the  keys  from  the  other  index.
+               Defaults to 1.
+
+       $index-&gt;sort(\&amp;sortfunc)
+           Sort  the  index  with  the  given sort function. If no function is
+           given, an alphabetic sort is done  based  on  the  keys.  The  sort
+           function  receives  the  items themselves as parameters and not the
+           keys.
+
+       $str = $index-&gt;output([$fh])
+       &quot;$index&quot;
+           Get a string representation of the index. The Dpkg::Control objects
+           are output in the order which they have been read or  added  except
+           if the order have been changed with sort().
+
+           Print the string representation of the index to a filehandle if $fh
+           has been passed.
+
+       $index-&gt;save($file)
+           Writes  the  content  of the index in a file. Auto-compresses files
+           based on their extensions.
+
+CHANGES
+   Version 3.00 (dpkg 1.21.2)
+       Change behavior: The CTRL_TESTS key now defaults to a stanza index.
+
+   Version 2.01 (dpkg 1.20.6)
+       New option: Add new &quot;item_opts&quot; option.
+
+   Version 2.00 (dpkg 1.20.0)
+       Change behavior: The &quot;unique_tuple_key&quot; option now defaults to true.
+
+   Version 1.01 (dpkg 1.19.0)
+       New option: Add new &quot;unique_tuple_key&quot; option to  $index-&gt;set_options()
+       to  set  better  default  &quot;get_key_func&quot; options, which will become the
+       default behavior in 1.20.x.
+
+   Version 1.00 (dpkg 1.15.6)
+       Mark the module as public.
+
+1.22.22                           2026-03-06                Dpkg::Index(3perl)
+</pre></body></html>

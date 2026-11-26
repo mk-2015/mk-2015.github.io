@@ -1,0 +1,115 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>openssl-storeutl(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>OPENSSL-STOREUTL(1SSL)              OpenSSL             OPENSSL-STOREUTL(1SSL)
+
+NAME
+       openssl-storeutl - STORE command
+
+SYNOPSIS
+       openssl storeutl [-help] [-out file] [-noout] [-passin arg] [-text arg]
+       [-r] [-certs] [-keys] [-crls] [-subject arg] [-issuer arg] [-serial
+       arg] [-alias arg] [-fingerprint arg] [-digest] [-engine id] [-provider
+       name] [-provider-path path] [-provparam [name:]key=value] [-propquery
+       propq] uri
+
+DESCRIPTION
+       This command can be used to display the contents (after decryption as
+       the case may be) fetched from the given URI.
+
+OPTIONS
+       -help
+           Print out a usage message.
+
+       -out filename
+           This  specifies  the  output  file to write to.  Standard output is
+           used if this option is not present.  The output  file  can  be  the
+           same  as  the  input,  which  leads to replacing the file contents.
+           Note that file I/O is not atomic. The output file is truncated  and
+           then written.
+
+       -noout
+           this option prevents output of the PEM data.
+
+       -passin arg
+           the  key  password source. For more information about the format of
+           arg see openssl-passphrase-options(1).
+
+       -text
+           Prints out the objects in text form, similarly to the -text  output
+           from openssl-x509(1), openssl-pkey(1), etc.
+
+       -r  Fetch objects recursively when possible.
+
+       -certs
+       -keys
+       -crls
+           Only  select  the  certificates,  keys  or CRLs from the given URI.
+           However, if this URI would return a set of names (URIs), those  are
+           always returned.
+
+           Note that all options must be given before the uri argument.
+
+           Note  -keys  selects exclusively private keys, there is no selector
+           for public keys only.
+
+       -subject arg
+           Search for an object having the subject name arg.
+
+           The        arg         must         be         formatted         as
+           &quot;/type0=value0/type1=value1/type2=...&quot;.   Special characters may be
+           escaped by &quot;\&quot; (backslash), whitespace is retained.   Empty  values
+           are  permitted  but  are ignored for the search.  That is, a search
+           with an empty value will have the same effect as not specifying the
+           type at all.  Giving a single &quot;/&quot; will lead to an empty sequence of
+           RDNs (a NULL-DN).  Multi-valued RDNs can be formed by placing a &quot;+&quot;
+           character instead of a  &quot;/&quot;  between  the  AttributeValueAssertions
+           (AVAs) that specify the members of the set.
+
+           Example:
+
+           &quot;/DC=org/DC=OpenSSL/DC=users/UID=123456+CN=John Doe&quot;
+
+       -issuer arg
+       -serial arg
+           Search  for  an  object  having  the  given  issuer name and serial
+           number.  These two options must be used together.  The  issuer  arg
+           must   be   formatted   as  &quot;/type0=value0/type1=value1/type2=...&quot;,
+           characters may be escaped by \ (backslash), no spaces are  skipped.
+           The  serial  arg may be specified as a decimal value or a hex value
+           if preceded by &quot;0x&quot;.
+
+       -alias arg
+           Search for an object having the given alias.
+
+       -fingerprint arg
+           Search for an object having the given fingerprint.
+
+       -digest
+           The digest that was used to  compute  the  fingerprint  given  with
+           -fingerprint.
+
+       -engine id
+           See &quot;Engine Options&quot; in openssl(1).  This option is deprecated.
+
+       -provider name
+       -provider-path path
+       -provparam [name:]key=value
+       -propquery propq
+           See &quot;Provider Options&quot; in openssl(1), provider(7), and property(7).
+
+SEE ALSO
+       openssl(1)
+
+HISTORY
+       This command was added in OpenSSL 1.1.1.
+
+       The -engine option was deprecated in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2016-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09            OPENSSL-STOREUTL(1SSL)
+</pre></body></html>

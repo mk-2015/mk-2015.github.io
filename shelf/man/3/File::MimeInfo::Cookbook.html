@@ -1,0 +1,98 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>File::MimeInfo::Cookbook(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>File::...okbook(3pm)  User Contributed Perl Documentation File::...okbook(3pm)
+
+NAME
+       File::MimeInfo::Cookbook - various code snippets
+
+DESCRIPTION
+       Some code snippets for non-basic uses of the File::MimeInfo module:
+
+       Matching an extension
+           A  file  does not have to actually exist in order to get a mimetype
+           for it. This means that the following will work:
+
+             my $extension = &#x27;*.txt&#x27;;
+             my $mimetype = mimetype( $extension );
+
+       Mimetyping an scalar
+           If you want to find the mimetype of a scalar value you  need  magic
+           mimetyping;  after  all  a scalar doesn&#x27;t have a filename or inode.
+           What you need to do is to use IO::Scalar :
+
+             use File::MimeInfo::Magic;
+             use IO::Scalar;
+
+             my $io_scalar = new IO::Scalar \$data;
+             my $mimetype = mimetype( $io_scalar );
+
+           In fact most other &quot;IO::&quot; will work as long  as  they  support  the
+           seek()  and  read()  methods.  Of course if you want really obscure
+           things to happen you can always write your own IO object  and  feed
+           it in there.
+
+           Be aware that when using a filehandle like this you need to set the
+           &quot;:utf8&quot; binmode yourself if appropriate.
+
+       Mimetyping a filehandle
+           Regrettably for non-seekable filehandles like STDIN simply using an
+           &quot;IO::&quot;  object will not work. You will need to buffer enough of the
+           data for a proper mimetyping. For example you could  mimetype  data
+           from STDIN like this:
+
+             use File::MimeInfo::Magic;
+             use IO::Scalar;
+
+             my $data;
+             read(STDIN, $data, $File::MimeInfo::Magic::max_buffer);
+             my $io_scalar = new IO::Scalar \$data;
+             my $mimetype = mimetype( $io_scalar );
+
+           Be aware that when using a filehandle like this you need to set the
+           &quot;:utf8&quot; binmode yourself if appropriate.
+
+       Creating a new filename
+           Say  you  have  a  temporary file that you want to save with a more
+           proper filename.
+
+             use File::MimeInfo::Magic qw#mimetype extensions#;
+             use File::Copy;
+
+             my $tmpfile = &#x27;/tmp/foo&#x27;;
+             my $mimetype = mimetype($tmpfile);
+             my $extension = extensions($mimetype);
+             my $newfile = &#x27;untitled1&#x27;;
+             $newfile .= &#x27;.&#x27;.$extension if length $extension;
+             move($tmpfile, $newfile);
+
+       Force the use of a certain database directory
+           Normally you just need to add the  dir  where  your  mime  database
+           lives  to  either  the  XDG_DATA_HOME  or XDG_DATA_DIRS environment
+           variables for it to be found. But in some rare cases you  may  want
+           to by-pass this system all together. Try one of the following:
+
+             @File::MimeInfo::DIRS = (&#x27;/home/me/share/mime&#x27;);
+             eval &#x27;use File::MimeInfo&#x27;;
+             die if $@;
+
+           or:
+
+             use File::MimeInfo;
+             @File::MimeInfo::DIRS = (&#x27;/home/me/share/mime&#x27;);
+             File::MimeInfo-&gt;rehash();
+
+           This  can  also be used for switching between databases at run time
+           while leaving other XDG configuration stuff alone.
+
+AUTHOR
+       Jaap  Karssenberg  &lt;pardus@cpan.org&gt;  Maintained  by   Michiel   Beijen
+       &lt;mb@x14.nl&gt;
+
+COPYRIGHT
+       Copyright (c) 2005, 2012 Jaap G Karssenberg. All rights reserved.  This
+       program  is  free  software;  you  can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+SEE ALSO
+       File::MimeInfo
+
+perl v5.38.2                      2024-04-27              File::...okbook(3pm)
+</pre></body></html>

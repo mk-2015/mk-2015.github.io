@@ -1,0 +1,102 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-transport(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-TRANSPORT(1) Linux System AdministrationBLUETOOTHCTL-TRANSPORT(1)
+
+NAME
+       bluetoothctl-transport - Media Transport Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [transport.commands]
+
+MEDIA TRANSPORT COMMANDS
+   list
+       List available transports.
+
+       Usage  &gt; list
+
+   show
+       Show transport information.
+
+       Usage  &gt; show [transport]
+
+   acquire
+       Acquire transport.
+
+       Usage  &gt; acquire &lt;transport&gt; [transport1...]
+
+       Note:
+
+       If  running  the  setup  with an audio server that has LE Audio support
+       (such as PipeWire) it will automatically acquire  transports  according
+       to the configured roles.
+
+   select
+       Select  transport.  For  transports  created on a Broadcast Sink device
+       only. This moves the transport to the &quot;broadcasting&quot; state, pending ac‐
+       quire.
+
+       Usage  &gt; select &lt;transport&gt; [transport1...]
+
+       Note:
+
+       If the select command receives a list of transports, they will first be
+       linked using the &quot;Links&quot; MediaTransport property. They will then be se‐
+       lected one by one, by calling the &quot;Select&quot; MediaTransport method. After
+       the first transport is acquired, the Broadcast Sink will create fds for
+       the associated stream and all its links. Each link can then be acquired
+       one by one, setting the fd for the transport and  starting  to  receive
+       audio.
+
+       The  select  command does not require a local endpoint to be registered
+       beforehand. This is because if the setup runs with an audio server that
+       has LE Audio support (such as PipeWire), the audio server is the one to
+       register endpoints and the transports are created as a result.  Once  a
+       transport is selected, the audio server will automatically acquire.
+
+   unselect
+       Unselect  transport.  For transports created on a Broadcast Sink device
+       only. This moves the transport to the &quot;idle&quot; state, pending release  by
+       the  audio server. If the transport was acquired by bluetoothctl it can
+       be released straight away, without having to be unselected.
+
+       Usage  &gt; unselect &lt;transport&gt; [transport1...]
+
+       Note: If running the setup with an audio server that has LE Audio  sup‐
+       port (such as PipeWire), it will prompt it to automatically release the
+       transport.
+
+   release
+       Release transport.
+
+       Usage  &gt; release &lt;transport&gt; [transport1...]
+
+       Note:
+
+       Transports  acquired  by  an audio server, can only be released by said
+       audio server.
+
+   send
+       Send contents of a file.
+
+       Usage  &gt; send &lt;transport&gt; &lt;filename&gt;
+
+   receive
+       Get/Set file to receive.
+
+       Usage  &gt; receive &lt;transport&gt; [filename]
+
+   volume
+       Get/Set transport volume.
+
+       Usage  &gt; volume &lt;transport&gt; [value]
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                            November 2022       BLUETOOTHCTL-TRANSPORT(1)
+</pre></body></html>

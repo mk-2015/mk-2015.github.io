@@ -1,0 +1,99 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>IO::Compress::Brotli(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>IO::Co...Brotli(3pm)  User Contributed Perl Documentation IO::Co...Brotli(3pm)
+
+NAME
+       IO::Compress::Brotli - Write Brotli buffers/streams
+
+SYNOPSIS
+         use IO::Compress::Brotli;
+
+         # compress a buffer
+         my $encoded = bro $encoded;
+
+         # compress a stream
+         my $bro = IO::Compress::Brotli-&gt;create;
+         while(have_input()) {
+            my $block = get_input_block();
+            my $encoded_block = $bro-&gt;compress($block);
+            handle_output_block($encoded_block);
+         }
+         # Need to finish the steam
+         handle_output_block($bro-&gt;finish());
+
+DESCRIPTION
+       IO::Compress::Brotli is a module that compressed Brotli buffers and
+       streams. Despite its name, it is not a subclass of IO::Compress::Base
+       and does not implement its interface. This will be rectified in a
+       future release.
+
+   One-shot interface
+       If you have the whole buffer in a Perl scalar use the bro function.
+
+       bro($input)
+           Takes  a  whole  uncompressed  buffer  as  input  and  returns  the
+           compressed data.
+
+           Exported by default.
+
+   Streaming interface
+       If you want to process the data  in  blocks  use  the  object  oriented
+       interface. The available methods are:
+
+       IO::Compress::Brotli-&gt;create
+           Returns  a IO::Compress::Brotli instance. Please note that a single
+           instance cannot be used to decompress multiple streams.
+
+       $bro-&gt;window($window)
+           Sets the window parameter  on  the  brotli  encoder.   Defaults  to
+           BROTLI_DEFAULT_WINDOW (22).
+
+       $bro-&gt;quality($quality)
+           Sets  the  quality  paremeter  on  the brotli encoder.  Defaults to
+           BROTLI_DEFAULT_QUALITY (11).
+
+       $bro-&gt;mode($mode)
+           Sets the brotli encoder mode, which can be any of &quot;generic&quot;, &quot;text&quot;
+           or &quot;font&quot;. Defaults to &quot;generic&quot;.
+
+       $bro-&gt;compress($block)
+           Takes the a block of uncompressed  data  and  returns  a  block  of
+           compressed data. Dies on error.
+
+       $bro-&gt;flush()
+           Flushes any pending output from the encoder.
+
+       $bro-&gt;finish()
+           Tells  the  encoder  to start the finish operation, and flushes any
+           remaining compressed output.
+
+           Once finish is called, the encoder cannot be used to  compress  any
+           more content.
+
+           NOTE:  Calling  finish  is  required,  or  the  output might remain
+           unflushed, and the be missing termination marks.
+
+SEE ALSO
+       Brotli       Compressed       Data        Format        Internet-Draft:
+       &lt;https://www.ietf.org/id/draft-alakuijala-brotli-08.txt&gt;
+
+       Brotli source code: &lt;https://github.com/google/brotli/&gt;
+
+AUTHOR
+       Marius Gavrilescu, &lt;marius@ieval.ro&gt;
+
+       The encoder bindings, modernisation of the decoder bindings and a clean
+       up of the overall project were contributed by:
+
+       Quim Rovira, &lt;quim@rovira.cat&gt;
+       Ãvar ArnfjÃ¶rÃ° Bjarmason, &lt;avarab@gmail.com&gt;
+       Marcell SzathmÃ¡ri
+       Mattia Barbon, &lt;mattia@barbon.org&gt;
+
+COPYRIGHT AND LICENSE
+       Copyright (C) 2015-2018 by Marius Gavrilescu
+
+       This library is free software; you can redistribute it and/or modify it
+       under  the same terms as Perl itself, either Perl version 5.20.2 or, at
+       your option, any later version of Perl 5 you may have available.
+
+perl v5.40.0                      2024-10-15              IO::Co...Brotli(3pm)
+</pre></body></html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>_TIFFRewriteField(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>_TIFFREWRITEFIELD(3tiff)            LibTIFF           _TIFFREWRITEFIELD(3tiff)
+
+NAME
+       _TIFFRewriteField - rewrite a field in the directory on disk
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int _TIFFRewriteField(TIFF *tif, uint16_t tag, TIFFDataType
+       in_datatype, tmsize_t count, void *data)
+
+DESCRIPTION
+       _TIFFRewriteField()  Rewrite  a  field in the directory on disk without
+       regard to updating the TIFF directory structure in  memory.   Currently
+       only  supported  for field that already exist in the on-disk directory.
+       Mainly used for updating stripoffset / stripbytecount values after  the
+       directory is already on disk.
+
+RETURN VALUES
+       Returns zero on failure, and one on success.
+
+SEE ALSO
+       libtiff (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026         _TIFFREWRITEFIELD(3tiff)
+</pre></body></html>

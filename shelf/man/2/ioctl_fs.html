@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ioctl_fs(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ioctl_fs(2)                   System Calls Manual                  ioctl_fs(2)
+
+NAME
+       ioctl_fs - filesystem operations
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/fs.h&gt;  /* Definition of op constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, unsigned long op, ...);
+
+DESCRIPTION
+       The following op values are available.
+
+   Share some of the data of one file with another file
+       FICLONE(2const)
+       FICLONERANGE(2const)
+
+       FIDEDUPERANGE(2const)
+
+   Operations for inode flags
+       FS_IOC_GETFLAGS(2const)
+       FS_IOC_SETFLAGS(2const)
+
+   Get or set a filesystem label
+       FS_IOC_GETFSLABEL(2const)
+       FS_IOC_SETFSLABEL(2const)
+
+   Get and/or clear page flags
+       PAGEMAP_SCAN(2const)
+
+RETURN VALUE
+       On success, a nonnegative value is returned.  On error, -1 is returned,
+       and errno is set to indicate the error.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       ioctl(2)
+
+Linux man-pages 6.9.1             2024-06-14                       ioctl_fs(2)
+</pre></body></html>

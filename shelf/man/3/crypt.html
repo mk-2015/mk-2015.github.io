@@ -1,0 +1,133 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>crypt(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>The and functions irreversibly for storage in the system password
+database  using  a  cryptographic The result of this operation is
+called a or just a Hashing  methods  are  described  in  controls
+which hashing method to use, and also supplies various parameters
+to  the  chosen  method,  most importantly a random which ensures
+that no two stored hashes are the same, even if the  strings  are
+the same.  The argument to is a structure of type It has at least
+these fields: struct crypt_data {
+    char output[CRYPT_OUTPUT_SIZE];
+    char setting[CRYPT_OUTPUT_SIZE];
+    char input[CRYPT_MAX_PASSPHRASE_SIZE];
+    char initialized; }; Upon a successful return from the hashed
+passphrase will be stored in Applications are encouraged, but not
+required,  to  use  the and fields to store the strings that they
+will pass as and to This will make it easier to erase all  sensi‐
+tive data after it is no longer needed.  The field must be set to
+zero before the first time a object is first used in a call to We
+recommend  zeroing  the  entire object, not just and not just the
+documented fields, before the first use.  (Of course, do this be‐
+fore storing anything in and The argument to should also point to
+a object, and should be the size of that  object,  cast  to  When
+used  with  the entire object (except for the and fields) must be
+zeroed before its first use; this is not just  a  recommendation,
+as  it  is  for Otherwise, the fields of the object have the same
+uses that they do for On the first call to should be the  address
+of  a variable set to NULL, and should be the address of an vari‐
+able set to zero.  will allocate and initialize a  object,  using
+and  write  its address and size into the variables pointed to by
+and These can be reused in subsequent calls.  After the  applica‐
+tion is done hashing passphrases, it should deallocate the object
+using  Upon  successful  completion,  and  return  a pointer to a
+string which encodes both the hashed passphrase, and the settings
+that were used to encode it.  This string is directly  usable  as
+in  other calls to and and as in calls to and It will be entirely
+printable ASCII, and will not contain whitespace or  the  charac‐
+ters  or See for more detail on the format of hashed passphrases.
+places its result in a static storage area, which will  be  over‐
+written by subsequent calls to It is not safe to call from multi‐
+ple  threads simultaneously.  and place their result in the field
+of their argument.  It is safe to call them from multiple threads
+simultaneously, as long as a separate object  is  used  for  each
+thread.   Upon error, and write an hash to the field of their ar‐
+gument, and writes an invalid hash to its  static  storage  area.
+This string will be shorter than 13 characters, will begin with a
+and  will  not  compare  equal  to  Upon error, and return a null
+pointer.  and may also return a null pointer, or they may  return
+a pointer to the invalid hash, depending on how libcrypt was con‐
+figured.   (The option to return the invalid hash is for compati‐
+bility with old applications that assume  that  cannot  return  a
+null  pointer.   See  below.)   All  four functions set when they
+fail.  When the functions succeed, the value  of  is  unspecified
+and  must  not be relied upon.  is invalid, or requests a hashing
+method that is not supported.  is too long (more than characters;
+some hashing methods may have lower limits).
+only: is too small for the hashing method requested by Failed  to
+allocate internal scratch memory.
+only:  failed  to  allocate memory for Hashing passphrases is not
+supported at all on this installation, or the hashing method  re‐
+quested  by  is not supported.  These error codes are not used by
+this version of libcrypt, but may be encountered  on  other  sys‐
+tems.   is  included  in POSIX, but and are not part of any stan‐
+dard.  POSIX does not specify any hashing methods, and  does  not
+require  hashed  passphrases  to be portable between systems.  In
+practice, hashed passphrases are portable as long as both systems
+support the hashing method that was used.  However,  the  set  of
+supported hashing methods varies considerably from system to sys‐
+tem.   The  behavior  of on errors isn&#x27;t well standardized.  Some
+implementations simply can&#x27;t fail (except by  crashing  the  pro‐
+gram),  others return a null pointer or a fixed string.  Most im‐
+plementations don&#x27;t set but some do.  POSIX specifies returning a
+null pointer and setting but it defines only one possible  error,
+in  the  case where is not supported at all.  Some older applica‐
+tions are not prepared to handle null pointers  returned  by  The
+behavior described above for this implementation, setting and re‐
+turning  an  invalid  hash different from is chosen to make these
+applications fail closed when an error occurs.  Due to historical
+restrictions on the export of  cryptographic  software  from  the
+USA,  is an optional POSIX component.  Applications should there‐
+fore be prepared for not to be available, or to always fail (set‐
+ting to at runtime.  POSIX specifies that is declared in but only
+if the macro is defined and has a value greater than or equal  to
+zero.   Since  libcrypt  does  not provide it declares and in in‐
+stead.  On a minority of systems (notably recent versions of  So‐
+laris), uses a thread-specific static storage buffer, which makes
+it  safe  to  call from multiple threads simultaneously, but does
+not prevent each call within a thread from  overwriting  the  re‐
+sults  of  the previous one.  Some implementations of upon error,
+return an invalid hash that is stored in a read-only location  or
+only  initialized once, which means that it is only safe to erase
+the buffer pointed to by the return value if an error did not oc‐
+cur.   may  be  quite  large  (32kB  in  this  implementation  of
+libcrypt;  over  128kB  in  some other implementations).  This is
+large enough that it may be unwise to allocate it on  the  stack.
+Some  recently  designed  hashing  methods need even more scratch
+memory, but the interface makes it impossible to change the  size
+of  without  breaking  binary compatibility.  The interface could
+accommodate larger allocations for specific hashing methods,  but
+the  caller of has no way of knowing how much memory to allocate.
+does the allocation itself, but can only make a  single  call  to
+For an explanation of the terms used in this section, see allbox;
+lb   lb  lb  l  l  l.   Interface       Attribute       Value  T{
+T}      Thread safety    MT-Unsafe race:crypt  T{  T}      Thread
+safety   MT-Safe
+
+A  rotor-based  function appeared in The DES-based first appeared
+in originates with the GNU C Library.  There&#x27;s also a function on
+HP-UX and MKS Toolkit, but the prototypes and  semantics  differ.
+and originate with the Openwall project.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

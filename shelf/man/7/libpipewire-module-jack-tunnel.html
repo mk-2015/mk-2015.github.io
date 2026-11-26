@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-jack-tunnel(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...k-tunnel(7) Miscellaneous Information Manual libpipew...k-tunnel(7)
+
+NAME
+       libpipewire-module-jack-tunnel - JACK Tunnel
+
+DESCRIPTION
+       The jack-tunnel module provides a source or sink that tunnels all audio
+       to a JACK server.
+
+       This module is usually used together with JACK DBus detect that will
+       automatically load the tunnel with the right parameters based on dbus
+       information.
+
+MODULE NAME
+       libpipewire-module-jack-tunnel
+
+MODULE OPTIONS
+       • jack.library:  the  libjack  to  load,  by  default  libjack.so.0  is
+         searched in JACK_PATH directories  and  then  some  standard  library
+         paths. Can be an absolute path.
+
+       • jack.server: the name of the JACK server to tunnel to.
+
+       • jack.client-name: the name of the JACK client.
+
+       • jack.connect:  if  jack  ports should be connected automatically. Can
+         also be placed per stream.
+
+       • tunnel.mode: the tunnel mode, sink|source|duplex, default duplex
+
+       • midi.ports: the number of midi ports. Can also be added to the stream
+         props.
+
+       • source.props: Extra properties for the source filter.
+
+       • sink.props: Extra properties for the sink filter.
+
+GENERAL OPTIONS
+       Options with well-known behavior.
+
+       • remote.name
+
+       • audio.channels
+
+       • audio.position
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.virtual
+
+       • media.class
+
+       • target.object to specify the remote node.name or serial.id to link to
+
+EXAMPLE CONFIGURATION OF A DUPLEX SINK/SOURCE
+       # ~/.config/pipewire/pipewire.conf.d/my-jack-tunnel.conf
+
+       context.modules = [
+       {   name = libpipewire-module-jack-tunnel
+           args = {
+               #jack.library     = libjack.so.0
+               #jack.server      = null
+               #jack.client-name = PipeWire
+               #jack.connect     = true
+               #tunnel.mode      = duplex
+               #midi.ports       = 0
+               #audio.channels   = 2
+               #audio.position   = [ FL FR ]
+               source.props = {
+                   # extra sink properties
+               }
+               sink.props = {
+                   # extra sink properties
+               }
+           }
+       }
+       ]
+
+PipeWire                             1.4.2              libpipew...k-tunnel(7)
+</pre></body></html>

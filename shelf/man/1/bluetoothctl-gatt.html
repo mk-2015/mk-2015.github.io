@@ -1,0 +1,127 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-gatt(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-GATT(1)      Linux System Administration     BLUETOOTHCTL-GATT(1)
+
+NAME
+       bluetoothctl-gatt - Generic Attribute Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [gatt.commands]
+
+GENERIC ATTRIBUTE COMMANDS
+   list-attributes
+       List attributes.
+
+       Usage  &gt; list-attributes &lt;attribute/UUID&gt;
+
+   select-attribute
+       Select attribute.
+
+       Usage  &gt; select-attribute &lt;attribute/UUID&gt;
+
+   attribute-info
+       Select attribute.
+
+       Usage  &gt; attribute-info [attribute/UUID]
+
+   read
+       Read attribute value.
+
+       Usage  &gt; read [offset]
+
+   write
+       Write attribute value.
+
+       Usage  &gt; write &lt;data=xx xx ...&gt; [offset] [type]
+
+   acquire-write
+       Acquire Write file descriptor.
+
+       Usage  &gt; acquire-write
+
+   release-write
+       Release Write file descriptor.
+
+       Usage  &gt; release-write
+
+   acquire-notify
+       Acquire Notify file descriptor.
+
+       Usage  &gt; acquire-notify
+
+   release-notify
+       Release Notify file descriptor.
+
+       Usage  &gt; release-notify
+
+   notify
+       Notify attribute value.
+
+       Usage  &gt; notify &lt;on/off&gt;
+
+   clone
+       Clone a device or attribute.
+
+       Usage  &gt; clone [dev/attribute/UUID]
+
+   register-application
+       Register application.
+
+       Usage  &gt; register-application [UUID ...]
+
+   unregister-application
+       Unregister application
+
+       Usage  &gt; unregister-application
+
+   register-service
+       Register application service.
+
+       Usage  &gt; register-service &lt;UUID&gt; [handle]
+
+   unregister-service
+       Unregister application service
+
+       Usage  &gt; unregister-service &lt;UUID/object&gt;
+
+   register-includes
+       Register as Included service.
+
+       Usage  &gt;r egister-includes &lt;UUID&gt; [handle]
+
+   unregister-includes
+       Unregister Included service.
+
+       Usage  &gt; unregister-includes &lt;Service-UUID&gt;&lt;Inc-UUID&gt;
+
+   register-characteristic
+       Register service characteristic.
+
+       Usage  &gt;  register-characteristic  &lt;UUID&gt;  &lt;Flags=read,write,notify...&gt;
+              [handle]
+
+   unregister-characteristic
+       Unregister service characteristic.
+
+       Usage  &gt; unregister-characteristic &lt;UUID/object&gt;
+
+   register-descriptor
+       Register characteristic descriptor.
+
+       Usage  &gt; register-descriptor &lt;UUID&gt; &lt;Flags=read,write...&gt; [handle]
+
+   unregister-descriptor
+       Unregister characteristic descriptor.
+
+       Usage  &gt; unregister-descriptor &lt;UUID/object&gt;
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                            November 2022            BLUETOOTHCTL-GATT(1)
+</pre></body></html>

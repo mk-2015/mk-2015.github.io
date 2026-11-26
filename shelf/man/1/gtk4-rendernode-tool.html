@@ -1,0 +1,87 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>gtk4-rendernode-tool(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GTK4-RENDERNODE-TOOL(1)          GTK commands          GTK4-RENDERNODE-TOOL(1)
+
+NAME
+       gtk4-rendernode-tool - GskRenderNode Utility
+
+SYNOPSIS
+       gtk4-rendernode-tool &lt;COMMAND&gt; [OPTIONS...] &lt;FILE&gt;
+
+       gtk4-rendernode-tool benchmark [OPTIONS...] &lt;FILE&gt;
+       gtk4-rendernode-tool compare [OPTIONS...] &lt;FILE1&gt; &lt;FILE2&gt;
+       gtk4-rendernode-tool extract [OPTIONS...] &lt;FILE&gt;
+       gtk4-rendernode-tool info [OPTIONS...] &lt;FILE&gt;
+       gtk4-rendernode-tool render [OPTIONS...] &lt;FILE&gt; [&lt;FILE&gt;]
+       gtk4-rendernode-tool show [OPTIONS...] &lt;FILE&gt;
+
+
+DESCRIPTION
+       gtk4-rendernode-tool  can perform various operations on serialized ren‐
+       dernodes.
+
+COMMANDS
+   Information
+       The info command shows general information about the  rendernode,  such
+       as the number of nodes, and the depth of the tree.
+
+   Showing
+       The show command displays the rendernode.
+
+       --undecorated
+
+       Removes  window decorations. This is meant for rendering of exactly the
+       rendernode without any titlebar.
+
+   Rendering
+       The render command saves a rendering of the rendernode as a  png,  tiff
+       or  svg  image or as pdf document. The name of the file to write can be
+       specified as a second FILE argument.
+
+       --renderer=RENDERER
+          Use the given renderer. Use --renderer=help  to  get  a  information
+          about possible values for the RENDERER.
+
+   Benchmark
+       The  benchmark command benchmarks rendering of a node with the existing
+       renderers and prints the runtimes.
+
+       --renderer=RENDERER
+          Add the given renderer. This argument can be passed  multiple  times
+          to  test multiple renderers. By default, all major GTK renderers are
+          run.
+
+       --runs=RUNS
+          Number of times to render the node on  each  renderer.  By  default,
+          this  is  3 times.  Keep in mind that the first run is often used to
+          populate caches and might be significantly slower.
+
+       --no-download
+          Do not attempt to download the result. This may cause  the  measure‐
+          ment to not include the execution of the commands on the GPU. It can
+          be useful to use this flag to test command submission performance.
+
+   Compare
+       The  compare  command compares the rendering of a node with a reference
+       image, or the renderings of two nodes, or two images.  If  any  differ‐
+       ences are found, the exit code is 1. If the images are identical, it is
+       0.
+
+       --renderer=RENDERER
+          Use the given renderer.
+
+       --output=FILE
+          Save the differences as a png image in FILE.
+
+       --quiet
+          Don&#x27;t write results to stdout.
+
+   Extract
+       The  extract  command saves all the data urls found in a node file to a
+       given directory. The file names for the  extracted  files  are  derived
+       from the mimetype of the url.
+
+       --dir=DIRECTORY
+          Save  extracted  files  in DIRECTORY (defaults to the current direc‐
+          tory).
+
+GTK                                                    GTK4-RENDERNODE-TOOL(1)
+</pre></body></html>

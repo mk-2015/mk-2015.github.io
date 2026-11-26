@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ninja(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>NINJA(1)                         User Commands                        NINJA(1)
+
+NAME
+       ninja - small build system closest in spirit to Make
+
+DESCRIPTION
+       usage: ninja [options] [targets...]
+
+       if targets are unspecified, builds the &#x27;default&#x27; target (see manual).
+
+   options:
+       --version
+              print ninja version (&quot;1.12.1&quot;)
+
+       -v, --verbose
+              show all command lines while building
+
+       --quiet
+              don&#x27;t show progress status, just command output
+
+       -C DIR change to DIR before doing anything else
+
+       -f FILE
+              specify input build file [default=build.ninja]
+
+       -j N   run N jobs in parallel (0 means infinity) [default=#CPUs]
+
+       -k N   keep going until N jobs fail (0 means infinity) [default=1]
+
+       -l N   do not start new jobs if the load average is greater than N
+
+       -n     dry run (don&#x27;t run commands but act like they succeeded)
+
+       -d MODE
+              enable debugging (use &#x27;-d list&#x27; to list modes)
+
+       -t TOOL
+              run a subtool (use &#x27;-t list&#x27; to list subtools)
+
+              terminates  toplevel  options;  further  flags are passed to the
+              tool
+
+       -w FLAG
+              adjust warnings (use &#x27;-w list&#x27; to list warnings)
+
+AUTHOR
+       This manual page was written by  Gary  Kramlich  &lt;grim@reaperworld.com&gt;
+       for the Debian GNU/Linux system (but may be used by others).
+
+ninja 1.12.1                       May 2024                           NINJA(1)
+</pre></body></html>

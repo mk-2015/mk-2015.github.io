@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>carg(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>carg(3)                    Library Functions Manual                    carg(3)
+
+NAME
+       carg, cargf, cargl - calculate the complex argument
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double carg(double complex z);
+       float cargf(float complex z);
+       long double cargl(long double complex z);
+
+DESCRIPTION
+       These  functions  calculate the complex argument (also called phase an‐
+       gle) of z, with a branch cut along the negative real axis.
+
+       A complex number can be described by two real coordinates.  One may use
+       rectangular coordinates and gets
+
+           z = x + I * y
+
+       where x = creal(z) and y = cimag(z).
+
+       Or one may use polar coordinates and gets
+
+           z = r * cexp(I * a)
+
+       where r = cabs(z) is the &quot;radius&quot;, the &quot;modulus&quot;, the absolute value of
+       z, and a = carg(z) is the &quot;phase angle&quot;, the argument of z.
+
+       One has:
+
+           tan(carg(z)) = cimag(z) / creal(z)
+
+RETURN VALUE
+       The return value is in the range of [-pi,pi].
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       carg(), cargf(), cargl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       cabs(3), complex(7)
+
+Linux man-pages 6.9.1             2024-05-02                           carg(3)
+</pre></body></html>

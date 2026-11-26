@@ -1,0 +1,236 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HTTP::Request::Common(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>HTTP::...:Common(3pm) User Contributed Perl DocumentationHTTP::...:Common(3pm)
+
+NAME
+       HTTP::Request::Common - Construct common HTTP::Request objects
+
+VERSION
+       version 7.00
+
+SYNOPSIS
+         use HTTP::Request::Common;
+         $ua = LWP::UserAgent-&gt;new;
+         $ua-&gt;request(GET &#x27;http://www.sn.no/&#x27;);
+         $ua-&gt;request(POST &#x27;http://somewhere/foo&#x27;, foo =&gt; bar, bar =&gt; foo);
+         $ua-&gt;request(PATCH &#x27;http://somewhere/foo&#x27;, foo =&gt; bar, bar =&gt; foo);
+         $ua-&gt;request(PUT &#x27;http://somewhere/foo&#x27;, foo =&gt; bar, bar =&gt; foo);
+         $ua-&gt;request(OPTIONS &#x27;http://somewhere/foo&#x27;, foo =&gt; bar, bar =&gt; foo);
+
+DESCRIPTION
+       This module provides functions that return newly created
+       &quot;HTTP::Request&quot; objects.  These functions are usually more convenient
+       to use than the standard &quot;HTTP::Request&quot; constructor for the most
+       common requests.
+
+       Note that LWP::UserAgent has several convenience methods, including
+       &quot;get&quot;, &quot;head&quot;, &quot;delete&quot;, &quot;post&quot; and &quot;put&quot;.
+
+       The following functions are provided:
+
+       GET $url
+       GET $url, Header =&gt; Value,...
+           The &quot;GET&quot; function returns an HTTP::Request object initialized with
+           the  &quot;GET&quot;  method and the specified URL.  It is roughly equivalent
+           to the following call
+
+             HTTP::Request-&gt;new(
+                GET =&gt; $url,
+                HTTP::Headers-&gt;new(Header =&gt; Value,...),
+             )
+
+           but is less cluttered.  What is different is that  a  header  named
+           &quot;Content&quot;  will  initialize the content part of the request instead
+           of setting a header field.  Note that GET requests should  normally
+           not  have  a  content, so this hack makes more sense for the &quot;PUT&quot;,
+           &quot;PATCH&quot;
+            and &quot;POST&quot; functions described below.
+
+           The get(...) method of LWP::UserAgent  exists  as  a  shortcut  for
+           &quot;$ua-&gt;request(GET ...)&quot;.
+
+       HEAD $url
+       HEAD $url, Header =&gt; Value,...
+           Like GET() but the method in the request is &quot;HEAD&quot;.
+
+           The  head(...)   method  of LWP::UserAgent exists as a shortcut for
+           &quot;$ua-&gt;request(HEAD ...)&quot;.
+
+       DELETE $url
+       DELETE $url, Header =&gt; Value,...
+           Like &quot;GET&quot; but  the  method  in  the  request  is  &quot;DELETE&quot;.   This
+           function is not exported by default.
+
+       PATCH $url
+       PATCH $url, Header =&gt; Value,...
+       PATCH $url, $form_ref, Header =&gt; Value,...
+       PATCH $url, Header =&gt; Value,..., Content =&gt; $form_ref
+       PATCH $url, Header =&gt; Value,..., Content =&gt; $content
+           The same as &quot;POST&quot; below, but the method in the request is &quot;PATCH&quot;.
+
+       PUT $url
+       PUT $url, Header =&gt; Value,...
+       PUT $url, $form_ref, Header =&gt; Value,...
+       PUT $url, Header =&gt; Value,..., Content =&gt; $form_ref
+       PUT $url, Header =&gt; Value,..., Content =&gt; $content
+           The same as &quot;POST&quot; below, but the method in the request is &quot;PUT&quot;
+
+       OPTIONS $url
+       OPTIONS $url, Header =&gt; Value,...
+       OPTIONS $url, $form_ref, Header =&gt; Value,...
+       OPTIONS $url, Header =&gt; Value,..., Content =&gt; $form_ref
+       OPTIONS $url, Header =&gt; Value,..., Content =&gt; $content
+           The  same  as  &quot;POST&quot;  below,  but  the  method  in  the request is
+           &quot;OPTIONS&quot;
+
+           This was added in version 6.21, so you should require that in  your
+           code:
+
+            use HTTP::Request::Common 6.21;
+
+       POST $url
+       POST $url, Header =&gt; Value,...
+       POST $url, $form_ref, Header =&gt; Value,...
+       POST $url, Header =&gt; Value,..., Content =&gt; $form_ref
+       POST $url, Header =&gt; Value,..., Content =&gt; $content
+           &quot;POST&quot;, &quot;PATCH&quot; and &quot;PUT&quot; all work with the same parameters.
+
+             %data = ( title =&gt; &#x27;something&#x27;, body =&gt; something else&#x27; );
+             $ua = LWP::UserAgent-&gt;new();
+             $request = HTTP::Request::Common::POST( $url, [ %data ] );
+             $response = $ua-&gt;request($request);
+
+           They  take  a  second  optional  array  or hash reference parameter
+           $form_ref.  The content can also be specified  directly  using  the
+           &quot;Content&quot;  pseudo-header,  and  you  may also provide the $form_ref
+           this way.
+
+           The &quot;Content&quot; pseudo-header  steals  a  bit  of  the  header  field
+           namespace  as  there is no way to directly specify a header that is
+           actually called &quot;Content&quot;.  If you really need this you must update
+           the request returned in a separate statement.
+
+           The $form_ref argument can be used to pass key/value pairs for  the
+           form  content.   By  default we will initialize a request using the
+           &quot;application/x-www-form-urlencoded&quot; content type.  This means  that
+           you can emulate an HTML &lt;form&gt; POSTing like this:
+
+             POST &#x27;http://www.perl.org/survey.cgi&#x27;,
+                  [ name   =&gt; &#x27;Gisle Aas&#x27;,
+                    email  =&gt; &#x27;gisle@aas.no&#x27;,
+                    gender =&gt; &#x27;M&#x27;,
+                    born   =&gt; &#x27;1964&#x27;,
+                    perc   =&gt; &#x27;3%&#x27;,
+                  ];
+
+           This will create an HTTP::Request object that looks like this:
+
+             POST http://www.perl.org/survey.cgi
+             Content-Length: 66
+             Content-Type: application/x-www-form-urlencoded
+
+             name=Gisle%20Aas&amp;email=gisle%40aas.no&amp;gender=M&amp;born=1964&amp;perc=3%25
+
+           Multivalued  form  fields  can be specified by either repeating the
+           field name or by passing the value as an array reference.
+
+           The POST method also  supports  the  &quot;multipart/form-data&quot;  content
+           used  for  Form-based  File  Upload  as specified in RFC 1867.  You
+           trigger this  content  format  by  specifying  a  content  type  of
+           &#x27;form-data&#x27; as one of the request headers.  If one of the values in
+           the  $form_ref  is an array reference, then it is treated as a file
+           part specification with the following interpretation:
+
+             [ $file, $filename, Header =&gt; Value... ]
+             [ undef, $filename, Header =&gt; Value,..., Content =&gt; $content ]
+
+           The first value in the array ($file) is the name of a file to open.
+           This file will be read and its content placed in the request.   The
+           routine  will croak if the file can&#x27;t be opened.  Use an &quot;undef&quot; as
+           $file value if you want to specify  the  content  directly  with  a
+           &quot;Content&quot;  header.   The $filename is the filename to report in the
+           request.  If this value is undefined,  then  the  basename  of  the
+           $file  will  be used.  You can specify an empty string as $filename
+           if you want to suppress sending the filename  when  you  provide  a
+           $file value.
+
+           If   a   $file  is  provided  by  no  &quot;Content-Type&quot;  header,  then
+           &quot;Content-Type&quot;   and   &quot;Content-Encoding&quot;   will   be   filled   in
+           automatically       with      the      values      returned      by
+           LWP::MediaTypes::guess_media_type()
+
+           Sending my ~/.profile to the survey used as example  above  can  be
+           achieved by this:
+
+             POST &#x27;http://www.perl.org/survey.cgi&#x27;,
+                  Content_Type =&gt; &#x27;form-data&#x27;,
+                  Content      =&gt; [ name  =&gt; &#x27;Gisle Aas&#x27;,
+                                    email =&gt; &#x27;gisle@aas.no&#x27;,
+                                    gender =&gt; &#x27;M&#x27;,
+                                    born   =&gt; &#x27;1964&#x27;,
+                                    init   =&gt; [&quot;$ENV{HOME}/.profile&quot;],
+                                  ]
+
+           This  will  create  an  HTTP::Request object that almost looks this
+           (the boundary and the content of your ~/.profile is  likely  to  be
+           different):
+
+             POST http://www.perl.org/survey.cgi
+             Content-Length: 388
+             Content-Type: multipart/form-data; boundary=&quot;6G+f&quot;
+
+             --6G+f
+             Content-Disposition: form-data; name=&quot;name&quot;
+
+             Gisle Aas
+             --6G+f
+             Content-Disposition: form-data; name=&quot;email&quot;
+
+             gisle@aas.no
+             --6G+f
+             Content-Disposition: form-data; name=&quot;gender&quot;
+
+             M
+             --6G+f
+             Content-Disposition: form-data; name=&quot;born&quot;
+
+             1964
+             --6G+f
+             Content-Disposition: form-data; name=&quot;init&quot;; filename=&quot;.profile&quot;
+             Content-Type: text/plain
+
+             PATH=/local/perl/bin:$PATH
+             export PATH
+
+             --6G+f--
+
+           If  you  set the $DYNAMIC_FILE_UPLOAD variable (exportable) to some
+           TRUE value, then you get back a request object  with  a  subroutine
+           closure  as  the  content attribute.  This subroutine will read the
+           content of any files on demand and return it  in  suitable  chunks.
+           This  allow you to upload arbitrary big files without using lots of
+           memory.  You can even upload infinite files like /dev/audio if  you
+           wish;  however,  if  the file is not a plain file, there will be no
+           &quot;Content-Length&quot; header defined for the request.  Not  all  servers
+           (or server applications) like this.  Also, if the file(s) change in
+           size  between  the  time the &quot;Content-Length&quot; is calculated and the
+           time that the last chunk is delivered, the subroutine will &quot;Croak&quot;.
+
+           The post(...)  method of LWP::UserAgent exists as  a  shortcut  for
+           &quot;$ua-&gt;request(POST ...)&quot;.
+
+SEE ALSO
+       HTTP::Request, LWP::UserAgent
+
+       Also,  there  are some examples in &quot;EXAMPLES&quot; in HTTP::Request that you
+       might find useful. For example, batch requests are explained there.
+
+AUTHOR
+       Gisle Aas &lt;gisle@activestate.com&gt;
+
+COPYRIGHT AND LICENSE
+       This software is copyright (c) 1994 by Gisle Aas.
+
+       This is free software; you can redistribute it and/or modify  it  under
+       the same terms as the Perl 5 programming language system itself.
+
+perl v5.38.2                      2024-10-10             HTTP::...:Common(3pm)
+</pre></body></html>

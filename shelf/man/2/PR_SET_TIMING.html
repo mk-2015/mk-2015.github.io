@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_TIMING(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_TIMING(2const)                                    PR_SET_TIMING(2const)
+
+NAME
+       PR_SET_TIMING - set the process timing mode
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_TIMING, long mode);
+
+DESCRIPTION
+       Set  whether to use (normal, traditional) statistical process timing or
+       accurate timestamp-based process timing, by passing PR_TIMING_STATISTI‐
+       CAL or PR_TIMING_TIMESTAMP to mode.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL mode is not PR_TIMING_STATISTICAL.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.0.
+
+CAVEATS
+       PR_TIMING_TIMESTAMP  is  not  currently  implemented (attempting to set
+       this mode will yield the error EINVAL).
+
+SEE ALSO
+       prctl(2), PR_GET_TIMING(2const)
+
+Linux man-pages 6.9.1             2024-06-02             PR_SET_TIMING(2const)
+</pre></body></html>

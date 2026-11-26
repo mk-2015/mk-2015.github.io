@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::option(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>option(3pm)           User Contributed Perl Documentation          option(3pm)
+
+NAME
+       Tk::option - Using the option database in Perl/Tk
+
+SYNOPSIS
+           $widget-&gt;widgetClass(Name=&gt;name, -class=&gt;class);
+
+           $widget-&gt;PathName;
+
+           $widget-&gt;optionAdd(pattern=&gt;value  ?,priority?);
+
+           $widget-&gt;optionClear;
+
+           $widget-&gt;optionGet(name, class);
+
+           $widget-&gt;optionReadfile(fileName ?,priority?);
+
+DESCRIPTION
+       The option database (also known as the resource database or the
+       application defaults database) is a set of rules for applying default
+       options to widgets.  Users and system administrators can set up these
+       rules to customize the appearance of applications without changing any
+       application code; for example, a user might set up personal foreground
+       and background colors, or a site might use fonts associated with visual
+       or language preferences.  Different window managers (and
+       implementations of them) have implemented the database differently, but
+       most Xt-based window managers use the .Xdefaults file or the xrdb
+       utility to manage user preferences; some use both, and/or implement a
+       more complex set of site, user and application databases.  Check your
+       site documentation for these topics or your window manager&#x27;s
+       RESOURCE_MANAGER property.
+
+   Being a good citizen
+       For most applications, the option database &quot;just works.&quot;  The option...
+       methods are for applications that need to do something unusual, such as
+       add new rules or test an option&#x27;s default.  Even in such cases, the
+       application should provide for user preferences.  Do not hardcode
+       widget options without a very good reason.  All users have their own
+       tastes and they are all different.  They choose a special font in a
+       special size and have often spend a lot of time working out a color
+       scheme that they will love until death.  When you respect their choices
+       they will enjoy working with your applications much more.  Don&#x27;t
+       destroy the common look and feel of a personal desktop.
+
+   Option rules and widget identification
+       All widgets in an application are identified hierarchically by
+       pathname, starting from the MainWindow and passing through each widget
+       used to create the endpoint.  The path elements are widget names, much
+       like the elements of a file path from the root directory to a file.
+       The rules in the option database are patterns that are matched against
+       a widget&#x27;s pathname to determine which defaults apply.  When a widget
+       is created, the Name option can be used to assign the widget&#x27;s name and
+       thus create a distinctive path for widgets in an application.  If the
+       Name option isn&#x27;t given, Perl/Tk assigns a default name based on the
+       type of widget; a MainWindow&#x27;s default name is the appname.  These
+       defaults are fine for most widgets, so don&#x27;t feel you need to find a
+       meaningful name for every widget you create.  A widget must have a
+       distinctive name to allow users to tailor its options independently of
+       other widgets in an application.  For instance, to create a Text widget
+       that will have special options assigned to it, give it a name such as:
+
+         $text = $mw-&gt;Text(Name =&gt; &#x27;importantText&#x27;);
+
+       You can then tailor the widget&#x27;s attributes with a rule in the option
+       database such as:
+
+         *importantText*foreground: red
+
+       The class attribute identifies groups of widgets, usually within an
+       application but also to group similar widgets among different
+       applications.  One typically assigns a class to a TopLevel or Frame so
+       that the class will apply to all of that widget&#x27;s children.  To extend
+       the example, we could be more specific about the importantText widget
+       by giving its frame a class:
+
+         $frame = $mw-&gt;Frame(-class =&gt; &#x27;Urgent&#x27;);
+         $text = $frame-&gt;Text(Name =&gt; &#x27;importantText&#x27;);
+
+       Then the resource pattern can be specified as so:
+
+         *Urgent*importantText*foreground: red
+
+       Similarly, the pattern &quot;*Urgent*background: cyan&quot; would apply to all
+       widgets in the frame.
+
+METHODS
+       $widget-&gt;widgetClass(Name=&gt;name, -class=&gt;class);
+           Identify  a  new widget with name and/or class.  Name specifies the
+           path element for the widget; names generally begin with a lowercase
+           letter.   -class  specifies  the  class  for  the  widget  and  its
+           children; classes generally begin with an uppercase letter.  If not
+           specified,  Perl/Tk  will  assign  a  unique  default  name to each
+           widget.  Only MainWindow widgets have  a  default  class,  made  by
+           uppercasing the first letter of the application name.
+
+       $widget-&gt;PathName;
+           The  PathName  method returns the widget&#x27;s pathname, which uniquely
+           identifies the widget within the application.
+
+       $widget-&gt;optionAdd(pattern=&gt;value ?, priority?);
+           The optionAdd method adds a new option to  the  database.   Pattern
+           contains  the  option being specified, and consists of names and/or
+           classes separated by asterisks or dots,  in  the  usual  X  format.
+           Value contains a text string to associate with pattern; this is the
+           value  that  will be returned in calls to the optionGet method.  If
+           priority is specified, it indicates the  priority  level  for  this
+           option  (see  below  for legal values); it defaults to interactive.
+           This method always returns an empty string.
+
+       $widget-&gt;optionClear;
+           The optionClear method clears the option database.  Default options
+           (from the RESOURCE_MANAGER property or the .Xdefaults file) will be
+           reloaded automatically the next time an  option  is  added  to  the
+           database  or  removed from it.  This method always returns an empty
+           string.
+
+       $widget-&gt;optionGet(name,class);
+           The optionGet method returns the value of the option specified  for
+           $widget  under  name  and  class.  To look up the option, optionGet
+           matches the patterns in the  resource  database  against  $widget&#x27;s
+           pathname  along with the class of $widget (or its parent if $widget
+           has no class specified).  The widget&#x27;s class and name  are  options
+           set  when  the widget is created (not related to class in the sense
+           of bless); the MainWindow&#x27;s name is the appname and  its  class  is
+           (by default) derived from the name of the script.
+
+           If several entries in the option database match $widget&#x27;s pathname,
+           name, and class, then the method returns whichever was created with
+           highest  priority  level.  If there are several matching entries at
+           the same priority level, then it returns whichever entry  was  most
+           recently  entered  into  the  option  database.   If  there  are no
+           matching entries, then the empty string is returned.
+
+       $widget-&gt;optionReadfile(fileName?,priority?);
+           The optionReadfile method reads fileName,  which  should  have  the
+           standard  format for an X resource database such as .Xdefaults, and
+           adds all the options specified in that file to the option database.
+           If priority is specified, it indicates the priority level at  which
+           to enter the options;  priority defaults to interactive.
+
+           The priority arguments to the option methods are normally specified
+           symbolically using one of the following values:
+
+           widgetDefault
+                   Level 20.  Used for default values hard-coded into widgets.
+
+           startupFile
+                   Level  40.   Used  for  options  specified  in application-
+                   specific startup files.
+
+           userDefault
+                   Level 60.  Used  for  options  specified  in  user-specific
+                   defaults  files,  such  as  .Xdefaults,  resource databases
+                   loaded into the X server, or user-specific startup files.
+
+           interactive
+                   Level 80.  Used for options specified  interactively  after
+                   the   application   starts   running.   If  priority  isn&#x27;t
+                   specified, it defaults to this level.
+
+           Any of  the  above  keywords  may  be  abbreviated.   In  addition,
+           priorities  may  be  specified numerically using integers between 0
+           and 100, inclusive.  The numeric form is probably a bad idea except
+           for new priority levels other than the ones given above.
+
+BUGS
+       The priority scheme used by core Tk is not the same as used  by  normal
+       Xlib  routines.  In particular is assumes that the order of the entries
+       is defined, but user commands like xrdb -merge can change the order.
+
+SEE ALSO
+       Tk::Xrm
+
+KEYWORDS
+       database, option, priority, retrieve
+
+perl v5.40.1                      2025-04-13                       option(3pm)
+</pre></body></html>

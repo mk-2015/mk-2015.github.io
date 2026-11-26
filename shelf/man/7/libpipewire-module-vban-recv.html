@@ -1,0 +1,118 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-vban-recv(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...ban-recv(7) Miscellaneous Information Manual libpipew...ban-recv(7)
+
+NAME
+       libpipewire-module-vban-recv - VBAN receiver
+
+DESCRIPTION
+       The vban-recv module creates a PipeWire source that receives audio and
+       midi VBAN packets.
+
+       The receive will listen on a specific port (6980) and create a stream
+       for each VBAN stream received on the port.
+
+MODULE NAME
+       libpipewire-module-vban-recv
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • local.ifname = &lt;str&gt;: interface name to use
+
+       • source.ip  =  &lt;str&gt;:  the  source  ip  address  to listen on, default
+         127.0.0.1
+
+       • source.port = &lt;int&gt;: the source port to listen on, default 6980
+
+       • node.always-process = &lt;bool&gt;: true to receive even when not running
+
+       • sess.latency.msec = &lt;str&gt;: target network  latency  in  milliseconds,
+         default 100
+
+       • stream.props = {}: properties to be passed to all the stream
+
+       • stream.rules = &lt;rules&gt;: match rules, use create-stream actions.
+
+   stream.rules matches
+       • vban.ip: the IP address of the VBAN sender
+
+       • vban.port: the port of the VBAN sender
+
+       • sess.name: the name of the VBAN stream
+
+   stream.rules create-stream
+       In  addition  to all the properties that can be passed to a stream, you
+       can also set:
+
+       • sess.latency.msec = &lt;str&gt;: target network  latency  in  milliseconds,
+         default 100
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • remote.name
+
+       • audio.position
+
+       • media.name
+
+       • media.class
+
+       • node.name
+
+       • node.description
+
+       • node.group
+
+       • node.latency
+
+       • node.virtual
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-vban-recv.conf
+
+       context.modules = [
+       {   name = libpipewire-module-vban-recv
+           args = {
+               #local.ifname = eth0
+               #source.ip = 127.0.0.1
+               #source.port = 6980
+               sess.latency.msec = 100
+               #node.always-process = false
+               #audio.position = [ FL FR ]
+               stream.props = {
+                  #media.class = &quot;Audio/Source&quot;
+                  #node.name = &quot;vban-receiver&quot;
+               }
+               stream.rules = [
+                   {   matches = [
+                           {    sess.name = &quot;~.*&quot;
+                                #sess.media = &quot;audio&quot; | &quot;midi&quot;
+                                #vban.ip = &quot;&quot;
+                                #vban.port = 1000
+                                #audio.channels = 2
+                                #audio.format = &quot;U8&quot; | &quot;S16LE&quot; | &quot;S24LE&quot; | &quot;S32LE&quot; | &quot;F32LE&quot; | &quot;F64LE&quot;
+                                #audio.rate = 44100
+                           }
+                       ]
+                       actions = {
+                           create-stream = {
+                               stream.props = {
+                                   #sess.latency.msec = 100
+                                   #target.object = &quot;&quot;
+                                   #audio.position = [ FL FR ]
+                                   #media.class = &quot;Audio/Source&quot;
+                                   #node.name = &quot;vban-receiver&quot;
+                               }
+                           }
+                       }
+                   }
+               ]
+           }
+       }
+       ]
+
+       Since
+           0.3.76
+
+PipeWire                             1.4.2              libpipew...ban-recv(7)
+</pre></body></html>

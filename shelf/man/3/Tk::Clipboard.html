@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Clipboard(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Clipboard(3pm)        User Contributed Perl Documentation       Clipboard(3pm)
+
+NAME
+       Tk::clipboard - Manipulate Tk clipboard
+
+SYNOPSIS
+       $widget-&gt;clipboardOption?(args)?
+
+DESCRIPTION
+       This command provides an interface to the Tk clipboard, which stores
+       data for later retrieval using the selection mechanism.  In order to
+       copy data into the clipboard, clipboardClear must be called, followed
+       by a sequence of one or more calls to clipboardAppend.  To ensure that
+       the clipboard is updated atomically, all appends should be completed
+       before returning to the event loop.
+
+       The following methods are currently supported:
+
+       $widget-&gt;clipboardClear
+           Claims  ownership of the clipboard on $widget&#x27;s display and removes
+           any previous contents.   Returns an empty string.
+
+       $widget-&gt;clipboardAppend(?-format=&gt;format?,?-type=&gt;type?,?--?,data)
+           Appends data to the clipboard on  $widget&#x27;s  display  in  the  form
+           given  by  type  with the representation given by format and claims
+           ownership of the clipboard on $widget&#x27;s display.
+
+               Type specifies the  form  in  which  the  selection  is  to  be
+               returned  (the  desired  ``target&#x27;&#x27;  for  conversion,  in ICCCM
+               terminology), and should be an atom  name  such  as  STRING  or
+               FILE_NAME;   see  the  Inter-Client  Communication  Conventions
+               Manual for complete details.  Type defaults to STRING.
+
+               The format argument specifies the representation that should be
+               used to transmit the selection to  the  requester  (the  second
+               column  of  Table  2 of the ICCCM), and defaults to STRING.  If
+               format is STRING, the selection is transmitted as  8-bit  ASCII
+               characters.     See   the   Tk::Selection   documentation   for
+               explanation of what happens if format is not STRING.  Note that
+               arguments passed to  clipboardAppend  are  concatenated  before
+               conversion,  so the caller must take care to ensure appropriate
+               spacing across string boundaries.  All items  appended  to  the
+               clipboard with the same type must have the same format.
+
+               A -- argument may be specified to mark the end of options:  the
+               next argument will always be used as data.  This feature may be
+               convenient if, for example, data starts with a -.
+
+       $widget-&gt;clipboardGet( ?-type? );
+           Retrieve  data  from  the  clipboard  on  widget&#x27;s  display.  -type
+           specifies the form in which the data is to be returned  and  should
+           be an atom  name  such  as  STRING  or FILE_NAME.  Type defaults to
+           STRING.  This command is equivalent to &quot;SelectionGet( -selection =&gt;
+           &#x27;CLIPBOARD&#x27; )&quot;.
+
+KEYWORDS
+       clear, format, clipboard, append, selection, type
+
+perl v5.40.1                      2025-04-13                    Clipboard(3pm)
+</pre></body></html>

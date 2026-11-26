@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UFFDIO_WRITEPROTECT(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>UFFDIO_WRITEPROTECT(2const)                        UFFDIO_WRITEPROTECT(2const)
+
+NAME
+       UFFDIO_WRITEPROTECT  -  write-protect or write-unprotect a userfaultfd-
+       registered memory range
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, UFFDIO_WRITEPROTECT, ...);
+
+       #include &lt;linux/userfaultfd.h&gt;
+
+       struct uffdio_writeprotect {
+           struct uffdio_range  range;  /* Range to change write permission*/
+           __u64                mode;   /* Mode to change write permission */
+       };
+
+DESCRIPTION
+       Write-protect or write-unprotect a userfaultfd-registered memory  range
+       registered with mode UFFDIO_REGISTER_MODE_WP.
+
+       There are two mode bits that are supported in this structure:
+
+       UFFDIO_WRITEPROTECT_MODE_WP
+              When this mode bit is set, the ioctl will be a write-protect op‐
+              eration  upon the memory range specified by range.  Otherwise it
+              will be a write-unprotect operation upon  the  specified  range,
+              which  can  be  used to resolve a userfaultfd write-protect page
+              fault.
+
+       UFFDIO_WRITEPROTECT_MODE_DONTWAKE
+              When this mode bit is set, do not wake up any thread that  waits
+              for  page-fault  resolution  after  the  operation.  This can be
+              specified only if UFFDIO_WRITEPROTECT_MODE_WP is not specified.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned and errno  is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL The  start or the len field of the ufdio_range structure was not
+              a multiple of the system page size; or  len  was  zero;  or  the
+              specified range was otherwise invalid.
+
+       EAGAIN The process was interrupted; retry this call.
+
+       ENOENT The  range  specified  in  range is not valid.  For example, the
+              virtual address does not exist, or  not  registered  with  user‐
+              faultfd write-protect mode.
+
+       EFAULT Encountered a generic fault during processing.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 5.7.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), ioctl_userfaultfd(2), userfaultfd(2)
+
+       Documentation/admin-guide/mm/userfaultfd.rst in the Linux kernel source
+       tree
+
+Linux man-pages 6.9.1             2024-06-17       UFFDIO_WRITEPROTECT(2const)
+</pre></body></html>

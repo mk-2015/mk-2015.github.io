@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Date::Manip::TZ_Base(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Date::...Z_Base(3pm)  User Contributed Perl Documentation Date::...Z_Base(3pm)
+
+NAME
+       Date::Manip::TZ_Base - Methods common to the TZ and Base classes
+
+SYNOPSIS
+       The Date::Manip::TZ_Base class is a second base class used for the
+       following Date::Manip classes:
+
+       Date::Manip::Base
+       Date::Manip::TZ
+
+       This  module  is  not  intended  to  be called directly and performs no
+       useful function by itself. Instead, use  the  various  derived  classes
+       which inherit from it.
+
+DESCRIPTION
+       This  module  contains  no public methods and is used internally by the
+       Base and TZ classes. In some instances, basic date operations depend on
+       timezone information, and all timezone operations depend  on  the  base
+       class.   In  order to avoid a circular dependency, I created this class
+       which allowed me to avoid that.
+
+KNOWN BUGS
+       None known.
+
+BUGS AND QUESTIONS
+       Please refer to the Date::Manip::Problems documentation for information
+       on submitting bug reports or questions to the author.
+
+SEE ALSO
+       Date::Manip       - main module documentation
+
+LICENSE
+       This script is free software; you can redistribute it and/or modify  it
+       under the same terms as Perl itself.
+
+AUTHOR
+       Sullivan Beck (sbeck@cpan.org)
+
+perl v5.40.1                      2025-06-08              Date::...Z_Base(3pm)
+</pre></body></html>

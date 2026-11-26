@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_KEEPCAPS(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_KEEPCAPS(2const)                                PR_SET_KEEPCAPS(2const)
+
+NAME
+       PR_SET_KEEPCAPS - set the state of the &quot;keep capabilities&quot; flag
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_KEEPCAPS, long state);
+
+DESCRIPTION
+       Set  the  state  of the calling thread&#x27;s &quot;keep capabilities&quot; flag.  The
+       effect of this flag is described in capabilities(7).  state must be ei‐
+       ther 0L (clear the flag) or 1L (set the flag).  The &quot;keep capabilities&quot;
+       value will be reset to 0 on subsequent calls to execve(2).
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL state is not a valid value.
+
+       EPERM  The  caller&#x27;s SECBIT_KEEP_CAPS_LOCKED flag is set (see capabili‐
+              ties(7)).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.2.18.
+
+SEE ALSO
+       prctl(2), PR_GET_KEEPCAPS(2const)
+
+Linux man-pages 6.9.1             2024-06-02           PR_SET_KEEPCAPS(2const)
+</pre></body></html>

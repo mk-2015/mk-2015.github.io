@@ -1,0 +1,521 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Try::Tiny(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Try::Tiny(3pm)        User Contributed Perl Documentation       Try::Tiny(3pm)
+
+NAME
+       Try::Tiny - Minimal try/catch with proper preservation of $@
+
+VERSION
+       version 0.32
+
+SYNOPSIS
+       You can use Try::Tiny&#x27;s &quot;try&quot; and &quot;catch&quot; to expect and handle
+       exceptional conditions, avoiding quirks in Perl and common mistakes:
+
+         # handle errors with a catch handler
+         try {
+           die &quot;foo&quot;;
+         } catch {
+           warn &quot;caught error: $_&quot;; # not $@
+         };
+
+       You can also use it like a standalone &quot;eval&quot; to catch and ignore any
+       error conditions.  Obviously, this is an extreme measure not to be
+       undertaken lightly:
+
+         # just silence errors
+         try {
+           die &quot;foo&quot;;
+         };
+
+DESCRIPTION
+       This module provides bare bones &quot;try&quot;/&quot;catch&quot;/&quot;finally&quot; statements that
+       are designed to minimize common mistakes with eval blocks, and NOTHING
+       else.
+
+       This is unlike TryCatch which provides a nice syntax and avoids adding
+       another call stack layer, and supports calling &quot;return&quot; from the &quot;try&quot;
+       block to return from the parent subroutine. These extra features come
+       at a cost of a few dependencies, namely Devel::Declare and Scope::Upper
+       which are occasionally problematic, and the additional catch filtering
+       uses Moose type constraints which may not be desirable either.
+
+       The main focus of this module is to provide simple and reliable error
+       handling for those having a hard time installing TryCatch, but who
+       still want to write correct &quot;eval&quot; blocks without 5 lines of
+       boilerplate each time.
+
+       It&#x27;s designed to work as correctly as possible in light of the various
+       pathological edge cases (see &quot;BACKGROUND&quot;) and to be compatible with
+       any style of error values (simple strings, references, objects,
+       overloaded objects, etc).
+
+       If the &quot;try&quot; block dies, it returns the value of the last statement
+       executed in the &quot;catch&quot; block, if there is one. Otherwise, it returns
+       &quot;undef&quot; in scalar context or the empty list in list context. The
+       following examples all assign &quot;bar&quot; to $x:
+
+         my $x = try { die &quot;foo&quot; } catch { &quot;bar&quot; };
+         my $x = try { die &quot;foo&quot; } || &quot;bar&quot;;
+         my $x = (try { die &quot;foo&quot; }) // &quot;bar&quot;;
+
+         my $x = eval { die &quot;foo&quot; } || &quot;bar&quot;;
+
+       You can add &quot;finally&quot; blocks, yielding the following:
+
+         my $x;
+         try { die &#x27;foo&#x27; } finally { $x = &#x27;bar&#x27; };
+         try { die &#x27;foo&#x27; } catch { warn &quot;Got a die: $_&quot; } finally { $x = &#x27;bar&#x27; };
+
+       &quot;finally&quot; blocks are always executed making them suitable for cleanup
+       code which cannot be handled using local.  You can add as many
+       &quot;finally&quot; blocks to a given &quot;try&quot; block as you like.
+
+       Note that adding a &quot;finally&quot; block without a preceding &quot;catch&quot; block
+       suppresses any errors. This behaviour is consistent with using a
+       standalone &quot;eval&quot;, but it is not consistent with &quot;try&quot;/&quot;finally&quot;
+       patterns found in other programming languages, such as Java, Python,
+       Javascript or C#. If you learned the &quot;try&quot;/&quot;finally&quot; pattern from one
+       of these languages, watch out for this.
+
+EXPORTS
+       All functions are exported by default using Exporter.
+
+       If you need to rename the &quot;try&quot;, &quot;catch&quot; or &quot;finally&quot; keyword consider
+       using Sub::Import to get Sub::Exporter&#x27;s flexibility.
+
+       try (&amp;;@)
+           Takes   one   mandatory   &quot;try&quot;  subroutine,  an  optional  &quot;catch&quot;
+           subroutine and &quot;finally&quot; subroutine.
+
+           The mandatory subroutine is evaluated in the context of  an  &quot;eval&quot;
+           block.
+
+           If  no  error  occurred the value from the first block is returned,
+           preserving list/scalar context.
+
+           If there was an error and the second subroutine was given  it  will
+           be  invoked  with  the  error in $_ (localized) and as that block&#x27;s
+           first and only argument.
+
+           $@ does not contain the error. Inside the &quot;catch&quot; block it has  the
+           same value it had before the &quot;try&quot; block was executed.
+
+           Note  that  the error may be false, but if that happens the &quot;catch&quot;
+           block will still be invoked.
+
+           Once all execution is finished then the &quot;finally&quot; block, if  given,
+           will execute.
+
+       catch (&amp;;@)
+           Intended to be used in the second argument position of &quot;try&quot;.
+
+           Returns  a  reference to the subroutine it was given but blessed as
+           &quot;Try::Tiny::Catch&quot; which allows try to decode correctly what to  do
+           with this code reference.
+
+             catch { ... }
+
+           Inside  the  &quot;catch&quot;  block the caught error is stored in $_, while
+           previous value of $@ is still available for use.  This value may or
+           may not be meaningful depending on what happened before the  &quot;try&quot;,
+           but it might be a good idea to preserve it in an error stack.
+
+           For   code   that  captures  $@  when  throwing  new  errors  (i.e.
+           Class::Throwable), you&#x27;ll need to do:
+
+             local $@ = $_;
+
+       finally (&amp;;@)
+             try     { ... }
+             catch   { ... }
+             finally { ... };
+
+           Or
+
+             try     { ... }
+             finally { ... };
+
+           Or even
+
+             try     { ... }
+             finally { ... }
+             catch   { ... };
+
+           Intended to be the second or  third  element  of  &quot;try&quot;.  &quot;finally&quot;
+           blocks are always executed in the event of a successful &quot;try&quot; or if
+           &quot;catch&quot; is run. This allows you to locate cleanup code which cannot
+           be done via local() e.g. closing a file handle.
+
+           When  invoked,  the  &quot;finally&quot;  block  is passed the error that was
+           caught.  If no error was caught, it is passed nothing.  (Note  that
+           the  &quot;finally&quot;  block  does  not  localize $_ with the error, since
+           unlike in a &quot;catch&quot; block, there is no way to know if &quot;$_ == undef&quot;
+           implies that there were no errors.) In other words,  the  following
+           code does just what you would expect:
+
+             try {
+               die_sometimes();
+             } catch {
+               # ...code run in case of error
+             } finally {
+               if (@_) {
+                 print &quot;The try block died with: @_\n&quot;;
+               } else {
+                 print &quot;The try block ran without error.\n&quot;;
+               }
+             };
+
+           You  must always do your own error handling in the &quot;finally&quot; block.
+           &quot;Try::Tiny&quot; will not do anything  about  handling  possible  errors
+           coming from code located in these blocks.
+
+           Furthermore  exceptions  in  &quot;finally&quot; blocks are not trappable and
+           are unable to influence the execution of your program. This is  due
+           to  limitation  of &quot;DESTROY&quot;-based scope guards, which &quot;finally&quot; is
+           implemented on top of. This may  change  in  a  future  version  of
+           Try::Tiny.
+
+           In  the same way catch() blesses the code reference this subroutine
+           does the same except it bless them as &quot;Try::Tiny::Finally&quot;.
+
+BACKGROUND
+       There are a number of issues with &quot;eval&quot;.
+
+   Clobbering $@
+       When you run an &quot;eval&quot; block and  it  succeeds,  $@  will  be  cleared,
+       potentially clobbering an error that is currently being caught.
+
+       This  causes action at a distance, clearing previous errors your caller
+       may have not yet handled.
+
+       $@ must be properly localized before invoking &quot;eval&quot; in order to  avoid
+       this issue.
+
+       More  specifically,  before Perl version 5.14.0 $@ was clobbered at the
+       beginning of the &quot;eval&quot;, which also made it impossible to  capture  the
+       previous  error  before  you  die  (for  instance when making exception
+       objects with error stacks).
+
+       For this reason &quot;try&quot; will actually set $@ to its previous  value  (the
+       one  available before entering the &quot;try&quot; block) in the beginning of the
+       &quot;eval&quot; block.
+
+   Localizing $@ silently masks errors
+       Inside an &quot;eval&quot; block, &quot;die&quot; behaves sort of like:
+
+         sub die {
+           $@ = $_[0];
+           return_undef_from_eval();
+         }
+
+       This means that if you were polite and localized $@ you  can&#x27;t  die  in
+       that  scope,  or  your  error  will be discarded (printing &quot;Something&#x27;s
+       wrong&quot; instead).
+
+       The workaround is very ugly:
+
+         my $error = do {
+           local $@;
+           eval { ... };
+           $@;
+         };
+
+         ...
+         die $error;
+
+   $@ might not be a true value
+       This code is wrong:
+
+         if ( $@ ) {
+           ...
+         }
+
+       because due to the previous caveats it may have been unset.
+
+       $@ could also be an overloaded error object that  evaluates  to  false,
+       but that&#x27;s asking for trouble anyway.
+
+       The classic failure mode (fixed in Perl 5.14.0) is:
+
+         sub Object::DESTROY {
+           eval { ... }
+         }
+
+         eval {
+           my $obj = Object-&gt;new;
+
+           die &quot;foo&quot;;
+         };
+
+         if ( $@ ) {
+
+         }
+
+       In  this  case  since  &quot;Object::DESTROY&quot; is not localizing $@ but still
+       uses &quot;eval&quot;, it will set $@ to &quot;&quot;.
+
+       The destructor is called when the stack is unwound, after &quot;die&quot; sets $@
+       to &quot;foo at Foo.pm line 42\n&quot;, so by the time &quot;if ( $@ )&quot;  is  evaluated
+       it has been cleared by &quot;eval&quot; in the destructor.
+
+       The  workaround  for  this  is even uglier than the previous ones. Even
+       though we can&#x27;t save the value of $@ from code that  doesn&#x27;t  localize,
+       we can at least be sure the &quot;eval&quot; was aborted due to an error:
+
+         my $failed = not eval {
+           ...
+
+           return 1;
+         };
+
+       This  is  because  an  &quot;eval&quot;  that caught a &quot;die&quot; will always return a
+       false value.
+
+ALTERNATE SYNTAX
+       Using Perl 5.10 you can use &quot;Switch statements&quot; in perlsyn (but  please
+       don&#x27;t,  because that syntax has since been deprecated because there was
+       too much unexpected magical behaviour).
+
+       The &quot;catch&quot; block is invoked in a topicalizer context (like  a  &quot;given&quot;
+       block),  but  note  that  you  can&#x27;t return a useful value from &quot;catch&quot;
+       using the &quot;when&quot; blocks without an explicit &quot;return&quot;.
+
+       This is somewhat similar to Perl 6&#x27;s &quot;CATCH&quot; blocks. You can use it  to
+       concisely match errors:
+
+         try {
+           require Foo;
+         } catch {
+           when (/^Can&#x27;t locate .*?\.pm in \@INC/) { } # ignore
+           default { die $_ }
+         };
+
+CAVEATS
+       •   @_  is  not  available  within the &quot;try&quot; block, so you need to copy
+           your argument list. In case you want to work with  argument  values
+           directly  via @_ aliasing (i.e. allow &quot;$_[1] = &quot;foo&quot;&quot;), you need to
+           pass @_ by reference:
+
+             sub foo {
+               my ( $self, @args ) = @_;
+               try { $self-&gt;bar(@args) }
+             }
+
+           or
+
+             sub bar_in_place {
+               my $self = shift;
+               my $args = \@_;
+               try { $_ = $self-&gt;bar($_) for @$args }
+             }
+
+       •   &quot;return&quot; returns from the &quot;try&quot; block,  not  from  the  parent  sub
+           (note  that  this  is  also  how &quot;eval&quot; works, but not how TryCatch
+           works):
+
+             sub parent_sub {
+               try {
+                 die;
+               }
+               catch {
+                 return;
+               };
+
+               say &quot;this text WILL be displayed, even though an exception is thrown&quot;;
+             }
+
+           Instead, you should capture the return value:
+
+             sub parent_sub {
+               my $success = try {
+                 die;
+                 1;
+               };
+               return unless $success;
+
+               say &quot;This text WILL NEVER appear!&quot;;
+             }
+             # OR
+             sub parent_sub_with_catch {
+               my $success = try {
+                 die;
+                 1;
+               }
+               catch {
+                 # do something with $_
+                 return undef; #see note
+               };
+               return unless $success;
+
+               say &quot;This text WILL NEVER appear!&quot;;
+             }
+
+           Note that if you have a &quot;catch&quot; block, it must return  &quot;undef&quot;  for
+           this  to work, since if a &quot;catch&quot; block exists, its return value is
+           returned in place of &quot;undef&quot; when an exception is thrown.
+
+       •   &quot;try&quot; introduces another caller stack frame.  Sub::Uplevel  is  not
+           used.  Carp  will  not  report  this  when using full stack traces,
+           though, because %Carp::Internal is used.  This  lack  of  magic  is
+           considered a feature.
+
+       •   The  value  of  $_ in the &quot;catch&quot; block is not guaranteed to be the
+           value of the exception thrown ($@) in the &quot;try&quot; block.  There is no
+           safe way to ensure this, since &quot;eval&quot; may be used unhygienically in
+           destructors.  The only guarantee is that the &quot;catch&quot; will be called
+           if an exception is thrown.
+
+       •   The return value of the &quot;catch&quot; block is not ignored, so if testing
+           the result of the expression for  truth  on  success,  be  sure  to
+           return a false value from the &quot;catch&quot; block:
+
+             my $obj = try {
+               MightFail-&gt;new;
+             } catch {
+               ...
+
+               return; # avoid returning a true value;
+             };
+
+             return unless $obj;
+
+       •   $SIG{__DIE__} is still in effect.
+
+           Though  it  can  be  argued  that  $SIG{__DIE__} should be disabled
+           inside of &quot;eval&quot; blocks, since it isn&#x27;t people have grown  to  rely
+           on  it. Therefore in the interests of compatibility, &quot;try&quot; does not
+           disable $SIG{__DIE__} for the scope of the error throwing code.
+
+       •   Lexical $_ may override the one set by &quot;catch&quot;.
+
+           For example Perl 5.10&#x27;s &quot;given&quot; form uses a  lexical  $_,  creating
+           some confusing behavior:
+
+             given ($foo) {
+               when (...) {
+                 try {
+                   ...
+                 } catch {
+                   warn $_; # will print $foo, not the error
+                   warn $_[0]; # instead, get the error like this
+                 }
+               }
+             }
+
+           Note  that this behavior was changed once again in Perl5 version 18
+           &lt;https://metacpan.org/module/perldelta#given-now-aliases-the-
+           global-_&gt;.  However, since  the  entirety  of  lexical  $_  is  now
+           considered experimental
+            &lt;https://metacpan.org/module/perldelta#Lexical-_-is-now-
+           experimental&gt;, it is unclear whether the new version 18 behavior is
+           final.
+
+SEE ALSO
+       Syntax::Keyword::Try
+           Only  available  on perls &gt;= 5.14, with a slightly different syntax
+           (e.g. no trailing &quot;;&quot; because it&#x27;s actually a keyword, not  a  sub,
+           but  this  means  you  can  &quot;return&quot;  and  &quot;next&quot;  within  it). Use
+           Feature::Compat::Try to automatically switch to  the  native  &quot;try&quot;
+           syntax  in  newer  perls  (when  available).  See  also  Try  Catch
+           Exception Handling.
+
+       TryCatch
+           Much more feature complete, more convenient semantics, but  at  the
+           cost of implementation complexity.
+
+       autodie
+           Automatic  error  throwing  for  builtin  functions  and more. Also
+           designed to work well with &quot;given&quot;/&quot;when&quot;.
+
+       Throwable
+           A lightweight role for rolling your own exception classes.
+
+       Error
+           Exception object implementation with a &quot;try&quot;  statement.  Does  not
+           localize $@.
+
+       Exception::Class::TryCatch
+           Provides  a  &quot;catch&quot; statement, but properly calling &quot;eval&quot; is your
+           responsibility.
+
+           The &quot;try&quot; keyword pushes $@ onto an error stack, avoiding  some  of
+           the  issues  with  $@,  but  you  still need to localize to prevent
+           clobbering.
+
+LIGHTNING TALK
+       I gave a lightning talk about this  module,  you  can  see  the  slides
+       (Firefox only):
+
+       &lt;http://web.archive.org/web/20100628040134/http://nothingmuch.woobling.org/talks/takahashi.xul&gt;
+
+       Or read the source:
+
+       &lt;http://web.archive.org/web/20100305133605/http://nothingmuch.woobling.org/talks/yapc_asia_2009/try_tiny.yml&gt;
+
+SUPPORT
+       Bugs    may    be    submitted    through    the    RT    bug   tracker
+       &lt;https://rt.cpan.org/Public/Dist/Display.html?Name=Try-Tiny&gt;        (or
+       bug-Try-Tiny@rt.cpan.org &lt;mailto:bug-Try-Tiny@rt.cpan.org&gt;).
+
+AUTHORS
+       •   ×××× ×§××&#x27;×× (Yuval Kogman) &lt;nothingmuch@woobling.org&gt;
+
+       •   Jesse Luehrs &lt;doy@tozt.net&gt;
+
+CONTRIBUTORS
+       •   Karen Etheridge &lt;ether@cpan.org&gt;
+
+       •   Peter Rabbitson &lt;ribasushi@cpan.org&gt;
+
+       •   Ricardo Signes &lt;rjbs@cpan.org&gt;
+
+       •   Mark Fowler &lt;mark@twoshortplanks.com&gt;
+
+       •   Graham Knop &lt;haarg@haarg.org&gt;
+
+       •   Aristotle Pagaltzis &lt;pagaltzis@gmx.de&gt;
+
+       •   Dagfinn Ilmari MannsÃ¥ker &lt;ilmari@ilmari.org&gt;
+
+       •   Lukas Mai &lt;l.mai@web.de&gt;
+
+       •   Alex &lt;alex@koban.(none)&gt;
+
+       •   anaxagoras &lt;walkeraj@gmail.com&gt;
+
+       •   Andrew Yates &lt;ayates@haddock.local&gt;
+
+       •   awalker &lt;awalker@sourcefire.com&gt;
+
+       •   chromatic &lt;chromatic@wgz.org&gt;
+
+       •   cm-perl &lt;cm-perl@users.noreply.github.com&gt;
+
+       •   David Lowe &lt;davidl@lokku.com&gt;
+
+       •   Glenn Fowler &lt;cebjyre@cpan.org&gt;
+
+       •   Hans Dieter Pearcey &lt;hdp@weftsoar.net&gt;
+
+       •   Jens Berthold &lt;jens@jebecs.de&gt;
+
+       •   Jonathan Yu &lt;JAWNSY@cpan.org&gt;
+
+       •   Marc Mims &lt;marc@questright.com&gt;
+
+       •   Mark Stosberg &lt;mark@stosberg.com&gt;
+
+       •   Pali &lt;pali@cpan.org&gt;
+
+       •   Paul Howarth &lt;paul@city-fan.org&gt;
+
+       •   Rudolf Leermakers &lt;rudolf@hatsuseno.org&gt;
+
+COPYRIGHT AND LICENCE
+       This software is Copyright (c) 2009 by ×××× ×§××&#x27;×× (Yuval Kogman).
+
+       This is free software, licensed under:
+
+         The MIT (X11) License
+
+perl v5.38.2                      2024-08-17                    Try::Tiny(3pm)
+</pre></body></html>

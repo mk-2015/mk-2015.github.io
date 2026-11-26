@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFcodec(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFCODEC(3tiff)                    LibTIFF                   TIFFCODEC(3tiff)
+
+NAME
+       TIFFcodec - codec-related utility routines
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       const TIFFCodec *TIFFFindCODEC(uint16_t scheme)
+
+       TIFFCodec *TIFFRegisterCODEC(uint16_t scheme, const char *method,
+       TIFFInitMethod init)
+
+       void TIFFUnRegisterCODEC(TIFFCodec *codec)
+
+       int TIFFIsCODECConfigured(uint16_t scheme)
+
+       TIFFCodec *TIFFGetConfiguredCODECs(uint16_t scheme)
+
+       int TIFFSetCompressionScheme(TIFF *tif, int scheme)
+
+DESCRIPTION
+       libtiff  supports a variety of compression schemes implemented by soft‐
+       ware codecs. Each codec adheres to a modular  interface  that  provides
+       for  the  decoding  and  encoding  of image data; as well as some other
+       methods for initialization, setup, cleanup, and the control of  default
+       strip and tile sizes.  Codecs are identified by the associated value of
+       the TIFF Compression tag; e.g. 5 for LZW compression.
+
+       TIFFFindCODEC()  ??????
+
+       TIFFUnRegisterCODEC() ?????
+
+       The  TIFFRegisterCODEC() routine can be used to augment or override the
+       set of codecs available to an application.  If the specified scheme al‐
+       ready has a registered codec then it is overridden and any images  with
+       data  encoded  with  this  compression scheme will be decoded using the
+       supplied codec.
+
+       TIFFIsCODECConfigured() returns 1 if the codec is configured and  work‐
+       ing. Otherwise 0 will be returned.
+
+       TIFFGetConfiguredCODECs() gets list of configured codecs, both built-in
+       and  registered  by  user.  Function returns array of TIFFCodec records
+       (the last record should be NULL) or NULL if function failed. Caller  is
+       responsible to free this structure.
+
+       TIFFSetCompressionScheme()  ????
+
+DIAGNOSTICS
+       No space to register compression scheme %s:
+          TIFFRegisterCODEC()  was  unable  to  allocate  memory  for the data
+          structures needed to register a codec.
+
+       Cannot remove compression scheme %s; not registered:
+          TIFFUnRegisterCODEC() did not locate the specified codec in the  ta‐
+          ble of registered compression schemes.
+
+SEE ALSO
+       libtiff (3tiff),
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026                 TIFFCODEC(3tiff)
+</pre></body></html>

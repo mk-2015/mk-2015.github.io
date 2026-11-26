@@ -1,0 +1,252 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SD_BUS_ERROR_MATCH_RULE_INVALID(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>SD-BUS-ERRORS(3)                 sd-bus-errors                SD-BUS-ERRORS(3)
+
+NAME
+       sd-bus-errors, SD_BUS_ERROR_FAILED, SD_BUS_ERROR_NO_MEMORY,
+       SD_BUS_ERROR_SERVICE_UNKNOWN, SD_BUS_ERROR_NAME_HAS_NO_OWNER,
+       SD_BUS_ERROR_NO_REPLY, SD_BUS_ERROR_IO_ERROR, SD_BUS_ERROR_BAD_ADDRESS,
+       SD_BUS_ERROR_NOT_SUPPORTED, SD_BUS_ERROR_LIMITS_EXCEEDED,
+       SD_BUS_ERROR_ACCESS_DENIED, SD_BUS_ERROR_AUTH_FAILED,
+       SD_BUS_ERROR_NO_SERVER, SD_BUS_ERROR_TIMEOUT, SD_BUS_ERROR_NO_NETWORK,
+       SD_BUS_ERROR_ADDRESS_IN_USE, SD_BUS_ERROR_DISCONNECTED,
+       SD_BUS_ERROR_INVALID_ARGS, SD_BUS_ERROR_FILE_NOT_FOUND,
+       SD_BUS_ERROR_FILE_EXISTS, SD_BUS_ERROR_UNKNOWN_METHOD,
+       SD_BUS_ERROR_UNKNOWN_OBJECT, SD_BUS_ERROR_UNKNOWN_INTERFACE,
+       SD_BUS_ERROR_UNKNOWN_PROPERTY, SD_BUS_ERROR_PROPERTY_READ_ONLY,
+       SD_BUS_ERROR_UNIX_PROCESS_ID_UNKNOWN, SD_BUS_ERROR_INVALID_SIGNATURE,
+       SD_BUS_ERROR_INCONSISTENT_MESSAGE, SD_BUS_ERROR_TIMED_OUT,
+       SD_BUS_ERROR_MATCH_RULE_NOT_FOUND, SD_BUS_ERROR_MATCH_RULE_INVALID,
+       SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED,
+       SD_BUS_ERROR_INVALID_FILE_CONTENT,
+       SD_BUS_ERROR_SELINUX_SECURITY_CONTEXT_UNKNOWN,
+       SD_BUS_ERROR_OBJECT_PATH_IN_USE - Standard D-Bus error names
+
+SYNOPSIS
+       #include &lt;systemd/sd-bus.h&gt;
+
+       #define SD_BUS_ERROR_FAILED                  &quot;org.freedesktop.DBus.Error.Failed&quot;
+       #define SD_BUS_ERROR_NO_MEMORY               &quot;org.freedesktop.DBus.Error.NoMemory&quot;
+       #define SD_BUS_ERROR_SERVICE_UNKNOWN         &quot;org.freedesktop.DBus.Error.ServiceUnknown&quot;
+       #define SD_BUS_ERROR_NAME_HAS_NO_OWNER       &quot;org.freedesktop.DBus.Error.NameHasNoOwner&quot;
+       #define SD_BUS_ERROR_NO_REPLY                &quot;org.freedesktop.DBus.Error.NoReply&quot;
+       #define SD_BUS_ERROR_IO_ERROR                &quot;org.freedesktop.DBus.Error.IOError&quot;
+       #define SD_BUS_ERROR_BAD_ADDRESS             &quot;org.freedesktop.DBus.Error.BadAddress&quot;
+       #define SD_BUS_ERROR_NOT_SUPPORTED           &quot;org.freedesktop.DBus.Error.NotSupported&quot;
+       #define SD_BUS_ERROR_LIMITS_EXCEEDED         &quot;org.freedesktop.DBus.Error.LimitsExceeded&quot;
+       #define SD_BUS_ERROR_ACCESS_DENIED           &quot;org.freedesktop.DBus.Error.AccessDenied&quot;
+       #define SD_BUS_ERROR_AUTH_FAILED             &quot;org.freedesktop.DBus.Error.AuthFailed&quot;
+       #define SD_BUS_ERROR_NO_SERVER               &quot;org.freedesktop.DBus.Error.NoServer&quot;
+       #define SD_BUS_ERROR_TIMEOUT                 &quot;org.freedesktop.DBus.Error.Timeout&quot;
+       #define SD_BUS_ERROR_NO_NETWORK              &quot;org.freedesktop.DBus.Error.NoNetwork&quot;
+       #define SD_BUS_ERROR_ADDRESS_IN_USE          &quot;org.freedesktop.DBus.Error.AddressInUse&quot;
+       #define SD_BUS_ERROR_DISCONNECTED            &quot;org.freedesktop.DBus.Error.Disconnected&quot;
+       #define SD_BUS_ERROR_INVALID_ARGS            &quot;org.freedesktop.DBus.Error.InvalidArgs&quot;
+       #define SD_BUS_ERROR_FILE_NOT_FOUND          &quot;org.freedesktop.DBus.Error.FileNotFound&quot;
+       #define SD_BUS_ERROR_FILE_EXISTS             &quot;org.freedesktop.DBus.Error.FileExists&quot;
+       #define SD_BUS_ERROR_UNKNOWN_METHOD          &quot;org.freedesktop.DBus.Error.UnknownMethod&quot;
+       #define SD_BUS_ERROR_UNKNOWN_OBJECT          &quot;org.freedesktop.DBus.Error.UnknownObject&quot;
+       #define SD_BUS_ERROR_UNKNOWN_INTERFACE       &quot;org.freedesktop.DBus.Error.UnknownInterface&quot;
+       #define SD_BUS_ERROR_UNKNOWN_PROPERTY        &quot;org.freedesktop.DBus.Error.UnknownProperty&quot;
+       #define SD_BUS_ERROR_PROPERTY_READ_ONLY      &quot;org.freedesktop.DBus.Error.PropertyReadOnly&quot;
+       #define SD_BUS_ERROR_UNIX_PROCESS_ID_UNKNOWN &quot;org.freedesktop.DBus.Error.UnixProcessIdUnknown&quot;
+       #define SD_BUS_ERROR_INVALID_SIGNATURE       &quot;org.freedesktop.DBus.Error.InvalidSignature&quot;
+       #define SD_BUS_ERROR_INCONSISTENT_MESSAGE    &quot;org.freedesktop.DBus.Error.InconsistentMessage&quot;
+       #define SD_BUS_ERROR_TIMED_OUT               &quot;org.freedesktop.DBus.Error.TimedOut&quot;
+       #define SD_BUS_ERROR_MATCH_RULE_NOT_FOUND    &quot;org.freedesktop.DBus.Error.MatchRuleNotFound&quot;
+       #define SD_BUS_ERROR_MATCH_RULE_INVALID      &quot;org.freedesktop.DBus.Error.MatchRuleInvalid&quot;
+       #define SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED \
+                                                    &quot;org.freedesktop.DBus.Error.InteractiveAuthorizationRequired&quot;
+       #define SD_BUS_ERROR_INVALID_FILE_CONTENT    &quot;org.freedesktop.DBus.Error.InvalidFileContent&quot;
+       #define SD_BUS_ERROR_SELINUX_SECURITY_CONTEXT_UNKNOWN \
+                                                    &quot;org.freedesktop.DBus.Error.SELinuxSecurityContextUnknown&quot;
+       #define SD_BUS_ERROR_OBJECT_PATH_IN_USE      &quot;org.freedesktop.DBus.Error.ObjectPathInUse&quot;
+
+
+DESCRIPTION
+       In addition to the error names user programs define, D-Bus knows a
+       number of generic, standardized error names that are listed below.
+
+       In addition to this list, in sd-bus, the special error namespace
+       &quot;System.Error.&quot;  is used to map arbitrary Linux system errors (as
+       defined by errno(3)) to D-Bus errors and back. For example, the error
+       EUCLEAN is mapped to &quot;System.Error.EUCLEAN&quot; and back.
+
+       SD_BUS_ERROR_FAILED
+           A generic error indication. See the error message for further
+           details. This error name should be avoided, in favor of a more
+           expressive error name.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_NO_MEMORY
+           A memory allocation failed, and the requested operation could not
+           be completed.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_SERVICE_UNKNOWN
+           The contacted bus service is unknown and cannot be activated.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_NAME_HAS_NO_OWNER
+           The specified bus service name currently has no owner.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_NO_REPLY
+           A message did not receive a reply. This error is usually generated
+           after a timeout.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_IO_ERROR
+           Generic input/output error, for example when accessing a socket or
+           other I/O context.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_BAD_ADDRESS
+           The specified D-Bus bus address string is malformed.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_NOT_SUPPORTED
+           The requested operation is not supported on the local system.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_LIMITS_EXCEEDED
+           Some limited resource has been exhausted.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_ACCESS_DENIED
+           Access to a resource has been denied due to security restrictions.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_AUTH_FAILED
+           Authentication did not complete successfully.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_NO_SERVER
+           Unable to connect to the specified server.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_TIMEOUT
+           An operation timed out. Note that method calls which timeout
+           generate a SD_BUS_ERROR_NO_REPLY.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_NO_NETWORK
+           No network available to execute requested network operation on.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_ADDRESS_IN_USE
+           The specified network address is already being listened on.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_DISCONNECTED
+           The connection has been terminated.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_INVALID_ARGS
+           One or more invalid arguments have been passed.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_FILE_NOT_FOUND
+           The requested file could not be found.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_FILE_EXISTS
+           The requested file already exists.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_UNKNOWN_METHOD
+           The requested method does not exist in the selected interface.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_UNKNOWN_OBJECT
+           The requested object does not exist in the selected service.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_UNKNOWN_INTERFACE
+           The requested interface does not exist on the selected object.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_UNKNOWN_PROPERTY
+           The requested property does not exist in the selected interface.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_PROPERTY_READ_ONLY
+           A write operation was requested on a read-only property.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_UNIX_PROCESS_ID_UNKNOWN
+           The requested PID is not known.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_INVALID_SIGNATURE
+           The specified message signature is not valid.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_INCONSISTENT_MESSAGE
+           The passed message does not validate correctly.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_MATCH_RULE_NOT_FOUND
+           The specified match rule does not exist.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_MATCH_RULE_INVALID
+           The specified match rule is invalid.
+
+           Added in version 223.
+
+       SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED
+           Access to the requested operation is not permitted. However, it
+           might be available after interactive authentication. This is
+           usually returned by method calls supporting a framework for
+           additional interactive authorization, when interactive
+           authorization was not enabled with the
+           sd_bus_message_set_allow_interactive_authorization(3) for the
+           method call message.
+
+           Added in version 223.
+
+NOTES
+       Functions described here are available as a shared library, which can
+       be compiled against and linked to with the libsystemd pkg-config(1)
+       file.
+
+       The code described here uses getenv(3), which is declared to be not
+       multi-thread-safe. This means that the code calling the functions
+       described here must not call setenv(3) from a parallel thread. It is
+       recommended to only do calls to setenv() from an early phase of the
+       program when no other threads have been started.
+
+SEE ALSO
+       systemd(1), libsystemd(3), sd-bus(3), sd_bus_error(3),
+       sd_bus_message_set_allow_interactive_authorization(3), errno(3),
+       strerror_r(3)
+
+systemd 257.13                                                SD-BUS-ERRORS(3)
+</pre></body></html>

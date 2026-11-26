@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>getpagesize(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>getpagesize(2)                System Calls Manual               getpagesize(2)
+
+NAME
+       getpagesize - get memory page size
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;unistd.h&gt;
+
+       int getpagesize(void);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       getpagesize():
+           Since glibc 2.20:
+               _DEFAULT_SOURCE || ! (_POSIX_C_SOURCE &gt;= 200112L)
+           glibc 2.12 to glibc 2.19:
+               _BSD_SOURCE || ! (_POSIX_C_SOURCE &gt;= 200112L)
+           Before glibc 2.12:
+               _BSD_SOURCE || _XOPEN_SOURCE &gt;= 500
+
+DESCRIPTION
+       The  function  getpagesize()  returns  the  number of bytes in a memory
+       page, where &quot;page&quot; is a fixed-length block, the unit for memory alloca‐
+       tion and file mapping performed by mmap(2).
+
+VERSIONS
+       A user program should not hard-code a page size, neither as  a  literal
+       nor  using the PAGE_SIZE macro, because some architectures support mul‐
+       tiple page sizes.
+
+       This manual page is in section 2 because Alpha, SPARC, and SPARC64  all
+       have  a  Linux  system call getpagesize() though other architectures do
+       not, and use the ELF auxiliary vector instead.
+
+STANDARDS
+       None.
+
+HISTORY
+       This call first appeared in 4.2BSD.  SVr4, 4.4BSD, SUSv2.  In SUSv2 the
+       getpagesize()  call  was  labeled  LEGACY,  and  it  was   removed   in
+       POSIX.1-2001.
+
+       glibc  2.0 returned a constant even on architectures with multiple page
+       sizes.
+
+SEE ALSO
+       mmap(2), sysconf(3)
+
+Linux man-pages 6.9.1             2024-05-02                    getpagesize(2)
+</pre></body></html>

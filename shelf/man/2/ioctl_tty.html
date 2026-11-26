@@ -1,0 +1,124 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ioctl_tty(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ioctl_tty(2)                  System Calls Manual                 ioctl_tty(2)
+
+NAME
+       ioctl_tty - ioctls for terminals and serial lines
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, int op, ...);
+
+DESCRIPTION
+       The  ioctl(2) call for terminals and serial ports accepts many possible
+       operation arguments.  Most require a third argument, of  varying  type,
+       here called argp or arg.
+
+       Use of ioctl() makes for nonportable programs.  Use the POSIX interface
+       described in termios(3) whenever possible.
+
+   Get and set terminal attributes
+       TCGETS(2const)
+       TCSETS(2const)
+       TCSETSW(2const)
+       TCSETSF(2const)
+
+       TCGETS(2const)
+       TCSETS(2const)
+       TCSETSW(2const)
+       TCSETSF(2const)
+
+       TCGETS(2const)
+       TCSETS(2const)
+       TCSETSW(2const)
+       TCSETSF(2const)
+
+   Locking the termios structure
+       TIOCGLCKTRMIOS(2const)
+       TIOCSLCKTRMIOS(2const)
+
+   Get and set window size
+       TIOCGWINSZ(2const)
+       TIOCSWINSZ(2const)
+
+   Sending a break
+       TCSBRK(2const)
+       TCSBRKP(2const)
+       TIOCSBRK(2const)
+       TIOCCBRK(2const)
+
+   Software flow control
+       TCXONC(2const)
+
+   Buffer count and flushing
+       FIONREAD(2const)
+       TIOCINQ(2const)
+       TIOCOUTQ(2const)
+       TCFLSH(2const)
+       TIOCSERGETLSR(2const)
+
+   Faking input
+       TIOCSTI(2const)
+
+   Redirecting console output
+       TIOCCONS(2const)
+
+   Controlling terminal
+       TIOCSCTTY(2const)
+       TIOCNOTTY(2const)
+
+   Process group and session ID
+       TIOCGPGRP(2const)
+       TIOCSPGRP(2const)
+       TIOCGSID(2const)
+
+   Exclusive mode
+       TIOCEXCL(2const)
+       TIOCGEXCL(2const)
+       TIOCNXCL(2const)
+
+   Line discipline
+       TIOCGETD(2const)
+       TIOCSETD(2const)
+
+   Pseudoterminal ioctls
+       TIOCPKT(2const)
+       TIOCGPKT(2const)
+
+       TIOCSPTLCK(2const)
+       TIOCGPTLCK(2const)
+
+       TIOCGPTPEER(2const)
+
+   Modem control
+       TIOCMGET(2const)
+       TIOCMSET(2const)
+       TIOCMBIC(2const)
+       TIOCMBIS(2const)
+
+       TIOCMIWAIT(2const)
+
+       TIOCGICOUNT(2const)
+
+   Marking a line as local
+       TIOCGSOFTCAR(2const)
+       TIOCSSOFTCAR(2const)
+
+   Linux-specific
+       For the TIOCLINUX(2const) ioctl, see ioctl_console(2).
+
+   Kernel debugging
+       TIOCTTYGSTRUCT(2const)
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ldattach(8), ioctl_console(2), termios(3), pty(7)
+
+Linux man-pages 6.9.1             2024-06-14                      ioctl_tty(2)
+</pre></body></html>

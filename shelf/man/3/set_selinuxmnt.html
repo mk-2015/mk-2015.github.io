@@ -1,0 +1,30 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>set_selinuxmnt(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>init_selinuxmnt(3)         SELinux API documentation        init_selinuxmnt(3)
+
+NAME
+       init_selinuxmnt - initialize the global variable selinux_mnt
+
+SYNOPSIS
+       static void init_selinuxmnt(void);
+
+       static void fini_selinuxmnt(void);
+
+       void set_selinuxmnt(const char *mnt);
+
+DESCRIPTION
+       init_selinuxmnt()  initializes  the  global variable selinux_mnt to the
+       selinuxfs mountpoint.
+
+       fini_selinuxmnt() deinitializes the global  variable  selinux_mnt  that
+       stores the selinuxfs mountpoint.
+
+       set_selinuxmnt() changes the selinuxfs mountpoint to mnt.
+
+AUTHOR
+       This  manual page has been written by Guido Trentalancia &lt;guido@trenta‐
+       lancia.com&gt;
+
+SEE ALSO
+       selinux(8),
+
+                                  21 Nov 2009               init_selinuxmnt(3)
+</pre></body></html>

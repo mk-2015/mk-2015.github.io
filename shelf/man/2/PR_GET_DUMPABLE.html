@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_GET_DUMPABLE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_GET_DUMPABLE(2const)                                PR_GET_DUMPABLE(2const)
+
+NAME
+       PR_GET_DUMPABLE - get the &quot;dumpable&quot; attribute of the calling process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_GET_DUMPABLE);
+
+DESCRIPTION
+       Return the current state of the calling process&#x27;s &quot;dumpable&quot; attribute.
+       See PR_SET_DUMPABLE(2const).
+
+RETURN VALUE
+       On  success,  return  the  value  described above.  On error, -1 is re‐
+       turned, and errno is set to indicate the error.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.3.20.
+
+SEE ALSO
+       prctl(2), PR_SET_DUMPABLE(2const)
+
+Linux man-pages 6.9.1             2024-06-02           PR_GET_DUMPABLE(2const)
+</pre></body></html>

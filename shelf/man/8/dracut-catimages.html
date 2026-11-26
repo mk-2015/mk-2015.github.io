@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>dracut-catimages(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>DRACUT-CATIMAGES(8)                 dracut                 DRACUT-CATIMAGES(8)
+
+NAME
+       dracut-catimages - creates initial ramdisk image by concatenating
+       images
+
+SYNOPSIS
+       dracut-catimages [OPTION...] &lt;initramfs base image&gt; [&lt;image&gt;...]
+
+DESCRIPTION
+       dracut-catimages creates an initial ramdisk image by concatenating
+       several images from the command line and /boot/dracut/*.img
+
+OPTIONS
+       -f, --force
+           overwrite existing initramfs file.
+
+       -i, --imagedir
+           Directory with additional images to add (default: /boot/dracut/)
+
+       -o, --overlaydir
+           Overlay directory, which contains additional files that will be
+           used to create an additional image
+
+       --nooverlay
+           Do not use the overlay directory
+
+       --noimagedir
+           Do not use the additional image directory
+
+       -h, --help
+           display help text and exit.
+
+       --debug
+           output debug information of the build process
+
+       -v, --verbose
+           verbose output during the build process
+
+FILES
+       /boot/dracut/*.img
+           images to work with
+
+AUTHORS
+       Harald Hoyer
+
+AVAILABILITY
+       The dracut-catimages command is part of the dracut package and is
+       available from https://github.com/dracut-ng/dracut-ng
+
+SEE ALSO
+       dracut(8)
+
+dracut                            04/11/2025               DRACUT-CATIMAGES(8)
+</pre></body></html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>encguess(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>ENCGUESS(1)            Perl Programmers Reference Guide            ENCGUESS(1)
+
+NAME
+       encguess - guess character encodings of files
+
+VERSION
+       $Id: encguess,v 0.4 2023/11/10 01:10:50 dankogai Exp $
+
+SYNOPSIS
+         encguess [switches] filename...
+
+   SWITCHES
+       -h
+         show this message and exit.
+
+       -s
+         specify  a  list  of  &quot;suspect  encoding types&quot; to test, separated by
+         either &quot;:&quot; or &quot;,&quot;
+
+       -S
+         output a list of all acceptable encoding types that can be used  with
+         the -s param
+
+       -u
+         suppress display of unidentified types
+
+   EXAMPLES:
+       • Guess  encoding  of  a  file named &quot;test.txt&quot;, using only the default
+         suspect types.
+
+            encguess test.txt
+
+       • Guess the encoding type of a file named &quot;test.txt&quot;, using the suspect
+         types &quot;euc-jp,shiftjis,7bit-jis&quot;.
+
+            encguess -s euc-jp,shiftjis,7bit-jis test.txt
+            encguess -s euc-jp:shiftjis:7bit-jis test.txt
+
+       • Guess the encoding type of several files, do not display results  for
+         unidentified files.
+
+            encguess -us euc-jp,shiftjis,7bit-jis test*.txt
+
+DESCRIPTION
+       The  encoding identification is done by checking one encoding type at a
+       time until all but the right type are eliminated. The set  of  encoding
+       types to try is defined by the -s parameter and defaults to ascii, utf8
+       and  UTF-16/32  with BOM. This can be overridden by passing one or more
+       encoding types via the -s parameter. If you need to  pass  in  multiple
+       suspect encoding types, use a quoted string with the a space separating
+       each value.
+
+SEE ALSO
+       Encode::Guess, Encode::Detect
+
+LICENSE AND COPYRIGHT
+       Copyright 2015 Michael LaGrasta and Dan Kogai.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the terms of the Artistic License (2.0). You may obtain a copy of
+       the full license at:
+
+       &lt;http://www.perlfoundation.org/artistic_license_2_0&gt;
+
+perl v5.40.1                      2026-08-30                       ENCGUESS(1)
+</pre></body></html>

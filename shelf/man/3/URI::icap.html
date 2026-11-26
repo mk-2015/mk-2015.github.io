@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>URI::icap(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>URI::icap(3pm)        User Contributed Perl Documentation       URI::icap(3pm)
+
+NAME
+       URI::icap - URI scheme for ICAP Identifiers
+
+VERSION
+       Version 5.20
+
+SYNOPSIS
+           use URI::icap;
+
+           my $uri = URI-&gt;new(&#x27;icap://icap-proxy.example.com/&#x27;);
+
+DESCRIPTION
+       This module implements the &quot;icap:&quot; URI scheme defined in RFC 3507
+       &lt;http://tools.ietf.org/html/rfc3507&gt;, for the Internet Content
+       Adaptation Protocol
+       &lt;https://en.wikipedia.org/wiki/Internet_Content_Adaptation_Protocol&gt;.
+
+SUBROUTINES/METHODS
+       This module inherits the behaviour of URI::http and overrides the
+       default_portdefault_port&gt; method.
+
+   default_port
+       The default port for icap servers is 1344
+
+DIAGNOSTICS
+       See URI
+
+CONFIGURATION AND ENVIRONMENT
+       See URI and URI
+
+DEPENDENCIES
+       None
+
+INCOMPATIBILITIES
+       None reported
+
+BUGS AND LIMITATIONS
+       See URI
+
+SEE ALSO
+       RFC 3507 &lt;http://tools.ietf.org/html/rfc3507&gt;
+
+AUTHOR
+       David Dick, &quot;&lt;ddick at cpan.org&gt;&quot;
+
+LICENSE AND COPYRIGHT
+       Copyright 2016 David Dick.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the terms of either: the GNU General Public License as published
+       by the Free Software Foundation; or the Artistic License.
+
+       See &lt;http://dev.perl.org/licenses/&gt; for more information.
+
+perl v5.38.2                      2024-10-09                    URI::icap(3pm)
+</pre></body></html>

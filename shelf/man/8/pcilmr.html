@@ -1,0 +1,224 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pcilmr(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>PCILMR(8)                      The PCI Utilities                     PCILMR(8)
+
+NAME
+       pcilmr - margin PCIe Links
+
+SYNOPSIS
+       pcilmr  [--margin]  [&lt;common  options&gt;]  &lt;link  port&gt;  [&lt;link options&gt;]
+       [&lt;link port&gt; [&lt;link options&gt;] ...]
+       pcilmr --full [&lt;common options&gt;]
+       pcilmr --scan
+
+CONFIGURATION
+       List of the requirements for links and system settings to run the  mar‐
+       gining test.
+
+       BIOS  settings  (depends  on the system, relevant for server baseboards
+       with Xeon CPUs):
+
+       •  Turn off PCIe Leaky Bucket Feature, Re-Equalization and Link  Degra‐
+          dation;
+
+       •  Set Error Thresholds to 0;
+
+       •  Intel VMD for NVMe SSDs - in case of strange behavior of the pcilmr,
+          try to run it with the VMD turned off.
+
+       Device (link) requirements:
+
+              Configured  by  the user before running the utility, the utility
+              does not change them:
+
+              •  The current Link data rate must be 16.0 GT/s or higher (right
+                 now utility supports 16 GT/s and 32 GT/s Links);
+
+              •  Link Downstream Component must  be  at  D0  Power  Management
+                 State.
+
+              Configured  by the utility during operation, utility set them to
+              their original state after receiving the results:
+
+              •  The ASPM must be disabled in both the Downstream Port and Up‐
+                 stream Port;
+
+              •  The Hardware Autonomous Speed Disable bit of the Link Control
+                 2 register must be Set in both the Downstream  Port  and  Up‐
+                 stream Port;
+
+              •  The Hardware Autonomous Width Disable bit of the Link Control
+                 register must be Set in both the Downstream Port and Upstream
+                 Port.
+
+DESCRIPTION
+       pcilmr  utility allows you to take advantage of the PCIe Lane Margining
+       at the Receiver capability which is mandatory for all Ports  supporting
+       a  data rate of 16.0 GT/s or higher, including Pseudo Ports (Retimers).
+       Lane Margining at Receiver enables system software to obtain the margin
+       information of a given Receiver while the Link is in the L0 state.  The
+       margin  information includes both voltage and time, in either direction
+       from the current Receiver position. Margining support for timing is re‐
+       quired, while support for voltage is optional at 16.0 GT/s and required
+       at 32.0 GT/s and higher data rates. Also,  independent  time  margining
+       and independent voltage margining is optional.
+
+       Utility allows to get an approximation of the eye margin diagram in the
+       form  of a rhombus (by four points). Lane Margining at the Receiver ca‐
+       pability enables users to margin PCIe links without a hardware debugger
+       and without the need to stop the target system. Utility can  be  useful
+       to debug link issues due to receiver margins.
+
+       pcilmr  requires  root  privileges  (to  access  Extended Configuration
+       Space), but during our testing there were no problems with the  devices
+       and  they successfully returned to their normal initial state after the
+       end of testing.
+
+
+RESULTS GRADING
+       The PCIe specification provides reference values for the  eye  diagram,
+       which are also used by the pcilmr to evaluate the results, but it seems
+       that  it makes sense to contact the manufacturer of a particular device
+       for references.
+
+       The utility uses values set in PCIe Base Spec Rev. 5.0 Section 8.4.2 as
+       the default eye width and height minimum references. Recommended values
+       were taken from the PCIe Architecture PHY Test Spec Rev 5.0  (Transmit‐
+       ter Electrical Compliance).
+
+       Reference grading values currently used by the utility are presented in
+       the table below:
+
+       box  tab(:);  C | Cb S | Cb S C | Cb | Cb | Cb | Cb Lb | C | C | C | C.
+       :16 GT/s (Gen 4):32 GT/s (Gen 5) :EW:EH:EW:EH _ Min:T{ 18.75 ps
+       30% UI T}:15 mV:T{ 9.375 ps
+       30% UI T}:15 mV _ Rec:T{ 23.75 ps
+       38% UI T}:21 mV:T{ 10.157 ps
+       33% UI T}:19.75 mV
+
+       pcilmr uses full eye width and height values to grade  lanes.  However,
+       it  is  possible  that device supports only one side margining. In such
+       cases by default utility will calculate EW or EH as a double  one  side
+       result.
+
+       If  info  for  specific  device is available, you can configure grading
+       criteria and tweak utility behavior in one-side only cases for your de‐
+       vice using -g link specific option (see below).
+
+
+HARDWARE QUIRKS SUPPORT
+       Thanks to testing or directly from the manufacturer&#x27;s documentation, we
+       know that some devices require special treatment during the  margining.
+       Utility detects such devices based on their Vendor ID - Device ID pair.
+       Right  now  the list of special devices is hardcoded in margin_hw file.
+       For such devices utility can automatically adjust port margining  para‐
+       meters or grading options.
+
+       For  example, for Ice Lake CPUs RC ports pcilmr will change device Max‐
+       VoltageOffset value and will force the use of &#x27;one side is  the  whole&#x27;
+       grading mode.
+
+
+OPTIONS
+   Device Specifier
+       You can specify Downstream or Upstream Port of the Link.
+
+       &lt;device/component&gt;
+              [&lt;domain&gt;:]&lt;bus&gt;:&lt;dev&gt;.&lt;func&gt; (see lspci(8))
+
+   Utility Modes
+       --margin &lt;downstream component&gt; ...
+              Margin selected Links.
+
+       --full Margin all ready for testing (in a meaning similar to the --scan
+              option) Links in the system (one by one).
+
+       --scan Scan  for  Links  with  negotiated speed 16 GT/s or higher. Mark
+              &quot;Ready&quot; those of them in which at least one of  the  Link  sides
+              have  Margining Ready bit set meaning that these Links are ready
+              for testing and you can run utility on them.
+
+   Margining Common (for all specified links) options
+       -c Print Device Lane Margining Capabilities only. Do not run margining.
+
+       -e &lt;errors&gt;
+              Specify Error Count Limit for margining.
+              Default: 4.
+
+       -o &lt;directory&gt;
+              Save margining results in csv form into the specified directory.
+              Utility  will  generate  file  with  the   name   in   form   of
+              &quot;lmr_&lt;port&gt;_Rx#_&lt;timestamp&gt;.csv&quot;  for  each  successfully tested
+              receiver.
+
+       -d &lt;time&gt;
+              Specify dwell time in seconds for the margining step.
+              Default: 1 s
+
+   Margining Link specific options
+       -l &lt;lane&gt;[,&lt;lane&gt;...]
+              ®.br Remember that Device may use Lane Reversal for Lane number‐
+              ing. However, utility uses logical lane numbers in arguments and
+              for logging. Utility will automatically determine Lane  Reversal
+              and tune its calls.
+              Default: all link lanes.
+
+       -r &lt;recvn&gt;[,&lt;recvn&gt;...]
+              Specify Receivers to select margining targets.
+              Default: all available Receivers (including Retimers).
+
+       -p &lt;parallel_lanes&gt;
+              Specify number of lanes to margin simultaneously.
+              According  to  spec  it&#x27;s  possible for Receiver to margin up to
+              MaxLanes + 1 lanes simultaneously, but during testing,  perform‐
+              ing  margining  on  several  lanes simultaneously led to results
+              that were different from sequential margining, so  this  feature
+              requires  additional verification and -p option right now is for
+              experiments mostly.
+              Default: 1.
+
+       Use only one of -T/-t options at the same time (same for -V/-v).
+       Without these options utility will use MaxSteps from  Device  capabili‐
+       ties as test limit.
+
+       -T     Time  Margining  will  continue until the Error Count is no more
+              than an Error Count Limit. Use this option to find Link limit.
+
+       -t &lt;steps&gt;
+              Specify maximum number of steps for Time Margining.
+
+       -V     Same as -T option, but for Voltage.
+
+       -v &lt;steps&gt;
+              Specify maximum number of steps for Voltage Margining.
+
+       -g &lt;recvn&gt;t=&lt;criteria&gt;{%|ps}[,f]
+
+          &lt;recvn&gt;t=f[,&lt;criteria&gt;{%|ps}]
+
+          &lt;recvn&gt;v=&lt;criteria&gt;[,f]
+
+          &lt;recvn&gt;v=f[,&lt;criteria&gt;]
+              Specify pass/fail grading criteria for eye width (timing - t) or
+              height (voltage - v) for one of the link receivers. For  EW  you
+              must choose one of the units (% UI or ps), for EH mV is used.
+              Additional  flag  f  is for situations when port doesn&#x27;t support
+              two side independent margining. In such cases by default utility
+              will calculate EW or EH as a double one side result. You can add
+              f flag for -g option to tell the utility that the result in  one
+              direction  is  actually  the  measurement of the full eye and it
+              does not need to be multiplied. This is so called &#x27;one  side  is
+              the whole&#x27; grading mode.
+
+
+EXAMPLES
+       Utility syntax example:
+              pcilmr -o csv ab:0.0 -r 1,6 -g 1t=20% -g 1v=f,30 52:0.0 -l 0,1,2
+              -TV
+
+       Examples of collected results on different systems.
+
+
+SEE ALSO
+       lspci(8), PCI Express Base Specification (Lane Margining at Receiver)
+
+pciutils-3.13.0                   30 May 2024                        PCILMR(8)
+</pre></body></html>

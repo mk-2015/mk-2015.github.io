@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>NS_GET_OWNER_UID(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>NS_GET_OWNER_UID(2const)                              NS_GET_OWNER_UID(2const)
+
+NAME
+       NS_GET_OWNER_UID - discovering the owner of a user namespace
+
+SYNOPSIS
+       #include &lt;linux/nsfs.h&gt;  /* Definition of NS_GET_OWNER_UID */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, NS_GET_OWNER_UID, uid_t *uid);
+
+DESCRIPTION
+       The  NS_GET_OWNER_UID  operation can be used to discover the owner user
+       ID of a user namespace (i.e., the effective user ID of the process that
+       created the user namespace).
+
+       fd refers to a /proc/pid/ns/user file.
+
+       The owner user ID is returned in the uid_t pointed to by the third  ar‐
+       gument.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL fd does not refer to a user namespace.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.11.
+
+SEE ALSO
+       ioctl(2), ioctl_nsfs(2)
+
+Linux man-pages 6.9.1             2024-06-13          NS_GET_OWNER_UID(2const)
+</pre></body></html>

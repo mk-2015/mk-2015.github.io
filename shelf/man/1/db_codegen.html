@@ -1,0 +1,133 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>db_codegen(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>The  utility  generates  application code to create and configure
+Berkeley DB database environments and databases based on a simple
+description language and writes it to one or more  output  files.
+The  generated code may need modification, in the case of compli‐
+cated applications, but will  usually  significantly  reduce  the
+time  required  to  create Berkeley DB applications.  The options
+are as follows: Generate code for the specified  API  Specify  an
+input by default, standard input is used.  Specify an output file
+by  default,  is used.  Write the library version number to stan‐
+dard output and exit.  Run in verbose mode.  The utility exits  0
+on  success,  and  &gt;0  if  an error occurs.  By default, when the
+utility generates C-language code, the output file is  named  The
+output  filename can be specified with the option.  At the begin‐
+ning of the output file is a list of public database  environment
+handles  and  database  handles,  as specified by the description
+language.  The database environment handle  variables  are  named
+where  is the name of the environment in the input specification.
+For databases associated with a database environment,  the  data‐
+base handle variables are named where is the name of the environ‐
+ment, and is the name of the database.  For standalone databases,
+the  database handle variables are named where is the name of the
+database.  There are two public functions in the output file: and
+The function should be called to create and configure  the  data‐
+base  environments  and  databases,  and  the  function should be
+called to gracefully shut down the  environments  and  databases.
+The  uses  a simple description language: Lines in the input con‐
+sist of white-space separated tokens.  Tokens  are  case-insensi‐
+tive.   Empty lines and lines where the first non-space character
+is a hash mark are ignored.  In addition, hash marks  may  appear
+in  lines,  in  which  case the content of the line from the hash
+mark to the end of the line is ignored.  There are two  top-level
+objects:  and which correspond to database environments and data‐
+bases, respectively.  These top-level objects can  be  associated
+with  keywords to describe their configuration and relationships.
+For example, the following  input  would  create  two  standalone
+databases: database data_one {
+    type btree } database data_two {
+    type  btree } In this case, there would be no handle, and the
+public handles would be: DB       *data_one;  DB       *data_two;
+For example, the following input would create a database environ‐
+ment which contains three databases: environment myenv {
+    database data_one {
+        type btree
+    }
+    database data_two {
+        type btree
+    }
+    database data_three {
+        type btree
+    }  }  In  this  case, the public and handles would be: DB_ENV
+*myenv_dbenv; DB      *myenv_data_one;  DB       *myenv_data_two;
+DB      *myenv_data_three; A variety of keywords can be specified
+for  the  databases and the environments.  For example, the cache
+size can be specified for the database environment, and the  page
+size  can be specified for the database, as well as for secondary
+relationships: environment myenv {
+    cachesize 2 0 10
+    database data_one {
+        type btree
+        pagesize 1024
+    }
+    database data_two {
+        primary data_one
+        secondary_offset 10 15
+        type btree
+        pagesize 32768
+    }
+    database data_three {
+        type btree
+        pagesize 512
+    } } Start a database environment block.  There must be  three
+tokens  on the line: the keyword, the name of the environment and
+an opening brace Specify the database environment home directory.
+There must be two tokens on the line: the keyword  and  the  home
+directory.   Specify  the database environment cache size.  There
+must be two tokens on the line: the  keyword,  the  gigabytes  of
+cache,  the  bytes of cache, and the number of caches (the number
+of underlying physical areas into which the  cache  is  logically
+divided).   Specify  the  database environment is private.  There
+must be one token on the line: the keyword by  itself.   End  the
+database environment block.  There must be one token on the line:
+the  keyword  by  itself.  Start a database block.  There must be
+three tokens on the line: the keyword, the name of  the  database
+and  an  opening  brace  Specify a custom key-comparison routine.
+This is used when the Btree database  requires  a  specific  sort
+that cannot generate.  A stub key comparison routine will be cre‐
+ated  and configured for the database which should be modified as
+necessary.  See the keyword for more information.  There must  be
+one  token  on  the  line:  the keyword by itself.  Configure the
+database to support sorted duplicates.  There must be  one  token
+on  the  line:  the keyword by itself.  Configure the size of the
+Queue database extent files.  There must be  two  tokens  on  the
+line: the keyword and the extent file size, as a number of pages.
+Configure  a  integral type key-comparison routine.  This is used
+when the Btree database key is an integral type (such as  or  Any
+C-language  integral  type may be specified.  See the keyword for
+more information.  A Btree comparison routine based on  the  type
+of the key will be created and configured.  There must be two to‐
+kens  on the line: the keyword and the type.  Configure the data‐
+base page size.  There must be two tokens on the line:  the  key‐
+word  and  the  page  size in bytes.  Configure the database as a
+secondary index.  A stub secondary callback routine will be  cre‐
+ated and configured for the database, which should be modified as
+necessary.   See the keyword for more information.  There must be
+two tokens on the line: the keyword and the name of  the  primary
+database  for  which this database is a secondary.  Configure the
+Btree database to support record number access.   There  must  be
+one  token  on  the  line:  the keyword by itself.  Configure the
+record length for a Queue database or a fixed-length Recno  data‐
+base.   There must be two tokens on the line: the keyword and the
+length of a record, in bytes.   Configure  a  secondary  callback
+routine  based  on  a byte string found in the primary database&#x27;s
+data item.  There must be three tokens on the line: the  keyword,
+the byte offset from the beginning of the primary data item where
+the  secondary key occurs, and the length of the secondary key in
+bytes.  Configure the database (and, by extension,  the  database
+environment),  to  be  transactional.  There must be one token on
+the line: the keyword by itself.  Configure  the  database  type.
+There  must  be two tokens on the line: the keyword and the type,
+where the type is one of or End the database  environment  block.
+There  must  be  one  token  on  the line: the keyword by itself.
+wrote this manual page for the Debian project (but may be used by
+others) after the original HTML format documentation Copyright  ©
+1996,2008 Oracle. All rights reserved.
+
+
+
+
+
+
+
+
+</pre></body></html>

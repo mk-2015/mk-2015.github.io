@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Date::Language::Hungarian(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Date::...ngarian(3pm) User Contributed Perl DocumentationDate::...ngarian(3pm)
+
+NAME
+       Date::Language::Hungarian - Magyar format for Date::Format
+
+SYNOPSIS
+               my $lang = Date::Language-&gt;new(&#x27;Hungarian&#x27;);
+               print $lang-&gt;time2str(&quot;%a %b %e %T %Y&quot;, time);
+
+               @lt = localtime(time);
+               print $lang-&gt;time2str($template, time);
+               print $lang-&gt;strftime($template, @lt);
+
+               print $lang-&gt;time2str($template, time, $zone);
+               print $lang-&gt;strftime($template, @lt, $zone);
+
+               print $lang-&gt;ctime(time);
+               print $lang-&gt;asctime(@lt);
+
+               print $lang-&gt;ctime(time, $zone);
+               print $lang-&gt;asctime(@lt, $zone);
+
+       See Date::Format.
+
+AUTHOR
+       Paula Goddard (paula -at- paulacska -dot- com)
+
+LICENCE
+       Made available under the same terms as Perl itself.
+
+perl v5.32.1                      2021-02-15             Date::...ngarian(3pm)
+</pre></body></html>

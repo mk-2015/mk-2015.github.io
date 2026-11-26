@@ -1,0 +1,103 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>w(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>W(1)                             User Commands                            W(1)
+
+NAME
+       w - Show who is logged on and what they are doing.
+
+SYNOPSIS
+       w [options] [user]
+
+DESCRIPTION
+       w  displays  information  about the users currently on the machine, and
+       their processes.  The header shows, in this order,  the  current  time,
+       how  long  the  system  has  been running, how many users are currently
+       logged on, and the system load averages for the past 1, 5, and 15  min‐
+       utes.
+
+       The  following entries are displayed for each user: login name, the tty
+       name, the remote host, login time, idle time, JCPU, PCPU, and the  com‐
+       mand line of their current process.
+
+       The  JCPU  time  is the time used by all processes attached to the tty.
+       It does not include past background jobs, but  does  include  currently
+       running background jobs.
+
+       The  PCPU  time  is  the time used by the current process, named in the
+       &quot;what&quot; field.
+
+COMMAND-LINE OPTIONS
+       -h, --no-header
+              Don&#x27;t print the header.
+
+       -u, --no-current
+              Ignores the username while figuring out the current process  and
+              cpu times.  To demonstrate this, do a su and do a w and a w -u.
+
+       -s, --short
+              Use  the short format.  Don&#x27;t print the login time, JCPU or PCPU
+              times.
+
+       -t, --terminal
+              Usually w will use either the systemd sessions table or the utmp
+              file to locate users.  In terminal mode w will scan the terminal
+              devices and locate user sessions this way. This is  not  a  true
+              count  of users, for example a user with two xterms will show up
+              twice, so the user count in the header will be  different.  Cur‐
+              rently terminal devices scanned are /dev/tty* and /dev/pts/*.
+
+       -f, --from
+              Toggle  printing  the from (remote hostname) field.  The default
+              as released is for the from field to not  be  printed,  although
+              your  system  administrator  or distribution maintainer may have
+              compiled a version in which the from field is shown by default.
+
+       --help Display help text and exit.
+
+       -i, --ip-addr
+              Display IP address instead of hostname for from field.
+
+       -p, --pids
+              Display pid of the  login  process/the  &quot;what&quot;  process  in  the
+              &quot;what&quot;  field.   The  login  process  is also called the session
+              leader.
+
+       -V, --version
+              Display version information.
+
+       -o, --old-style
+              Old style output.  Prints blank space for idle times  less  than
+              one minute.
+
+       user   Show information about the specified user only.
+
+ENVIRONMENT
+       PROCPS_USERLEN
+              Override  the default width of the username column.  Defaults to
+              8.
+
+       PROCPS_FROMLEN
+              Override the default width of the from column.  Defaults to 16.
+
+FILES
+       /var/run/utmp
+              information about who is currently logged on, only for  non-sys‐
+              temd hosts.
+
+       /proc  process information
+
+       /dev/tty* , /dev/pts/*
+              Terminal device files scanned with --terminal mode.
+
+BUGS
+       When  using --terminal option, w assumes processes with a parent PID of
+       0 or 1 are agetty(8) processes and will not display them. This is prone
+       to both false postive and negative errors.
+
+REPORTING BUGS
+       Please send bug reports to procps@freelists.org
+
+SEE ALSO
+       free(1),  loginctl(1),  ps(1),  top(1),  uptime(1),  who(1),   utmp(5),
+       agetty(8)
+
+procps-ng                         2023-01-15                              W(1)
+</pre></body></html>

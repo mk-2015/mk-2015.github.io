@@ -1,0 +1,146 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCLINUX(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCLINUX(2const)                                            TIOCLINUX(2const)
+
+NAME
+       TIOCLINUX - ioctls for console terminal and virtual consoles
+
+SYNOPSIS
+       #include &lt;linux/tiocl.h&gt;  /* Definition of TIOCL_* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCLINUX, void *argp);
+
+DESCRIPTION
+       The  action  of  the  following ioctls depends on the first byte in the
+       struct pointed to by argp, referred to here as the subcode.  These  are
+       legal only for the superuser or the owner of the current terminal.
+
+       subcode=0
+              Dump  the  screen.   Disappeared  in  Linux 1.1.92.  (With Linux
+              1.1.92 or later, read from /dev/vcsN or /dev/vcsaN instead.)
+
+       subcode=1
+              Get task information.  Disappeared in Linux 1.1.92.
+
+       subcode=TIOCL_SETSEL
+              Set selection.  argp points to a
+
+                  struct {
+                      char  subcode;
+                      short xs, ys, xe, ye;
+                      short sel_mode;
+                  };
+
+              xs and ys are the starting column and row.  xe and  ye  are  the
+              ending  column  and  row.   (Upper left corner is row=column=1.)
+              sel_mode is 0 for character-by-character selection, 1 for  word-
+              by-word  selection,  or 2 for line-by-line selection.  The indi‐
+              cated screen characters are highlighted and saved  in  a  kernel
+              buffer.
+
+              Since  Linux  6.7, using this subcode requires the CAP_SYS_ADMIN
+              capability.
+
+       subcode=TIOCL_PASTESEL
+              Paste selection.  The characters in  the  selection  buffer  are
+              written to fd.
+
+              Since  Linux  6.7, using this subcode requires the CAP_SYS_ADMIN
+              capability.
+
+       subcode=TIOCL_UNBLANKSCREEN
+              Unblank the screen.
+
+       subcode=TIOCL_SELLOADLUT
+              Sets contents of a 256-bit look up table defining characters  in
+              a &quot;word&quot;, for word-by-word selection.  (Since Linux 1.1.32.)
+
+              Since  Linux  6.7, using this subcode requires the CAP_SYS_ADMIN
+              capability.
+
+       subcode=TIOCL_GETSHIFTSTATE
+              argp points to a char which is set to the value  of  the  kernel
+              variable shift_state.  (Since Linux 1.1.32.)
+
+       subcode=TIOCL_GETMOUSEREPORTING
+              argp  points  to  a char which is set to the value of the kernel
+              variable report_mouse.  (Since Linux 1.1.33.)
+
+       subcode=8
+              Dump screen width and height, cursor position, and all the char‐
+              acter-attribute pairs.  (Linux 1.1.67 through Linux 1.1.91 only.
+              With Linux 1.1.92 or later, read from /dev/vcsa* instead.)
+
+       subcode=9
+              Restore screen width and height, cursor position,  and  all  the
+              character-attribute  pairs.   (Linux 1.1.67 through Linux 1.1.91
+              only.  With Linux 1.1.92 or later, write to /dev/vcsa* instead.)
+
+       subcode=TIOCL_SETVESABLANK
+              Handles the Power Saving feature of the new generation of  moni‐
+              tors.   VESA  screen blanking mode is set to argp[1], which gov‐
+              erns what screen blanking does:
+
+              0      Screen blanking is disabled.
+
+              1      The current video adapter register  settings  are  saved,
+                     then  the controller is programmed to turn off the verti‐
+                     cal synchronization pulses.  This puts the  monitor  into
+                     &quot;standby&quot;  mode.   If your monitor has an Off_Mode timer,
+                     then it will eventually power down by itself.
+
+              2      The current settings are saved, then  both  the  vertical
+                     and  horizontal  synchronization  pulses  are turned off.
+                     This puts the monitor into &quot;off&quot; mode.  If  your  monitor
+                     has  no  Off_Mode  timer,  or if you want your monitor to
+                     power down immediately when the  blank_timer  times  out,
+                     then  you  choose  this  option.  (Caution: Powering down
+                     frequently  will  damage  the  monitor.)   (Since   Linux
+                     1.1.76.)
+
+       subcode=TIOCL_SETKMSGREDIRECT
+              Change target of kernel messages (&quot;console&quot;): by default, and if
+              this  is  set to 0, messages are written to the currently active
+              VT.  The VT to write to is  a  single  byte  following  subcode.
+              (Since Linux 2.5.36.)
+
+       subcode=TIOCL_GETFGCONSOLE
+              Returns  the number of VT currently in foreground.  (Since Linux
+              2.5.36.)
+
+       subcode=TIOCL_SCROLLCONSOLE
+              Scroll the foreground VT by the specified amount of lines  down,
+              or half the screen if 0.  lines is *(((int32_t *)&amp;subcode) + 1).
+              (Since Linux 2.5.67.)
+
+       subcode=TIOCL_BLANKSCREEN
+              Blank  the foreground VT, ignoring &quot;pokes&quot; (typing): can only be
+              unblanked explicitly (by switching VTs,  to  text  mode,  etc.).
+              (Since Linux 2.5.71.)
+
+       subcode=TIOCL_BLANKEDSCREEN
+              Returns  the  number of VT currently blanked, 0 if none.  (Since
+              Linux 2.5.71.)
+
+       subcode=16
+              Never used.
+
+       subcode=TIOCL_GETKMSGREDIRECT
+              Returns target of kernel messages.  (Since Linux 2.6.17.)
+
+RETURN VALUE
+       On success, 0 is returned (except where indicated).  On failure, -1  is
+       returned, and errno is set to indicate the error.
+
+ERRORS
+       EINVAL argp is invalid.
+
+       EPERM  Insufficient permission.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       ioctl(2), ioctl_console(2)
+
+Linux man-pages 6.9.1             2024-06-13                 TIOCLINUX(2const)
+</pre></body></html>

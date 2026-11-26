@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.BatteryProvider(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ...RYPROVIDER(5) Linux System AdministrationORG.BLUEZ...RYPROVIDER(5)
+
+NAME
+       org.bluez.BatteryProvider  - BlueZ D-Bus BatteryProvider API documenta‐
+       tion
+
+INTERFACE
+       Service
+              &lt;client D-Bus address&gt;
+
+       Interface
+              org.bluez.BatteryProvider1
+
+       Object path
+              {provider_root}/{unique battery object path}
+
+   Properties
+       Objects provided on this  interface  contain  the  same  properties  as
+       org.bluez.Battery(5)  interface.  Additionally, this interface needs to
+       have the Device property indicating the object path of the device  this
+       battery provides.
+
+   object Device [readonly]
+          The object path of the device that has this battery.
+
+BlueZ                            October 2023        ORG.BLUEZ...RYPROVIDER(5)
+</pre></body></html>

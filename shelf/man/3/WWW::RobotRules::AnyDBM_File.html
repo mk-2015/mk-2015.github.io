@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>WWW::RobotRules::AnyDBM_File(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>WWW::R...M_File(3pm)  User Contributed Perl Documentation WWW::R...M_File(3pm)
+
+NAME
+       WWW::RobotRules::AnyDBM_File - Persistent RobotRules
+
+SYNOPSIS
+        require WWW::RobotRules::AnyDBM_File;
+        require LWP::RobotUA;
+
+        # Create a robot useragent that uses a diskcaching RobotRules
+        my $rules = WWW::RobotRules::AnyDBM_File-&gt;new( &#x27;my-robot/1.0&#x27;, &#x27;cachefile&#x27; );
+        my $ua = WWW::RobotUA-&gt;new( &#x27;my-robot/1.0&#x27;, &#x27;me@foo.com&#x27;, $rules );
+
+        # Then just use $ua as usual
+        $res = $ua-&gt;request($req);
+
+DESCRIPTION
+       This is a subclass of WWW::RobotRules that uses the AnyDBM_File package
+       to implement persistent diskcaching of robots.txt and host visit
+       information.
+
+       The constructor (the new() method) takes an extra argument specifying
+       the name of the DBM file to use.  If the DBM file already exists, then
+       you can specify undef as agent name as the name can be obtained from
+       the DBM database.
+
+SEE ALSO
+       WWW::RobotRules, LWP::RobotUA
+
+AUTHORS
+       Hakan Ardo &lt;hakan@munin.ub2.lu.se&gt;, Gisle Aas &lt;aas@sn.no&gt;
+
+perl v5.26.1                      2018-04-14              WWW::R...M_File(3pm)
+</pre></body></html>

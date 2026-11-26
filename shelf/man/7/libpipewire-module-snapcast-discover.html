@@ -1,0 +1,109 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-snapcast-discover(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...discover(7) Miscellaneous Information Manual libpipew...discover(7)
+
+NAME
+       libpipewire-module-snapcast-discover - Snapcast Discover
+
+DESCRIPTION
+       Automatically creates a Snapcast sink device based on zeroconf
+       information.
+
+       This module will load module-protocol-simple for each announced stream
+       that matches the rule with the create-stream action and passes the
+       properties to the module.
+
+       If no stream.rules are given, it will create a sink for all announced
+       snapcast servers.
+
+       A new stream will be created on the snapcast server with the given
+       snapcast.stream-name or PipeWire-&lt;hostname&gt;. You will need to route
+       this new stream to clients with the snapcast control application.
+
+MODULE NAME
+       libpipewire-module-snapcast-discover
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • snapcast.discover-local  = allow discovery of local services as well.
+         false by default.
+
+       • stream.rules = &lt;rules&gt;: match rules, use create-stream  actions.  See
+         Protocol Simple for module properties.
+
+   stream.rules matches
+       • snapcast.ip: the IP address of the snapcast server
+
+       • snapcast.port: the port of the snapcast server
+
+       • snapcast.ifindex: the interface index where the snapcast announcement
+         was received.
+
+       • snapcast.ifname:  the  interface name where the snapcast announcement
+         was received.
+
+       • snapcast.name: the name of the snapcast server
+
+       • snapcast.hostname: the hostname of the snapcast server
+
+       • snapcast.domain: the domain of the snapcast server
+
+   stream.rules create-stream
+       In addition to all the  properties  that  can  be  passed  to  Protocol
+       Simple, you can also set:
+
+       • snapcast.stream-name: The name of the stream on a snapcast server.
+
+       • node.name: The name of the sink that is created on the sender.
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-snapcast-discover.conf
+
+       context.modules = [
+       {   name = libpipewire-module-snapcast-discover
+           args = {
+               stream.rules = [
+                   {   matches = [
+                           {    snapcast.ip = &quot;~.*&quot;
+                                #snapcast.port = 1000
+                                #snapcast.ifindex = 1
+                                #snapcast.ifname = eth0
+                                #snapcast.name = &quot;&quot;
+                                #snapcast.hostname = &quot;&quot;
+                                #snapcast.domain = &quot;&quot;
+                           }
+                       ]
+                       actions = {
+                           create-stream = {
+                               #audio.rate = 44100
+                               #audio.format = S16LE   # S16LE, S24_32LE, S32LE
+                               #audio.channels = 2
+                               #audio.position = [ FL FR ]
+                               #
+                               # The stream name as is appears on the snapcast
+                               # server:
+                               #snapcast.stream-name = &quot;PipeWire&quot;
+                               #
+                               # The name of the sink on the sender:
+                               #node.name = &quot;Snapcast Sink&quot;
+                               #
+                               #capture = true
+                               #server.address = [ &quot;tcp:4711&quot; ]
+                               #capture.props = {
+                                   #target.object = &quot;&quot;
+                                   #node.latency = 2048/48000
+                                   #media.class = &quot;Audio/Sink&quot;
+                               #}
+                           }
+                       }
+                   }
+               ]
+           }
+       }
+       ]
+
+SEE ALSO
+       Protocol Simple
+
+
+PipeWire                             1.4.2              libpipew...discover(7)
+</pre></body></html>

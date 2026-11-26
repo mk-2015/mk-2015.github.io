@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>readdir(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>readdir(2)                    System Calls Manual                   readdir(2)
+
+NAME
+       readdir - read directory entry
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/syscall.h&gt;      /* Definition of SYS_* constants */
+       #include &lt;unistd.h&gt;
+
+       int syscall(SYS_readdir, unsigned int fd,
+                   struct old_linux_dirent *dirp, unsigned int count);
+
+       Note: There is no definition of struct old_linux_dirent; see NOTES.
+
+DESCRIPTION
+       This is not the function you are interested in.  Look at readdir(3) for
+       the POSIX conforming C library interface.  This page documents the bare
+       kernel system call interface, which is superseded by getdents(2).
+
+       readdir()  reads  one old_linux_dirent structure from the directory re‐
+       ferred to by the file descriptor fd into the buffer pointed to by dirp.
+       The argument count is ignored; at most one  old_linux_dirent  structure
+       is read.
+
+       The  old_linux_dirent  structure is declared (privately in Linux kernel
+       file fs/readdir.c) as follows:
+
+           struct old_linux_dirent {
+               unsigned long d_ino;     /* inode number */
+               unsigned long d_offset;  /* offset to this old_linux_dirent */
+               unsigned short d_namlen; /* length of this d_name */
+               char  d_name[1];         /* filename (null-terminated) */
+           }
+
+       d_ino is an inode number.  d_offset is the distance from the  start  of
+       the  directory  to  this  old_linux_dirent.   d_reclen  is  the size of
+       d_name, not counting the terminating null byte  (&#x27;\0&#x27;).   d_name  is  a
+       null-terminated filename.
+
+RETURN VALUE
+       On success, 1 is returned.  On end of directory, 0 is returned.  On er‐
+       ror, -1 is returned, and errno is set to indicate the error.
+
+ERRORS
+       EBADF  Invalid file descriptor fd.
+
+       EFAULT Argument points outside the calling process&#x27;s address space.
+
+       EINVAL Result buffer is too small.
+
+       ENOENT No such directory.
+
+       ENOTDIR
+              File descriptor does not refer to a directory.
+
+VERSIONS
+       You  will need to define the old_linux_dirent structure yourself.  How‐
+       ever, probably you should use readdir(3) instead.
+
+       This system call does not exist on x86-64.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       getdents(2), readdir(3)
+
+Linux man-pages 6.9.1             2024-06-15                        readdir(2)
+</pre></body></html>

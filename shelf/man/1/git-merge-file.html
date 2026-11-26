@@ -1,0 +1,109 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>git-merge-file(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GIT-MERGE-FILE(1)                 Git Manual                 GIT-MERGE-FILE(1)
+
+NAME
+       git-merge-file - Run a three-way file merge
+
+SYNOPSIS
+       git merge-file [-L &lt;current-name&gt; [-L &lt;base-name&gt; [-L &lt;other-name&gt;]]]
+               [--ours|--theirs|--union] [-p|--stdout] [-q|--quiet] [--marker-size=&lt;n&gt;]
+               [--[no-]diff3] [--object-id] &lt;current&gt; &lt;base&gt; &lt;other&gt;
+
+
+DESCRIPTION
+       Given three files &lt;current&gt;, &lt;base&gt; and &lt;other&gt;, git merge-file
+       incorporates all changes that lead from &lt;base&gt; to &lt;other&gt; into
+       &lt;current&gt;. The result ordinarily goes into &lt;current&gt;. git merge-file is
+       useful for combining separate changes to an original. Suppose &lt;base&gt; is
+       the original, and both &lt;current&gt; and &lt;other&gt; are modifications of
+       &lt;base&gt;, then git merge-file combines both changes.
+
+       A conflict occurs if both &lt;current&gt; and &lt;other&gt; have changes in a
+       common segment of lines. If a conflict is found, git merge-file
+       normally outputs a warning and brackets the conflict with lines
+       containing &lt;&lt;&lt;&lt;&lt;&lt;&lt; and &gt;&gt;&gt;&gt;&gt;&gt;&gt; markers. A typical conflict will look
+       like this:
+
+           &lt;&lt;&lt;&lt;&lt;&lt;&lt; A
+           lines in file A
+           =======
+           lines in file B
+           &gt;&gt;&gt;&gt;&gt;&gt;&gt; B
+
+       If there are conflicts, the user should edit the result and delete one
+       of the alternatives. When --ours, --theirs, or --union option is in
+       effect, however, these conflicts are resolved favouring lines from
+       &lt;current&gt;, lines from &lt;other&gt;, or lines from both respectively. The
+       length of the conflict markers can be given with the --marker-size
+       option.
+
+       If --object-id is specified, exactly the same behavior occurs, except
+       that instead of specifying what to merge as files, it is specified as a
+       list of object IDs referring to blobs.
+
+       The exit value of this program is negative on error, and the number of
+       conflicts otherwise (truncated to 127 if there are more than that many
+       conflicts). If the merge was clean, the exit value is 0.
+
+       git merge-file is designed to be a minimal clone of RCS merge; that is,
+       it implements all of RCS merge&#x27;s functionality which is needed by
+       git(1).
+
+OPTIONS
+       --object-id
+           Specify the contents to merge as blobs in the current repository
+           instead of files. In this case, the operation must take place
+           within a valid repository.
+
+           If the -p option is specified, the merged file (including
+           conflicts, if any) goes to standard output as normal; otherwise,
+           the merged file is written to the object store and the object ID of
+           its blob is written to standard output.
+
+       -L &lt;label&gt;
+           This option may be given up to three times, and specifies labels to
+           be used in place of the corresponding file names in conflict
+           reports. That is, git merge-file -L x -L y -L z a b c generates
+           output that looks like it came from files x, y and z instead of
+           from files a, b and c.
+
+       -p
+           Send results to standard output instead of overwriting &lt;current&gt;.
+
+       -q
+           Quiet; do not warn about conflicts.
+
+       --diff3
+           Show conflicts in &quot;diff3&quot; style.
+
+       --zdiff3
+           Show conflicts in &quot;zdiff3&quot; style.
+
+       --ours, --theirs, --union
+           Instead of leaving conflicts in the file, resolve conflicts
+           favouring our (or their or both) side of the lines.
+
+       --diff-algorithm={patience|minimal|histogram|myers}
+           Use a different diff algorithm while merging. The current default
+           is &quot;myers&quot;, but selecting more recent algorithm such as &quot;histogram&quot;
+           can help avoid mismerges that occur due to unimportant matching
+           lines (such as braces from distinct functions). See also git-
+           diff(1) --diff-algorithm.
+
+EXAMPLES
+       git merge-file README.my README README.upstream
+           combines the changes of README.my and README.upstream since README,
+           tries to merge them and writes the result into README.my.
+
+       git merge-file -L a -L b -L c tmp/a123 tmp/b234 tmp/c345
+           merges tmp/a123 and tmp/c345 with the base tmp/b234, but uses
+           labels a and c instead of tmp/a123 and tmp/c345.
+
+       git merge-file -p --object-id abc1234 def567 890abcd
+           combines the changes of the blob abc1234 and 890abcd since def567,
+           tries to merge them and writes the result to standard output
+
+GIT
+       Part of the git(1) suite
+
+Git 2.47.3                        07/30/2025                 GIT-MERGE-FILE(1)
+</pre></body></html>

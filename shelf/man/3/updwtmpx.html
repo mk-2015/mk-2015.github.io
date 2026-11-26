@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>updwtmpx(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>updwtmp(3)                 Library Functions Manual                 updwtmp(3)
+
+NAME
+       updwtmp, logwtmp - append an entry to the wtmp file
+
+LIBRARY
+       System utilities library (libutil, -lutil)
+
+SYNOPSIS
+       #include &lt;utmp.h&gt;
+
+       void updwtmp(const char *wtmp_file, const struct utmp *ut);
+       void logwtmp(const char *line, const char *name, const char *host);
+
+DESCRIPTION
+       updwtmp() appends the utmp structure ut to the wtmp file.
+
+       logwtmp()  constructs  a utmp structure using line, name, host, current
+       time, and current process ID.  Then it calls updwtmp()  to  append  the
+       structure to the wtmp file.
+
+FILES
+       /var/log/wtmp
+              database of past user logins
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       updwtmp(), logwtmp() T}   Thread safety  MT-Unsafe sig:ALRM timer
+
+VERSIONS
+       For consistency with the other &quot;utmpx&quot; functions (see getutxent(3)),
+       glibc provides (since glibc 2.1):
+
+           #define _GNU_SOURCE          /* See feature_test_macros(7) */
+           #include &lt;utmpx.h&gt;
+           void updwtmpx (const char *wtmpx_file, const struct utmpx *utx);
+
+       This function performs the same task as updwtmp(), but differs in that
+       it takes a utmpx structure as its last argument.
+
+STANDARDS
+       None.
+
+HISTORY
+       Solaris, NetBSD.
+
+SEE ALSO
+       getutxent(3), wtmp(5)
+
+Linux man-pages 6.9.1             2024-05-02                        updwtmp(3)
+</pre></body></html>

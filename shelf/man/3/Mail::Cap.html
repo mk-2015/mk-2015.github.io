@@ -1,0 +1,116 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Mail::Cap(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Mail::Cap(3pm)        User Contributed Perl Documentation       Mail::Cap(3pm)
+
+NAME
+       Mail::Cap - understand mailcap files
+
+SYNOPSIS
+        my $mc   = Mail::Cap-&gt;new;
+
+        my $desc = $mc-&gt;description(&#x27;image/gif&#x27;);
+        print &quot;GIF desc: $desc\n&quot;;
+
+        my $cmd  = $mc-&gt;viewCmd(&#x27;text/plain; charset=iso-8859-1&#x27;, &#x27;file.txt&#x27;);
+
+DESCRIPTION
+       Parse mailcap files as specified in &quot;RFC 1524 --A User Agent
+       Configuration Mechanism For Multimedia Mail Format Information&gt;.  In
+       the description below $type refers to the MIME type as specified in the
+       &quot;Content-Type&quot; header of mail or HTTP messages.  Examples of types are:
+
+         image/gif
+         text/html
+         text/plain; charset=iso-8859-1
+
+       You could also take a look at the File::MimeInfo distribution, which
+       are accessing tables which are used by many applications on a system,
+       and therefore have succeeded the mail-cap specifications on modern
+       (UNIX) systems.
+
+METHODS
+   Constructors
+       Mail::Cap-&gt;new(%options)
+           Create  and  initialize  a new Mail::Cap object.  If you give it an
+           argument it will try to parse  the  specified  file.   Without  any
+           arguments  it  will  search for the mailcap file using the standard
+           mailcap path,  or  the  MAILCAPS  environment  variable  if  it  is
+           defined.
+
+            -Option  --Default
+             filename  undef
+             take      &#x27;FIRST&#x27;
+
+           filename =&gt; FILENAME
+             Add  the  specified file to the list to standard locations.  This
+             file is tried first.
+
+           take =&gt; &#x27;ALL&#x27;|&#x27;FIRST&#x27;
+             Include all mailcap files you can find.   By  default,  only  the
+             first  file  is  parsed, however the RFC tells us to include ALL.
+             To maintain backwards compatibility, the default only  takes  the
+             FIRST.
+
+           example:
+
+             $mcap = new Mail::Cap;
+             $mcap = new Mail::Cap &quot;/mydir/mailcap&quot;;
+             $mcap = new Mail::Cap filename =&gt; &quot;/mydir/mailcap&quot;;
+             $mcap = new Mail::Cap take =&gt; &#x27;ALL&#x27;;
+             $mcap = Mail::Cap-&gt;new(take =&gt; &#x27;ALL&#x27;);
+
+   Run commands
+       These  methods invoke a suitable program presenting or manipulating the
+       media object in the specified file.  They all return 1 if a command was
+       found, and 0 otherwise.  You might test  $?  for  the  outcome  of  the
+       command.
+
+       $obj-&gt;compose($type, $file)
+       $obj-&gt;edit($type, $file)
+       $obj-&gt;print($type, $file)
+       $obj-&gt;view($type, $file)
+
+   Command creator
+       These  methods return a string that is suitable for feeding to system()
+       in order to invoke a suitable program presenting  or  manipulating  the
+       media  object  in  the  specified  file.   It will return &quot;undef&quot; if no
+       suitable specification exists.
+
+       $obj-&gt;composeCmd($type, $file)
+       $obj-&gt;editCmd($type, $file)
+       $obj-&gt;printCmd($type, $file)
+       $obj-&gt;viewCmd($type, $file)
+
+   Look-up definitions
+       Methods return the corresponding mailcap field for the type.
+
+       $obj-&gt;description($type)
+       $obj-&gt;field($type, $field)
+           Returns the specified field for the  type.   Returns  undef  if  no
+           specification exists.
+
+       $obj-&gt;nametemplate($type)
+       $obj-&gt;textualnewlines($type)
+       $obj-&gt;x11_bitmap($type)
+
+SEE ALSO
+       This    module    is    part    of    the    MailTools    distribution,
+       http://perl.overmeer.net/mailtools/.
+
+AUTHORS
+       The MailTools  bundle  was  developed  by  Graham  Barr.   Later,  Mark
+       Overmeer   took   over   maintenance   without  commitment  to  further
+       development.
+
+       Mail::Cap by Gisle  Aas  &lt;aas@oslonett.no&gt;.   Mail::Field::AddrList  by
+       Peter  Orbaek  &lt;poe@cit.dk&gt;.   Mail::Mailer and Mail::Send by Tim Bunce
+       &lt;Tim.Bunce@ig.co.uk&gt;.  For other contributors see ChangeLog.
+
+LICENSE
+       Copyrights 1995-2000 Graham Barr &lt;gbarr@pobox.com&gt; and  2001-2024  Mark
+       Overmeer &lt;perl@overmeer.net&gt;.
+
+       This program is free software; you can redistribute it and/or modify it
+       under      the      same     terms     as     Perl     itself.      See
+       http://www.perl.com/perl/misc/Artistic.html
+
+perl v5.40.0                      2024-11-23                    Mail::Cap(3pm)
+</pre></body></html>

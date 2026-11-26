@@ -1,0 +1,83 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_MPX_ENABLE_MANAGEMENT(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_MPX_ENABLE_MANAGEMENT(2)   System Calls Manual  PR_MPX_ENABLE_MANAGEMENT(2)
+
+NAME
+       PR_MPX_ENABLE_MANAGEMENT, PR_MPX_DISABLE_MANAGEMENT - enable or disable
+       kernel management of Memory Protection eXtensions (MPX)
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       [[deprecated]] int prctl(PR_MPX_ENABLE_MANAGEMENT, 0L, 0L, 0L, 0L);
+       [[deprecated]] int prctl(PR_MPX_DISABLE_MANAGEMENT, 0L, 0L, 0L, 0L);
+
+DESCRIPTION
+       Enable  or  disable  kernel  management of Memory Protection eXtensions
+       (MPX) bounds tables.
+
+       MPX is a hardware-assisted mechanism for performing bounds checking  on
+       pointers.  It consists of a set of registers storing bounds information
+       and  a  set  of special instruction prefixes that tell the CPU on which
+       instructions it should do bounds enforcement.  There is a limited  num‐
+       ber of these registers and when there are more pointers than registers,
+       their  contents  must  be &quot;spilled&quot; into a set of tables.  These tables
+       are called &quot;bounds tables&quot;  and  the  MPX  prctl()  operations  control
+       whether the kernel manages their allocation and freeing.
+
+       When  management  is  enabled, the kernel will take over allocation and
+       freeing of the bounds tables.  It does this by trapping the #BR  excep‐
+       tions  that result at first use of missing bounds tables and instead of
+       delivering the exception to user space, it allocates the table and pop‐
+       ulates the bounds directory with the location of the  new  table.   For
+       freeing, the kernel checks to see if bounds tables are present for mem‐
+       ory which is not allocated, and frees them if so.
+
+       Before  enabling MPX management using PR_MPX_ENABLE_MANAGEMENT, the ap‐
+       plication must first have allocated a user-space buffer for the  bounds
+       directory and placed the location of that directory in the bndcfgu reg‐
+       ister.
+
+       These  calls  fail  if  the CPU or kernel does not support MPX.  Kernel
+       support for MPX is enabled via the  CONFIG_X86_INTEL_MPX  configuration
+       option.   You can check whether the CPU supports MPX by looking for the
+       mpx CPUID bit, like with the following command:
+
+           cat /proc/cpuinfo | grep &#x27; mpx &#x27;
+
+       A thread may not switch in or out of long (64-bit) mode  while  MPX  is
+       enabled.
+
+       All threads in a process are affected by these calls.
+
+       The  child  of  a fork(2) inherits the state of MPX management.  During
+       execve(2), MPX management is reset to a state as if PR_MPX_DISABLE_MAN‐
+       AGEMENT had been called.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       ENXIO  The  kernel  or  the CPU does not support MPX management.  Check
+              that the kernel and processor have MPX support.
+
+STANDARDS
+       None.
+
+HISTORY
+       Linux 3.19.  Removed in Linux 5.4.  Only on x86.
+
+       Due to  a  lack  of  toolchain  support,  PR_MPX_ENABLE_MANAGEMENT  and
+       PR_MPX_DISABLE_MANAGEMENT are not supported in Linux 5.4 and later.
+
+SEE ALSO
+       prctl(2)
+
+       For  further information on Intel MPX, see the kernel source file Docu‐
+       mentation/x86/intel_mpx.txt.
+
+Linux man-pages 6.9.1             2024-06-01       PR_MPX_ENABLE_MANAGEMENT(2)
+</pre></body></html>

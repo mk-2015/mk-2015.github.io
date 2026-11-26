@@ -1,0 +1,362 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wacom(4)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/4/">man(4)</a></p><hr><pre>WACOM(4)                   Kernel Interfaces Manual                   WACOM(4)
+
+NAME
+       wacom - Wacom input driver
+
+SYNOPSIS
+       Section &quot;InputClass&quot;
+         Identifier &quot;idevname&quot;
+         MatchIsTablet &quot;on&quot;
+         MatchDevicePath &quot;devpath&quot;
+         Driver &quot;wacom&quot;
+         Option &quot;...&quot; &quot; ...&quot;
+         ...
+       EndSection
+
+DESCRIPTION
+       wacom is an X input driver for Wacom devices.
+
+       The wacom driver functions as a pointer input device.
+
+SUPPORTED HARDWARE
+       This driver supports virtually all tablet devices that are supported by
+       the Linux kernel.
+
+       Please  check https://github.com/linuxwacom for latest updates of Wacom
+       X and kernel drivers.
+
+DRIVER-INTERNAL DEVICE HOTPLUGGING
+       Configuration via Section &quot;InputDevice&quot; is discouraged as such  devices
+       cannot  be hotplugged at runtime. Instead users should use Section &quot;In‐
+       putClass&quot;  as  in  the  example  above.  The  InputClass  section  (see
+       xorg.conf.d(5))  assigns  this  driver for the device, the wacom driver
+       creates multiple X devices for each physical device, one X  device  for
+       each  available  tool. The list of tools is hardware-dependent. See Op‐
+       tion Type as outlined in the CONFIGURATION DETAILS section.
+
+       These tool-specific devices are referred to as parent device and depen‐
+       dent device.  The parent device is the one presented by the system  and
+       the  one that causes the X server to load the wacom driver. This parent
+       device then causes the automatic addition of several dependent devices.
+       If the parent device is unplugged or otherwise removed,  the  dependent
+       devices will be automatically removed as well.
+
+       Dependent  devices  may be assigned tool-specific options through addi‐
+       tional InputClass sections. We recommend that a MatchDriver wacom  line
+       is used in these sections in addition to the user-specific pattern.
+
+       Match  directives  are applied by the X server before the driver is se‐
+       lected.  The type name of the parent device is appended by the  driver.
+       It  is  not  possible  to use a MatchProduct directive to match against
+       this appended type name.
+
+CONFIGURATION DETAILS
+       Please refer to xorg.conf(5) or xorg.conf.d(5) for  general  configura‐
+       tion  details  and for options that can be used with all input drivers.
+       This section only covers configuration details specific to this driver.
+
+       Multiple instances of the Wacom devices can cohabit. Each  device  sup‐
+       ports the following entries:
+
+       Option &quot;Type&quot; &quot;stylus&quot;|&quot;eraser&quot;|&quot;cursor&quot;|&quot;pad&quot;|&quot;touch&quot;
+           sets  the type of tool the device represents. This option is manda‐
+           tory.  The core options, such as &quot;SendCoreEvents&quot; or  &quot;AlwaysCore&quot;,
+           are  unnecessary  in  Gimp  if you don&#x27;t need to move system cursor
+           outside of Gimp drawing area.  &quot;pad&quot; is for Intuos 3 or Cintiq 21UX
+           tablet ExpressKeys/menu strips, and Graphire  4  or  Bamboo  tablet
+           buttons,  wheel,  and/or  ring.  It is required  for Intuos3,  Cin‐
+           tiqV5, Graphire 4, and Bamboo if you want  to  use  keystroke  fea‐
+           tures.   &quot;pad&quot;  is reported as a second tool in the driver. &quot;touch&quot;
+           is for the tablet with touch support.  Right now only a few  Tablet
+           PCs have this feature.
+
+       Option &quot;Device&quot; &quot;path&quot;
+           sets  the  path  to  the  special file which represents serial line
+           where the tablet is plugged.  You have to specify it for each  sub‐
+           section  with  the  same value if you want to have multiple devices
+           with the same tablet.  This option is mandatory only if using  Sec‐
+           tion &quot;InputDevice&quot; for static configuration.
+
+       Option &quot;Suppress&quot; &quot;number&quot;
+           sets  the  position  increment  under which not to transmit coordi‐
+           nates.  This entry must be specified only in the first  Wacom  sub‐
+           section  if  you have multiple devices for one tablet. If you don&#x27;t
+           specify this entry, the default value,  which is 2, will  be  used.
+           To  disable  suppression, the entry should be specified as 0.  When
+           suppress is defined,  an event will be sent only when at least  one
+           of the following conditions is met:
+
+                   the  change between the current X coordinate and the previ‐
+           ous one is greater than suppress;
+
+                   the change between the current Y coordinate and the  previ‐
+           ous one is greater than suppress;
+
+                   the  change  between  the current pressure and the previous
+           one is greater than suppress;
+
+                   the change between the  current degree of rotation and  the
+           previous one of the transducer is greater than suppress;
+
+                   the change between the current absolute wheel value and the
+           previous one is equal to or greater than suppress;
+
+                   the  change between the current tilt value and the previous
+           one is equal to or greater than suppress (if tilt is supported);
+
+                   relative wheel value has changed;
+
+                   button value has changed;
+
+                   proximity has changed.
+
+       Option &quot;Mode&quot; &quot;Relative&quot;|&quot;Absolute&quot;
+           sets the mode of the device.  The default value for stylus, pad and
+           eraser is Absolute; cursor is Relative; touch defaults to  Relative
+           for tablets with touch pads and Absolute for touch screens.
+
+       Option &quot;TopX&quot; &quot;number&quot;
+           X coordinate of the top corner of the active zone.  Default to 0.
+
+       Option &quot;TopY&quot; &quot;number&quot;
+           Y coordinate of the top corner of the active zone.  Default to 0.
+
+       Option &quot;BottomX&quot; &quot;number&quot;
+           X  coordinate  of the bottom corner of the active zone.  Default to
+           width of the tablet.
+
+       Option &quot;BottomY&quot; &quot;number&quot;
+           Y coordinate of the bottom corner of the active zone.   Default  to
+           height of the tablet.
+
+       Option &quot;ButtonsOnly&quot; &quot;on&quot;|&quot;off&quot;
+           disables the device&#x27;s motion events.  Default to off.
+
+       Option &quot;ButtonM&quot; &quot;AC&quot;
+           reports  an  action AC when button M is pressed,  where M is one of
+           the device supported  button numbers,  it can be  1  to  32.  Wacom
+           uses  a  driver-internal  button mapping, where any physical button
+           appears to the X server as the button specified by the ButtonM map‐
+           ping. Hence, if two physical buttons have the same ButtonM mapping,
+           the server will think they are the same physical button.   The  de‐
+           fault  action reported to the X server is mouse button M click. Be‐
+           cause X uses buttons 4, 5, 6, and 7 as the  four  scrolling  direc‐
+           tions,  physical buttons 4 and higher are mapped to 8 and higher by
+           default.  Only simple button presses can be  configured  here;  for
+           more  complex  actions,  use  xsetwacom(1).   To  ignore the button
+           click, i.e., to not report any button click event to the X  server,
+           use &quot;0&quot; or &quot;button 0&quot;.
+
+       Option &quot;TPCButton&quot; &quot;on&quot;|&quot;off&quot;
+           enables  the  stylus  buttons as Tablet PC buttons. If enabled, the
+           stylus reports button events only when its tip is pressed.  If  any
+           button  is  down,  pressing  the tip reports a button event for the
+           button. Otherwise if no button is down, the tip reports  as  usual.
+           Default  to  &quot;on&quot;  for Tablet PCs; &quot;off&quot; for all other models. Only
+           available on the stylus tool.
+
+       Option &quot;Touch&quot; &quot;on&quot;|&quot;off&quot;
+           enables touch events for touch devices,  i.e., system cursor  moves
+           when  user  touches  the  tablet.  Default to &quot;on&quot; for devices that
+           support touch; &quot;off&quot; for all other models.
+
+       Option &quot;Rotate&quot; &quot;CW&quot;|&quot;CCW&quot;|&quot;HALF&quot;|&quot;NONE&quot;
+           rotates the tablet orientation counterclockwise (CCW) or  clockwise
+           (CW)  or 180 degrees (HALF).  If you have specific tablet mappings,
+           i.e. TopX/Y or BottomX/Y were set, the mapping will be applied  be‐
+           fore  rotation. Rotation must be applied to the parent device (usu‐
+           ally the stylus), rotation settings on in-driver hotplugged devices
+           (see DRIVER-INTERNAL DEVICE HOTPLUGGING ) will be ignored. The  de‐
+           fault is &quot;NONE&quot;.
+
+       Option &quot;PressCurve&quot; &quot;x1,y1,x2,y2&quot;
+           sets  pressure  curve  by control points x1, y1, x2, and y2.  Their
+           values are in range from 0..100. The pressure curve is  interpreted
+           as  Bezier curve with 4 control points, the first and the last con‐
+           trol point being fixed on the coordinates 0/0 and 100/100,  respec‐
+           tively.  The  middle  control points are adjustible by this setting
+           and thus define the shape of the curve.  The input for linear curve
+           (default) is &quot;0,0,100,100&quot;; slightly depressed curve (firmer) might
+           be  &quot;5,0,100,95&quot;;  slightly  raised   curve   (softer)   might   be
+           &quot;0,5,95,100&quot;.   The pressure curve is only applicable to devices of
+           type stylus or eraser, other devices do not honor this setting.
+
+       Option &quot;Pressure2K&quot; &quot;bool&quot;
+           reduces the pressure range to the range of 0 to 2048 for  backwards
+           compatibility  with  applications  that  have this range hardcoded.
+           See section BUGS.  This option should not be used unless  the  user
+           runs  one  or  more  applications that rely on a hardcoded pressure
+           range.
+
+       Option &quot;DebugLevel&quot; &quot;number&quot;
+           sets the level of debugging info for tool-specific messages.  There
+           are 12 levels, specified by the integers between 1 and 12.  All de‐
+           bug messages with a level less than or equal to the  &quot;number&quot;  will
+           be  logged into the Xorg log file. This option is only available if
+           the driver was built with debugging support.
+
+       Option &quot;CommonDBG&quot; &quot;number&quot;
+           sets the level of debugging info for  common  (i.e.  not  tool-spe‐
+           cific)  code paths on the tablet. There are 12 levels, specified by
+           the integers between 1 and 12. All debug messages with a level less
+           than or equal to the &quot;number&quot; will be  logged  into  the  Xorg  log
+           file.  This  option  is only available if the driver was built with
+           debugging support.
+
+       Option &quot;GrabDevice&quot; &quot;bool&quot;
+           sets whether the underlying event device will  be  grabbed  by  the
+           driver  to  prevent  the data from leaking to /dev/input/mice. When
+           enabled, while the X server is running, no other programs  will  be
+           able to read the event stream.  Default: &quot;false&quot;.
+
+       Option &quot;CursorProx&quot; &quot;number&quot;
+           sets  the distance at which a relative tool is treated as being out
+           of proximity.  Beyond this distance the cursor will stop responding
+           to tool motion. The default value for pucks is 10 (Intuos  Pro)  or
+           42 (Intuos/Bamboo). The default value for pens is 30.
+
+       Option &quot;RawSample&quot; &quot;number&quot;
+           Set   the  sample  window  size (a sliding average sampling window)
+           for incoming input tool raw data points.  Default:  4, range  of  1
+           to 20.
+
+       Option &quot;Serial&quot; &quot;number&quot;
+           sets  the  serial  number associated with the physical device. This
+           allows to have multiple devices of the  same  type  (i.e.  multiple
+           pens). This option is only available on wacom V devices (Intuos se‐
+           ries  and Cintiq 21U).  To see which serial number belongs to a de‐
+           vice, you need to run the utility program, xsetwacom,  which  comes
+           with linuxwacom package.
+
+       Option &quot;ToolSerials&quot; &quot;number[,type[,label]][;...]&quot;
+           sets the list of serial numbered devices that need to be hotplugged
+           for a physical device. The &#x27;type&#x27; option may be any of &quot;pen&quot;, &quot;air‐
+           brush&quot;,  &quot;artpen&quot;,  or  &quot;cursor&quot;.  This option is only available on
+           wacom V devices which are capable of reporting a serial number.  To
+           see if a connected device is supported, or to identify which serial
+           number  belongs  to  a device, you need to run the utility program,
+           xsetwacom, that comes with this driver. In layman&#x27;s terms, this op‐
+           tion will add additional X devices for  this  specific  tool&#x27;s  tip
+           (and eraser, if applicable).  This is useful for programs like gimp
+           (which  remembers tools based on the X device) to recall additional
+           drawing tool selections for an airbrush+eraser, art pen, extra pen,
+           etc.
+
+       Option &quot;Threshold&quot; &quot;number&quot;
+           sets the pressure threshold used to generate a button 1  events  of
+           stylus.   The threshold applies to the normalised pressure range of
+           [0..2048].  The default is 27.
+
+       Option &quot;Gesture&quot; &quot;bool&quot;
+           Enable or disable multi-finger in-driver gesture support on the de‐
+           vice. Default: off unless the  tablet  supports  multi-touch.  Note
+           that disabling this option may allow the desktop environment to de‐
+           tect multi-finger gestures instead.
+
+       Option &quot;ZoomDistance&quot; &quot;number&quot;
+           If  Option  &quot;Gesture&quot; is enabled, this option specifies the minimum
+           movement distance before a zoom gesture is recognized.
+
+       Option &quot;ScrollDistance&quot; &quot;number&quot;
+           If Option &quot;Gesture&quot; is enabled, this option specifies  the  minimum
+           movement distance before a scroll gesture is recognized.
+
+       Option &quot;TapTime&quot; &quot;number&quot;
+           If  Option &quot;Gesture&quot; is enabled, this option determines the maximum
+           time of a touch event to be recognized as tap. A press and  release
+           event  shorter  than  TapTime  generates  button  press and release
+           events. Presses longer than TapTime do not generate button  events,
+           only motion events.
+
+       Option &quot;PressureRecalibration&quot; &quot;bool&quot;
+           Allows  to  disable  pressure recalibration. Default: true.  If the
+           initial pressure of a device is != 0 the  driver  recalibrates  the
+           pressure range. This is to account for worn out devices.  The down‐
+           side  is  that  when the user hits the tablet very hard the initial
+           pressure reading may be unequal to zero even for a  perfectly  good
+           pen.  If  the consecutive pressure readings are not higher than the
+           initial pressure by a threshold no button event will be  generated.
+           This option allows to disable the recalibration.
+
+       Option &quot;PanScrollThreshold&quot; &quot;number&quot;
+           Specifies the distance the pen must move (in tablet units) before a
+           scroll event is generated when using the &quot;pan&quot; action. Smaller val‐
+           ues will require less distance and be more sensitive. Larger values
+           will require more distance and be less sensitive.  Default: 1300 or
+           2600  depending  on tablet resolution (corresponds to 13 mm of dis‐
+           tance).
+
+       Option &quot;SmoothPanscrollingEnabled&quot; &quot;bool&quot;
+           Allows to disable smooth panscrolling. Default: true.  If disabled,
+           panscrolling sends legacy button events instead.  This  option  ex‐
+           ists  for  backwards  compatibility with applications that have the
+           number of axes on a device limited to 6.  See section BUGS for more
+           details. This option should not be used unless the user runs one or
+           more applications that do not support more than six axes.
+
+
+TOUCH GESTURES
+   Single finger (1FG)
+       Left click: tap, actual click happens after TapTime period elapses.
+
+       Left click drag: tap to select, quickly (within TapTime  period)  touch
+       selection  again.   Then  drag.  Available on touchpads, e.g. BambooPT,
+       not touchscreens.
+
+   Two finger (2FG)
+       Right click: one finger down + tap second finger
+
+       Vertical scroll: two fingers side by side (in any  orientation)  moving
+       vertically  with  constant  separation initiates a vertical scroll.  By
+       driver default a gesture up results in a scroll down event  (the  docu‐
+       ment  moves up) and a gesture down results in a scroll up event (moving
+       the document down).
+
+       Horizontal scroll: two fingers side by side held at a constant distance
+       moving horizontally initiates a horizontal scroll.  A  gesture  to  the
+       left  results  in  a scroll right event (the document moves left) and a
+       gesture right results in a  scroll  left  event  (moving  the  document
+       right).
+
+       Zoom in: two separated fingers side by side, bring together i.e. pinch.
+
+       Zoom  out: two fingers side by side, spread.  Not all applications sup‐
+       port zoom.
+
+BUGS
+   Pressure range increase leads to unexpected behavior
+       In version 0.34, the driver&#x27;s pressure range increased from 2048  steps
+       to 65536 steps. The pressure axis range is advertised through the X In‐
+       put  Protocol  but  some  applications have the previous pressure range
+       hardcoded and cannot handle pressure values above 2048. This is an  ap‐
+       plication  bug  but for backwards-compatibility with such applications,
+       this driver provides the Pressure2K option to reduce the range to  2048
+       steps.  Note that this setting applies to the device. Once applied, all
+       applications will see the reduced pressure range. It is not possible to
+       provide this setting on a per-application basis.
+
+   Smooth panscrolling exceeds the axis limits
+       In version 1.2.0, the driver&#x27;s support for  smooth  panscrolling  added
+       two  axes to the stylus device, bringing the total axis count to eight.
+       The number of axes is advertised through the X Input Protocol but  some
+       applications (notably GIMP 2.xx) cannot handle more than six axes. This
+       is  an application bug but for backwards-compatibility with such appli‐
+       cations, this driver provides the SmoothPanscrollingEnabled  option  to
+       disable  this  feature  and thus limit the axis count to six. Note that
+       this setting applies to the device. Once applied, the driver  will  not
+       send smooth panscroll events at all. It is not possible to provide this
+       setting on a per-application basis.
+
+SEE ALSO
+       Xorg(1), xorg.conf(5), xorg.conf.d(5), X(7)
+
+       More information is available at https://github.com/linuxwacom/xf86-in‐
+       put-wacom
+
+AUTHORS
+       Peter   Hutterer   &lt;peter.hutterer@who-t.net&gt;,  Ping  Cheng  &lt;pingc@wa‐
+       com.com&gt;, Frederic Lepied &lt;lepied@xfree86.org&gt;, John E. Joganic &lt;jej@j-
+       arkadia.com&gt;, Magnus VigerlÃ¶f &lt;Magnus.Vigerlof@ipbo.se&gt;
+
+X Version 11                xf86-input-wacom 1.2.3                    WACOM(4)
+</pre></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>X11::Protocol::Ext::BIG_REQUESTS(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Protoc...EQUESTS(3pm) User Contributed Perl DocumentationProtoc...EQUESTS(3pm)
+
+NAME
+       X11::Protocol::Ext::BIG_REQUESTS - Perl module for the X11 protocol Big
+       Requests extension
+
+SYNOPSIS
+         use X11::Protocol;
+         $x = X11::Protocol-&gt;new($ENV{&#x27;DISPLAY&#x27;});
+         $x-&gt;init_extension(&#x27;BIG_REQUESTS&#x27;) or die;
+
+DESCRIPTION
+       This module is used by the X11::Protocol module to participate in the
+       &#x27;Big Requests&#x27; extension to the X protocol. Once initialized, it
+       transparently allows requests of more than 262140 (65535 * 4) bytes.
+       The new maximum request length is available as
+       &quot;$x-&gt;maximum_request_length&quot;.
+
+AUTHOR
+       Stephen McCamant &lt;SMCCAM@cpan.org&gt;.
+
+SEE ALSO
+       perl(1), X11::Protocol, Big Requests Extension (X Consortium Standard).
+
+perl v5.34.0                      2022-10-13             Protoc...EQUESTS(3pm)
+</pre></body></html>

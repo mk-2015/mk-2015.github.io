@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>e2tail(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>E2TAIL(1)                        User commands                       E2TAIL(1)
+
+NAME
+       e2tail - a basic version of the tail command for an ext2 filesystem
+
+SYNOPSIS
+       e2tail [options] file
+
+DESCRIPTION
+       The  e2tail(1)  command  implements a basic version of the tail(1) com‐
+       mand.
+
+OPTIONS
+       -n num_lines
+              The number of lines to display
+
+       -f     Output appended data as the file grows.  This  is  inode  depen‐
+              dent, so if the file is renamed, it will keep checking it.
+
+       -F     Output  appended  data as the file grows.  This is file name de‐
+              pendent, so if the file is renamed, it will  check  on  any  new
+              files  with  the  same name as the original.  This is useful for
+              watching log files that may be rotated out  occasionally.   This
+              was  requested  by  a  person in the computer security field for
+              monitoring &#x27;honeypot&#x27; type machines.
+
+       -s sleep_interval
+              The number of seconds to sleep before checking if the  file  has
+              grown while in &#x27;follow&#x27; mode.  The default is 1.
+
+EXAMPLES
+       Check `/var/log/messages` on `/dev/sdc1` every 10 seconds
+
+           e2tail -s 10 -F /dev/sdc1:/var/log/messages
+
+SEE ALSO
+       e2tools(7), e2ln(1), e2ls(1), e2mkdir(1), e2cp(1), e2rm(1), e2mv(1).
+
+AUTHOR
+       The e2tools were written by Keith Sheffield &lt;sheff@pobox.com&gt;.
+
+       This  manual page was written by Lucas Wall &lt;lwall@debian.org&gt;, for the
+       Debian project (but may be used by others).
+
+Linux                             2020-02-05                         E2TAIL(1)
+</pre></body></html>

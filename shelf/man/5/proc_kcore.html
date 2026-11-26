@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>proc_kcore(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>proc_kcore(5)                 File Formats Manual                proc_kcore(5)
+
+NAME
+       /proc/kcore - physical memory
+
+DESCRIPTION
+       /proc/kcore
+              This  file  represents  the physical memory of the system and is
+              stored in the ELF core file format.  With this pseudo-file,  and
+              an unstripped kernel (/usr/src/linux/vmlinux) binary, GDB can be
+              used to examine the current state of any kernel data structures.
+
+              The  total  length  of  the  file is the size of physical memory
+              (RAM) plus 4 KiB.
+
+SEE ALSO
+       proc(5)
+
+Linux man-pages 6.9.1             2024-05-02                     proc_kcore(5)
+</pre></body></html>

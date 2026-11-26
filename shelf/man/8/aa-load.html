@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>aa-load(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>AA-LOAD(8)                         AppArmor                         AA-LOAD(8)
+
+NAME
+       aa-load - load precompiled AppArmor policy from cache location(s)
+
+SYNOPSIS
+       aa-load [options] (cache file|cache dir|cache base dir)+
+
+DESCRIPTION
+       aa-load loads precompiled AppArmor policy from the specified locations.
+
+OPTIONS
+       aa-load accepts the following arguments:
+
+       -f, --force
+           Force  aa-load  to load a policy even if its abi does not match the
+           kernel abi.
+
+       -d, --debug
+           Display debug messages.
+
+       -v, --verbose
+           Display progress and error messages.
+
+       -n, --dry-run
+           Do not actually load the specified policy/policies into the kernel.
+
+       -h, --help
+           Display a brief usage guide.
+
+EXIT STATUS
+       Upon exiting, aa-load returns 0  upon  success  and  1  upon  an  error
+       loading the precompiled policy.
+
+BUGS
+       If     you     find     any     bugs,    please    report    them    at
+       &lt;https://gitlab.com/apparmor/apparmor/-/issues&gt;.
+
+SEE ALSO
+       apparmor(7),       apparmor.d(5),        apparmor_parser(8),        and
+       &lt;https://wiki.apparmor.net&gt;.
+
+AppArmor 4.1.0                    2025-04-10                        AA-LOAD(8)
+</pre></body></html>

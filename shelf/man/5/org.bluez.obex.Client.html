@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.obex.Client(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ.OBEX.CLIENT(5)  Linux System Administration ORG.BLUEZ.OBEX.CLIENT(5)
+
+NAME
+       org.bluez.obex.Client - BlueZ D-Bus OBEX Client API documentation
+
+INTERFACE
+       Service
+              org.bluez.obex
+
+       Interface
+              org.bluez.obex.Client1
+
+       Object path
+              /org/bluez/obex
+
+   Methods
+   object CreateSession(string destination, dict args)
+          Connects  to  the  destination address and then proceed to create an
+          OBEX session object which implements  org.bluez.obex.Session(5)  in‐
+          terface.
+
+          The last parameter is a dictionary to hold optional or type-specific
+          parameters.
+
+          Possible args values:
+
+          string Target
+                 Type of session to be created.
+
+                 Possible values:
+
+                 &quot;ftp&quot;
+
+                 &quot;map&quot;
+
+                 &quot;opp&quot;
+
+                 &quot;pbap&quot;
+
+                 &quot;sync&quot;
+
+                 &quot;bip-avrcp&quot;
+
+          string Source
+                 Local address to be used.
+
+          byte Channel
+                 Channel to be used.
+
+          uint16 PSM
+                 L2CAP PSM to be used.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Failed
+
+   void RemoveSession(object session)
+          Disconnects  and  removes  session  previously created by CreateSes‐
+          sion() aborting any pending transfers.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.NotAuthorized
+
+BlueZ                            October 2023         ORG.BLUEZ.OBEX.CLIENT(5)
+</pre></body></html>

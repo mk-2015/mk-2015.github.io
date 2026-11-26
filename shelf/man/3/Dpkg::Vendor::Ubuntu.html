@@ -1,0 +1,23 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Vendor::Ubuntu(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Vendor::Ubuntu(3perl)      libdpkg-perl      Dpkg::Vendor::Ubuntu(3perl)
+
+NAME
+       Dpkg::Vendor::Ubuntu - Ubuntu vendor class
+
+DESCRIPTION
+       This vendor class customizes the behavior of dpkg scripts for Ubuntu
+       specific behavior and policies.
+
+       Note: This is a private module, its API can change at any time.
+
+PUBLIC FUNCTIONS
+       $bugs = Dpkg::Vendor::Ubuntu::find_launchpad_closes($changes)
+           Takes  one  string  as  argument  and  finds &quot;LP: #123456, #654321&quot;
+           statements, which are references to bugs on Launchpad. Returns  all
+           closed bug numbers in an array reference.
+
+CHANGES
+   Version 0.xx
+       This is a semi-private module. Only documented functions are public.
+
+1.22.22                           2026-03-06       Dpkg::Vendor::Ubuntu(3perl)
+</pre></body></html>

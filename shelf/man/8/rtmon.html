@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>rtmon(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>RTMON(8)                    System Manager&#x27;s Manual                   RTMON(8)
+
+NAME
+       rtmon - listens to and monitors RTnetlink
+
+SYNOPSIS
+       rtmon [ OPTIONS ] file FILE [ all | OBJECTS ]
+
+       OPTIONS := { f[amily] { inet | inet6 | link | help } | -4 | -6 | -0 |
+               -V[ersion] }
+
+       OBJECTS := [ link ] [ address ] [ route ]
+
+
+DESCRIPTION
+       This manual page documents briefly the rtmon command.
+
+       rtmon listens on netlink socket and monitors routing table changes.
+
+       rtmon can be started before the first network configuration command is
+       issued.  For example if you insert:
+
+       rtmon file /var/log/rtmon.log
+
+       in a startup script, you will be able to view the full history later.
+       Certainly, it is possible to start rtmon at any time. It prepends the
+       history with the state snapshot dumped at the moment of starting.
+
+
+OPTIONS
+       rtmon supports the following options:
+
+       -Version
+              Print version and exit.
+
+       help   Show summary of options.
+
+       file FILE [ all | OBJECTS ]
+              Log  output to FILE. OBJECTS is the list of object types that we
+              want to monitor. It may contain &#x27;link&#x27;, &#x27;address&#x27;,  &#x27;route&#x27;  and
+              &#x27;all&#x27;. &#x27;link&#x27; specifies the network device, &#x27;address&#x27; the proto‐
+              col  (IP or IPv6) address on a device, &#x27;route&#x27; the routing table
+              entry and &#x27;all&#x27; does what the name says.
+
+       -family [ inet | inet6 | link | help ]
+              Specify protocol family. &#x27;inet&#x27; is IPv4, &#x27;inet6&#x27; is IPv6, &#x27;link&#x27;
+              means that no networking protocol is involved and &#x27;help&#x27;  prints
+              usage information.
+
+       -4     Use IPv4. Shortcut for -family inet.
+
+       -6     Use IPv6. Shortcut for -family inet6.
+
+       -0     Use  a special family identifier meaning that no networking pro‐
+              tocol is involved. Shortcut for -family link.
+
+USAGE EXAMPLES
+       # rtmon file /var/log/rtmon.log
+              Log to file /var/log/rtmon.log, then run:
+
+       # ip monitor file /var/log/rtmon.log
+              to display logged output from file.
+
+SEE ALSO
+       ip(8) ip-monitor(8)
+
+AUTHOR
+       rtmon was written by Alexey Kuznetsov &lt;kuznet@ms2.inr.ac.ru&gt;.
+
+       This manual page was written by Michael Prokop &lt;mika@grml.org&gt;, for the
+       Debian project (but may be used by others).
+
+                                                                      RTMON(8)
+</pre></body></html>

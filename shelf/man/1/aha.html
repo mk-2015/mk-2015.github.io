@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>aha(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>reads  ECMA-48 SGR-colored text from the standard input, converts
+it to colored HTML and writes it to the standard output.  The op‐
+tions are as follows: Style HTML output to use a black background
+with white text.  Adds the given css to the output. In fact  just
+adds &lt;link rel=&quot;stylesheet&quot; href=&quot; &quot; /&gt; to the header.  Read from
+instead  of from the standard input.  Print help for to the stan‐
+dard output.  Use the character encoding instead of UTF-8 for the
+output, where is a number from 1-16.  Use a fix for inputs  using
+control  sequences  to change the cursor position.  This is a hot
+fix, thus it may not work with every program.  Uses the
+ code for the language.  Do not enclose HTML output in and  tags.
+Style HTML output to use a pink background.  Ignore all carriage-
+returns (ASCII sign 13, \r) which may lead to double new lines in
+html.   Use  a stylesheet instead of inline styles.  Set the HTML
+document title to instead of or the filename.  Print version num‐
+ber of to the standard output and exit.  Wrap long lines  in  the
+html  output.  Works with CSS3 supporting browsers and many older
+ones.  Don&#x27;t use  doctype  xml  but  html  (may  useful  for  old
+browsers  like  IE)  Sets  the style used in the element to after
+styles set by other parameters.  Create an HTML file with a black
+background, a custom title and a  larger  font-size  using  help:
+Create  an  HTML file with a white background using the output of
+Create an HTML file with a black background from  the  output  of
+You have to use option due the other new-line-commands htop uses:
+Create  an HTML file from the output of this man page.  uses bold
+and underline formatting from which converts to SGR: The  utility
+is  maintained  by  Blinking  text using the HTML tag and the css
+property have been deprecated on modern browsers, thus  requiring
+the use of option and redefining the css class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

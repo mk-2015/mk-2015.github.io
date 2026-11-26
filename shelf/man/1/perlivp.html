@@ -1,0 +1,90 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>perlivp(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>PERLIVP(1)             Perl Programmers Reference Guide             PERLIVP(1)
+
+NAME
+       perlivp - Perl Installation Verification Procedure
+
+SYNOPSIS
+       perlivp [-p] [-v] [-h]
+
+DESCRIPTION
+       The perlivp program is set up at Perl source code build time to test
+       the Perl version it was built under.  It can be used after running:
+
+           make install
+
+       (or your platform&#x27;s equivalent procedure) to verify that perl and its
+       libraries have been installed correctly.  A correct installation is
+       verified by output that looks like:
+
+           ok 1
+           ok 2
+
+       etc.
+
+OPTIONS
+       -h help
+            Prints out a brief help message.
+
+       -p print preface
+            Gives a description of each test prior to performing it.
+
+       -v verbose
+            Gives more detailed information about each test, after it has been
+            performed.   Note  that  any  failed tests ought to print out some
+            extra information whether or not -v is thrown.
+
+DIAGNOSTICS
+       •   print &quot;# Perl binary &#x27;$perlpath&#x27; does not appear executable.\n&quot;;
+
+           Likely to occur for a perl binary that was not properly  installed.
+           Correct by conducting a proper installation.
+
+       •   print &quot;# Perl version &#x27;$]&#x27; installed, expected $ivp_VERSION.\n&quot;;
+
+           Likely  to  occur  for  a  perl  that  was  not properly installed.
+           Correct by conducting a proper installation.
+
+       •   print &quot;# Perl \@INC directory &#x27;$_&#x27; does not appear to exist.\n&quot;;
+
+           Likely to occur for a perl  library  tree  that  was  not  properly
+           installed.  Correct by conducting a proper installation.
+
+       •   print  &quot;#  Needed  module  &#x27;$_&#x27;  does  not  appear  to  be properly
+           installed.\n&quot;;
+
+           One of the two modules that is used by perlivp was not  present  in
+           the  installation.   This  is  a  serious  error since it adversely
+           affects perlivp&#x27;s ability to function.  You may be able to  correct
+           this by performing a proper perl installation.
+
+       •   print  &quot;#  Required  module  &#x27;$_&#x27;  does  not  appear to be properly
+           installed.\n&quot;;
+
+           An attempt to &quot;eval &quot;require $module&quot;&quot; failed, even though the list
+           of  extensions  indicated  that  it  should  succeed.   Correct  by
+           conducting a proper installation.
+
+       •   print &quot;# Unnecessary module &#x27;bLuRfle&#x27; appears to be installed.\n&quot;;
+
+           This  test  not  coming out ok could indicate that you have in fact
+           installed  a  bLuRfle.pm  module  or  that  the  &quot;eval  &quot;   require
+           \&quot;$module_name.pm\&quot;;  &quot;&quot; test may give misleading results with your
+           installation of perl.  If yours is the latter case then please  let
+           the author know.
+
+       •   print  &quot;#  file&quot;,+($#missing  ==  0)  ?  &#x27;&#x27;  :  &#x27;s&#x27;,&quot;  missing from
+           installation:\n&quot;;
+
+           One or  more  files  turned  up  missing  according  to  a  run  of
+           &quot;ExtUtils::Installed   -&gt;   validate()&quot;   over  your  installation.
+           Correct by conducting a proper installation.
+
+       For further information on how to conduct a proper installation consult
+       the INSTALL file that comes with the perl source and  the  README  file
+       for your platform.
+
+AUTHOR
+       Peter Prymmer
+
+perl v5.40.1                      2026-08-30                        PERLIVP(1)
+</pre></body></html>

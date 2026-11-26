@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-client-device(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...t-device(7) Miscellaneous Information Manual libpipew...t-device(7)
+
+NAME
+       libpipewire-module-client-device - Client Device
+
+DESCRIPTION
+       Allow clients to export devices to the PipeWire daemon.
+
+       This module creates an export type for the SPA_TYPE_INTERFACE_Device
+       interface.
+
+       With pw_core_export(), objects of this type can be exported to the
+       PipeWire server. All actions performed on the device locally will be
+       visible to connecteced clients.
+
+       In some cases, it is possible to use this factory directly. With
+       pw_core_create_object() on the client-device factory will result in a
+       SPA_TYPE_INTERFACE_Device proxy that can be used to control the server
+       side created Device Impl.
+
+       Schematically, the client side Device is wrapped in the ClientDevice
+       proxy and unwrapped by the server side resource so that all actions on
+       the client side device are reflected on the server side device and
+       server side actions are reflected in the client.
+
+         client side proxy                            server side resource
+       .------------------------------.            .----------------------------------.
+       | SPA_TYPE_INTERFACE_Device    |            |  PW_TYPE_INTERFACE_Device        |
+       |                              |  IPC       |.--------------------------------.|
+       |                              | -----&gt;     || SPA_TYPE_INTERFACE_Device      ||
+       |                              |            |&#x27;--------------------------------&#x27;|
+
+MODULE NAME
+       libpipewire-module-client-device
+
+MODULE OPTIONS
+       This module has no options.
+
+PROPERTIES FOR THE CREATE_OBJECT CALL
+       All properties are passed directly to the pw_context_create_device()
+       call.
+
+EXAMPLE CONFIGURATION
+       The module is usually added to the config file of the main PipeWire
+       daemon and the clients.
+
+       context.modules = [
+       { name = libpipewire-module-client-device }
+       ]
+
+SEE ALSO
+       • module-spa-device-factory: make nodes from a factory
+
+PipeWire                             1.4.2              libpipew...t-device(7)
+</pre></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>mbsinit(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>mbsinit(3)                 Library Functions Manual                 mbsinit(3)
+
+NAME
+       mbsinit - test for initial shift state
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wchar.h&gt;
+
+       int mbsinit(const mbstate_t *ps);
+
+DESCRIPTION
+       The  function  mbsinit()  tests  whether  *ps corresponds to an initial
+       state.
+
+RETURN VALUE
+       mbsinit() returns nonzero if *ps is an initial state, or if ps is NULL.
+       Otherwise, it returns 0.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       mbsinit() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+NOTES
+       The behavior of mbsinit() depends on the LC_CTYPE category of the
+       current locale.
+
+SEE ALSO
+       mbstate_t(3type), mbrlen(3), mbrtowc(3), mbsrtowcs(3), wcrtomb(3),
+       wcsrtombs(3)
+
+Linux man-pages 6.9.1             2024-05-03                        mbsinit(3)
+</pre></body></html>

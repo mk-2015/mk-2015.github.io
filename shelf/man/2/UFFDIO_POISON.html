@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UFFDIO_POISON(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>UFFDIO_POISON(2const)                                    UFFDIO_POISON(2const)
+
+NAME
+       UFFDIO_POISON - mark an address range as &quot;poisoned&quot;
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, UFFDIO_POISON, ...);
+
+       #include &lt;linux/userfaultfd.h&gt;
+
+       struct uffdio_poison {
+            struct uffdio_range  range;
+                              /* Range to install poison PTE markers in */
+            __u64   mode;     /* Flags controlling the behavior of poison */
+            __s64   updated;  /* Number of bytes poisoned, or negated error */
+       };
+
+DESCRIPTION
+       Mark  an  address  range  as  &quot;poisoned&quot;.  Future accesses to these ad‐
+       dresses will raise a SIGBUS signal.  Unlike MADV_HWPOISON this works by
+       installing page table entries, rather than &quot;really&quot; poisoning  the  un‐
+       derlying  physical  pages.   This means it only affects this particular
+       address space.
+
+       The following value may be bitwise ORed in mode to change the  behavior
+       of the UFFDIO_POISON operation:
+
+       UFFDIO_POISON_MODE_DONTWAKE
+              Do not wake up the thread that waits for page-fault resolution.
+
+       The  updated  field is used by the kernel to return the number of bytes
+       that were actually poisoned, or an error in the  same  manner  as  UFF‐
+       DIO_COPY.  If the value returned in the updated field doesn&#x27;t match the
+       value that was specified in range.len, the operation fails with the er‐
+       ror  EAGAIN.   The  updated field is output-only; it is not read by the
+       UFFDIO_POISON operation.
+
+RETURN VALUE
+       On success, 0 is returned.  In this case, the entire area was poisoned.
+
+       On error, -1 is returned and errno is set to indicate the error.
+
+ERRORS
+       EAGAIN The number of bytes mapped (i.e., the value returned in the  up‐
+              dated  field) does not equal the value that was specified in the
+              range.len field.
+
+       EINVAL Either range.start or range.len was not a multiple of the system
+              page size; or range.len was zero; or the range specified was in‐
+              valid.
+
+       EINVAL An invalid bit was specified in the mode field.
+
+       EEXIST One or more pages were already mapped in the given range.
+
+       ENOENT The faulting process has changed its virtual memory  layout  si‐
+              multaneously with an outstanding UFFDIO_POISON operation.
+
+       ENOMEM Allocating memory for page table entries failed.
+
+       ESRCH  The  faulting  process has exited at the time of a UFFDIO_POISON
+              operation.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 6.6.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), ioctl_userfaultfd(2), userfaultfd(2)
+
+       linux.git/Documentation/admin-guide/mm/userfaultfd.rst
+
+Linux man-pages 6.9.1             2024-06-17             UFFDIO_POISON(2const)
+</pre></body></html>

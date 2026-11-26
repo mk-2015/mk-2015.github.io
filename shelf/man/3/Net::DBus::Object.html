@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net::DBus::Object(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Net::D...:Object(3pm) User Contributed Perl DocumentationNet::D...:Object(3pm)
+
+NAME
+       Net::DBus::Object - Implement objects to export to the bus
+
+SYNOPSIS
+         # Connecting an object to the bus, under a service
+         package main;
+
+         use Net::DBus;
+
+         # Attach to the bus
+         my $bus = Net::DBus-&gt;find;
+
+         # Acquire a service &#x27;org.demo.Hello&#x27;
+         my $service = $bus-&gt;export_service(&quot;org.demo.Hello&quot;);
+
+         # Export our object within the service
+         my $object = Demo::HelloWorld-&gt;new($service);
+
+         ....rest of program...
+
+         # Define a new package for the object we&#x27;re going
+         # to export
+         package Demo::HelloWorld;
+
+         # Specify the main interface provided by our object
+         use Net::DBus::Exporter qw(org.example.demo.Greeter);
+
+         # We&#x27;re going to be a DBus object
+         use base qw(Net::DBus::Object);
+
+         # Export a &#x27;Greeting&#x27; signal taking a stringl string parameter
+         dbus_signal(&quot;Greeting&quot;, [&quot;string&quot;]);
+
+         # Export &#x27;Hello&#x27; as a method accepting a single string
+         # parameter, and returning a single string value
+         dbus_method(&quot;Hello&quot;, [&quot;string&quot;], [&quot;string&quot;]);
+
+         sub new {
+             my $class = shift;
+             my $service = shift;
+             my $self = $class-&gt;SUPER::new($service, &quot;/org/demo/HelloWorld&quot;);
+
+             bless $self, $class;
+
+             return $self;
+         }
+
+         sub Hello {
+           my $self = shift;
+           my $name = shift;
+
+           $self-&gt;emit_signal(&quot;Greeting&quot;, &quot;Hello $name&quot;);
+           return &quot;Said hello to $name&quot;;
+         }
+
+         # Export &#x27;Goodbye&#x27; as a method accepting a single string
+         # parameter, and returning a single string, but put it
+         # in the &#x27;org.exaple.demo.Farewell&#x27; interface
+
+         dbus_method(&quot;Goodbye&quot;, [&quot;string&quot;], [&quot;string&quot;], &quot;org.example.demo.Farewell&quot;);
+
+         sub Goodbye {
+           my $self = shift;
+           my $name = shift;
+
+           $self-&gt;emit_signal(&quot;Greeting&quot;, &quot;Goodbye $name&quot;);
+           return &quot;Said goodbye to $name&quot;;
+         }
+
+DESCRIPTION
+       This the base for implementing objects which are directly exported to
+       the bus. The methods implemented in a subclass are mapped to methods on
+       the bus. By using this class, an application is directly tieing the RPC
+       functionality into its object model. Applications may thus prefer to
+       use the &quot;Net::DBus::ProxyObject&quot; class which allows the RPC
+       functionality to be maintained separately from the core object model,
+       by proxying RPC method calls.
+
+METHODS
+       my $object = Net::DBus::Object-&gt;new($service, $path)
+           This  creates  a  new  DBus object with an path of $path registered
+           within the service $service. The $path parameter should be a string
+           complying with the usual DBus requirements for object paths,  while
+           the $service parameter should be an instance of Net::DBus::Service.
+           The  latter  is  typically obtained by calling the &quot;export_service&quot;
+           method on the Net::DBus object.
+
+       my $object = Net::DBus::Object-&gt;new($parentobj, $subpath)
+           This creates a new DBus child  object  with  an  path  of  $subpath
+           relative to its parent $parentobj. The $subpath parameter should be
+           a  string  complying  with  the  usual DBus requirements for object
+           paths, while the $parentobj parameter  should  be  an  instance  of
+           Net::DBus::BaseObject or a subclass.
+
+AUTHOR
+       Daniel P. Berrange
+
+COPYRIGHT
+       Copyright (C) 2005-2011 Daniel P. Berrange
+
+SEE ALSO
+       Net::DBus,          Net::DBus::Service,          Net::DBus::BaseObject,
+       Net::DBus::ProxyObject, Net::DBus::Exporter, Net::DBus::RemoteObject
+
+perl v5.40.0                      2024-10-15             Net::D...:Object(3pm)
+</pre></body></html>

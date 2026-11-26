@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>selinux_restorecon_set_exclude_list(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>selinux_r...clude_list(3)  SELinux API documentation selinux_r...clude_list(3)
+
+NAME
+       selinux_restorecon_set_exclude_list - set list of directories to be ex‐
+       cluded from relabeling.
+
+SYNOPSIS
+       #include &lt;selinux/restorecon.h&gt;
+
+       void selinux_restorecon_set_exclude_list(const char **exclude_list);
+
+DESCRIPTION
+       selinux_restorecon_set_exclude_list() passes to selinux_restorecon(3) a
+       pointer  containing  a  NULL terminated list of one or more directories
+       that are not to be relabeled in exclude_list.
+
+       selinux_restorecon_set_exclude_list()   must   be   called   prior   to
+       selinux_restorecon(3).
+
+SEE ALSO
+       selinux_restorecon(3),
+       selinux_restorecon_set_sehandle(3),
+       selinux_restorecon_default_handle(3),
+       selinux_restorecon_set_alt_rootpath(3),
+       selinux_restorecon_xattr(3)
+
+Security Enhanced Linux           20 Oct 2015        selinux_r...clude_list(3)
+</pre></body></html>

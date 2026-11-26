@@ -1,0 +1,90 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Vendor(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Vendor(3perl)              libdpkg-perl              Dpkg::Vendor(3perl)
+
+NAME
+       Dpkg::Vendor - get access to some vendor specific information
+
+DESCRIPTION
+       The files in $Dpkg::CONFDIR/origins/ can provide information about
+       various vendors who are providing Debian packages. Currently those
+       files look like this:
+
+         Vendor: Debian
+         Vendor-URL: https://www.debian.org/
+         Bugs: debbugs://bugs.debian.org
+
+       If the vendor derives from another vendor, the file should document the
+       relationship by listing the base distribution in the Parent field:
+
+         Parent: Debian
+
+       The file should be named according to the vendor name. The usual
+       convention is to name the vendor file using the vendor name in all
+       lowercase, but some variation is permitted. Namely, spaces are mapped
+       to dashes (&#x27;-&#x27;), and the file can have the same casing as the Vendor
+       field, or it can be capitalized.
+
+FUNCTIONS
+       $dir = get_vendor_dir()
+           Returns  the  current dpkg origins directory name, where the vendor
+           files are stored.
+
+       $fields = get_vendor_info([$name])
+           Returns a Dpkg::Control object with the information parsed from the
+           corresponding vendor file in $Dpkg::CONFDIR/origins/. If  $name  is
+           omitted,   it  will  use  $Dpkg::CONFDIR/origins/default  which  is
+           supposed to be a symlink to the vendor of the  currently  installed
+           operating  system.  Returns  undef if there&#x27;s no file for the given
+           vendor.
+
+       $name = get_vendor_file([$name])
+           Check if there&#x27;s a file for the given vendor and returns its name.
+
+           The vendor filename will  be  derived  from  the  vendor  name,  by
+           replacing  any  number  of  non-alphanumeric  characters  (that  is
+           [^A-Za-z0-9]) into &quot;-&quot;, then the resulting name will  be  tried  in
+           sequence  by  lower-casing  it, keeping it as is, lower-casing then
+           capitalizing it, and capitalizing it.
+
+       $name = get_current_vendor()
+           Returns the name of the current vendor. If DEB_VENDOR  is  set,  it
+           uses   that   first,   otherwise   it   falls   back   to   parsing
+           $Dpkg::CONFDIR/origins/default.  If that  file  doesn&#x27;t  exist,  it
+           returns undef.
+
+       $object = get_vendor_object($name)
+           Return  the Dpkg::Vendor::* object of the corresponding vendor.  If
+           $name is omitted, return the object of the current vendor.   If  no
+           vendor  can  be  identified,  then return the Dpkg::Vendor::Default
+           object.
+
+           The module name will be derived from the vendor name, by  splitting
+           parts   around  groups  of  non  alphanumeric  character  (that  is
+           [^A-Za-z0-9]) separators, by either  capitalizing  or  lower-casing
+           and  capitalizing  each  part  and  then  joining  them without the
+           separators. So the expected casing is based on  the  one  from  the
+           Vendor field in the origins file.
+
+       run_vendor_hook($hookid, @params)
+           Run a hook implemented by the current vendor object.
+
+CHANGES
+   Version 1.03 (dpkg 1.22.12)
+       Obsolete  behavior: get_vendor_file() and get_vendor_object() no longer
+       support the deprecated behavior from 1.02.
+
+   Version 1.02 (dpkg 1.21.10)
+       Deprecated behavior: get_vendor_file() loading  vendor  files  with  no
+       special characters remapping. get_vendor_object() loading vendor module
+       names with no special character stripping.
+
+   Version 1.01 (dpkg 1.17.0)
+       New function: get_vendor_dir().
+
+   Version 1.00 (dpkg 1.16.1)
+       Mark the module as public.
+
+SEE ALSO
+       deb-origin(5).
+
+1.22.22                           2026-03-06               Dpkg::Vendor(3perl)
+</pre></body></html>

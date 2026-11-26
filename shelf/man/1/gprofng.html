@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>gprofng(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GPROFNG(1)                       User Commands                      GPROFNG(1)
+
+NAME
+       gprofng - The next generation GNU application profiling tool
+
+SYNOPSIS
+       gprofng [option(s)] action [qualifier] [option(s)] target [options]
+
+DESCRIPTION
+       This is the driver for the gprofng tools suite to gather and analyze
+       performance data.
+
+       The driver executes the action specified.  An example of an action is
+       collect to collect performance data.  Depending on the action, a
+       qualifier may be needed to further define the command.  The last item
+       is the target that the command applies to.
+
+       There are three places where options are supported.  The driver
+       supports options.  These can be found below.  The action, possibly in
+       combination with the qualifier also supports options.  A description of
+       these can be found in the man page for the command.  Any options needed
+       to execute the target command should follow the target name.
+
+       For example, to collect performance data for an application called
+       a.out and store the results in experiment directory mydata.er, the
+       following command may be used:
+
+               $ gprofng collect app -o mydata.er a.out -t 2
+
+       In this example, the action is collect, the qualifier is app, the
+       single argument to the command is &quot;-o mydata.er&quot; and the target is
+       a.out.  The target command is invoked with the -t 2 option.
+
+       If gprofng is executed without any additional option, action, or
+       target, a usage overview is printed.
+
+OPTIONS
+       --version
+           Print the version number and exit.
+
+       --help
+           Print usage information and exit.
+
+ENVIRONMENT
+       The following environment variables are supported:
+
+       GPROFNG_MAX_CALL_STACK_DEPTH
+           Set the depth of the call stack (default is 256).
+
+       GPROFNG_USE_JAVA_OPTIONS
+           May be set when profiling a C/C++ application that uses dlopen() to
+           execute Java code.
+
+       GPROFNG_ALLOW_CORE_DUMP
+           Set this variable to allow a core file to be generated; otherwise
+           an error report is created on /tmp.
+
+       GPROFNG_ARCHIVE
+           Use this variable to define the settings for automatic archiving
+           upon experiment recording completion.
+
+       GPROFNG_ARCHIVE_COMMON_DIR
+           Set this variable to the location of the common archive.
+
+       GPROFNG_JAVA_MAX_CALL_STACK_DEPTH
+           Set the depth of the Java call stack; the default is 256; set to 0
+           to disable capturing of call stacks.
+
+       GPROFNG_JAVA_NATIVE_MAX_CALL_STACK_DEPTH
+           Set the depth of the Java native call stack; the default is 256;
+           set to 0 to disable capturing of call stacks (JNI and assembly call
+           stacks are not captured).
+
+       GPROFNG_SYSCONFDIR
+           Set the path to the gprofng.rc configuration file.  By default,
+           this file is placed in the etc subdirectory of the binutils
+           installation directory.  In case an RPM has been used for the
+           installation, this file is in directory /etc.
+
+           When building and installing from the source, the user can set the
+           path to this configuration file to a non-default location.  If this
+           is the case, the user may set the &quot;GPROFNG_SYSCONFDIR&quot; environment
+           variable to point to this location.
+
+           Otherwise, the gprofng display text, gprofng display src, and
+           gprofng archive tools cannot find this file.
+
+NOTES
+       The gprofng driver supports the following commands.
+
+       Collect performance data:
+
+       &quot;gprofng collect app&quot;
+           Collect application performance data.
+
+       Display the performance results:
+
+       &quot;gprofng display text&quot;
+           Display the performance data in ASCII format.
+
+       &quot;gprofng display html&quot;
+           Generate an HTML file from one or more experiments.
+
+       &quot;gprofng display gui&quot;
+           Start the GUI.  Note that this tool is not available by default and
+           needs to be installed seperately.
+
+       Miscellaneous commands:
+
+       &quot;gprofng display src&quot;
+           Display source or disassembly with compiler annotations.
+
+       &quot;gprofng archive&quot;
+           Include binaries and source code in an experiment directory.
+
+       It is also possible to invoke the lower level commands directly, but
+       since these are subject to change, in particular the options, we
+       recommend to use the driver.
+
+       The gprofng GUI is an optional tool that provides a graphical interface
+       for &quot;gprofng&quot;.  It is easy to use and supports many views into the
+       performance data.  For those interested in this GUI, we recommend to
+       search for &quot;gprofng-gui&quot; how to obtain, install and use it.
+
+SEE ALSO
+       gprofng-archive(1), gprofng-collect-app(1), gprofng-display-html(1),
+       gprofng-display-src(1), gprofng-display-text(1)
+
+       Each gprofng command also supports the --help option.  This lists the
+       options and a short description for each option.
+
+       For example this displays the options supported on the gprofng collect
+       app command:
+
+               $ gprofng collect app --help
+
+       The user guide for gprofng is maintained as a Texinfo manual.  If the
+       info and gprofng programs are correctly installed, the command info
+       gprofng should give access to this document.
+
+COPYRIGHT
+       Copyright (c) 2022-2025 Free Software Foundation, Inc.
+
+       Permission is granted to copy, distribute and/or modify this document
+       under the terms of the GNU Free Documentation License, Version 1.3 or
+       any later version published by the Free Software Foundation; with no
+       Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+       Texts.  A copy of the license is included in the section entitled &quot;GNU
+       Free Documentation License&quot;.
+
+binutils-2.44                     2025-03-03                        GPROFNG(1)
+</pre></body></html>

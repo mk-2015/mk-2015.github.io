@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_SECUREBITS(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_SECUREBITS(2const)                            PR_SET_SECUREBITS(2const)
+
+NAME
+       PR_SET_SECUREBITS - set the &quot;securebits&quot; flags of the calling thread
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_SECUREBITS, unsigned long flags);
+
+DESCRIPTION
+       Set  the &quot;securebits&quot; flags of the calling thread to the value supplied
+       in flags.  See capabilities(7).
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL flags is not a valid value.
+
+       EPERM  op  is  PR_SET_SECUREBITS,  and  the  caller  does  not have the
+              CAP_SETPCAP capability, or tried to unset a  &quot;locked&quot;  flag,  or
+              tried to set a flag whose corresponding locked flag was set (see
+              capabilities(7)).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.26.
+
+SEE ALSO
+       prctl(2), PR_GET_SECUREBITS(2const), capabilities(7)
+
+Linux man-pages 6.9.1             2024-06-02         PR_SET_SECUREBITS(2const)
+</pre></body></html>

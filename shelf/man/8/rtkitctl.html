@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>rtkitctl(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>RTKITCTL(8)                 System Manager&#x27;s Manual                RTKITCTL(8)
+
+NAME
+       rtkitctl - Realtime Policy and Watchdog daemon control
+
+SYNOPSIS
+       rtkitctl [options]
+
+DESCRIPTION
+       RealtimeKit  is a D-Bus system service that changes the scheduling pol‐
+       icy of user processes/threads to  SCHED_RR  (i.e.  realtime  scheduling
+       mode)  on  request.  It is intended to be used as a secure mechanism to
+       allow real-time scheduling to be used by normal user processes.
+
+OPTIONS
+       -h, --help
+              Show a summary of options.
+
+       --version
+              Show version.
+
+       --reset-known
+              Reset real-time status of known threads.
+
+       --reset-all
+              Reset real-time status of all threads.
+
+       --start
+              Start RealtimeKit if it is not running already.
+
+       -k, --exit
+              Terminate running RealtimeKit daemon.
+
+AUTHOR
+       RealtimeKit was written by Lennart Poettering &lt;lennart@poettering.net&gt;.
+
+                                 July 1, 2009                      RTKITCTL(8)
+</pre></body></html>

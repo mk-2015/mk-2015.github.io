@@ -1,0 +1,245 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Balloon(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Balloon(3pm)          User Contributed Perl Documentation         Balloon(3pm)
+
+NAME
+       Tk::Balloon - pop up help balloons.
+
+SYNOPSIS
+           use Tk::Balloon;
+           ...
+           $b = $top-&gt;Balloon(-statusbar =&gt; $status_bar_widget);
+
+           # Normal Balloon:
+           $b-&gt;attach($widget,
+                      -balloonmsg =&gt; &quot;Balloon help message&quot;,
+                      -statusmsg =&gt; &quot;Status bar message&quot;);
+
+           # Balloon attached to entries in a menu widget:
+           $b-&gt;attach($menu, -state =&gt; &#x27;status&#x27;,
+                             -msg =&gt; [&#x27;first menu entry&#x27;,
+                                      &#x27;second menu entry&#x27;,
+                                      ...
+                                     ],
+                     );
+
+           # Balloon attached to individual items in a canvas widget:
+           $b-&gt;attach($canvas, -balloonposition =&gt; &#x27;mouse&#x27;,
+                               -msg =&gt; {&#x27;item1&#x27; =&gt; &#x27;msg1&#x27;,
+                                        &#x27;tag2&#x27;  =&gt; &#x27;msg2&#x27;,
+                                         ...
+                                       },
+                     );
+
+           # Balloon attached to items in a listbox widget:
+           $b-&gt;attach($listbox, -balloonposition =&gt; &#x27;mouse&#x27;,
+                                -msg =&gt; [&#x27;first listbox element&#x27;,
+                                         &#x27;2nd listbox element&#x27;,
+                                         ...
+                                        ],
+                     );
+
+DESCRIPTION
+       Balloon provides the framework to create and attach help balloons to
+       various widgets so that when the mouse pauses over the widget for more
+       than a specified amount of time, a help balloon is popped up.
+
+   Balloons and Menus or Listboxes
+       If the balloon is attached to a Menu or Listbox widget and the message
+       arguments are array references, then each element in the array will be
+       the message corresponding to a menu entry or listbox element.  The
+       balloon message will then be shown for the entry which the mouse pauses
+       over. Otherwise it is assumed that the balloon is to be attached to the
+       Menu or Listbox as a whole. You can have separate status and balloon
+       messages just like normal balloons.
+
+   Balloons and Canvases
+       If the balloon is attached to a Canvas widget and the message arguments
+       are hash references, then each hash key should correspond to a canvas
+       item ID or tag and the associated value will correspond to the message
+       for that canvas item. The balloon message will then be shown for the
+       current item (the one at the position of the mouse). Otherwise it is
+       assumed that the balloon is to be attached to the Canvas as a whole.
+       You can have separate status and balloon messages just like normal
+       balloons.
+
+   Balloons and HLists
+       If the balloon is attached to a HList widget and the message arguments
+       are hash references, then each hash key should correspond to a HList
+       path and the associated value will correspond to the message for that
+       HList item. The balloon message will then be shown for the current item
+       (the one at the position of the mouse). Otherwise it is assumed that
+       the balloon is to be attached to the HList as a whole.  You can have
+       separate status and balloon messages just like normal balloons.
+
+   Balloon Position
+       By default, the balloon pops up at the lower right side of the client.
+       If it would extend outside the lower screen border, it&#x27;s positioned at
+       the upper right side. If it would extend outside the right screen
+       border it&#x27;s shown on the lower left side of the client. If it would
+       extend outside both the lower and the right screen border, it&#x27;s
+       positioned at the upper left side of the client. Thus, the little arrow
+       always points to the attached client.
+
+OPTIONS
+       Balloon accepts all of the options that the Frame widget accepts. In
+       addition, the following options are also recognized.
+
+       -initwait
+           Specifies  the  amount  of  time  to  wait  without activity before
+           popping up a help balloon. Specified in milliseconds.  Defaults  to
+           350  milliseconds.  This  applies to both the popped up balloon and
+           the status bar message.
+
+       -state
+           Can be one of &#x27;balloon&#x27;, &#x27;status&#x27;, &#x27;both&#x27; or &#x27;none&#x27; indicating that
+           the help balloon, status bar help, both or none respectively should
+           be activated when the mouse pauses over the client widget.  Default
+           is &#x27;both&#x27;.
+
+       -statusbar
+           Specifies  the  widget  used  to  display  the status message. This
+           widget should accept the -text option and is typically a Label.  If
+           the  widget  accepts  the  -textvariable  option and that option is
+           defined then it is used instead of the -text option.
+
+       -balloonposition
+           Can be one of &#x27;widget&#x27; or &#x27;mouse&#x27;. It controls  where  the  balloon
+           will  popup.  &#x27;widget&#x27;  makes the balloon appear at the lower right
+           corner of the widget it is attached to (default), and &#x27;mouse&#x27; makes
+           the balloon appear below and to the  right  of  the  current  mouse
+           position.
+
+       -postcommand
+           This  option  takes  a CODE reference which will be executed before
+           the balloon and statusbar messages are displayed and should  return
+           a  true  or false value to indicate whether you want the balloon to
+           be displayed or not. This also lets you control where  the  balloon
+           is  positioned  by  returning  a  true  value  that  looks like X,Y
+           (matches  this  regular  expression:  &quot;/^(\d+),(\d+)$/&quot;).  If   the
+           postcommand  returns  a  value  that  matches  that  re  then those
+           coordinates will be used as  the  position  to  post  the  balloon.
+           Warning:  this  subroutine  should  return  quickly  or the balloon
+           response will appear slow.
+
+       -cancelcommand
+           This option takes a CODE reference which will  be  executed  before
+           the balloon and statusbar messages are canceled and should return a
+           true  or false value to indicate whether you want the balloon to be
+           canceled or not. Warning: this subroutine should return quickly  or
+           the balloon response will appear slow.
+
+       -motioncommand
+           This  option  takes a CODE reference which will be executed for any
+           motion event and should return a true or false  value  to  indicate
+           whether   the   currently  displayed  balloon  should  be  canceled
+           (deactivated).  If it returns true then the balloon will definitely
+           be canceled, if it returns false then  it  may  still  be  canceled
+           depending  the  internal  rules.  Note: a new balloon may be posted
+           after the -initwait time interval, use the -postcommand  option  to
+           control that behavior.  Warning: the subroutine should be extremely
+           fast  or the balloon response will appear slow and consume a lot of
+           CPU time (it is executed  every  time  the  mouse  moves  over  the
+           widgets the balloon is attached to).
+
+       -numscreens
+           This  option accepts an integer 1 or greater. This option should be
+           used to avoid disjointed balloons across multiple screens in single
+           logical  sceen  (SLS)  mode.  This  only  currently  works  in  the
+           horizontal  direction.  Example: If you are running dual screens in
+           SLS mode then you would set this value to 2. Default value is 1.
+
+METHODS
+       The Balloon widget supports only three non-standard methods:
+
+   attach(widget, options)
+       Attaches the widget indicated by widget to the help system. The allowed
+       options are:
+
+       -statusmsg
+           The argument is the message to be shown on the status bar when  the
+           mouse  pauses  over this client. If this is not specified, but -msg
+           is specified then the message displayed on the status  bar  is  the
+           same  as  the  argument for -msg. If you give it a scalar reference
+           then it is dereferenced  before  being  displayed.  Useful  if  the
+           postcommand is used to change the message.
+
+       -balloonmsg
+           The  argument  is  the  message to be displayed in the balloon that
+           will be popped up when the mouse pauses over this client.  As  with
+           -statusmsg  if  this is not specified, then it takes its value from
+           the -msg specification if any. If neither -balloonmsg nor -msg  are
+           specified,  or  they are the empty string then no balloon is popped
+           up instead of an empty balloon. If you give it a  scalar  reference
+           then  it  is  dereferenced  before  being  displayed. Useful if the
+           postcommand is used to change the message.
+
+       -msg
+           The catch-all for -statusmsg and -balloonmsg. This is a  convenient
+           way  of  specifying  the  same  message to be displayed in both the
+           balloon and the status bar for the client.
+
+       -initwait
+       -state
+       -statusbar
+       -balloonposition
+       -postcommand
+       -cancelcommand
+       -motioncommand
+           These options allow you to override the balloon&#x27;s default value for
+           those option for some of the widgets it is attached to. It  accepts
+           the same values as above and will default to the Balloon&#x27;s value.
+
+   detach(widget)
+       Detaches the specified widget from the help system.
+
+   destroy
+       Destroys the specified balloon.
+
+ADVERTISED SUBWIDGETS
+       The balloon label is advertised as &quot;message&quot;.
+
+EXAMPLES
+       See  the  balloon  demo  included with the widget demo script that came
+       with the distribution for examples on various ways to use balloons.
+
+NOTES
+       Because of the overhead associated with each balloon you  create  (from
+       tracking  the  mouse  movement  to know when to activate and deactivate
+       them) you will see the best performance (low CPU  consumption)  if  you
+       create  as  few balloons as possible and attach them to as many widgets
+       as you can.  In other words, don&#x27;t create a balloon for each widget you
+       want to attach one to.
+
+CAVEATS
+       Pressing any button will deactivate (cancel) the  current  balloon,  if
+       one  exists.  You  can  usually make the balloon reappear by moving the
+       mouse a little. Creative use of the 3 command options can help you  out
+       also. If the mouse is over the balloon when a menu is unposted then the
+       balloon will remain until you move off of it.
+
+BUGS
+       If  using  balloons  attached  to  listbox entries or canvas items in a
+       scrolled widget, then the subwidget have to be used:
+
+           $balloon-&gt;attach($w-&gt;Subwidget(&quot;scrolled&quot;), -msg =&gt; ...);
+
+AUTHORS
+       Rajappa Iyer &lt;rsi@earthling.net&gt; did the original coding.
+
+       Jason A. Smith &lt;smithj4@rpi.edu&gt; added support for menus and made  some
+       other enhancements.
+
+       Slaven Rezic &lt;srezic@cpan.org&gt; added support for canvas items.
+
+       Gerhard    Petrowitsch   &lt;gerhard@petrowitsch.de&gt;   added   intelligent
+       positioning
+
+       Jack Dunnigan &lt;dunniganj@cpan.org&gt; Made  positioning  more  intelligent
+       and added support for multiple monitors under single logical screen.
+
+HISTORY
+       The code and documentation was derived from Balloon.tcl from the Tix4.0
+       distribution  by  Ioi  Lam and modified by the above mentioned authors.
+       This code may be redistributed under the same terms as Perl.
+
+perl v5.40.1                      2025-04-13                      Balloon(3pm)
+</pre></body></html>

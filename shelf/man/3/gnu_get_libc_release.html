@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>gnu_get_libc_release(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>gnu_get_libc_version(3)    Library Functions Manual    gnu_get_libc_version(3)
+
+NAME
+       gnu_get_libc_version,  gnu_get_libc_release - get glibc version and re‐
+       lease
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;gnu/libc-version.h&gt;
+
+       const char *gnu_get_libc_version(void);
+       const char *gnu_get_libc_release(void);
+
+DESCRIPTION
+       The function gnu_get_libc_version() returns a  string  that  identifies
+       the glibc version available on the system.
+
+       The  function gnu_get_libc_release() returns a string indicates the re‐
+       lease status of the glibc version available on the system.   This  will
+       be a string such as stable.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       gnu_get_libc_version(), gnu_get_libc_release() T}   Thread safety  MT-
+       Safe
+
+STANDARDS
+       GNU.
+
+HISTORY
+       glibc 2.1.
+
+EXAMPLES
+       When run, the program below will produce output such as the following:
+
+           $ ./a.out
+           GNU libc version: 2.8
+           GNU libc release: stable
+
+   Program source
+
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+
+       #include &lt;gnu/libc-version.h&gt;
+
+       int
+       main(void)
+       {
+           printf(&quot;GNU libc version: %s\n&quot;, gnu_get_libc_version());
+           printf(&quot;GNU libc release: %s\n&quot;, gnu_get_libc_release());
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       confstr(3)
+
+Linux man-pages 6.9.1             2024-06-15           gnu_get_libc_version(3)
+</pre></body></html>

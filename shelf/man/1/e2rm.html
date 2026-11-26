@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>e2rm(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>E2RM(1)                          User commands                         E2RM(1)
+
+NAME
+       e2rm - removes files and directories on an ext2 filesystem
+
+SYNOPSIS
+       e2rm [options] files...
+
+DESCRIPTION
+       The e2rm command removes files and directories on an ext2 filesystem.
+
+OPTIONS
+       -r     Recursively delete files if a directory name is given.
+
+       -v     Be verbose.
+
+   Note
+       This  program  expects  to have a full ext2 file specification for each
+       argument.
+
+EXAMPLES
+       Remove a file
+
+           e2rm -v boot.img:/boot/grub/grub.c1 /boot/grub/grub.c2
+
+       Remove a directory and all the files
+
+           e2rm -r boot.img:/boot/grub
+
+SEE ALSO
+       e2tools(7), e2ln(1), e2ls(1), e2mkdir(1), e2cp(1), e2mv(1), e2tail(1).
+
+AUTHOR
+       The e2tools were written by Keith Sheffield &lt;sheff@pobox.com&gt;.
+
+       This manual page was written by Lucas Wall &lt;lwall@debian.org&gt;, for  the
+       Debian project (but may be used by others).
+
+Linux                             2020-02-05                           E2RM(1)
+</pre></body></html>

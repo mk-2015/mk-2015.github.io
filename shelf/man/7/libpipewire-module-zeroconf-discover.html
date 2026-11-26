@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-zeroconf-discover(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...discover(7) Miscellaneous Information Manual libpipew...discover(7)
+
+NAME
+       libpipewire-module-zeroconf-discover - Zeroconf Discover
+
+DESCRIPTION
+       Use zeroconf to detect and load module-pulse-tunnel with the right
+       parameters.
+
+       This will automatically create sinks and sources to stream audio
+       to/from remote PulseAudio servers. It also works with module-protocol-
+       pulse.
+
+MODULE NAME
+       libpipewire-module-zeroconf-discover
+
+MODULE OPTIONS
+       • pulse.discover-local  =  allow  discovery  of local services as well.
+         false by default.
+
+       • pulse.latency: the latency to end-to-end latency in  milliseconds  to
+         maintain (Default 200ms).
+
+EXAMPLE CONFIGURATION
+       # ~/.config/pipewire/pipewire.conf.d/my-zeroconf-discover.conf
+
+       context.modules = [
+       {   name = libpipewire-module-zeroconf-discover
+           args = { }
+       }
+       ]
+
+PipeWire                             1.4.2              libpipew...discover(7)
+</pre></body></html>

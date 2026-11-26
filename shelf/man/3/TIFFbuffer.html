@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFbuffer(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFBUFFER(3tiff)                   LibTIFF                  TIFFBUFFER(3tiff)
+
+NAME
+       TIFFbuffer - I/O buffering control routines
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFReadBufferSetup(TIFF *tif, tdata_t buffer, tsize_t size)
+
+       int TIFFWriteBufferSetup(TIFF *tif, tdata_t buffer, tsize_t size)
+
+DESCRIPTION
+       The  following  routines  are  provided  for  client-control of the I/O
+       buffers used by the library. Applications need  never  use  these  rou‐
+       tines;  they  are  provided only for &quot;intelligent clients&quot; that wish to
+       optimize memory usage and/or eliminate potential copy  operations  that
+       can  occur  when working with images that have data stored without com‐
+       pression.
+
+       TIFFReadBufferSetup() sets up the data buffer used  to  read  raw  (en‐
+       coded)  data from a file. If the specified pointer is NULL (zero), then
+       a buffer of the appropriate size is  allocated.  Otherwise  the  caller
+       must  guarantee  that the buffer is large enough to hold any individual
+       strip of raw data.  TIFFReadBufferSetup() returns a non-zero  value  if
+       the setup was successful and zero otherwise.
+
+       TIFFWriteBufferSetup()  sets  up the data buffer used to write raw (en‐
+       coded) data to a file. If the specified size is  -1,  then  the  buffer
+       size  is selected to hold a complete tile or strip, or at least 8 kilo‐
+       bytes, whichever is greater. If the specified buffer  is  NULL  (zero),
+       then  a  buffer  of  the  appropriate  size  is  dynamically allocated.
+       TIFFWriteBufferSetup() returns a non-zero value if the setup  was  suc‐
+       cessful and zero otherwise.
+
+DIAGNOSTICS
+       %s: No space for data buffer at scanline %ld:
+          TIFFReadBufferSetup() was unable to dynamically allocate space for a
+          data buffer.
+
+       %s: No space for output buffer:
+          TIFFWriteBufferSetup()  was unable to dynamically allocate space for
+          a data buffer.
+
+SEE ALSO
+       libtiff (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026                TIFFBUFFER(3tiff)
+</pre></body></html>

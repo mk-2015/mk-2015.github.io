@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bup-import-rdiff-backup(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>bup-import-rdiff-backup(1)                          bup-import-rdiff-backup(1)
+
+NAME
+       bup-import-rdiff-backup - import a rdiff-backup archive
+
+SYNOPSIS
+       bup import-rdiff-backup [-n]
+
+DESCRIPTION
+       bup import-rdiff-backup imports a rdiff-backup archive.  The timestamps
+       for  the backups are preserved and the path to the rdiff-backup archive
+       is stripped from the paths.
+
+OPTIONS
+       -n, --dry-run
+              don’t do anything just print out what would be done
+
+EXAMPLES
+              $ bup import-rdiff-backup /.snapshots legacy-rdiff-backup
+
+BUP
+       Part of the bup(1) suite.
+
+AUTHORS
+       Zoran Zaric zz@zoranzaric.de
+
+Bup 0.33.7                        2025-01-11        bup-import-rdiff-backup(1)
+</pre></body></html>

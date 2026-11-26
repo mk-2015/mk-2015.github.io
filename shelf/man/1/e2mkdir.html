@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>e2mkdir(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>E2MKDIR(1)                       User commands                      E2MKDIR(1)
+
+NAME
+       e2mkdir - creates a directory on an ext2 filesystem
+
+SYNOPSIS
+       e2mkdir [options] directory...
+
+DESCRIPTION
+       The  e2mkdir  command creates directories on an ext2 filesystem. It be‐
+       haves similar to `mkdir -p&#x27;.
+
+OPTIONS
+       -G gid Set the default group to gid.
+
+       -O uid Set the default file owner to uid.
+
+       -P mode
+              Set the file permissions (ie 755, 666).
+
+       -v     Be verbose.
+
+   Note
+       This program expects to have a full ext2 file  specification  for  each
+       argument.
+
+EXAMPLES
+       This  creates  the  directory  `/boot/grub` with on `boot.img` with the
+       current user and group ids:
+
+           e2mkdir boot.img:/boot/grub
+
+       To override the default ownership and permissions:
+
+           e2mkdir -O 100 -P 700 /dev/hdb1:/data/backup
+
+SEE ALSO
+       e2tools(7), e2ln(1), e2ls(1), e2mv(1), e2cp(1), e2rm(1), e2tail(1).
+
+AUTHOR
+       The e2tools were written by Keith Sheffield &lt;sheff@pobox.com&gt;.
+
+       This manual page was written by Lucas Wall &lt;lwall@debian.org&gt;, for  the
+       Debian project (but may be used by others).
+
+Linux                             2020-02-05                        E2MKDIR(1)
+</pre></body></html>

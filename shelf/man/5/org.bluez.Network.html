@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.Network(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ.NETWORK(5)      Linux System Administration     ORG.BLUEZ.NETWORK(5)
+
+NAME
+       org.bluez.Network - BlueZ D-Bus Network API documentation
+
+INTERFACE
+       Service
+              org.bluez
+
+       Interface
+              org.bluez.Network1
+
+       Object path
+              [variable prefix]/{hci0,hci1,...}/dev_XX_XX_XX_XX_XX_XX
+
+   Methods
+   string Connect(string uuid)
+          Connects  to  the  network  device  and return the network interface
+          name.
+
+          Possible uuid values:
+
+          &quot;panu&quot;, &quot;00001115-0000-1000-8000-00805f9b34fb&quot;
+                 Personal Network User role.
+
+          &quot;nap&quot;, &quot;00001116-0000-1000-8000-00805f9b34fb&quot;
+                 Network Access Point role.
+
+          &quot;gn&quot;, &quot;00001117-0000-1000-8000-00805f9b34fb&quot;
+                 Group Network role.
+
+          The connection will be closed and  network  device  released  either
+          upon  calling  Disconnect()  or  when the client disappears from the
+          message bus.
+
+          Possible errors:
+
+          org.bluez.Error.InvalidArguments
+
+          org.bluez.Error.NotSupported
+
+          org.bluez.Error.InProgress
+
+          org.bluez.Error.Failed
+
+   void Disconnect()
+          Disconnects from the network device.
+
+          To abort a connection attempt in case of errors or timeouts  in  the
+          client it is fine to call this method.
+
+          Possible errors:
+
+          org.bluez.Error.Failed
+
+          org.bluez.Error.NotConnected
+
+   Properties
+   boolean Connected [readonly]
+          Indicates if the device is connected.
+
+   string Interface [readonly, optional]
+          Indicates the network interface name when available.
+
+   string UUID [readonly, optional]
+          Indicates the connection role when available.
+
+BlueZ                            October 2023             ORG.BLUEZ.NETWORK(5)
+</pre></body></html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>csqrt(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>csqrt(3)                   Library Functions Manual                   csqrt(3)
+
+NAME
+       csqrt, csqrtf, csqrtl - complex square root
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;complex.h&gt;
+
+       double complex csqrt(double complex z);
+       float complex csqrtf(float complex z);
+       long double complex csqrtl(long double complex z);
+
+DESCRIPTION
+       These  functions  calculate the complex square root of z, with a branch
+       cut along the negative real axis.   (That  means  that  csqrt(-1+eps*I)
+       will be close to I while csqrt(-1-eps*I) will be close to -I, if eps is
+       a small positive real number.)
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       csqrt(), csqrtf(), csqrtl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       cabs(3), cexp(3), complex(7)
+
+Linux man-pages 6.9.1             2024-05-02                          csqrt(3)
+</pre></body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>finitef(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>finite(3)                  Library Functions Manual                  finite(3)
+
+NAME
+       finite,  finitef, finitel, isinf, isinff, isinfl, isnan, isnanf, isnanl
+       - BSD floating-point classification functions
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;math.h&gt;
+
+       int finite(double x);
+       int finitef(float x);
+       int finitel(long double x);
+
+       int isinf(double x);
+       int isinff(float x);
+       int isinfl(long double x);
+
+       int isnan(double x);
+       int isnanf(float x);
+       int isnanl(long double x);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       finite(), finitef(), finitel():
+           /* glibc &gt;= 2.19: */ _DEFAULT_SOURCE
+               || /* glibc &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE
+
+       isinf():
+           _XOPEN_SOURCE &gt;= 600 || _ISOC99_SOURCE
+               || /* glibc &gt;= 2.19: */ _DEFAULT_SOURCE
+               || /* glibc &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE
+
+       isinff(), isinfl():
+           /* glibc &gt;= 2.19: */ _DEFAULT_SOURCE
+               || /* glibc &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE
+
+       isnan():
+           _XOPEN_SOURCE || _ISOC99_SOURCE
+               || /* glibc &gt;= 2.19: */ _DEFAULT_SOURCE
+               || /* glibc &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE
+
+       isnanf(), isnanl():
+           _XOPEN_SOURCE &gt;= 600
+               || /* glibc &gt;= 2.19: */ _DEFAULT_SOURCE
+               || /* glibc &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE
+
+DESCRIPTION
+       The finite(), finitef(), and finitel() functions return a nonzero value
+       if x is neither infinite nor a &quot;not-a-number&quot; (NaN) value, and 0 other‐
+       wise.
+
+       The isnan(), isnanf(), and isnanl() functions return a nonzero value if
+       x is a NaN value, and 0 otherwise.
+
+       The isinf(), isinff(), and isinfl() functions return 1 if x is positive
+       infinity, -1 if x is negative infinity, and 0 otherwise.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       finite(), finitef(), finitel(), isinf(), isinff(), isinfl(), isnan(),
+       isnanf(), isnanl() T}   Thread safety  MT-Safe
+
+NOTES
+       Note that these functions are obsolete.  C99 defines macros isfinite(),
+       isinf(), and isnan() (for all types) replacing them.  Further note that
+       the C99 isinf() has weaker guarantees on the return value.  See
+       fpclassify(3).
+
+SEE ALSO
+       fpclassify(3)
+
+Linux man-pages 6.9.1             2024-05-02                         finite(3)
+</pre></body></html>

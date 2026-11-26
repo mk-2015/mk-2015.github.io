@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>gtester(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GTESTER()                                                            GTESTER()
+
+NAME
+       gtester - test running utility
+
+SYNOPSIS
+       gtester [OPTIONâ¦] test-program
+
+
+DESCRIPTION
+       gtester is a utility to run unit tests that have been written using the
+       GLib test framework.
+
+       Since  GLib  2.62,  gtester-report is deprecated. Use TAP for reporting
+       test results instead, and feed it to the test harness provided by  your
+       build system.
+
+       When  called  with  the  -o option, gtester writes an XML report of the
+       test results, which can be converted into HTML using the gtester-report
+       utility.
+
+OPTIONS
+       -h, --help
+          Print help and exit.
+
+       -v, --verbose
+          Print version information and exit.
+
+       --g-fatal-warnings
+          Make warnings fatal.
+
+       -k, --keep-going
+          Continue running after tests failed.
+
+       -l
+          List paths of available test cases.
+
+       -m=&lt;MODE&gt;
+          Run test cases in MODE, which can be one of:
+
+          • perf
+
+            Run performance tests.
+
+          • slow, thorough
+
+            Run slow tests, or repeat non-deterministic tests more often.
+
+          • quick
+
+            Do not run slow or performance  tests,  or  do  extra  repeats  of
+            non-deterministic tests (default).
+
+          • undefined
+
+            Run test cases that deliberately provoke checks or assertion fail‐
+            ures, if implemented (default).
+
+          • no-undefined
+
+            Do  not  run test cases that deliberately provoke checks or asser‐
+            tion failures.
+
+       -p=&lt;TEST-PATH&gt;
+          Only run test cases matching TEST-PATH.
+
+       -s=&lt;TEST-PATH&gt;
+          Skip test cases matching TEST-PATH.
+
+       --seed=&lt;SEED-STRING&gt;
+          Run all test cases with random number seed SEED-STRING.
+
+       -o=&lt;LOG-FILE&gt;
+          Write the test log to LOG-FILE.
+
+       -q, --quiet
+          Suppress per-test-binary output.
+
+       --verbose
+          Report success per testcase.
+
+SEE ALSO
+        &lt;gtester-report(1)&gt;
+
+                                                                     GTESTER()
+</pre></body></html>

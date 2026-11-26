@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>lconv(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>lconv(3type)                                                      lconv(3type)
+
+NAME
+       lconv - numeric formatting information
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;locale.h&gt;
+
+       struct lconv {                /* Values in the &quot;C&quot; locale: */
+           char *decimal_point;      /* &quot;.&quot; */
+           char *thousands_sep;      /* &quot;&quot; */
+           char *grouping;           /* &quot;&quot; */
+           char *mon_decimal_point;  /* &quot;&quot; */
+           char *mon_thousands_sep;  /* &quot;&quot; */
+           char *mon_grouping;       /* &quot;&quot; */
+           char *positive_sign;      /* &quot;&quot; */
+           char *negative_sign;      /* &quot;&quot; */
+           char *currency_symbol;    /* &quot;&quot; */
+           char  frac_digits;        /* CHAR_MAX */
+           char  p_cs_precedes;      /* CHAR_MAX */
+           char  n_cs_precedes;      /* CHAR_MAX */
+           char  p_sep_by_space;     /* CHAR_MAX */
+           char  n_sep_by_space;     /* CHAR_MAX */
+           char  p_sign_posn;        /* CHAR_MAX */
+           char  n_sign_posn;        /* CHAR_MAX */
+           char *int_curr_symbol;    /* &quot;&quot; */
+           char  int_frac_digits;    /* CHAR_MAX */
+           char  int_p_cs_precedes;  /* CHAR_MAX */
+           char  int_n_cs_precedes;  /* CHAR_MAX */
+           char  int_p_sep_by_space; /* CHAR_MAX */
+           char  int_n_sep_by_space; /* CHAR_MAX */
+           char  int_p_sign_posn;    /* CHAR_MAX */
+           char  int_n_sign_posn;    /* CHAR_MAX */
+       };
+
+DESCRIPTION
+       Contains  members  related to the formatting of numeric values.  In the
+       &quot;C&quot; locale, its members have the values shown in the comments above.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001.
+
+SEE ALSO
+       setlocale(3), localeconv(3), charsets(7), locale(7)
+
+Linux man-pages 6.9.1             2024-05-02                      lconv(3type)
+</pre></body></html>

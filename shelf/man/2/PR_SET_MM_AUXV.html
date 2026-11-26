@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_MM_AUXV(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_MM_AUXV(2const)                                  PR_SET_MM_AUXV(2const)
+
+NAME
+       PR_SET_MM_AUXV - set a new auxiliary vector
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/prctl.h&gt;
+
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       int prctl(PR_SET_MM, PR_SET_MM_AUXV,
+                 unsigned long addr, unsigned long size, 0L);
+
+DESCRIPTION
+       Set a new auxiliary vector.
+
+       addr should provide the address of the vector.  size is the size of the
+       vector.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL addr is greater than TASK_SIZE (the limit on  the  size  of  the
+              user address space for this architecture).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.5.
+
+SEE ALSO
+       prctl(2), PR_SET_MM(2const)
+
+Linux man-pages 6.9.1             2024-06-01            PR_SET_MM_AUXV(2const)
+</pre></body></html>

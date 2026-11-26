@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCGWINSZ(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSWINSZ(2const)                                          TIOCSWINSZ(2const)
+
+NAME
+       TIOCGWINSZ, TIOCSWINSZ - get and set window size
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC*WINSZ constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCGWINSZ, struct winsize *argp);
+       int ioctl(int fd, TIOCSWINSZ, const struct winsize *argp);
+
+       #include &lt;asm/termios.h&gt;
+
+       struct winsize {
+           unsigned short ws_row;
+           unsigned short ws_col;
+           unsigned short ws_xpixel;  /* unused */
+           unsigned short ws_ypixel;  /* unused */
+       };
+
+DESCRIPTION
+       Window sizes are kept in the kernel, but not used by the kernel (except
+       in  the case of virtual consoles, where the kernel will update the win‐
+       dow size when the size of the virtual console changes, for example,  by
+       loading a new font).
+
+       TIOCGWINSZ
+              Get window size.
+
+       TIOCSWINSZ
+              Set window size.
+
+       When  the  window  size changes, a SIGWINCH signal is sent to the fore‐
+       ground process group.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2const)
+
+Linux man-pages 6.9.1             2024-06-13                TIOCSWINSZ(2const)
+</pre></body></html>

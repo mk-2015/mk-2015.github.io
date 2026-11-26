@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TCXONC(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TCXONC(2const)                                                  TCXONC(2const)
+
+NAME
+       TCXONC - software flow control
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TCXONC */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TCXONC, int arg);
+
+DESCRIPTION
+       Equivalent to tcflow(fd, arg).
+
+       See tcflow(3) for the argument values TCOOFF, TCOON, TCIOFF, TCION.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2), tcflow(3), termios(3)
+
+Linux man-pages 6.9.1             2024-06-13                    TCXONC(2const)
+</pre></body></html>

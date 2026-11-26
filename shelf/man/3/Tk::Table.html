@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Table(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Table(3pm)            User Contributed Perl Documentation           Table(3pm)
+
+NAME
+       Tk::Table - Scrollable 2 dimensional table of Tk widgets
+
+SYNOPSIS
+         use Tk::Table;
+
+         $table = $parent-&gt;Table(-rows =&gt; number,
+                                 -columns =&gt; number,
+                                 -scrollbars =&gt; anchor,
+                                 -fixedrows =&gt; number,
+                                 -fixedcolumns =&gt; number,
+                                 -takefocus =&gt; boolean);
+
+         $widget = $table-&gt;Button(...);
+
+         $old = $table-&gt;put($row,$col,$widget);
+         $old = $table-&gt;put($row,$col,&quot;Text&quot;);  # simple Label
+         $widget = $table-&gt;get($row,$col);
+
+         $cols = $table-&gt;totalColumns;
+         $rows = $table-&gt;totalRows;
+
+         $table-&gt;see($widget);
+         $table-&gt;see($row,$col);
+
+         ($row,$col) = $table-&gt;Posn($widget);
+
+DESCRIPTION
+       Tk::Table is an all-perl widget/geometry manager which allows a two
+       dimensional table of arbitrary perl/Tk widgets to be displayed.
+
+       Entries in the Table are simply ordinary perl/Tk widgets. They should
+       be created with the Table as their parent. Widgets are positioned in
+       the table using:
+
+        $table-&gt;put($row,$col,$widget)
+
+       If $widget is not a reference it is treated as a string, and a Lable
+       widget is created with the string as its text.
+
+       All the widgets in each column are set to the same width - the
+       requested width of the widest widget in the column.  Likewise, all the
+       widgets in each row are set to the same height - the requested height
+       of the tallest widget in the column.
+
+       A number of rows and/or columns can be marked as &#x27;fixed&#x27; - and so can
+       serve as &#x27;headings&#x27; for the remainder the rows which are scrollable.
+
+       The requested size of the table as a whole is such that the number of
+       rows specified by -rows (default 10), and number of columns specified
+       by -columns (default 10) can be displayed.
+
+       If the Table is told it can take the keyboard focus then cursor and
+       scroll keys scroll the displayed widgets.
+
+       &quot;-scrollbars&quot;. By default, scrollbars will be added &quot;nw&quot;.  To disable
+       scrollbars, set &quot;-scrollbars&quot; to an empty string:
+
+         $table = $parent-&gt;Table(-scrollbars =&gt; &#x27;&#x27;, ...);
+
+       The table can be emptied using
+
+        $table-&gt;clear
+
+       the widgets which were in the table are destroyed.
+
+       The Tk::Table widget is derived from a Tk::Frame, so inherits all its
+       configure options.
+
+       The default focus traversal is giving the focus only to the table
+       widget as a whole. To enable focus traversal into table cells (e.g. if
+       there are embedded entry widgets), then the option &quot;-takefocus&quot; has to
+       be set to 0.
+
+BUGS / Snags / Possible enhancements
+       •   Very large Tables consume a lot of X windows.
+
+       •   No equivalent of pack&#x27;s -anchor/-pad etc. options
+
+SEE ALSO
+       Tk::grid, Tk::HList, Tk::TableMatrix, Tk::MListbox, Tk::Columns
+
+perl v5.40.1                      2025-04-13                        Table(3pm)
+</pre></body></html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>strspn(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>strspn(3)                  Library Functions Manual                  strspn(3)
+
+NAME
+       strspn, strcspn - get length of a prefix substring
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;string.h&gt;
+
+       size_t strspn(const char *s, const char *accept);
+       size_t strcspn(const char *s, const char *reject);
+
+DESCRIPTION
+       The  strspn()  function calculates the length (in bytes) of the initial
+       segment of s which consists entirely of bytes in accept.
+
+       The strcspn() function calculates the length of the initial segment  of
+       s which consists entirely of bytes not in reject.
+
+RETURN VALUE
+       The  strspn()  function returns the number of bytes in the initial seg‐
+       ment of s which consist only of bytes from accept.
+
+       The strcspn() function returns the number of bytes in the initial  seg‐
+       ment of s which are not in the string reject.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       strspn(), strcspn() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C89, SVr4, 4.3BSD.
+
+SEE ALSO
+       memchr(3), strchr(3), string(3), strpbrk(3), strsep(3), strstr(3),
+       strtok(3), wcscspn(3), wcsspn(3)
+
+Linux man-pages 6.9.1             2024-05-02                         strspn(3)
+</pre></body></html>

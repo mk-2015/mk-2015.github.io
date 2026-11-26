@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::TextUndo(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TextUndo(3pm)         User Contributed Perl Documentation        TextUndo(3pm)
+
+NAME
+       Tk::TextUndo - perl/tk text widget with bindings to undo changes.
+
+SYNOPSIS
+           use Tk::TextUndo;
+
+           $testundo = $parent-&gt;TextUndo(?-option=&gt;value, ...?);
+
+DESCRIPTION
+       This IS-A text widget with an unlimited &#x27;undo&#x27; history but without a
+       re&#x27;undo&#x27; capability.
+
+   Bindings
+       The &quot;TextUndo&quot; widget has the same bindings as the Text widget.  In
+       addition there are the following bindings:
+
+       Event &lt;L4&gt; &lt;&lt;Undo&gt;&gt;
+           undo  the  last  change.   Pressing &lt;L4&gt; several times undo step by
+           step the changes made to the text widget.
+
+   Methods
+       The  &quot;TextUndo&quot;  widget  has  the  same  methods  as   &quot;Text&quot;   widget.
+       Additional methods for the &quot;TextUndo&quot; widget are:
+
+       $text-&gt;Load($filename);
+           Loads  the  contents  of the $filename into the text widget. Load()
+           delete the previous contents of the text widget as well as its undo
+           history of the previous file.
+
+       $text-&gt;Save(?$otherfilename?)
+           Save contents of the text widget to a file. If  the  $otherfilename
+           is  not  specified,  the  text  widget  contents writes the file of
+           $filename used in the last Load() call.  If no file was  previously
+           Load()&#x27;ed  an  error  message pops up.  The default filename of the
+           last Load() call is not overwriten by $otherfilename.
+
+       $text-&gt;FileName(?$otherfilename?)
+           If passed an argument sets the file name associated with the loaded
+           document.  Returns  the  current  file  name  associated  with  the
+           document.
+
+KEYS
+       widget, text, undo
+
+SEE ALSO
+       Tk::Text, Tk::ROText
+
+perl v5.40.1                      2025-04-13                     TextUndo(3pm)
+</pre></body></html>

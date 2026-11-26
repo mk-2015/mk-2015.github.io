@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>LWP::MemberMixin(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>LWP::MemberMixin(3pm) User Contributed Perl DocumentationLWP::MemberMixin(3pm)
+
+NAME
+       LWP::MemberMixin - Member access mixin class
+
+SYNOPSIS
+        package Foo;
+        use parent qw(LWP::MemberMixin);
+
+DESCRIPTION
+       A mixin class to get methods that provide easy access to member
+       variables in the %$self.  Ideally there should be better Perl language
+       support for this.
+
+METHODS
+       There is only one method provided:
+
+   _elem
+           _elem($elem [, $val])
+
+       Internal method to get/set the value of member variable $elem. If $val
+       is present it is used as the new value for the member variable.  If it
+       is not present the current value is not touched. In both cases the
+       previous value of the member variable is returned.
+
+perl v5.40.1                      2025-03-01             LWP::MemberMixin(3pm)
+</pre></body></html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>__ppc_mdoom(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>__ppc_yield(3)             Library Functions Manual             __ppc_yield(3)
+
+NAME
+       __ppc_yield,  __ppc_mdoio,  __ppc_mdoom - Hint the processor to release
+       shared resources
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/platform/ppc.h&gt;
+
+       void __ppc_yield(void);
+       void __ppc_mdoio(void);
+       void __ppc_mdoom(void);
+
+DESCRIPTION
+       These functions provide hints about the usage  of  resources  that  are
+       shared  with  other  processors on the Power architecture.  They can be
+       used, for example, if a program waiting on a lock intends to divert the
+       shared resources to be used by other processors.
+
+       __ppc_yield() provides a hint that performance  will  probably  be  im‐
+       proved if shared resources dedicated to the executing processor are re‐
+       leased for use by other processors.
+
+       __ppc_mdoio()  provides  a  hint  that performance will probably be im‐
+       proved if shared resources dedicated to the executing processor are re‐
+       leased until all  outstanding  storage  accesses  to  caching-inhibited
+       storage have been completed.
+
+       __ppc_mdoom()  provides  a  hint  that performance will probably be im‐
+       proved if shared resources dedicated to the executing processor are re‐
+       leased until all outstanding storage accesses to cacheable storage  for
+       which the data is not in the cache have been completed.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       __ppc_yield(), __ppc_mdoio(), __ppc_mdoom() T}   Thread safety  MT-Safe
+
+STANDARDS
+       GNU.
+
+HISTORY
+       glibc 2.18.
+
+SEE ALSO
+       __ppc_set_ppr_med(3)
+
+       Power ISA, Book II - Section 3.2 (&quot;or&quot; architecture)
+
+Linux man-pages 6.9.1             2024-05-02                    __ppc_yield(3)
+</pre></body></html>

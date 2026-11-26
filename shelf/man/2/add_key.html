@@ -1,0 +1,197 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>add_key(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>add_key(2)                    System Calls Manual                   add_key(2)
+
+NAME
+       add_key - add a key to the kernel&#x27;s key management facility
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;keyutils.h&gt;
+
+       key_serial_t add_key(const char *type, const char *description,
+                            const void payload[.plen], size_t plen,
+                            key_serial_t keyring);
+
+       Note: There is no glibc wrapper for this system call; see NOTES.
+
+DESCRIPTION
+       add_key()  creates  or updates a key of the given type and description,
+       instantiates it with the payload of length plen,  attaches  it  to  the
+       nominated keyring, and returns the key&#x27;s serial number.
+
+       The  key may be rejected if the provided data is in the wrong format or
+       it is invalid in some other way.
+
+       If the destination keyring already contains  a  key  that  matches  the
+       specified type and description, then, if the key type supports it, that
+       key  will be updated rather than a new key being created; if not, a new
+       key (with a different ID) will be created and it will displace the link
+       to the extant key from the keyring.
+
+       The destination keyring serial number may be that of  a  valid  keyring
+       for  which  the  caller has write permission.  Alternatively, it may be
+       one of the following special keyring IDs:
+
+       KEY_SPEC_THREAD_KEYRING
+              This   specifies   the    caller&#x27;s    thread-specific    keyring
+              (thread-keyring(7)).
+
+       KEY_SPEC_PROCESS_KEYRING
+              This    specifies    the   caller&#x27;s   process-specific   keyring
+              (process-keyring(7)).
+
+       KEY_SPEC_SESSION_KEYRING
+              This  specifies  the  caller&#x27;s  session-specific  keyring  (ses‐
+              sion-keyring(7)).
+
+       KEY_SPEC_USER_KEYRING
+              This     specifies    the    caller&#x27;s    UID-specific    keyring
+              (user-keyring(7)).
+
+       KEY_SPEC_USER_SESSION_KEYRING
+              This  specifies  the  caller&#x27;s  UID-session  keyring  (user-ses‐
+              sion-keyring(7)).
+
+   Key types
+       The  key  type  is a string that specifies the key&#x27;s type.  Internally,
+       the kernel defines a number of key types that are available in the core
+       key management code.  Among the types that are available for user-space
+       use and can be specified as the type argument to add_key() are the fol‐
+       lowing:
+
+       &quot;keyring&quot;
+              Keyrings are special key types that may  contain  links  to  se‐
+              quences of other keys of any type.  If this interface is used to
+              create a keyring, then payload should be NULL and plen should be
+              zero.
+
+       &quot;user&quot; This is a general purpose key type whose payload may be read and
+              updated  by  user-space  applications.  The key is kept entirely
+              within kernel memory.  The payload for keys of this  type  is  a
+              blob of arbitrary data of up to 32,767 bytes.
+
+       &quot;logon&quot; (since Linux 3.3)
+              This key type is essentially the same as &quot;user&quot;, but it does not
+              permit  the  key to read.  This is suitable for storing payloads
+              that you do not want to be readable from user space.
+
+       This key type vets the description to ensure that it is qualified by  a
+       &quot;service&quot; prefix, by checking to ensure that the description contains a
+       &#x27;:&#x27; that is preceded by other characters.
+
+       &quot;big_key&quot; (since Linux 3.13)
+              This key type is similar to &quot;user&quot;, but may hold a payload of up
+              to  1 MiB.   If  the key payload is large enough, then it may be
+              stored encrypted in tmpfs (which can be swapped out) rather than
+              kernel memory.
+
+       For further details on these key types, see keyrings(7).
+
+RETURN VALUE
+       On success, add_key() returns the serial number of the key  it  created
+       or  updated.  On error, -1 is returned and errno is set to indicate the
+       error.
+
+ERRORS
+       EACCES The keyring wasn&#x27;t available for modification by the user.
+
+       EDQUOT The key quota for this user would be exceeded by  creating  this
+              key or linking it to the keyring.
+
+       EFAULT One  or  more  of  type, description, and payload points outside
+              process&#x27;s accessible address space.
+
+       EINVAL The size of the string (including  the  terminating  null  byte)
+              specified  in  type  or description exceeded the limit (32 bytes
+              and 4096 bytes respectively).
+
+       EINVAL The payload data was invalid.
+
+       EINVAL type was &quot;logon&quot; and the description was not  qualified  with  a
+              prefix string of the form &quot;service:&quot;.
+
+       EKEYEXPIRED
+              The keyring has expired.
+
+       EKEYREVOKED
+              The keyring has been revoked.
+
+       ENOKEY The keyring doesn&#x27;t exist.
+
+       ENOMEM Insufficient memory to create a key.
+
+       EPERM  The type started with a period (&#x27;.&#x27;).  Key types that begin with
+              a period are reserved to the implementation.
+
+       EPERM  type  was  &quot;keyring&quot;  and  the description started with a period
+              (&#x27;.&#x27;).  Keyrings with descriptions (names) that begin with a pe‐
+              riod are reserved to the implementation.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.10.
+
+NOTES
+       glibc does not provide a wrapper for this system call.   A  wrapper  is
+       provided  in  the  libkeyutils library.  (The accompanying package pro‐
+       vides the &lt;keyutils.h&gt; header file.)  When  employing  the  wrapper  in
+       that library, link with -lkeyutils.
+
+EXAMPLES
+       The program below creates a key with the type, description, and payload
+       specified  in  its  command-line arguments, and links that key into the
+       session keyring.  The following shell session demonstrates the  use  of
+       the program:
+
+           $ ./a.out user mykey &quot;Some payload&quot;
+           Key ID is 64a4dca
+           $ grep &#x27;64a4dca&#x27; /proc/keys
+           064a4dca I--Q---    1 perm 3f010000  1000  1000 user    mykey: 12
+
+   Program source
+
+       #include &lt;keyutils.h&gt;
+       #include &lt;stdint.h&gt;
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;string.h&gt;
+
+       int
+       main(int argc, char *argv[])
+       {
+           key_serial_t key;
+
+           if (argc != 4) {
+               fprintf(stderr, &quot;Usage: %s type description payload\n&quot;,
+                       argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           key = add_key(argv[1], argv[2], argv[3], strlen(argv[3]),
+                         KEY_SPEC_SESSION_KEYRING);
+           if (key == -1) {
+               perror(&quot;add_key&quot;);
+               exit(EXIT_FAILURE);
+           }
+
+           printf(&quot;Key ID is %jx\n&quot;, (uintmax_t) key);
+
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       keyctl(1), keyctl(2), request_key(2), keyctl(3), keyrings(7),
+       keyutils(7), persistent-keyring(7), process-keyring(7),
+       session-keyring(7), thread-keyring(7), user-keyring(7),
+       user-session-keyring(7)
+
+       The kernel source files Documentation/security/keys/core.rst and
+       Documentation/keys/request-key.rst (or, before Linux 4.13, in the files
+       Documentation/security/keys.txt and
+       Documentation/security/keys-request-key.txt).
+
+Linux man-pages 6.9.1             2024-06-15                        add_key(2)
+</pre></body></html>

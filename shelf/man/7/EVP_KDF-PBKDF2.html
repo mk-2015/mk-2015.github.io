@@ -1,0 +1,88 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KDF-PBKDF2(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KDF-PBKDF2(7SSL)                OpenSSL               EVP_KDF-PBKDF2(7SSL)
+
+NAME
+       EVP_KDF-PBKDF2 - The PBKDF2 EVP_KDF implementation
+
+DESCRIPTION
+       Support for computing the PBKDF2 password-based KDF through the EVP_KDF
+       API.
+
+       The EVP_KDF-PBKDF2 algorithm implements the PBKDF2 password-based key
+       derivation function, as described in SP800-132; it derives a key from a
+       password using a salt and iteration count.
+
+       The output is considered to be a cryptographic key.
+
+   Identity
+       &quot;PBKDF2&quot; is the name for this implementation; it can be used with the
+       EVP_KDF_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;pass&quot; (OSSL_KDF_PARAM_PASSWORD) &lt;octet string&gt;
+       &quot;salt&quot; (OSSL_KDF_PARAM_SALT) &lt;octet string&gt;
+       &quot;iter&quot; (OSSL_KDF_PARAM_ITER) &lt;unsigned integer&gt;
+           This parameter has a default value of 2048.
+
+       &quot;properties&quot; (OSSL_KDF_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+       &quot;digest&quot; (OSSL_KDF_PARAM_DIGEST) &lt;UTF8 string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_KDF(3).
+
+       &quot;pkcs5&quot; (OSSL_KDF_PARAM_PKCS5) &lt;integer&gt;
+           This   parameter  can  be  used  to  enable  or  disable  SP800-132
+           compliance checks.  Setting the mode to 0  enables  the  compliance
+           checks.
+
+           The checks performed are:
+
+           - the iteration count is at least 1000.
+           - the salt length is at least 128 bits.
+           - the derived key length is at least 112 bits.
+
+           The  default  provider  uses  a  default  mode  of  1 for backwards
+           compatibility, and the FIPS provider uses  a  default  mode  of  0.
+           This option breaks FIPS compliance if it causes the approved &quot;fips-
+           indicator&quot; to return 0.
+
+       &quot;fips-indicator&quot; (OSSL_KDF_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           This option is used by the OpenSSL FIPS provider.
+
+           A  getter  that  returns  1 if the operation is FIPS approved, or 0
+           otherwise.  This may  be  used  after  calling  EVP_KDF_derive.  It
+           returns  0  if &quot;pkcs5&quot; is set to 1 and the derived key length, salt
+           length or iteration count test fails.
+
+NOTES
+       A typical application of this algorithm is to  derive  keying  material
+       for  an  encryption  algorithm from a password in the &quot;pass&quot;, a salt in
+       &quot;salt&quot;, and an iteration count.
+
+       Increasing the &quot;iter&quot; parameter slows down the algorithm which makes it
+       harder for an attacker to perform a brute force attack  using  a  large
+       number of candidate passwords.
+
+       No  assumption  is  made  regarding  the  given  password; it is simply
+       treated as a byte sequence.
+
+CONFORMING TO
+       SP800-132
+
+SEE ALSO
+       EVP_KDF(3),          EVP_KDF_CTX_new(3),           EVP_KDF_CTX_free(3),
+       EVP_KDF_CTX_set_params(3),     EVP_KDF_derive(3),    &quot;PARAMETERS&quot;    in
+       EVP_KDF(3)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2018-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09              EVP_KDF-PBKDF2(7SSL)
+</pre></body></html>

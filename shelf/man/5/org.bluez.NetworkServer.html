@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.NetworkServer(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ...WORKSERVER(5) Linux System AdministrationORG.BLUEZ...WORKSERVER(5)
+
+NAME
+       org.bluez.NetworkServer - BlueZ D-Bus NetworkServer API documentation
+
+INTERFACE
+       Service
+              org.bluez
+
+       Interface
+              org.bluez.NetworkServer1
+
+       Object path
+              /org/bluez/{hci0,hci1,...}
+
+   Methods
+   void Register(string uuid, string bridge)
+          Registers server for the provided UUID.
+
+          Every  new connection to this server will be added the bridge inter‐
+          face.
+
+          Possible uuid values:
+
+          &quot;panu&quot;, &quot;00001115-0000-1000-8000-00805f9b34fb&quot;
+                 Personal Network User role.
+
+          &quot;nap&quot;, &quot;00001116-0000-1000-8000-00805f9b34fb&quot;
+                 Network Access Point role.
+
+          &quot;gn&quot;, &quot;00001117-0000-1000-8000-00805f9b34fb&quot;
+                 Group Network role.
+
+          Initially no network server SDP is provided. Only after this  method
+          a SDP record will be available and the BNEP server will be ready for
+          incoming connections.
+
+          Possible errors:
+
+          org.bluez.Error.InvalidArguments
+
+          org.bluez.Error.AlreadyExists
+
+          org.bluez.Error.Failed
+
+   void Unregister(string uuid)
+          Unregisters the server for provided UUID which was previously regis‐
+          tered with Register() method.
+
+          All  servers will be automatically unregistered when the calling ap‐
+          plication terminates.
+
+          Possible errors:
+
+          org.bluez.Error.InvalidArguments
+
+          org.bluez.Error.Failed
+
+BlueZ                            October 2023        ORG.BLUEZ...WORKSERVER(5)
+</pre></body></html>

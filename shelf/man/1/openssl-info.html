@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>openssl-info(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>OPENSSL-INFO(1SSL)                  OpenSSL                 OPENSSL-INFO(1SSL)
+
+NAME
+       openssl-info - print OpenSSL built-in information
+
+SYNOPSIS
+       openssl info [-help] [-configdir] [-enginesdir] [-modulesdir ]
+       [-dsoext] [-dirnamesep] [-listsep] [-seeds] [-cpusettings]
+       [-windowscontext]
+
+DESCRIPTION
+       This command is used to print out information about OpenSSL.  The
+       information is written exactly as it is with no extra text, which makes
+       useful for scripts.
+
+       As a consequence, only one item may be chosen for each run of this
+       command.
+
+OPTIONS
+       -help
+           Print out a usage message.
+
+       -configdir
+           Outputs the default directory for OpenSSL configuration files.
+
+       -enginesdir
+           Outputs the default directory for OpenSSL engine modules.
+
+       -modulesdir
+           Outputs  the  default  directory  for  OpenSSL dynamically loadable
+           modules other than engine modules.
+
+       -dsoext
+           Outputs the DSO extension OpenSSL uses.
+
+       -dirnamesep
+           Outputs the separator character between a  directory  specification
+           and  a  filename.  Note that on some operating systems, this is not
+           the same as the separator between directory elements.
+
+       -listsep
+           Outputs the OpenSSL list separator character.   This  is  typically
+           used to construct $PATH (&quot;%PATH%&quot; on Windows) style lists.
+
+       -seeds
+           Outputs the randomness seed sources.
+
+       -cpusettings
+           Outputs the OpenSSL CPU settings info.
+
+       -windowscontext
+           Outputs the Windows install context.
+
+HISTORY
+       This command was added in OpenSSL 3.0.
+
+       The -windowscontext option was added in OpenSSL 3.4.
+
+COPYRIGHT
+       Copyright 2019-2020 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                OPENSSL-INFO(1SSL)
+</pre></body></html>

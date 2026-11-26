@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>fwupd-refresh.service(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>fwupd-re...h.service(8) Message Of The Day Integration fwupd-re...h.service(8)
+
+NAME
+       fwupd-refresh.service - message of the day integration.
+
+DESCRIPTION
+       Message  on  the day integration is used to display the availability of
+       updates when connecting to a remote console.
+
+       It has two elements:
+
+       • Automatic firmware metadata refresh
+
+       • Message of the day display
+
+       This uses a systemd timer to run on a regular cadence. To enable  this,
+       run:
+
+         systemctl enable fwupd-refresh.timer
+
+
+NOTES
+       Motd  display  is  dependent  upon  the availability of the update-motd
+       snippet consumption service such as pam_motd.
+
+       To enable a proxy, set the  systemd  global  environment  in  /etc/sys‐
+       temd/system.conf so all the systemd child processes have the proxy set‐
+       tings applied:
+
+       [Manager]
+       DefaultEnvironment=http_proxy=âhttp://internal.corp:3128/ âhttps_proxy=âhttp://internal.corp:3128/â
+
+
+SEE ALSO
+       &lt;fwupdmgr(1)&gt; &lt;fwupd.conf(5)&gt;
+
+2.0.20                                                 fwupd-re...h.service(8)
+</pre></body></html>

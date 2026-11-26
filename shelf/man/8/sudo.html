@@ -1,0 +1,463 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sudo(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>allows  a permitted user to execute a as the superuser or another
+user, as specified by the security policy.  The  invoking  user&#x27;s
+real  user-ID  is  used  to determine the user name with which to
+query the security policy.  supports a  plugin  architecture  for
+security  policies,  auditing,  and  input/output logging.  Third
+parties can develop and distribute  their  own  plugins  to  work
+seamlessly  with  the  front-end.  The default security policy is
+which is configured via the file or via LDAP.   See  the  section
+for more information.  The security policy determines what privi‐
+leges,  if  any,  a  user  has to run The policy may require that
+users authenticate themselves with a password or another  authen‐
+tication  mechanism.  If authentication is required, will exit if
+the user&#x27;s password is not entered  within  a  configurable  time
+limit.   This  limit  is  policy-specific;  the  default password
+prompt timeout for the security policy is  0  minutes.   Security
+policies  may support credential caching to allow the user to run
+again for a period of time without requiring authentication.   By
+default,  the  policy  caches credentials on a per-terminal basis
+for 15 minutes.  See the and options in for more information.  By
+running with the option, a user can update the cached credentials
+without running a On systems where is the primary method of gain‐
+ing superuser privileges, it is imperative to avoid syntax errors
+in the security policy configuration files.  For the default  se‐
+curity  policy, changes to the configuration files should be made
+using the utility which will ensure that no syntax errors are in‐
+troduced.  When invoked as the option (described below),  is  im‐
+plied.   Security  policies  and audit plugins may log successful
+and failed attempts to run If an I/O plugin  is  configured,  the
+running  input and output may be logged as well.  The options are
+as follows: Normally, if requires a password,  it  will  read  it
+from  the user&#x27;s terminal.  If the option is specified, a (possi‐
+bly graphical) helper program is  executed  to  read  the  user&#x27;s
+password  and output the password to the standard output.  If the
+environment variable is set, it specifies the path to the  helper
+program.   Otherwise,  if  contains a line specifying the askpass
+program, that value will be used.  For example: # Path to askpass
+helper program Path askpass /usr/bin/ssh-askpass  If  no  askpass
+program  is available, will exit with an error.  Ring the bell as
+part of the password prompt when a terminal is present.  This op‐
+tion has no effect if an askpass program is used.  Run the  given
+in  the  background.  It is not possible to use shell job control
+to manipulate background processes started  by  Most  interactive
+will  fail  to  work properly in background mode.  Close all file
+descriptors greater than or equal to before  executing  a  Values
+less  than  three  are not permitted.  By default, will close all
+open file descriptors other than standard input, standard output,
+and standard error when executing a The security policy  may  re‐
+strict  the  user&#x27;s  ability to use this option.  The policy only
+permits use of the option when the administrator has enabled  the
+option.   Run the in the specified instead of the current working
+directory.  The security policy may return an error if  the  user
+does not have permission to specify the working directory.  Indi‐
+cates  to  the  security  policy that the user wishes to preserve
+their existing environment variables.  The  security  policy  may
+return  an error if the user does not have permission to preserve
+the environment.  Indicates to the security policy that the  user
+wishes  to  add the comma-separated list of environment variables
+to those preserved from the  user&#x27;s  environment.   The  security
+policy  may  return an error if the user does not have permission
+to preserve the environment.  This option may be specified multi‐
+ple times.  Edit one or more instead of running a In  lieu  of  a
+path  name, the string &quot;sudoedit&quot; is used when consulting the se‐
+curity policy.  If the user is authorized by the policy, the fol‐
+lowing steps are taken: Temporary copies are made of the files to
+be edited with the owner set to the invoking  user.   The  editor
+specified  by the policy is run to edit the temporary files.  The
+policy uses the and environment variables (in  that  order).   If
+none  of  or  are  set, the first program listed in the option is
+used.  If they have been modified, the temporary files are copied
+back to their original location and the  temporary  versions  are
+removed.   To help prevent the editing of unauthorized files, the
+following restrictions are enforced unless explicitly allowed  by
+the  security  policy:  Symbolic links may not be edited (version
+1.8.15 and higher).  Symbolic links along the path to  be  edited
+are not followed when the parent directory is writable by the in‐
+voking user unless that user is root (version 1.8.16 and higher).
+Files  located  in  a  directory that is writable by the invoking
+user may not be edited unless that user is root  (version  1.8.16
+and  higher).   Users  are  never  allowed to edit device special
+files.  If the specified file does not exist, it will be created.
+Unlike most run by the editor is run with the invoking user&#x27;s en‐
+vironment unmodified.  If the temporary file becomes empty  after
+editing,  the  user will be prompted before it is installed.  If,
+for some reason, is unable to update a file with its edited  ver‐
+sion,  the  user  will receive a warning and the edited copy will
+remain in a temporary file.  Run the with the primary  group  set
+to  instead  of  the primary group specified by the target user&#x27;s
+password database entry.  The may be either a group name or a nu‐
+meric group-ID prefixed with the character  (e.g.,  for  GID  0).
+When  running a as a GID, many shells require that the be escaped
+with a backslash If no option is specified, the will  be  run  as
+the invoking user.  In either case, the primary group will be set
+to The policy permits any of the target user&#x27;s groups to be spec‐
+ified  via  the  option as long as the option is not in use.  Re‐
+quest that the security policy set the  environment  variable  to
+the  home directory specified by the target user&#x27;s password data‐
+base entry.  Depending on the policy, this may be the default be‐
+havior.  Display a short help message to the standard output  and
+exit.   Run  the  on  the specified if the security policy plugin
+supports remote The plugin does not currently support running re‐
+mote This may also be used in conjunction with the option to list
+a user&#x27;s privileges for the remote host.  Run the shell specified
+by the target user&#x27;s password database entry as  a  login  shell.
+This  means that login-specific resource files such as or will be
+read by the shell.  If a is specified, it is passed to the  shell
+as a simple using the option.  The and any are concatenated, sep‐
+arated  by spaces, after escaping each character with a backslash
+except for alphanumerics, underscores, hyphens, and dollar signs.
+If no is specified, an interactive shell is  executed.   attempts
+to change to that user&#x27;s home directory before running the shell.
+The  is  run  with an environment similar to the one a user would
+receive at log in.  Most shells  behave  differently  when  a  is
+specified  as  compared  to  an  interactive session; consult the
+shell&#x27;s manual for details.  The section in the manual  documents
+how the option affects the environment in which a is run when the
+policy  is in use.  Similar to the option, except that it removes
+every cached credential for the user, regardless of the  terminal
+or  parent  process ID.  The next time is run, a password must be
+entered if the security policy requires  authentication.   It  is
+not possible to use the option in conjunction with a or other op‐
+tion.  This option does not require a password.  Not all security
+policies support credential caching.  When used without a invali‐
+dates the user&#x27;s cached credentials for the current session.  The
+next  time  is  run in the session, a password must be entered if
+the security policy requires  authentication.   By  default,  the
+policy  uses  a  separate record in the credential cache for each
+terminal (or parent process ID if no terminal is present).   This
+prevents  the option from interfering with commands run in a dif‐
+ferent terminal session.  See the option in for more information.
+This option does not require a password, and was added to allow a
+user to revoke permissions from a file.  When used in conjunction
+with a or an option that may require a password, this option will
+cause to ignore the user&#x27;s cached credentials.  As a result, will
+prompt for a password (if one is required by the security policy)
+and will not update the user&#x27;s cached credentials.  Not all secu‐
+rity policies support credential caching.  If  no  is  specified,
+list  the  privileges  for the invoking user (or the specified by
+the option) on the current host.  A longer list format is used if
+this option is specified multiple times and the  security  policy
+supports  a verbose output format.  If a is specified and is per‐
+mitted by the security policy for  the  invoking  user  (or  the,
+specified by the option) on the current host, the fully-qualified
+path to the is displayed along with any If is specified more than
+once  (and the security policy supports it), the matching rule is
+displayed in a verbose format along with the If  a  is  specified
+but  not  allowed by the policy, will exit with a status value of
+1.  Do not update the user&#x27;s cached credentials, even if the user
+successfully authenticates.  Unlike  the  flag,  existing  cached
+credentials  are  used  if  they  are  valid.  To detect when the
+user&#x27;s cached credentials are valid (or when no authentication is
+required), the following can be used: sudo -Nnv Not all  security
+policies  support  credential  caching.  Avoid prompting the user
+for input of any kind.  If a password is required for the to run,
+will display an error message and exit.   Preserve  the  invoking
+user&#x27;s  group vector unaltered.  By default, the policy will ini‐
+tialize the group vector to the list of groups the target user is
+a member of.  The real  and  effective  group-IDs,  however,  are
+still set to match the target user.  Use a custom password prompt
+with optional escape sequences.  The following percent escape se‐
+quences  are  supported  by the policy: expanded to the host name
+including the domain name (only if the  machine&#x27;s  host  name  is
+fully  qualified  or  the  option is set in expanded to the local
+host name without the domain name expanded to  the  name  of  the
+user whose password is being requested (respects the and flags in
+expanded  to  the  login name of the user the will be run as (de‐
+faults to root unless the option is also specified)  expanded  to
+the  invoking  user&#x27;s  login  name two consecutive characters are
+collapsed into a single character The custom prompt will override
+the default prompt specified by either the security policy or the
+environment variable.  On systems that use PAM, the custom prompt
+will also override the prompt specified by a  PAM  module  unless
+the  flag is disabled in Change to the specified root (see before
+running the The security policy may return an error if  the  user
+does  not have permission to specify the root directory.  Run the
+with an SELinux security  context  that  includes  the  specified
+Write the prompt to the standard error and read the password from
+the standard input instead of using the terminal device.  Run the
+shell  specified  by the environment variable if it is set or the
+shell specified by the invoking user&#x27;s password  database  entry.
+If  a is specified, it is passed to the shell as a simple command
+using the option.  The and any  are  concatenated,  separated  by
+spaces, after escaping each character with a backslash except for
+alphanumerics,  underscores, hyphens, and dollar signs.  If no is
+specified, an interactive shell is executed.  Most shells  behave
+differently  when  a  is  specified as compared to an interactive
+session; consult the shell&#x27;s manual for details.  Run the with an
+SELinux security context that includes the  specified  If  no  is
+specified,  the  default  type is derived from the role.  Used in
+conjunction with the option to list the privileges for instead of
+for the invoking user.  The security policy may restrict  listing
+other  users&#x27;  privileges.   When using the policy, the option is
+restricted to the root user and users with  either  the  priviege
+for  the  specified  or  the ability to run any as root or on the
+current host.  Used to set a timeout for the If the  timeout  ex‐
+pires  before  the has exited, the will be terminated.  The secu‐
+rity policy may restrict the user&#x27;s ability to set timeouts.  The
+policy requires that user-specified timeouts  be  explicitly  en‐
+abled.   Run  the  as  a  user other than the default target user
+(usually The may be either a user name or a numeric user-ID  pre‐
+fixed  with the character (e.g., for UID 0).  When running a UID,
+many shells require that the be escaped with a backslash Some se‐
+curity policies may restrict UIDs to those listed in the password
+database.  The policy allows UIDs that are not  in  the  password
+database  as long as the option is not set.  Other security poli‐
+cies may not support this.  Print the version string as  well  as
+the  version  string  of any configured plugins.  If the invoking
+user is already root, the option will display the options  passed
+to  configure  when was built; plugins may display additional in‐
+formation such as default options.  Update the user&#x27;s cached cre‐
+dentials, authenticating the user if necessary.  For the  plugin,
+this  extends  the timeout for another 15 minutes by default, but
+does not run a Not all security policies support  cached  creden‐
+tials.   The  is  used to delimit the end of the options.  Subse‐
+quent options are passed to the Options that  take  a  value  may
+only be specified once unless otherwise indicated in the descrip‐
+tion.   This  is  to help guard against problems caused by poorly
+written scripts that invoke with user-controlled input.  Environ‐
+ment variables to be set for the may also be passed as options to
+in the form for example Environment variables may be  subject  to
+restrictions  imposed  by the security policy plugin.  The policy
+subjects environment variables passed as options to the same  re‐
+strictions  as  existing environment variables with one important
+difference.  If the option is set in the to be run  has  the  tag
+set  or the matched is the user may set variables that would oth‐
+erwise be forbidden.  See for more information.  When executes  a
+the  security  policy specifies the execution environment for the
+Typically, the real and effective user and group and IDs are  set
+to  match  those of the target user, as specified in the password
+database, and the group vector is initialized based on the  group
+database  (unless the option was specified).  The following para‐
+meters may be specified by security policy:  real  and  effective
+user-ID  real  and effective group-ID supplementary group-IDs the
+environment list current working  directory  file  creation  mode
+mask  (umask) SELinux role and type scheduling priority (aka nice
+value) There are two distinct ways can run a If  an  I/O  logging
+plugin is configured to log terminal I/O, or if the security pol‐
+icy  explicitly  requests  it, a new pseudo-terminal is allocated
+and is used to create a second process, referred to  as  the  The
+creates  a new terminal session with itself as the leader and the
+pty as its controlling terminal, calls again, sets up the  execu‐
+tion  environment  as  described  above, and then uses the system
+call to run the in the child process.  The exists  to  relay  job
+control  signals  between  the user&#x27;s terminal and the pty the is
+being run in.  This makes it possible to suspend and  resume  the
+normally.  Without the the would be in what POSIX terms an and it
+would  not receive any job control signals from the kernel.  When
+the exits or is terminated by a signal, the passes the exit  sta‐
+tus to the main process and exits.  After receiving the exit sta‐
+tus, the main process passes the exit status to the security pol‐
+icy&#x27;s  close  function, as well as the close function of any con‐
+figured audit plugin, and exits.  This mode is  the  default  for
+sudo versions 1.9.14 and above when using the sudoers policy.  If
+no  pty  is  used, calls sets up the execution environment as de‐
+scribed above, and uses the system call to run the in  the  child
+process.   The  main  process waits until the has completed, then
+passes the exit status to the security policy&#x27;s  close  function,
+as  well  as  the close function of any configured audit plugins,
+and exits.  As a special case, if the policy plugin does not  de‐
+fine a close function, will execute the directly instead of call‐
+ing  first.   The policy plugin will only define a close function
+when I/O logging is enabled, a pty is required, an  SELinux  role
+is  specified,  the  has an associated timeout, or the or options
+are enabled.  Both and are enabled by default  on  systems  using
+PAM.   This mode is the default for sudo versions prior to 1.9.14
+when using the sudoers policy.  On systems that use PAM, the  se‐
+curity policy&#x27;s close function is responsible for closing the PAM
+session.   It may also log the exit status.  When the is run as a
+child of the process, will relay signals it receives to  the  The
+and  signals  are only relayed when the is being run in a new pty
+or when the signal was sent by a user process,  not  the  kernel.
+This  prevents the from receiving twice each time the user enters
+control-C.  Some signals, such as and cannot be caught  and  thus
+will  not be relayed to the As a general rule, should be used in‐
+stead of when you wish to suspend a being run  by  As  a  special
+case, will not relay signals that were sent by the it is running.
+This prevents the from accidentally killing itself.  On some sys‐
+tems,  the  utility  sends to all non-system processes other than
+itself before rebooting the system.  This prevents from  relaying
+the  signal  it received back to which might then exit before the
+system was actually rebooted, leaving it  in  a  half-dead  state
+similar to single user mode.  Note, however, that this check only
+applies  to  the  run by and not any other processes that the may
+create.  As a result, running a script  that  calls  or  via  may
+cause  the system to end up in this undefined state unless the or
+are run using the family of functions instead  of  (which  inter‐
+poses  a shell between the and the calling process).  Plugins may
+be specified via directives in the file.  They may be  loaded  as
+dynamic  shared  objects  (on systems that support them), or com‐
+piled directly into the binary.  If no file is present, or if  it
+doesn&#x27;t contain any lines, will use for the policy, auditing, and
+I/O  logging plugins.  See the manual for details of the file and
+the manual for more information about  the  plugin  architecture.
+Upon  successful  execution of a the exit status from will be the
+exit status of the program that was executed.  If the  terminated
+due to receipt of a signal, will send itself the same signal that
+terminated  the  If  the option was specified without a will exit
+with a value of 0 if the user is allowed to run and they  authen‐
+ticated  successfully (as required by the security policy).  If a
+is specified with the option, the exit value will only  be  0  if
+the  is permitted by the security policy, otherwise it will be 1.
+If there is an authentication failure, a configuration/permission
+problem, or if the given cannot be executed, exits with  a  value
+of  1.   In  the  latter case, the error string is printed to the
+standard error.  If cannot one or more entries in the  user&#x27;s  an
+error  is  printed to the standard error.  (If the directory does
+not exist or if it is not really a directory, the  entry  is  ig‐
+nored  and  no  error  is printed.)  This should not happen under
+normal circumstances.  The most common reason for to return is if
+you are running an automounter and one of the directories in your
+is on a machine that is currently unreachable.  tries to be  safe
+when  executing  external To prevent command spoofing, checks &quot;.&quot;
+and &quot;&quot; (both denoting current directory) last when searching  for
+a in the user&#x27;s (if one or both are in the Depending on the secu‐
+rity policy, the user&#x27;s environment variable may be modified, re‐
+placed,  or passed unchanged to the program that executes.  Users
+should be granted privileges to execute files that  are  writable
+by the user or that reside in a directory that is writable by the
+user.   If  the user can modify or replace the there is no way to
+limit what additional they can run.  By default,  will  only  log
+the  it  explicitly runs.  If a user runs a such as or subsequent
+run from that shell are not subject to security policy.  The same
+is true for that offer shell escapes  (including  most  editors).
+If  I/O  logging  is  enabled,  subsequent  will have their input
+and/or output logged, but there will not be traditional logs  for
+those  Because  of this, care must be taken when giving users ac‐
+cess to via to verify that the does not  inadvertently  give  the
+user an effective root shell.  For information on ways to address
+this, see the section in To prevent the disclosure of potentially
+sensitive information, disables core dumps by default while it is
+executing  (they  are re-enabled for the that is run).  This his‐
+torical practice dates from a time when  most  operating  systems
+allowed set-user-ID processes to dump core by default.  To aid in
+debugging  crashes,  you may wish to re-enable core dumps by set‐
+ting to false in the file as follows: Set disable_coredump  false
+See  the manual for more information.  utilizes the following en‐
+vironment variables.  The security policy has  control  over  the
+actual content of the environment.  Default editor to use in (su‐
+doedit) mode if neither nor is set.  Set to the mail spool of the
+target  user  when the option is specified, or when is enabled in
+(unless is present in the list).  Set to the  home  directory  of
+the  target  user when the or options are specified, when the op‐
+tion is specified and is set in when is enabled in or when is en‐
+abled in and is not present in the list.  Set to the  login  name
+of  the target user when the option is specified, when the option
+is enabled in or when the option is enabled in (unless is present
+in the list).  May be overridden by the security policy.  Used to
+determine shell to run with option.   Specifies  the  path  to  a
+helper program used to read the password if no terminal is avail‐
+able  or if the option is specified.  Set to the run by sudo, in‐
+cluding any The are truncated at 4096 characters to prevent a po‐
+tential execution error.  Default editor  to  use  in  (sudoedit)
+mode.   Set to the group-ID of the user who invoked sudo.  Set to
+the home directory of the user who invoked sudo.  Used as the de‐
+fault password prompt unless the option was specified.   If  set,
+will  be  set to its value for the program being run.  Set to the
+user-ID of the user who invoked sudo.  Set to the login  name  of
+the  user  who  invoked sudo.  Set to the same value as described
+above.  Default editor to use in (sudoedit) mode if is  not  set.
+front-end  configuration The following examples assume a properly
+configured security policy.  To get a file listing of an  unread‐
+able  directory:  $ sudo ls /usr/local/protected To list the home
+directory of user yaz on a machine where the file system  holding
+~yaz  is  not exported as root: $ sudo -u yaz ls ~yaz To edit the
+file as user www: $ sudoedit  -u  www  ~www/htdocs/index.html  To
+view  system  logs  only  accessible to root and users in the adm
+group: $ sudo -g adm more /var/log/syslog To run an editor as jim
+with a different primary  group:  $  sudoedit  -u  jim  -g  audio
+~jim/sound.txt  To  shut  down  a machine: $ sudo shutdown -r +15
+&quot;quick reboot&quot; To make a usage listing of the directories in  the
+/home partition.  The are run in a sub-shell to allow the command
+and file redirection to work.  $ sudo sh -c &quot;cd /home ; du -s * |
+sort -rn &gt; USAGE&quot; Error messages produced by include: By default,
+does not permit editing a file when any of the parent directories
+are  writable by the invoking user.  This avoids a race condition
+that could allow the user to overwrite an  arbitrary  file.   See
+the  option in for more information.  By default, does not follow
+symbolic links when opening files.  See the option  in  for  more
+information.   was not run with root privileges.  The binary must
+be owned by the root user  and  have  the  set-user-ID  bit  set.
+Also,  it  must  not be located on a file system mounted with the
+option or on an NFS file system that maps uid 0  to  an  unprivi‐
+leged uid.  was not run with root privileges.  The binary has the
+proper  owner  and permissions but it still did not run with root
+privileges.  The most common reason for this  is  that  the  file
+system  the binary is located on is mounted with the option or it
+is an NFS file system that maps uid 0 to an unprivileged uid.  An
+error occurred while loading or initializing the  plugins  speci‐
+fied  in One or more environment variable names specified via the
+option contained an equal sign The arguments to the option should
+be environment variable names without an associated value.   When
+tried  to  read  the password, it did not receive any characters.
+This may happen if no terminal is available  (or  the  option  is
+specified)  and the standard input has been redirected from needs
+to read the password but there is no mechanism available  for  it
+to  do  so.  A terminal is not present to read the password from,
+has not been configured to read from the standard input, the  op‐
+tion  was  not used, and no askpass helper has been specified ei‐
+ther via the file or the environment  variable.   was  unable  to
+find  a usable temporary directory in which to store its interme‐
+diate files.  was run by a process that has  the  Linux  flag  is
+set.   This causes the set-user-ID bit to be ignored when running
+an executable, which will prevent  from  functioning.   The  most
+likely  cause  for  this  is running within a container that sets
+this flag.  Check the documentation to see if it is  possible  to
+configure  the  container such that the flag is not set.  was not
+run with root privileges.  The binary does not have  the  correct
+owner or permissions.  It must be owned by the root user and have
+the  set-user-ID  bit set.  It is only possible to run on systems
+that support setting the effective user-ID.  The user did not en‐
+ter a password before the password timeout (5 minutes by default)
+expired.  Your user-ID does not appear in the system passwd data‐
+base.  It is only possible to specify environment variables  when
+running  a When editing a file, the editor is run with the user&#x27;s
+environment unmodified.  See the HISTORY.md file in the distribu‐
+tion (https://www.sudo.ws/about/history/) for a brief history  of
+sudo.   Many  people  have worked on over the years; this version
+consists of code written primarily by:  See  the  CONTRIBUTORS.md
+file  in  the  distribution  (https://www.sudo.ws/about/contribu‐
+tors/) for an exhaustive list of people who have  contributed  to
+There  is no easy way to prevent a user from gaining a root shell
+if that user is allowed to run arbitrary via Also, many  programs
+(such  as  editors) allow the user to run via shell escapes, thus
+avoiding checks.  However, on most systems it is possible to pre‐
+vent shell escapes with the plugin&#x27;s functionality.   It  is  not
+meaningful to run the directly via sudo, e.g., $ sudo cd /usr/lo‐
+cal/protected  since  when  the  exits  the  parent process (your
+shell) will still be the same.  The option can be used to  run  a
+in  a specific Running shell scripts via can expose the same ker‐
+nel bugs that make set-user-ID shell scripts unsafe on some oper‐
+ating systems (if your OS has a /dev/fd/  directory,  set-user-ID
+shell scripts are generally safe).  If you believe you have found
+a  bug  in you can either file a bug report in the sudo bug data‐
+base,   https://bugzilla.sudo.ws/,   or   open   an   issue    at
+https://github.com/sudo-project/sudo/issues.  If you would prefer
+to  use  email,  messages may be sent to the sudo-workers mailing
+list, https://www.sudo.ws/mailman/listinfo/sudo-workers  (public)
+or &lt;sudo@sudo.ws&gt; (private).  Please not report security vulnera‐
+bilities through public GitHub issues, Bugzilla or mailing lists.
+Instead, report them via email to &lt;Todd.Miller@sudo.ws&gt;.  You may
+encrypt  your  message  with PGP if you would like, using the key
+found at https://www.sudo.ws/dist/PGPKEYS.  Limited free  support
+is    available    via   the   sudo-users   mailing   list,   see
+https://www.sudo.ws/mailman/listinfo/sudo-users to  subscribe  or
+search the archives.  is provided and any express or implied war‐
+ranties, including, but not limited to, the implied warranties of
+merchantability  and  fitness  for  a particular purpose are dis‐
+claimed.   See  the   LICENSE.md   file   distributed   with   or
+https://www.sudo.ws/about/license/ for complete details.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></body></html>

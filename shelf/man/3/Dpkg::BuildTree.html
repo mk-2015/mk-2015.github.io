@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::BuildTree(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::BuildTree(3perl)           libdpkg-perl           Dpkg::BuildTree(3perl)
+
+NAME
+       Dpkg::BuildTree - handle build tree actions
+
+DESCRIPTION
+       The Dpkg::BuildTree module provides functions to handle build tree
+       actions.
+
+       Note: This is a private module, its API can change at any time.
+
+METHODS
+       $bt = Dpkg::BuildTree-&gt;new(%opts)
+           Create a new Dpkg::BuildTree object.
+
+           Options:
+
+           dir     The build tree directory.  If not specified, it assumes the
+                   current working directory.
+
+       $bt-&gt;clean()
+           Clean the build tree, by removing any dpkg generated artifacts.
+
+       $bt-&gt;needs_root()
+           Check whether the build tree needs root to build.
+
+CHANGES
+   Version 0.xx
+       This is a private module.
+
+1.22.22                           2026-03-06            Dpkg::BuildTree(3perl)
+</pre></body></html>

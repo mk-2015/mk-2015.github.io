@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>get_phys_pages(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>get_phys_pages(3)          Library Functions Manual          get_phys_pages(3)
+
+NAME
+       get_phys_pages,  get_avphys_pages  -  get  total and available physical
+       page counts
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/sysinfo.h&gt;
+
+       long get_phys_pages(void);
+       long get_avphys_pages(void);
+
+DESCRIPTION
+       The function get_phys_pages() returns  the  total  number  of  physical
+       pages of memory available on the system.
+
+       The  function get_avphys_pages() returns the number of currently avail‐
+       able physical pages of memory on the system.
+
+RETURN VALUE
+       On success, these functions return a nonnegative value as given in  DE‐
+       SCRIPTION.   On  failure,  they return -1 and set errno to indicate the
+       error.
+
+ERRORS
+       ENOSYS The system could not provide the required information  (possibly
+              because the /proc filesystem was not mounted).
+
+STANDARDS
+       GNU.
+
+HISTORY
+       Before glibc 2.23, these functions obtained the required information by
+       scanning the MemTotal and MemFree fields of /proc/meminfo.  Since glibc
+       2.23,  these  functions obtain the required information by calling sys‐
+       info(2).
+
+NOTES
+       The following sysconf(3) calls provide a portable  means  of  obtaining
+       the same information as the functions described on this page.
+
+           total_pages = sysconf(_SC_PHYS_PAGES);    /* total pages */
+           avl_pages = sysconf(_SC_AVPHYS_PAGES);    /* available pages */
+
+EXAMPLES
+       The following example shows how get_phys_pages() and get_avphys_pages()
+       can be used.
+
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;sys/sysinfo.h&gt;
+
+       int
+       main(void)
+       {
+           printf(&quot;This system has %ld pages of physical memory and &quot;
+                   &quot;%ld pages of physical memory available.\n&quot;,
+                   get_phys_pages(), get_avphys_pages());
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       sysconf(3)
+
+Linux man-pages 6.9.1             2024-06-15                 get_phys_pages(3)
+</pre></body></html>

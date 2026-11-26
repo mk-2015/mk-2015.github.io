@@ -1,0 +1,178 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tie::IxHash(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Tie::IxHash(3pm)      User Contributed Perl Documentation     Tie::IxHash(3pm)
+
+NAME
+       Tie::IxHash - ordered associative arrays for Perl
+
+SYNOPSIS
+           # simple usage
+           use Tie::IxHash;
+           tie HASHVARIABLE, &#x27;Tie::IxHash&#x27; [, LIST];
+
+           # OO interface with more powerful features
+           use Tie::IxHash;
+           TIEOBJECT = Tie::IxHash-&gt;new( [LIST] );
+           TIEOBJECT-&gt;Splice( OFFSET [, LENGTH [, LIST]] );
+           TIEOBJECT-&gt;Push( LIST );
+           TIEOBJECT-&gt;Pop;
+           TIEOBJECT-&gt;Shift;
+           TIEOBJECT-&gt;Unshift( LIST );
+           TIEOBJECT-&gt;Keys( [LIST] );
+           TIEOBJECT-&gt;Values( [LIST] );
+           TIEOBJECT-&gt;Indices( LIST );
+           TIEOBJECT-&gt;Delete( [LIST] );
+           TIEOBJECT-&gt;Replace( OFFSET, VALUE, [KEY] );
+           TIEOBJECT-&gt;Reorder( LIST );
+           TIEOBJECT-&gt;SortByKey;
+           TIEOBJECT-&gt;SortByValue;
+           TIEOBJECT-&gt;Length;
+
+DESCRIPTION
+       This Perl module implements Perl hashes that preserve the order in
+       which the hash elements were added.  The order is not affected when
+       values corresponding to existing keys in the IxHash are changed.  The
+       elements can also be set to any arbitrary supplied order.  The familiar
+       perl array operations can also be performed on the IxHash.
+
+   Standard &quot;TIEHASH&quot; Interface
+       The standard &quot;TIEHASH&quot; mechanism is available. This interface is
+       recommended for simple uses, since the usage is exactly the same as
+       regular Perl hashes after the &quot;tie&quot; is declared.
+
+   Object Interface
+       This module also provides an extended object-oriented interface that
+       can be used for more powerful operations with the IxHash.  The
+       following methods are available:
+
+       FETCH, STORE, DELETE, EXISTS
+               These  standard  &quot;TIEHASH&quot; methods mandated by Perl can be used
+               directly.  See the &quot;tie&quot; entry in perlfunc(1) for details.
+
+       Push, Pop, Shift, Unshift, Splice
+               These  additional  methods  resembling   Perl   functions   are
+               available  for  operating on key-value pairs in the IxHash. The
+               behavior is the  same  as  the  corresponding  perl  functions,
+               except  when a supplied hash key already exists in the hash. In
+               that case, the existing value is updated but its order  is  not
+               affected.   To  unconditionally  alter  the order of a supplied
+               key-value pair, first &quot;DELETE&quot; the IxHash element.
+
+       Keys    Returns an array of IxHash element keys  corresponding  to  the
+               list  of supplied indices.  Returns an array of all the keys if
+               called without arguments.  Note the return value is mostly only
+               useful when used in a list context (since perl will convert  it
+               to  the  number  of elements in the array when used in a scalar
+               context, and that may not be very useful).
+
+               If  a  single  argument  is  given,  returns  the  single   key
+               corresponding to the index.  This is usable in either scalar or
+               list context.
+
+       Values  Returns  an array of IxHash element values corresponding to the
+               list of supplied indices.  Returns an array of all  the  values
+               if  called  without arguments.  Note the return value is mostly
+               only useful when used  in  a  list  context  (since  perl  will
+               convert  it to the number of elements in the array when used in
+               a scalar context, and that may not be very useful).
+
+               If a  single  argument  is  given,  returns  the  single  value
+               corresponding to the index.  This is usable in either scalar or
+               list context.
+
+       Indices Returns  an array of indices corresponding to the supplied list
+               of keys.  Note the return value is mostly only useful when used
+               in a list context (since perl will convert it to the number  of
+               elements  in  the array when used in a scalar context, and that
+               may not be very useful).
+
+               If a  single  argument  is  given,  returns  the  single  index
+               corresponding  to  the key.  This is usable in either scalar or
+               list context.
+
+       Delete  Removes elements with the supplied keys from the IxHash.
+
+       Replace Substitutes the IxHash element at the specified index with  the
+               supplied  value-key  pair.   If  a  key is not supplied, simply
+               substitutes the value at index with the supplied value.  If  an
+               element  with  the  supplied  key  already  exists,  it will be
+               removed from the IxHash first.
+
+       Reorder This method can be used to manipulate the internal order of the
+               IxHash elements by supplying a list  of  keys  in  the  desired
+               order.   Note  however, that any IxHash elements whose keys are
+               not in the list will be removed from the IxHash.
+
+       Length  Returns the number of IxHash elements.
+
+       SortByKey
+               Reorders the IxHash elements by textual comparison of the keys.
+
+       SortByValue
+               Reorders the IxHash  elements  by  textual  comparison  of  the
+               values.
+
+       Clear   Resets  the  IxHash  to its pristine state: with no elements at
+               all.
+
+EXAMPLE
+           use Tie::IxHash;
+
+           # simple interface
+           $t = tie(%myhash, &#x27;Tie::IxHash&#x27;, &#x27;a&#x27; =&gt; 1, &#x27;b&#x27; =&gt; 2);
+           %myhash = (first =&gt; 1, second =&gt; 2, third =&gt; 3);
+           $myhash{fourth} = 4;
+           @keys = keys %myhash;
+           @values = values %myhash;
+           print(&quot;y&quot;) if exists $myhash{third};
+
+           # OO interface
+           $t = Tie::IxHash-&gt;new(first =&gt; 1, second =&gt; 2, third =&gt; 3);
+           $t-&gt;Push(fourth =&gt; 4); # same as $myhash{&#x27;fourth&#x27;} = 4;
+           ($k, $v) = $t-&gt;Pop;    # $k is &#x27;fourth&#x27;, $v is 4
+           $t-&gt;Unshift(neg =&gt; -1, zeroth =&gt; 0);
+           ($k, $v) = $t-&gt;Shift;  # $k is &#x27;neg&#x27;, $v is -1
+           @oneandtwo = $t-&gt;Splice(1, 2, foo =&gt; 100, bar =&gt; 101);
+
+           @keys = $t-&gt;Keys;
+           @values = $t-&gt;Values;
+           @indices = $t-&gt;Indices(&#x27;foo&#x27;, &#x27;zeroth&#x27;);
+           @itemkeys = $t-&gt;Keys(@indices);
+           @itemvals = $t-&gt;Values(@indices);
+           $t-&gt;Replace(2, 0.3, &#x27;other&#x27;);
+           $t-&gt;Delete(&#x27;second&#x27;, &#x27;zeroth&#x27;);
+           $len = $t-&gt;Length;     # number of key-value pairs
+
+           $t-&gt;Reorder(reverse @keys);
+           $t-&gt;SortByKey;
+           $t-&gt;SortByValue;
+
+BUGS
+       You cannot specify a negative length to &quot;Splice&quot;. Negative indexes  are
+       OK, though.
+
+NOTE
+       Indexing  always  begins  at 0 (despite the current $[ setting) for all
+       the functions.
+
+TODO
+       Addition of elements with keys that already exist to  the  end  of  the
+       IxHash must be controlled by a switch.
+
+       Provide &quot;TIEARRAY&quot; interface when it stabilizes in Perl.
+
+       Rewrite using XSUBs for efficiency.
+
+AUTHOR
+       Gurusamy Sarathy        gsar@umich.edu
+
+       Copyright (c) 1995 Gurusamy Sarathy. All rights reserved.  This program
+       is  free  software;  you can redistribute it and/or modify it under the
+       same terms as Perl itself.
+
+VERSION
+       Version 1.23
+
+SEE ALSO
+       perl(1)
+
+perl v5.34.0                      2022-10-13                  Tie::IxHash(3pm)
+</pre></body></html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>canonicalize_file_name(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>canonicalize_file_name(3)  Library Functions Manual  canonicalize_file_name(3)
+
+NAME
+       canonicalize_file_name - return the canonicalized absolute pathname
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #define _GNU_SOURCE         /* See feature_test_macros(7) */
+       #include &lt;stdlib.h&gt;
+
+       char *canonicalize_file_name(const char *path);
+
+DESCRIPTION
+       The  canonicalize_file_name() function returns a null-terminated string
+       containing the canonicalized absolute pathname corresponding  to  path.
+       In  the  returned string, symbolic links are resolved, as are .  and ..
+       pathname components.  Consecutive slash (/) characters are replaced  by
+       a single slash.
+
+       The   returned   string   is   dynamically   allocated   by  canonical‐
+       ize_file_name() and the caller should deallocate it with  free(3)  when
+       it is no longer required.
+
+       The call canonicalize_file_name(path) is equivalent to the call:
+
+           realpath(path, NULL);
+
+RETURN VALUE
+       On  success, canonicalize_file_name() returns a null-terminated string.
+       On error (e.g., a pathname component is unreadable or does not  exist),
+       canonicalize_file_name()  returns  NULL  and sets errno to indicate the
+       error.
+
+ERRORS
+       See realpath(3).
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       canonicalize_file_name() T}   Thread safety  MT-Safe
+
+STANDARDS
+       GNU.
+
+SEE ALSO
+       readlink(2), realpath(3)
+
+Linux man-pages 6.9.1             2024-05-02         canonicalize_file_name(3)
+</pre></body></html>

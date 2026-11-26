@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>unmkinitramfs(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>UNMKINITRAMFS(8)             System Administration            UNMKINITRAMFS(8)
+
+NAME
+       unmkinitramfs - extract content from an initramfs image
+
+
+SYNOPSIS
+       unmkinitramfs [-v] initramfs-file directory
+       unmkinitramfs -h
+
+
+DESCRIPTION
+       The unmkinitramfs command extracts the content of a given initramfs im‐
+       age using cpio and the appropriate decompressor command.
+
+       The  initramfs  image  may  be a single compressed cpio archive, or the
+       concatenation of any number of uncompressed  cpio  archives  optionally
+       followed by a compressed cpio archive.
+
+       When  the  initramfs  image  includes  one  or  more  &quot;early initramfs&quot;
+       archives, that is uncompressed archives with microcode or  other  files
+       that  the  kernel uses directly, these are extracted to sub-directories
+       named &quot;early&quot;, &quot;early2&quot;, etc., and the other archives are extracted  to
+       a sub-directory named &quot;main&quot;.
+
+       In  a  future  version  of initramfs-tools this behaviour may change so
+       that all archives are extracted directly into the given directory.
+
+
+OPTIONS
+       -h     Display usage information and exit.
+
+
+       -v     Display verbose messages about extraction.
+
+
+
+USAGE EXAMPLES
+       Extract initramfs content of current running kernel:
+
+
+       unmkinitramfs /boot/initrd.img-$(uname -r) initramfs/
+
+
+
+BUGS
+       unmkinitramfs does not support initramfs images with more than one com‐
+       pressed cpio archive.
+
+
+AUTHOR
+       The initramfs-tools are written by Maximilian Attems  &lt;maks@debian.org&gt;
+       and numerous others.
+
+
+SEE ALSO
+       initramfs-tools(7),     lsinitramfs(8),     mkinitramfs(8),     update-
+       initramfs(8).
+
+initramfs-tools                   2025/03/20                  UNMKINITRAMFS(8)
+</pre></body></html>

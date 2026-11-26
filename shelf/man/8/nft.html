@@ -1,0 +1,5491 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>nft(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>NFT(8)                                                                  NFT(8)
+
+NAME
+       nft - Administration tool of the nftables framework for packet
+       filtering and classification
+
+SYNOPSIS
+       nft [ -nNscaeSupyjtT ] [ -I directory ] [ -f filename | -i | cmd ...]
+       nft -h
+       nft -v
+
+DESCRIPTION
+       nft is the command line tool used to set up, maintain and inspect
+       packet filtering and classification rules in the Linux kernel, in the
+       nftables framework. The Linux kernel subsystem is known as nf_tables,
+       and ‘nf’ stands for Netfilter.
+
+OPTIONS
+       The command accepts several different options which are documented here
+       in groups for better understanding of their meaning. You can get
+       information about options by running nft --help.
+
+       General options:
+
+       -h, --help
+           Show help message and all options.
+
+       -v, --version
+           Show version.
+
+       -V
+           Show long version information, including compile-time
+           configuration.
+
+       Ruleset input handling options that specify to how to load rulesets:
+
+       -f, --file filename
+           Read input from filename. If filename is -, read from stdin. The
+           directory path to this file is inserted at the beginning the list
+           of directories to be searched for included files (see
+           -I/--includepath).
+
+       -D, --define name=value
+           Define a variable. You can only combine this option with -f.
+
+       -i, --interactive
+           Read input from an interactive readline CLI. You can use quit to
+           exit, or use the EOF marker, normally this is CTRL-D.
+
+       -I, --includepath directory
+           Add the directory directory to the list of directories to be
+           searched for included files. This option may be specified multiple
+           times.
+
+       -c, --check
+           Check commands validity without actually applying the changes.
+
+       -o, --optimize
+           Optimize your ruleset. You can combine this option with -c to
+           inspect the proposed optimizations.
+
+       Ruleset list output formatting that modify the output of the list
+       ruleset command:
+
+       -a, --handle
+           Show object handles in output.
+
+       -s, --stateless
+           Omit stateful information of rules and stateful objects.
+
+       -t, --terse
+           Omit contents of sets from output.
+
+       -S, --service
+           Translate ports to service names as defined by /etc/services.
+
+       -N, --reversedns
+           Translate IP address to names via reverse DNS lookup. This may slow
+           down your listing since it generates network traffic.
+
+       -u, --guid
+           Translate numeric UID/GID to names as defined by /etc/passwd and
+           /etc/group.
+
+       -n, --numeric
+           Print fully numerical output.
+
+       -y, --numeric-priority
+           Display base chain priority numerically.
+
+       -p, --numeric-protocol
+           Display layer 4 protocol numerically.
+
+       -T, --numeric-time
+           Show time, day and hour values in numeric format.
+
+       Command output formatting:
+
+       -e, --echo
+           When inserting items into the ruleset using add, insert or replace
+           commands, print notifications just like nft monitor.
+
+       -j, --json
+           Format output in JSON. See libnftables-json(5) for a schema
+           description.
+
+       -d, --debug level
+           Enable debugging output. The debug level can be any of scanner,
+           parser, eval, netlink, mnl, proto-ctx, segtree, all. You can
+           combine more than one by separating by the , symbol, for example -d
+           eval,mnl.
+
+INPUT FILE FORMATS
+   LEXICAL CONVENTIONS
+       Input is parsed line-wise. When the last character of a line, just
+       before the newline character, is a non-quoted backslash (\), the next
+       line is treated as a continuation. Multiple commands on the same line
+       can be separated using a semicolon (;).
+
+       A hash sign (#) begins a comment. All following characters on the same
+       line are ignored.
+
+       Identifiers begin with an alphabetic character (a-z,A-Z), followed by
+       zero or more alphanumeric characters (a-z,A-Z,0-9) and the characters
+       slash (/), backslash (\), underscore (_) and dot (.). Identifiers using
+       different characters or clashing with a keyword need to be enclosed in
+       double quotes (&quot;).
+
+   INCLUDE FILES
+           include filename
+
+       Other files can be included by using the include statement. The
+       directories to be searched for include files can be specified using the
+       -I/--includepath option. You can override this behaviour either by
+       prepending ‘./’ to your path to force inclusion of files located in the
+       current working directory (i.e. relative path) or / for file location
+       expressed as an absolute path.
+
+       If -I/--includepath is not specified, then nft relies on the default
+       directory that is specified at compile time. You can retrieve this
+       default directory via the -h/--help option.
+
+       Include statements support the usual shell wildcard symbols (,?,[]).
+       Having no matches for an include statement is not an error, if wildcard
+       symbols are used in the include statement. This allows having
+       potentially empty include directories for statements like include
+       &quot;/etc/firewall/rules/&quot;. The wildcard matches are loaded in alphabetical
+       order. Files beginning with dot (.) are not matched by include
+       statements.
+
+   SYMBOLIC VARIABLES
+           define variable = expr
+           undefine variable
+           redefine variable = expr
+           $variable
+
+       Symbolic variables can be defined using the define statement. Variable
+       references are expressions and can be used to initialize other
+       variables. The scope of a definition is the current block and all
+       blocks contained within. Symbolic variables can be undefined using the
+       undefine statement, and modified using the redefine statement.
+
+       Using symbolic variables.
+
+           define int_if1 = eth0
+           define int_if2 = eth1
+           define int_ifs = { $int_if1, $int_if2 }
+           redefine int_if2 = wlan0
+           undefine int_if2
+
+           filter input iif $int_ifs accept
+
+
+ADDRESS FAMILIES
+       Address families determine the type of packets which are processed. For
+       each address family, the kernel contains so called hooks at specific
+       stages of the packet processing paths, which invoke nftables if rules
+       for these hooks exist.  tab(:); lt lt lt lt lt lt lt lt lt lt lt lt.
+       T{
+
+       ip T}:T{
+
+       IPv4 address family.  T} T{
+
+       ip6 T}:T{
+
+       IPv6 address family.  T} T{
+
+       inet T}:T{
+
+       Internet (IPv4/IPv6) address family.  T} T{
+
+       arp T}:T{
+
+       ARP address family, handling IPv4 ARP packets.  T} T{
+
+       bridge T}:T{
+
+       Bridge address family, handling packets which traverse a bridge device.
+       T} T{
+
+       netdev T}:T{
+
+       Netdev address family, handling packets on ingress and egress.  T}
+
+
+       All nftables objects exist in address family specific namespaces,
+       therefore all identifiers include an address family. If an identifier
+       is specified without an address family, the ip family is used by
+       default.
+
+   IPV4/IPV6/INET ADDRESS FAMILIES
+       The IPv4/IPv6/Inet address families handle IPv4, IPv6 or both types of
+       packets. They contain five hooks at different packet processing stages
+       in the network stack.
+
+       Table 1. IPv4/IPv6/Inet address family hooks allbox tab(:); ltB ltB.
+       T{ Hook T}:T{ Description T} lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       prerouting T}:T{
+
+       All packets entering the system are processed by the prerouting hook.
+       It is invoked before the routing process and is used for early
+       filtering or changing packet attributes that affect routing.  T} T{
+
+       input T}:T{
+
+       Packets delivered to the local system are processed by the input hook.
+       T} T{
+
+       forward T}:T{
+
+       Packets forwarded to a different host are processed by the forward
+       hook.  T} T{
+
+       output T}:T{
+
+       Packets sent by local processes are processed by the output hook.  T}
+       T{
+
+       postrouting T}:T{
+
+       All packets leaving the system are processed by the postrouting hook.
+       T} T{
+
+       ingress T}:T{
+
+       All packets entering the system are processed by this hook. It is
+       invoked before layer 3 protocol handlers, hence before the prerouting
+       hook, and it can be used for filtering and policing. Ingress is only
+       available for Inet family (since Linux kernel 5.10).  T}
+
+
+   ARP ADDRESS FAMILY
+       The ARP address family handles ARP packets received and sent by the
+       system. It is commonly used to mangle ARP packets for clustering.
+
+       Table 2. ARP address family hooks allbox tab(:); ltB ltB.  T{ Hook
+       T}:T{ Description T} lt lt lt lt.  T{
+
+       input T}:T{
+
+       Packets delivered to the local system are processed by the input hook.
+       T} T{
+
+       output T}:T{
+
+       Packets send by the local system are processed by the output hook.  T}
+
+
+   BRIDGE ADDRESS FAMILY
+       The bridge address family handles Ethernet packets traversing bridge
+       devices.
+
+       The list of supported hooks is identical to IPv4/IPv6/Inet address
+       families above.
+
+   NETDEV ADDRESS FAMILY
+       The Netdev address family handles packets from the device ingress and
+       egress path. This family allows you to filter packets of any ethertype
+       such as ARP, VLAN 802.1q, VLAN 802.1ad (Q-in-Q) as well as IPv4 and
+       IPv6 packets.
+
+       Table 3. Netdev address family hooks allbox tab(:); ltB ltB.  T{ Hook
+       T}:T{ Description T} lt lt lt lt.  T{
+
+       ingress T}:T{
+
+       All packets entering the system are processed by this hook. It is
+       invoked after the network taps (ie. tcpdump), right after tc ingress
+       and before layer 3 protocol handlers, it can be used for early
+       filtering and policing.  T} T{
+
+       egress T}:T{
+
+       All packets leaving the system are processed by this hook. It is
+       invoked after layer 3 protocol handlers and before tc egress. It can be
+       used for late filtering and policing.  T}
+
+
+       Tunneled packets (such as vxlan) are processed by netdev family hooks
+       both in decapsulated and encapsulated (tunneled) form. So a packet can
+       be filtered on the overlay network as well as on the underlying
+       network.
+
+       Note that the order of netfilter and tc is mirrored on ingress versus
+       egress. This ensures symmetry for NAT and other packet mangling.
+
+       Ingress packets which are redirected out some other interface are only
+       processed by netfilter on egress if they have passed through netfilter
+       ingress processing before. Thus, ingress packets which are redirected
+       by tc are not subjected to netfilter. But they are if they are
+       redirected by netfilter on ingress. Conceptually, tc and netfilter can
+       be thought of as layers, with netfilter layered above tc: If the packet
+       hasn’t been passed up from the tc layer to the netfilter layer, it’s
+       not subjected to netfilter on egress.
+
+RULESET
+           {list | flush} ruleset [family]
+
+       The ruleset keyword is used to identify the whole set of tables,
+       chains, etc. currently in place in kernel. The following ruleset
+       commands exist: tab(:); lt lt lt lt.  T{
+
+       list T}:T{
+
+       Print the ruleset in human-readable format.  T} T{
+
+       flush T}:T{
+
+       Clear the whole ruleset. Note that, unlike iptables, this will remove
+       all tables and whatever they contain, effectively leading to an empty
+       ruleset - no packet filtering will happen anymore, so the kernel
+       accepts any valid packet it receives.  T}
+
+
+       It is possible to limit list and flush to a specific address family
+       only. For a list of valid family names, see the section called “ADDRESS
+       FAMILIES” above.
+
+       By design, list ruleset command output may be used as input to nft -f.
+       Effectively, this is the nft-equivalent of iptables-save and
+       iptables-restore.
+
+TABLES
+           {add | create} table [family] table [{ [comment comment ;] [flags flags ;] }]
+           {delete | destroy | list | flush} table [family] table
+           list tables [family]
+           delete table [family] handle handle
+           destroy table [family] handle handle
+
+       Tables are containers for chains, sets and stateful objects. They are
+       identified by their address family and their name. The address family
+       must be one of ip, ip6, inet, arp, bridge, netdev. The inet address
+       family is a dummy family which is used to create hybrid IPv4/IPv6
+       tables. The meta expression nfproto keyword can be used to test which
+       family (ipv4 or ipv6) context the packet is being processed in. When no
+       address family is specified, ip is used by default. The only difference
+       between add and create is that the former will not return an error if
+       the specified table already exists while create will return an error.
+
+       Table 4. Table flags allbox tab(:); ltB ltB.  T{ Flag T}:T{ Description
+       T} lt lt lt lt lt lt.  T{
+
+       dormant T}:T{
+
+       table is not evaluated any more (base chains are unregistered).  T} T{
+
+       owner T}:T{
+
+       table is owned by the creating process.  T} T{
+
+       persist T}:T{
+
+       table shall outlive the owning process.  T}
+
+
+       Creating a table with flag owner excludes other processes from
+       manipulating it or its contents. By default, it will be removed when
+       the process exits. Setting flag persist will prevent this and the
+       resulting orphaned table will accept a new owner, e.g. a restarting
+       daemon maintaining the table.
+
+       Add, change, delete a table.
+
+           # start nft in interactive mode
+           nft --interactive
+
+           # create a new table.
+           create table inet mytable
+
+           # add a new base chain: get input packets
+           add chain inet mytable myin { type filter hook input priority filter; }
+
+           # add a single counter to the chain
+           add rule inet mytable myin counter
+
+           # disable the table temporarily -- rules are not evaluated anymore
+           add table inet mytable { flags dormant; }
+
+           # make table active again:
+           add table inet mytable
+
+       tab(:); lt lt lt lt lt lt lt lt lt lt.  T{
+
+       add T}:T{
+
+       Add a new table for the given family with the given name.  T} T{
+
+       delete T}:T{
+
+       Delete the specified table.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified table, it does not fail if it does not exist.  T}
+       T{
+
+       list T}:T{
+
+       List all chains and rules of the specified table.  T} T{
+
+       flush T}:T{
+
+       Flush all chains and rules of the specified table.  T}
+
+
+CHAINS
+           {add | create} chain [family] table chain [{ type type hook hook [device device] priority priority ; [policy policy ;] [comment comment ;] }]
+           {delete | destroy | list | flush} chain [family] table chain
+           list chains [family]
+           delete chain [family] table handle handle
+           destroy chain [family] table handle handle
+           rename chain [family] table chain newname
+
+       Chains are containers for rules. They exist in two kinds, base chains
+       and regular chains. A base chain is an entry point for packets from the
+       networking stack, a regular chain may be used as jump target and is
+       used for better rule organization.  tab(:); lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt.  T{
+
+       add T}:T{
+
+       Add a new chain in the specified table. When a hook and priority value
+       are specified, the chain is created as a base chain and hooked up to
+       the networking stack.  T} T{
+
+       create T}:T{
+
+       Similar to the add command, but returns an error if the chain already
+       exists.  T} T{
+
+       delete T}:T{
+
+       Delete the specified chain. The chain must not contain any rules or be
+       used as jump target.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified chain, it does not fail if it does not exist. The
+       chain must not contain any rules or be used as jump target.  T} T{
+
+       rename T}:T{
+
+       Rename the specified chain.  T} T{
+
+       list T}:T{
+
+       List all rules of the specified chain.  T} T{
+
+       flush T}:T{
+
+       Flush all rules of the specified chain.  T}
+
+
+       For base chains, type, hook and priority parameters are mandatory.
+
+       Table 5. Supported chain types allbox tab(:); ltB ltB ltB ltB.  T{ Type
+       T}:T{ Families T}:T{ Hooks T}:T{ Description T} lt lt lt lt lt lt lt lt
+       lt lt lt lt.  T{
+
+       filter T}:T{
+
+       all T}:T{
+
+       all T}:T{
+
+       Standard chain type to use in doubt.  T} T{
+
+       nat T}:T{
+
+       ip, ip6, inet T}:T{
+
+       prerouting, input, output, postrouting T}:T{
+
+       Chains of this type perform Native Address Translation based on
+       conntrack entries. Only the first packet of a connection actually
+       traverses this chain - its rules usually define details of the created
+       conntrack entry (NAT statements for instance).  T} T{
+
+       route T}:T{
+
+       ip, ip6, inet T}:T{
+
+       output T}:T{
+
+       If a packet has traversed a chain of this type and is about to be
+       accepted, a new route lookup is performed if relevant parts of the IP
+       header have changed. This allows one to e.g. implement policy routing
+       selectors in nftables.  T}
+
+
+       Apart from the special cases illustrated above (e.g. nat type not
+       supporting forward hook or route type only supporting output hook),
+       there are three further quirks worth noticing:
+
+       •   The netdev family supports merely two combinations, namely filter
+           type with ingress hook and filter type with egress hook. Base
+           chains in this family also require the device parameter to be
+           present since they exist per interface only.
+
+       •   The arp family supports only the input and output hooks, both in
+           chains of type filter.
+
+       •   The inet family also supports the ingress hook (since Linux kernel
+           5.10), to filter IPv4 and IPv6 packet at the same location as the
+           netdev ingress hook. This inet hook allows you to share sets and
+           maps between the usual prerouting, input, forward, output,
+           postrouting and this ingress hook.
+
+       The device parameter accepts a network interface name as a string, and
+       is required when adding a base chain that filters traffic on the
+       ingress or egress hooks. Any ingress or egress chains will only filter
+       traffic from the interface specified in the device parameter.
+
+       The priority parameter accepts a signed integer value or a standard
+       priority name which specifies the order in which chains with the same
+       hook value are traversed. The ordering is ascending, i.e. lower
+       priority values have precedence over higher ones.
+
+       With nat type chains, there’s a lower excluding limit of -200 for
+       priority values, because conntrack hooks at this priority and NAT
+       requires it.
+
+       Standard priority values can be replaced with easily memorizable names.
+       Not all names make sense in every family with every hook (see the
+       compatibility matrices below) but their numerical value can still be
+       used for prioritizing chains.
+
+       These names and values are defined and made available based on what
+       priorities are used by xtables when registering their default chains.
+
+       Most of the families use the same values, but bridge uses different
+       ones from the others. See the following tables that describe the values
+       and compatibility.
+
+       Table 6. Standard priority names, family and hook compatibility matrix
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Value T}:T{ Families
+       T}:T{ Hooks T} lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt.  T{
+
+       raw T}:T{
+
+       -300 T}:T{
+
+       ip, ip6, inet T}:T{
+
+       all T} T{
+
+       mangle T}:T{
+
+       -150 T}:T{
+
+       ip, ip6, inet T}:T{
+
+       all T} T{
+
+       dstnat T}:T{
+
+       -100 T}:T{
+
+       ip, ip6, inet T}:T{
+
+       prerouting T} T{
+
+       filter T}:T{
+
+       0 T}:T{
+
+       ip, ip6, inet, arp, netdev T}:T{
+
+       all T} T{
+
+       security T}:T{
+
+       50 T}:T{
+
+       ip, ip6, inet T}:T{
+
+       all T} T{
+
+       srcnat T}:T{
+
+       100 T}:T{
+
+       ip, ip6, inet T}:T{
+
+       postrouting T}
+
+
+       Table 7. Standard priority names and hook compatibility for the bridge
+       family allbox tab(:); lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       Name T}:T{
+
+       Value T}:T{
+
+       Hooks T} T{
+
+       dstnat T}:T{
+
+       -300 T}:T{
+
+       prerouting T} T{
+
+       filter T}:T{
+
+       -200 T}:T{
+
+       all T} T{
+
+       out T}:T{
+
+       100 T}:T{
+
+       output T} T{
+
+       srcnat T}:T{
+
+       300 T}:T{
+
+       postrouting T}
+
+
+       Basic arithmetic expressions (addition and subtraction) can also be
+       achieved with these standard names to ease relative prioritizing, e.g.
+       mangle - 5 stands for -155. Values will also be printed like this until
+       the value is not further than 10 from the standard value.
+
+       Base chains also allow one to set the chain’s policy, i.e. what happens
+       to packets not explicitly accepted or refused in contained rules.
+       Supported policy values are accept (which is the default) or drop.
+
+RULES
+           {add | insert} rule [family] table chain [handle handle | index index] statement ... [comment comment]
+           replace rule [family] table chain handle handle statement ... [comment comment]
+           {delete | reset} rule [family] table chain handle handle
+           destroy rule [family] table chain handle handle
+           reset rules [family] [table [chain]]
+
+       Rules are added to chains in the given table. If the family is not
+       specified, the ip family is used. Rules are constructed from two kinds
+       of components according to a set of grammatical rules: expressions and
+       statements.
+
+       The add and insert commands support an optional location specifier,
+       which is either a handle or the index (starting at zero) of an existing
+       rule. Internally, rule locations are always identified by handle and
+       the translation from index happens in userspace. This has two potential
+       implications in case a concurrent ruleset change happens after the
+       translation was done: The effective rule index might change if a rule
+       was inserted or deleted before the referred one. If the referred rule
+       was deleted, the command is rejected by the kernel just as if an
+       invalid handle was given.
+
+       A comment is a single word or a double-quoted (&quot;) multi-word string
+       which can be used to make notes regarding the actual rule. Note: If you
+       use bash for adding rules, you have to escape the quotation marks, e.g.
+       \&quot;enable ssh for servers\&quot;.  tab(:); lt lt lt lt lt lt lt lt lt lt lt
+       lt.  T{
+
+       add T}:T{
+
+       Add a new rule described by the list of statements. The rule is
+       appended to the given chain unless a location is specified, in which
+       case the rule is inserted after the specified rule.  T} T{
+
+       insert T}:T{
+
+       Same as add except the rule is inserted at the beginning of the chain
+       or before the specified rule.  T} T{
+
+       replace T}:T{
+
+       Similar to add, but the rule replaces the specified rule.  T} T{
+
+       delete T}:T{
+
+       Delete the specified rule.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified rule, it does not fail if it does not exist.  T}
+       T{
+
+       reset T}:T{
+
+       Reset rule-contained state, e.g. counter and quota statement values.
+       T}
+
+
+       add a rule to ip table output chain.
+
+           nft add rule filter output ip daddr 192.168.0.0/24 accept # &#x27;ip filter&#x27; is assumed
+           # same command, slightly more verbose
+           nft add rule ip filter output ip daddr 192.168.0.0/24 accept
+
+       delete rule from inet table.
+
+           # nft -a list ruleset
+           table inet filter {
+                   chain input {
+                           type filter hook input priority filter; policy accept;
+                           ct state established,related accept # handle 4
+                           ip saddr 10.1.1.1 tcp dport ssh accept # handle 5
+                     ...
+           # delete the rule with handle 5
+           nft delete rule inet filter input handle 5
+
+
+SETS
+       nftables offers two kinds of set concepts. Anonymous sets are sets that
+       have no specific name. The set members are enclosed in curly braces,
+       with commas to separate elements when creating the rule the set is used
+       in. Once that rule is removed, the set is removed as well. They cannot
+       be updated, i.e. once an anonymous set is declared it cannot be changed
+       anymore except by removing/altering the rule that uses the anonymous
+       set.
+
+       Using anonymous sets to accept particular subnets and ports.
+
+           nft add rule filter input ip saddr { 10.0.0.0/8, 192.168.0.0/16 } tcp dport { 22, 443 } accept
+
+       Named sets are sets that need to be defined first before they can be
+       referenced in rules. Unlike anonymous sets, elements can be added to or
+       removed from a named set at any time. Sets are referenced from rules
+       using an @ prefixed to the sets name.
+
+       Using named sets to accept addresses and ports.
+
+           nft add rule filter input ip saddr @allowed_hosts tcp dport @allowed_ports accept
+
+       The sets allowed_hosts and allowed_ports need to be created first. The
+       next section describes nft set syntax in more detail.
+
+           add set [family] table set { type type | typeof expression ; [flags flags ;] [timeout timeout ;] [gc-interval gc-interval ;] [elements = { element[, ...] } ;] [size size ;] [comment comment ;] [policy &#x27;policy ;] [auto-merge ;] }
+           {delete | destroy | list | flush | reset } set [family] table set
+           list sets [family] [table]
+           delete set [family] table handle handle
+           {add | delete | destroy } element [family] table set { element[, ...] }
+
+       Sets are element containers of a user-defined data type, they are
+       uniquely identified by a user-defined name and attached to tables.
+       Their behaviour can be tuned with the flags that can be specified at
+       set creation time.  tab(:); lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       add T}:T{
+
+       Add a new set in the specified table. See the Set specification table
+       below for more information about how to specify properties of a set.
+       T} T{
+
+       delete T}:T{
+
+       Delete the specified set.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified set, it does not fail if it does not exist.  T} T{
+
+       list T}:T{
+
+       Display the elements in the specified set.  T} T{
+
+       flush T}:T{
+
+       Remove all elements from the specified set.  T} T{
+
+       reset T}:T{
+
+       Reset state in all contained elements, e.g. counter and quota statement
+       values.  T}
+
+
+       Table 8. Set specifications allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       type T}:T{
+
+       data type of set elements T}:T{
+
+       string: ipv4_addr, ipv6_addr, ether_addr, inet_proto, inet_service,
+       mark T} T{
+
+       typeof T}:T{
+
+       data type of set element T}:T{
+
+       expression to derive the data type from T} T{
+
+       flags T}:T{
+
+       set flags T}:T{
+
+       string: constant, dynamic, interval, timeout. Used to describe the sets
+       properties.  T} T{
+
+       timeout T}:T{
+
+       time an element stays in the set, mandatory if set is added to from the
+       packet path (ruleset) T}:T{
+
+       string, decimal followed by unit. Units are: d, h, m, s T} T{
+
+       gc-interval T}:T{
+
+       garbage collection interval, only available when timeout or flag
+       timeout are active T}:T{
+
+       string, decimal followed by unit. Units are: d, h, m, s T} T{
+
+       elements T}:T{
+
+       elements contained by the set T}:T{
+
+       set data type T} T{
+
+       size T}:T{
+
+       maximum number of elements in the set, mandatory if set is added to
+       from the packet path (ruleset) T}:T{
+
+       unsigned integer (64 bit) T} T{
+
+       policy T}:T{
+
+       set policy T}:T{
+
+       string: performance [default], memory T} T{
+
+       auto-merge T}:T{
+
+       automatic merge of adjacent/overlapping set elements (only for interval
+       sets) T}:T{
+
+       T}
+
+
+MAPS
+           add map [family] table map { type type | typeof expression [flags flags ;] [elements = { element[, ...] } ;] [size size ;] [comment comment ;] [policy &#x27;policy ;] }
+           {delete | destroy | list | flush | reset } map [family] table map
+           list maps [family] [table]
+
+       Maps store data based on some specific key used as input. They are
+       uniquely identified by a user-defined name and attached to tables.
+       tab(:); lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       add T}:T{
+
+       Add a new map in the specified table.  T} T{
+
+       delete T}:T{
+
+       Delete the specified map.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified map, it does not fail if it does not exist.  T} T{
+
+       list T}:T{
+
+       Display the elements in the specified map.  T} T{
+
+       flush T}:T{
+
+       Remove all elements from the specified map.  T} T{
+
+       reset T}:T{
+
+       Reset state in all contained elements, e.g. counter and quota statement
+       values.  T}
+
+
+       Table 9. Map specifications allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt.  T{
+
+       type T}:T{
+
+       data type of map elements T}:T{
+
+       string: ipv4_addr, ipv6_addr, ether_addr, inet_proto, inet_service,
+       mark, counter, quota. Counter and quota can’t be used as keys T} T{
+
+       typeof T}:T{
+
+       data type of set element T}:T{
+
+       expression to derive the data type from T} T{
+
+       flags T}:T{
+
+       map flags T}:T{
+
+       string, same as set flags T} T{
+
+       elements T}:T{
+
+       elements contained by the map T}:T{
+
+       map data type T} T{
+
+       size T}:T{
+
+       maximum number of elements in the map T}:T{
+
+       unsigned integer (64 bit) T} T{
+
+       policy T}:T{
+
+       map policy T}:T{
+
+       string: performance [default], memory T}
+
+
+       Users can specifiy the properties/features that the set/map must
+       support. This allows the kernel to pick an optimal internal
+       representation. If a required flag is missing, the ruleset might still
+       work, as nftables will auto-enable features if it can infer this from
+       the ruleset. This may not work for all cases, however, so it is
+       recommended to specify all required features in the set/map definition
+       manually.
+
+       Table 10. Set and Map flags allbox tab(:); ltB ltB.  T{ Flag T}:T{
+       Description T} lt lt lt lt lt lt lt lt.  T{
+
+       constant T}:T{
+
+       Set contents will never change after creation T} T{
+
+       dynamic T}:T{
+
+       Set must support updates from the packet path with the add, update or
+       delete keywords.  T} T{
+
+       interval T}:T{
+
+       Set must be able to store intervals (ranges) T} T{
+
+       timeout T}:T{
+
+       Set must support element timeouts (auto-removal of elements once they
+       expire).  T}
+
+
+ELEMENTS
+           {add | create | delete | destroy | get | reset } element [family] table set { ELEMENT[, ...] }
+
+           ELEMENT := key_expression OPTIONS [: value_expression]
+           OPTIONS := [timeout TIMESPEC] [expires TIMESPEC] [comment string]
+           TIMESPEC := [numd][numh][numm][num[s]]
+
+       Element-related commands allow one to change contents of named sets and
+       maps. key_expression is typically a value matching the set type.
+       value_expression is not allowed in sets but mandatory when adding to
+       maps, where it matches the data part in its type definition. When
+       deleting from maps, it may be specified but is optional as
+       key_expression uniquely identifies the element.
+
+       create command is similar to add with the exception that none of the
+       listed elements may already exist.
+
+       get command is useful to check if an element is contained in a set
+       which may be non-trivial in very large and/or interval sets. In the
+       latter case, the containing interval is returned instead of just the
+       element itself.
+
+       reset command resets state attached to the given element(s), e.g.
+       counter and quota statement values.
+
+       Table 11. Element options allbox tab(:); ltB ltB.  T{ Option T}:T{
+       Description T} lt lt lt lt lt lt.  T{
+
+       timeout T}:T{
+
+       timeout value for sets/maps with flag timeout T} T{
+
+       expires T}:T{
+
+       the time until given element expires, useful for ruleset replication
+       only T} T{
+
+       comment T}:T{
+
+       per element comment field T}
+
+
+FLOWTABLES
+           {add | create} flowtable [family] table flowtable { hook hook priority priority ; devices = { device[, ...] } ; }
+           list flowtables [family] [table]
+           {delete | destroy | list} flowtable [family] table flowtable
+           delete flowtable [family] table handle handle
+
+       Flowtables allow you to accelerate packet forwarding in software.
+       Flowtables entries are represented through a tuple that is composed of
+       the input interface, source and destination address, source and
+       destination port; and layer 3/4 protocols. Each entry also caches the
+       destination interface and the gateway address - to update the
+       destination link-layer address - to forward packets. The ttl and
+       hoplimit fields are also decremented. Hence, flowtables provides an
+       alternative path that allow packets to bypass the classic forwarding
+       path. Flowtables reside in the ingress hook that is located before the
+       prerouting hook. You can select which flows you want to offload through
+       the flow expression from the forward chain. Flowtables are identified
+       by their address family and their name. The address family must be one
+       of ip, ip6, or inet. The inet address family is a dummy family which is
+       used to create hybrid IPv4/IPv6 tables. When no address family is
+       specified, ip is used by default.
+
+       The priority can be a signed integer or filter which stands for 0.
+       Addition and subtraction can be used to set relative priority, e.g.
+       filter + 5 equals to 5.  tab(:); lt lt lt lt lt lt lt lt.  T{
+
+       add T}:T{
+
+       Add a new flowtable for the given family with the given name.  T} T{
+
+       delete T}:T{
+
+       Delete the specified flowtable.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified flowtable, it does not fail if it does not exist.
+       T} T{
+
+       list T}:T{
+
+       List all flowtables.  T}
+
+
+STATEFUL OBJECTS
+           {add | delete | destroy | list | reset} counter [family] table object
+           {add | delete | destroy | list | reset} quota [family] table object
+           {add | delete | destroy | list} limit [family] table object
+           delete counter [family] table handle handle
+           delete quota [family] table handle handle
+           delete limit [family] table handle handle
+           destroy counter [family] table handle handle
+           destroy quota [family] table handle handle
+           destroy limit [family] table handle handle
+           list { counters | limits | quotas } [family] [table]
+           reset { counters | quotas } [family] [table]
+
+       Stateful objects are attached to tables and are identified by a unique
+       name. They group stateful information from rules, to reference them in
+       rules the keywords &quot;type name&quot; are used e.g. &quot;counter name&quot;.  tab(:);
+       lt lt lt lt lt lt lt lt lt lt.  T{
+
+       add T}:T{
+
+       Add a new stateful object in the specified table.  T} T{
+
+       delete T}:T{
+
+       Delete the specified object.  T} T{
+
+       destroy T}:T{
+
+       Delete the specified object, it does not fail if it does not exist.  T}
+       T{
+
+       list T}:T{
+
+       Display stateful information the object holds.  T} T{
+
+       reset T}:T{
+
+       List-and-reset stateful object.  T}
+
+
+   CT HELPER
+           add ct helper [family] table name { type type protocol protocol ; [l3proto family ;] }
+           delete ct helper [family] table name
+           list ct helpers
+
+       Ct helper is used to define connection tracking helpers that can then
+       be used in combination with the ct helper set statement. type and
+       protocol are mandatory, l3proto is derived from the table family by
+       default, i.e. in the inet table the kernel will try to load both the
+       ipv4 and ipv6 helper backends, if they are supported by the kernel.
+
+       Table 12. conntrack helper specifications allbox tab(:); ltB ltB ltB.
+       T{ Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt
+       lt lt lt.  T{
+
+       type T}:T{
+
+       name of helper type T}:T{
+
+       quoted string (e.g. &quot;ftp&quot;) T} T{
+
+       protocol T}:T{
+
+       layer 4 protocol of the helper T}:T{
+
+       string (e.g. ip) T} T{
+
+       l3proto T}:T{
+
+       layer 3 protocol of the helper T}:T{
+
+       address family (e.g. ip) T} T{
+
+       comment T}:T{
+
+       per ct helper comment field T}:T{
+
+       string T}
+
+
+       defining and assigning ftp helper.
+
+           Unlike iptables, helper assignment needs to be performed after the conntrack
+           lookup has completed, for example with the default 0 hook priority.
+
+           table inet myhelpers {
+             ct helper ftp-standard {
+                type &quot;ftp&quot; protocol tcp
+             }
+             chain prerouting {
+                 type filter hook prerouting priority filter;
+                 tcp dport 21 ct helper set &quot;ftp-standard&quot;
+             }
+           }
+
+
+   CT TIMEOUT
+           add ct timeout  [family] table name { protocol protocol ; policy = { state: value [, ...] } ; [l3proto family ;] }
+           delete ct timeout [family] table name
+           list ct timeouts
+
+       Ct timeout is used to update connection tracking timeout values.Timeout
+       policies are assigned with the ct timeout set statement. protocol and
+       policy are mandatory, l3proto is derived from the table family by
+       default.
+
+       Table 13. conntrack timeout specifications allbox tab(:); ltB ltB ltB.
+       T{ Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt.  T{
+
+       protocol T}:T{
+
+       layer 4 protocol of the timeout object T}:T{
+
+       string (e.g. ip) T} T{
+
+       state T}:T{
+
+       connection state name T}:T{
+
+       string (e.g. &quot;established&quot;) T} T{
+
+       value T}:T{
+
+       timeout value for connection state T}:T{
+
+       unsigned integer T} T{
+
+       l3proto T}:T{
+
+       layer 3 protocol of the timeout object T}:T{
+
+       address family (e.g. ip) T} T{
+
+       comment T}:T{
+
+       per ct timeout comment field T}:T{
+
+       string T}
+
+
+       tcp connection state names that can have a specific timeout value are:
+
+       close, close_wait, established, fin_wait, last_ack, retrans, syn_recv,
+       syn_sent, time_wait and unack.
+
+       You can use sysctl -a |grep net.netfilter.nf_conntrack_tcp_timeout_ to
+       view and change the system-wide defaults. ct timeout allows for
+       flow-specific settings, without changing the global timeouts.
+
+       For example, tcp port 53 could have much lower settings than other
+       traffic.
+
+       udp state names that can have a specific timeout value are replied and
+       unreplied.
+
+       defining and assigning ct timeout policy.
+
+           table ip filter {
+                   ct timeout customtimeout {
+                           protocol tcp;
+                           l3proto ip
+                           policy = { established: 2m, close: 20s }
+                   }
+
+                   chain output {
+                           type filter hook output priority filter; policy accept;
+                           ct timeout set &quot;customtimeout&quot;
+                   }
+           }
+
+       testing the updated timeout policy.
+
+           % conntrack -E
+
+           It should display:
+
+           [UPDATE] tcp      6 120 ESTABLISHED src=172.16.19.128 dst=172.16.19.1
+           sport=22 dport=41360 [UNREPLIED] src=172.16.19.1 dst=172.16.19.128
+           sport=41360 dport=22
+
+
+   CT EXPECTATION
+           add ct expectation  [family] table name { protocol protocol ; dport dport ; timeout timeout ; size size ; [l3proto family ;] }
+           delete ct expectation  [family] table name
+           list ct expectations
+
+       Ct expectation is used to create connection expectations. Expectations
+       are assigned with the ct expectation set statement. protocol, dport,
+       timeout and size are mandatory, l3proto is derived from the table
+       family by default.
+
+       Table 14. conntrack expectation specifications allbox tab(:); ltB ltB
+       ltB.  T{ Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       protocol T}:T{
+
+       layer 4 protocol of the expectation object T}:T{
+
+       string (e.g. ip) T} T{
+
+       dport T}:T{
+
+       destination port of expected connection T}:T{
+
+       unsigned integer T} T{
+
+       timeout T}:T{
+
+       timeout value for expectation T}:T{
+
+       unsigned integer T} T{
+
+       size T}:T{
+
+       size value for expectation T}:T{
+
+       unsigned integer T} T{
+
+       l3proto T}:T{
+
+       layer 3 protocol of the expectation object T}:T{
+
+       address family (e.g. ip) T} T{
+
+       comment T}:T{
+
+       per ct expectation comment field T}:T{
+
+       string T}
+
+
+       defining and assigning ct expectation policy.
+
+           table ip filter {
+                   ct expectation expect {
+                           protocol udp
+                           dport 9876
+                           timeout 2m
+                           size 8
+                           l3proto ip
+                   }
+
+                   chain input {
+                           type filter hook input priority filter; policy accept;
+                           ct expectation set &quot;expect&quot;
+                   }
+           }
+
+
+   COUNTER
+           add counter [family] table name [{ [ packets packets bytes bytes ; ] [ comment comment ; }]
+           delete counter [family] table name
+           list counters
+
+       Table 15. Counter specifications allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       packets T}:T{
+
+       initial count of packets T}:T{
+
+       unsigned integer (64 bit) T} T{
+
+       bytes T}:T{
+
+       initial count of bytes T}:T{
+
+       unsigned integer (64 bit) T} T{
+
+       comment T}:T{
+
+       per counter comment field T}:T{
+
+       string T}
+
+
+       Using named counters.
+
+           nft add counter filter http
+           nft add rule filter input tcp dport 80 counter name \&quot;http\&quot;
+
+       Using named counters with maps.
+
+           nft add counter filter http
+           nft add counter filter https
+           nft add rule filter input counter name tcp dport map { 80 : \&quot;http\&quot;, 443 : \&quot;https\&quot; }
+
+
+   QUOTA
+           add quota [family] table name { [over|until] bytes BYTE_UNIT [ used bytes BYTE_UNIT ] ; [ comment comment ; ] }
+           BYTE_UNIT := bytes | kbytes | mbytes
+           delete quota [family] table name
+           list quotas
+
+       Table 16. Quota specifications allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       quota T}:T{
+
+       quota limit, used as the quota name T}:T{
+
+       Two arguments, unsigned integer (64 bit) and string: bytes, kbytes,
+       mbytes. &quot;over&quot; and &quot;until&quot; go before these arguments T} T{
+
+       used T}:T{
+
+       initial value of used quota T}:T{
+
+       Two arguments, unsigned integer (64 bit) and string: bytes, kbytes,
+       mbytes T} T{
+
+       comment T}:T{
+
+       per quota comment field T}:T{
+
+       string T}
+
+
+       Using named quotas.
+
+           nft add quota filter user123 { over 20 mbytes }
+           nft add rule filter input ip saddr 192.168.10.123 quota name \&quot;user123\&quot;
+
+       Using named quotas with maps.
+
+           nft add quota filter user123 { over 20 mbytes }
+           nft add quota filter user124 { over 20 mbytes }
+           nft add rule filter input quota name ip saddr map { 192.168.10.123 : \&quot;user123\&quot;, 192.168.10.124 : \&quot;user124\&quot; }
+
+
+EXPRESSIONS
+       Expressions represent values, either constants like network addresses,
+       port numbers, etc., or data gathered from the packet during ruleset
+       evaluation. Expressions can be combined using binary, logical,
+       relational and other types of expressions to form complex or relational
+       (match) expressions. They are also used as arguments to certain types
+       of operations, like NAT, packet marking etc.
+
+       Each expression has a data type, which determines the size, parsing and
+       representation of symbolic values and type compatibility with other
+       expressions.
+
+   DESCRIBE COMMAND
+           describe expression | data type
+
+       The describe command shows information about the type of an expression
+       and its data type. A data type may also be given, in which nft will
+       display more information about the type.
+
+       The describe command.
+
+           $ nft describe tcp flags
+           payload expression, datatype tcp_flag (TCP flag) (basetype bitmask, integer), 8 bits
+
+           predefined symbolic constants:
+           fin                           0x01
+           syn                           0x02
+           rst                           0x04
+           psh                           0x08
+           ack                           0x10
+           urg                           0x20
+           ecn                           0x40
+           cwr                           0x80
+
+
+DATA TYPES
+       Data types determine the size, parsing and representation of symbolic
+       values and type compatibility of expressions. A number of global data
+       types exist, in addition some expression types define further data
+       types specific to the expression type. Most data types have a fixed
+       size, some however may have a dynamic size, f.i. the string type. Some
+       types also have predefined symbolic constants. Those can be listed
+       using the nft describe command:
+
+           $ nft describe ct_state
+           datatype ct_state (conntrack state) (basetype bitmask, integer), 32 bits
+
+           pre-defined symbolic constants (in hexadecimal):
+           invalid                         0x00000001
+           new ...
+
+       Types may be derived from lower order types, f.i. the IPv4 address type
+       is derived from the integer type, meaning an IPv4 address can also be
+       specified as an integer value.
+
+       In certain contexts (set and map definitions), it is necessary to
+       explicitly specify a data type. Each type has a name which is used for
+       this.
+
+   INTEGER TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       Integer T}:T{
+
+       integer T}:T{
+
+       variable T}:T{
+
+       - T}
+
+
+       The integer type is used for numeric values. It may be specified as a
+       decimal, hexadecimal or octal number. The integer type does not have a
+       fixed size, its size is determined by the expression for which it is
+       used.
+
+   BITMASK TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       Bitmask T}:T{
+
+       bitmask T}:T{
+
+       variable T}:T{
+
+       integer T}
+
+
+       The bitmask type (bitmask) is used for bitmasks.
+
+   STRING TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       String T}:T{
+
+       string T}:T{
+
+       variable T}:T{
+
+       - T}
+
+
+       The string type is used for character strings. A string begins with an
+       alphabetic character (a-zA-Z) followed by zero or more alphanumeric
+       characters or the characters /, -, _ and .. In addition, anything
+       enclosed in double quotes (&quot;) is recognized as a string.
+
+       String specification.
+
+           # Interface name
+           filter input iifname eth0
+
+           # Weird interface name
+           filter input iifname &quot;(eth0)&quot;
+
+
+   LINK LAYER ADDRESS TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       Link layer address T}:T{
+
+       lladdr T}:T{
+
+       variable T}:T{
+
+       integer T}
+
+
+       The link layer address type is used for link layer addresses. Link
+       layer addresses are specified as a variable amount of groups of two
+       hexadecimal digits separated using colons (:).
+
+       Link layer address specification.
+
+           # Ethernet destination MAC address
+           filter input ether daddr 20:c9:d0:43:12:d9
+
+
+   IPV4 ADDRESS TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       IPV4 address T}:T{
+
+       ipv4_addr T}:T{
+
+       32 bit T}:T{
+
+       integer T}
+
+
+       The IPv4 address type is used for IPv4 addresses. Addresses are
+       specified in either dotted decimal, dotted hexadecimal, dotted octal,
+       decimal, hexadecimal, octal notation or as a host name. A host name
+       will be resolved using the standard system resolver.
+
+       IPv4 address specification.
+
+           # dotted decimal notation
+           filter output ip daddr 127.0.0.1
+
+           # host name
+           filter output ip daddr localhost
+
+
+   IPV6 ADDRESS TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       IPv6 address T}:T{
+
+       ipv6_addr T}:T{
+
+       128 bit T}:T{
+
+       integer T}
+
+
+       The IPv6 address type is used for IPv6 addresses. Addresses are
+       specified as a host name or as hexadecimal halfwords separated by
+       colons. Addresses might be enclosed in square brackets (&quot;[]&quot;) to
+       differentiate them from port numbers.
+
+       IPv6 address specification.
+
+           # abbreviated loopback address
+           filter output ip6 daddr ::1
+
+       IPv6 address specification with bracket notation.
+
+           # without [] the port number (22) would be parsed as part of the
+           # ipv6 address
+           ip6 nat prerouting tcp dport 2222 dnat to [1ce::d0]:22
+
+
+   BOOLEAN TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       Boolean T}:T{
+
+       boolean T}:T{
+
+       1 bit T}:T{
+
+       integer T}
+
+
+       The boolean type is a syntactical helper type in userspace. Its use is
+       in the right-hand side of a (typically implicit) relational expression
+       to change the expression on the left-hand side into a boolean check
+       (usually for existence).
+
+       Table 17. The following keywords will automatically resolve into a
+       boolean type with given value allbox tab(:); ltB ltB.  T{ Keyword T}:T{
+       Value T} lt lt lt lt.  T{
+
+       exists T}:T{
+
+       1 T} T{
+
+       missing T}:T{
+
+       0 T}
+
+
+       Table 18. expressions support a boolean comparison allbox tab(:); ltB
+       ltB.  T{ Expression T}:T{ Behaviour T} lt lt lt lt lt lt.  T{
+
+       fib T}:T{
+
+       Check route existence.  T} T{
+
+       exthdr T}:T{
+
+       Check IPv6 extension header existence.  T} T{
+
+       tcp option T}:T{
+
+       Check TCP option header existence.  T}
+
+
+       Boolean specification.
+
+           # match if route exists
+           filter input fib daddr . iif oif exists
+
+           # match only non-fragmented packets in IPv6 traffic
+           filter input exthdr frag missing
+
+           # match if TCP timestamp option is present
+           filter input tcp option timestamp exists
+
+
+   ICMP TYPE TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       ICMP Type T}:T{
+
+       icmp_type T}:T{
+
+       8 bit T}:T{
+
+       integer T}
+
+
+       The ICMP Type type is used to conveniently specify the ICMP header’s
+       type field.
+
+       Table 19. Keywords may be used when specifying the ICMP type allbox
+       tab(:); ltB ltB.  T{ Keyword T}:T{ Value T} lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       echo-reply T}:T{
+
+       0 T} T{
+
+       destination-unreachable T}:T{
+
+       3 T} T{
+
+       source-quench T}:T{
+
+       4 T} T{
+
+       redirect T}:T{
+
+       5 T} T{
+
+       echo-request T}:T{
+
+       8 T} T{
+
+       router-advertisement T}:T{
+
+       9 T} T{
+
+       router-solicitation T}:T{
+
+       10 T} T{
+
+       time-exceeded T}:T{
+
+       11 T} T{
+
+       parameter-problem T}:T{
+
+       12 T} T{
+
+       timestamp-request T}:T{
+
+       13 T} T{
+
+       timestamp-reply T}:T{
+
+       14 T} T{
+
+       info-request T}:T{
+
+       15 T} T{
+
+       info-reply T}:T{
+
+       16 T} T{
+
+       address-mask-request T}:T{
+
+       17 T} T{
+
+       address-mask-reply T}:T{
+
+       18 T}
+
+
+       ICMP Type specification.
+
+           # match ping packets
+           filter output icmp type { echo-request, echo-reply }
+
+
+   ICMP CODE TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       ICMP Code T}:T{
+
+       icmp_code T}:T{
+
+       8 bit T}:T{
+
+       integer T}
+
+
+       The ICMP Code type is used to conveniently specify the ICMP header’s
+       code field.
+
+   ICMPV6 TYPE TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       ICMPv6 Type T}:T{
+
+       icmpv6_type T}:T{
+
+       8 bit T}:T{
+
+       integer T}
+
+
+       The ICMPv6 Type type is used to conveniently specify the ICMPv6
+       header’s type field.
+
+       Table 20. keywords may be used when specifying the ICMPv6 type: allbox
+       tab(:); ltB ltB.  T{ Keyword T}:T{ Value T} lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt.  T{
+
+       destination-unreachable T}:T{
+
+       1 T} T{
+
+       packet-too-big T}:T{
+
+       2 T} T{
+
+       time-exceeded T}:T{
+
+       3 T} T{
+
+       parameter-problem T}:T{
+
+       4 T} T{
+
+       echo-request T}:T{
+
+       128 T} T{
+
+       echo-reply T}:T{
+
+       129 T} T{
+
+       mld-listener-query T}:T{
+
+       130 T} T{
+
+       mld-listener-report T}:T{
+
+       131 T} T{
+
+       mld-listener-done T}:T{
+
+       132 T} T{
+
+       mld-listener-reduction T}:T{
+
+       132 T} T{
+
+       nd-router-solicit T}:T{
+
+       133 T} T{
+
+       nd-router-advert T}:T{
+
+       134 T} T{
+
+       nd-neighbor-solicit T}:T{
+
+       135 T} T{
+
+       nd-neighbor-advert T}:T{
+
+       136 T} T{
+
+       nd-redirect T}:T{
+
+       137 T} T{
+
+       router-renumbering T}:T{
+
+       138 T} T{
+
+       ind-neighbor-solicit T}:T{
+
+       141 T} T{
+
+       ind-neighbor-advert T}:T{
+
+       142 T} T{
+
+       mld2-listener-report T}:T{
+
+       143 T}
+
+
+       ICMPv6 Type specification.
+
+           # match ICMPv6 ping packets
+           filter output icmpv6 type { echo-request, echo-reply }
+
+
+   ICMPV6 CODE TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       ICMPv6 Code T}:T{
+
+       icmpv6_code T}:T{
+
+       8 bit T}:T{
+
+       integer T}
+
+
+       The ICMPv6 Code type is used to conveniently specify the ICMPv6
+       header’s code field.
+
+   CONNTRACK TYPES
+       Table 21. overview of types used in ct expression and statement allbox
+       tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{ Base
+       type T} lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.
+       T{
+
+       conntrack state T}:T{
+
+       ct_state T}:T{
+
+       4 byte T}:T{
+
+       bitmask T} T{
+
+       conntrack direction T}:T{
+
+       ct_dir T}:T{
+
+       8 bit T}:T{
+
+       integer T} T{
+
+       conntrack status T}:T{
+
+       ct_status T}:T{
+
+       4 byte T}:T{
+
+       bitmask T} T{
+
+       conntrack event bits T}:T{
+
+       ct_event T}:T{
+
+       4 byte T}:T{
+
+       bitmask T} T{
+
+       conntrack label T}:T{
+
+       ct_label T}:T{
+
+       128 bit T}:T{
+
+       bitmask T}
+
+
+       For each of the types above, keywords are available for convenience:
+
+       Table 22. conntrack state (ct_state) allbox tab(:); ltB ltB.  T{
+       Keyword T}:T{ Value T} lt lt lt lt lt lt lt lt lt lt.  T{
+
+       invalid T}:T{
+
+       1 T} T{
+
+       established T}:T{
+
+       2 T} T{
+
+       related T}:T{
+
+       4 T} T{
+
+       new T}:T{
+
+       8 T} T{
+
+       untracked T}:T{
+
+       64 T}
+
+
+       Table 23. conntrack direction (ct_dir) allbox tab(:); ltB ltB.  T{
+       Keyword T}:T{ Value T} lt lt lt lt.  T{
+
+       original T}:T{
+
+       0 T} T{
+
+       reply T}:T{
+
+       1 T}
+
+
+       Table 24. conntrack status (ct_status) allbox tab(:); ltB ltB.  T{
+       Keyword T}:T{ Value T} lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       expected T}:T{
+
+       1 T} T{
+
+       seen-reply T}:T{
+
+       2 T} T{
+
+       assured T}:T{
+
+       4 T} T{
+
+       confirmed T}:T{
+
+       8 T} T{
+
+       snat T}:T{
+
+       16 T} T{
+
+       dnat T}:T{
+
+       32 T} T{
+
+       dying T}:T{
+
+       512 T}
+
+
+       Table 25. conntrack event bits (ct_event) allbox tab(:); ltB ltB.  T{
+       Keyword T}:T{ Value T} lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt.  T{
+
+       new T}:T{
+
+       1 T} T{
+
+       related T}:T{
+
+       2 T} T{
+
+       destroy T}:T{
+
+       4 T} T{
+
+       reply T}:T{
+
+       8 T} T{
+
+       assured T}:T{
+
+       16 T} T{
+
+       protoinfo T}:T{
+
+       32 T} T{
+
+       helper T}:T{
+
+       64 T} T{
+
+       mark T}:T{
+
+       128 T} T{
+
+       seqadj T}:T{
+
+       256 T} T{
+
+       secmark T}:T{
+
+       512 T} T{
+
+       label T}:T{
+
+       1024 T}
+
+
+       Possible keywords for conntrack label type (ct_label) are read at
+       runtime from /etc/connlabel.conf.
+
+   DCCP PKTTYPE TYPE
+       allbox tab(:); ltB ltB ltB ltB.  T{ Name T}:T{ Keyword T}:T{ Size T}:T{
+       Base type T} lt lt lt lt.  T{
+
+       DCCP packet type T}:T{
+
+       dccp_pkttype T}:T{
+
+       4 bit T}:T{
+
+       integer T}
+
+
+       The DCCP packet type abstracts the different legal values of the
+       respective four bit field in the DCCP header, as stated by RFC4340.
+       Note that possible values 10-15 are considered reserved and therefore
+       not allowed to be used. In iptables&#x27; dccp match, these values are
+       aliased INVALID. With nftables, one may simply match on the numeric
+       value range, i.e. 10-15.
+
+       Table 26. keywords may be used when specifying the DCCP packet type
+       allbox tab(:); ltB ltB.  T{ Keyword T}:T{ Value T} lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       request T}:T{
+
+       0 T} T{
+
+       response T}:T{
+
+       1 T} T{
+
+       data T}:T{
+
+       2 T} T{
+
+       ack T}:T{
+
+       3 T} T{
+
+       dataack T}:T{
+
+       4 T} T{
+
+       closereq T}:T{
+
+       5 T} T{
+
+       close T}:T{
+
+       6 T} T{
+
+       reset T}:T{
+
+       7 T} T{
+
+       sync T}:T{
+
+       8 T} T{
+
+       syncack T}:T{
+
+       9 T}
+
+
+PRIMARY EXPRESSIONS
+       The lowest order expression is a primary expression, representing
+       either a constant or a single datum from a packet’s payload, meta data
+       or a stateful module.
+
+   META EXPRESSIONS
+           meta {length | nfproto | l4proto | protocol | priority}
+           [meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype | skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu | iifgroup | oifgroup | cgroup | random | ipsec | iifkind | oifkind | time | hour | day }
+
+       A meta expression refers to meta data associated with a packet.
+
+       There are two types of meta expressions: unqualified and qualified meta
+       expressions. Qualified meta expressions require the meta keyword before
+       the meta key, unqualified meta expressions can be specified by using
+       the meta key directly or as qualified meta expressions. Meta l4proto is
+       useful to match a particular transport protocol that is part of either
+       an IPv4 or IPv6 packet. It will also skip any IPv6 extension headers
+       present in an IPv6 packet.
+
+       meta iif, oif, iifname and oifname are used to match the interface a
+       packet arrived on or is about to be sent out on.
+
+       iif and oif are used to match on the interface index, whereas iifname
+       and oifname are used to match on the interface name. This is not the
+       same — assuming the rule
+
+           filter input meta iif &quot;foo&quot;
+
+       Then this rule can only be added if the interface &quot;foo&quot; exists. Also,
+       the rule will continue to match even if the interface &quot;foo&quot; is renamed
+       to &quot;bar&quot;.
+
+       This is because internally the interface index is used. In case of
+       dynamically created interfaces, such as tun/tap or dialup interfaces
+       (ppp for example), it might be better to use iifname or oifname
+       instead.
+
+       In these cases, the name is used so the interface doesn’t have to exist
+       to add such a rule, it will stop matching if the interface gets renamed
+       and it will match again in case interface gets deleted and later a new
+       interface with the same name is created.
+
+       Like with iptables, wildcard matching on interface name prefixes is
+       available for iifname and oifname matches by appending an asterisk (*)
+       character. Note however that unlike iptables, nftables does not accept
+       interface names consisting of the wildcard character only - users are
+       supposed to just skip those always matching expressions. In order to
+       match on literal asterisk character, one may escape it using backslash
+       (\).
+
+       Table 27. Meta expression types allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt.  T{
+
+       length T}:T{
+
+       Length of the packet in bytes T}:T{
+
+       integer (32-bit) T} T{
+
+       nfproto T}:T{
+
+       real hook protocol family, useful only in inet table T}:T{
+
+       integer (32 bit) T} T{
+
+       l4proto T}:T{
+
+       layer 4 protocol, skips ipv6 extension headers T}:T{
+
+       integer (8 bit) T} T{
+
+       protocol T}:T{
+
+       EtherType protocol value T}:T{
+
+       ether_type T} T{
+
+       priority T}:T{
+
+       TC packet priority T}:T{
+
+       tc_handle T} T{
+
+       mark T}:T{
+
+       Packet mark T}:T{
+
+       mark T} T{
+
+       iif T}:T{
+
+       Input interface index T}:T{
+
+       iface_index T} T{
+
+       iifname T}:T{
+
+       Input interface name T}:T{
+
+       ifname T} T{
+
+       iiftype T}:T{
+
+       Input interface type T}:T{
+
+       iface_type T} T{
+
+       oif T}:T{
+
+       Output interface index T}:T{
+
+       iface_index T} T{
+
+       oifname T}:T{
+
+       Output interface name T}:T{
+
+       ifname T} T{
+
+       oiftype T}:T{
+
+       Output interface hardware type T}:T{
+
+       iface_type T} T{
+
+       sdif T}:T{
+
+       Slave device input interface index T}:T{
+
+       iface_index T} T{
+
+       sdifname T}:T{
+
+       Slave device interface name T}:T{
+
+       ifname T} T{
+
+       skuid T}:T{
+
+       UID associated with originating socket T}:T{
+
+       uid T} T{
+
+       skgid T}:T{
+
+       GID associated with originating socket T}:T{
+
+       gid T} T{
+
+       rtclassid T}:T{
+
+       Routing realm T}:T{
+
+       realm T} T{
+
+       ibrname T}:T{
+
+       Input bridge interface name T}:T{
+
+       ifname T} T{
+
+       obrname T}:T{
+
+       Output bridge interface name T}:T{
+
+       ifname T} T{
+
+       pkttype T}:T{
+
+       packet type T}:T{
+
+       pkt_type T} T{
+
+       cpu T}:T{
+
+       cpu number processing the packet T}:T{
+
+       integer (32 bit) T} T{
+
+       iifgroup T}:T{
+
+       incoming device group T}:T{
+
+       devgroup T} T{
+
+       oifgroup T}:T{
+
+       outgoing device group T}:T{
+
+       devgroup T} T{
+
+       cgroup T}:T{
+
+       control group id T}:T{
+
+       integer (32 bit) T} T{
+
+       random T}:T{
+
+       pseudo-random number T}:T{
+
+       integer (32 bit) T} T{
+
+       ipsec T}:T{
+
+       true if packet was ipsec encrypted T}:T{
+
+       boolean (1 bit) T} T{
+
+       iifkind T}:T{
+
+       Input interface kind T}:T{
+
+       T} T{
+
+       oifkind T}:T{
+
+       Output interface kind T}:T{
+
+       T} T{
+
+       time T}:T{
+
+       Absolute time of packet reception T}:T{
+
+       Integer (32 bit) or string T} T{
+
+       day T}:T{
+
+       Day of week T}:T{
+
+       Integer (8 bit) or string T} T{
+
+       hour T}:T{
+
+       Hour of day T}:T{
+
+       String T}
+
+
+       Table 28. Meta expression specific types allbox tab(:); ltB ltB.  T{
+       Type T}:T{ Description T} lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt.  T{
+
+       iface_index T}:T{
+
+       Interface index (32 bit number). Can be specified numerically or as
+       name of an existing interface.  T} T{
+
+       ifname T}:T{
+
+       Interface name (16 byte string). Does not have to exist.  T} T{
+
+       iface_type T}:T{
+
+       Interface type (16 bit number).  T} T{
+
+       uid T}:T{
+
+       User ID (32 bit number). Can be specified numerically or as user name.
+       T} T{
+
+       gid T}:T{
+
+       Group ID (32 bit number). Can be specified numerically or as group
+       name.  T} T{
+
+       realm T}:T{
+
+       Routing Realm (32 bit number). Can be specified numerically or as
+       symbolic name defined in /etc/iproute2/rt_realms.  T} T{
+
+       devgroup_type T}:T{
+
+       Device group (32 bit number). Can be specified numerically or as
+       symbolic name defined in /etc/iproute2/group.  T} T{
+
+       pkt_type T}:T{
+
+       Packet type: host (addressed to local host), broadcast (to all),
+       multicast (to group), other (addressed to another host).  T} T{
+
+       ifkind T}:T{
+
+       Interface kind (16 byte string). See TYPES in ip-link(8) for a list.
+       T} T{
+
+       time T}:T{
+
+       Either an integer or a date in ISO format. For example: &quot;2019-06-06
+       17:00&quot;. Hour and seconds are optional and can be omitted if desired. If
+       omitted, midnight will be assumed. The following three would be
+       equivalent: &quot;2019-06-06&quot;, &quot;2019-06-06 00:00&quot; and &quot;2019-06-06 00:00:00&quot;.
+       Use a range expression such as &quot;2019-06-06 10:00&quot;-&quot;2019-06-10 14:00&quot;
+       for matching a time range. When an integer is given, it is assumed to
+       be a UNIX timestamp.  T} T{
+
+       day T}:T{
+
+       Either a day of week (&quot;Monday&quot;, &quot;Tuesday&quot;, etc.), or an integer between
+       0 and 6. Strings are matched case-insensitively, and a full match is
+       not expected (e.g. &quot;Mon&quot; would match &quot;Monday&quot;). When an integer is
+       given, 0 is Sunday and 6 is Saturday. Use a range expression such as
+       &quot;Monday&quot;-&quot;Wednesday&quot; for matching a week day range.  T} T{
+
+       hour T}:T{
+
+       A string representing an hour in 24-hour format. Seconds can optionally
+       be specified. For example, 17:00 and 17:00:00 would be equivalent. Use
+       a range expression such as &quot;17:00&quot;-&quot;19:00&quot; for matching a time range.
+       T}
+
+
+       Using meta expressions.
+
+           # qualified meta expression
+           filter output meta oif eth0
+           filter forward meta iifkind { &quot;tun&quot;, &quot;veth&quot; }
+
+           # unqualified meta expression
+           filter output oif eth0
+
+           # incoming packet was subject to ipsec processing
+           raw prerouting meta ipsec exists accept
+
+           # match incoming packet from 03:00 to 14:00 local time
+           raw prerouting meta hour &quot;03:00&quot;-&quot;14:00&quot; counter accept
+
+
+   SOCKET EXPRESSION
+           socket {transparent | mark | wildcard}
+           socket cgroupv2 level NUM
+
+       Socket expression can be used to search for an existing open TCP/UDP
+       socket and its attributes that can be associated with a packet. It
+       looks for an established or non-zero bound listening socket (possibly
+       with a non-local address). You can also use it to match on the socket
+       cgroupv2 at a given ancestor level, e.g. if the socket belongs to
+       cgroupv2 a/b, ancestor level 1 checks for a matching on cgroup a and
+       ancestor level 2 checks for a matching on cgroup b.
+
+       Table 29. Available socket attributes allbox tab(:); ltB ltB ltB.  T{
+       Name T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt
+       lt.  T{
+
+       transparent T}:T{
+
+       Value of the IP_TRANSPARENT socket option in the found socket. It can
+       be 0 or 1.  T}:T{
+
+       boolean (1 bit) T} T{
+
+       mark T}:T{
+
+       Value of the socket mark (SOL_SOCKET, SO_MARK).  T}:T{
+
+       mark T} T{
+
+       wildcard T}:T{
+
+       Indicates whether the socket is wildcard-bound (e.g. 0.0.0.0 or ::0).
+       T}:T{
+
+       boolean (1 bit) T} T{
+
+       cgroupv2 T}:T{
+
+       cgroup version 2 for this socket (path from /sys/fs/cgroup) T}:T{
+
+       cgroupv2 T}
+
+
+       Using socket expression.
+
+           # Mark packets that correspond to a transparent socket. &quot;socket wildcard 0&quot;
+           # means that zero-bound listener sockets are NOT matched (which is usually
+           # exactly what you want).
+           table inet x {
+               chain y {
+                   type filter hook prerouting priority mangle; policy accept;
+                   socket transparent 1 socket wildcard 0 mark set 0x00000001 accept
+               }
+           }
+
+           # Trace packets that corresponds to a socket with a mark value of 15
+           table inet x {
+               chain y {
+                   type filter hook prerouting priority mangle; policy accept;
+                   socket mark 0x0000000f nftrace set 1
+               }
+           }
+
+           # Set packet mark to socket mark
+           table inet x {
+               chain y {
+                   type filter hook prerouting priority mangle; policy accept;
+                   tcp dport 8080 mark set socket mark
+               }
+           }
+
+           # Count packets for cgroupv2 &quot;user.slice&quot; at level 1
+           table inet x {
+               chain y {
+                   type filter hook input priority filter; policy accept;
+                   socket cgroupv2 level 1 &quot;user.slice&quot; counter
+               }
+           }
+
+
+   OSF EXPRESSION
+           osf [ttl {loose | skip}] {name | version}
+
+       The osf expression does passive operating system fingerprinting. This
+       expression compares some data (Window Size, MSS, options and their
+       order, DF, and others) from packets with the SYN bit set.
+
+       Table 30. Available osf attributes allbox tab(:); ltB ltB ltB.  T{ Name
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       ttl T}:T{
+
+       Do TTL checks on the packet to determine the operating system.  T}:T{
+
+       string T} T{
+
+       version T}:T{
+
+       Do OS version checks on the packet.  T}:T{
+
+       T} T{
+
+       name T}:T{
+
+       Name of the OS signature to match. All signatures can be found at pf.os
+       file. Use &quot;unknown&quot; for OS signatures that the expression could not
+       detect.  T}:T{
+
+       string T}
+
+
+       Available ttl values.
+
+           If no TTL attribute is passed, make a true IP header and fingerprint TTL true comparison. This generally works for LANs.
+
+           * loose: Check if the IP header&#x27;s TTL is less than the fingerprint one. Works for globally-routable addresses.
+           * skip: Do not compare the TTL at all.
+
+       Using osf expression.
+
+           # Accept packets that match the &quot;Linux&quot; OS genre signature without comparing TTL.
+           table inet x {
+               chain y {
+                   type filter hook input priority filter; policy accept;
+                   osf ttl skip name &quot;Linux&quot;
+               }
+           }
+
+
+   FIB EXPRESSIONS
+           fib FIB_TUPLE FIB_RESULT
+           FIB_TUPLE := { saddr | daddr} [ . { iif | oif } . mark ]
+           FIB_RESULT  := { oif | oifname | type }
+
+       A fib expression queries the fib (forwarding information base) to
+       obtain information such as the output interface index.
+
+       The first arguments to the fib expression are the input keys to be
+       passed to the fib lookup function. One of saddr or daddr is mandatory,
+       they are also mutually exclusive.
+
+       mark, iif and oif keywords are optional modifiers to influence the
+       search result, see the FIB_TUPLE keyword table below for a description.
+       The iif and oif tuple keywords are also mutually exclusive.
+
+       The last argument to the fib expression is the desired result type.
+
+       oif asks to obtain the interface index that would be used to send
+       packets to the packets source (saddr key) or destination (daddr key).
+       If no routing entry is found, the returned interface index is 0.
+
+       oifname is like oif, but it fills the interface name instead. This is
+       useful to check dynamic interfaces such as ppp devices. If no entry is
+       found, an empty interface name is returned.
+
+       type returns the address type such as unicast or multicast. A complete
+       list of supported address types can be shown with nft describe
+       fib_addrtype.
+
+       Table 31. FIB_TUPLE keywords allbox tab(:); ltB ltB.  T{ flag T}:T{
+       Description T} lt lt lt lt lt lt lt lt lt lt.  T{
+
+       daddr T}:T{
+
+       Perform a normal route lookup: search fib for route to the destination
+       address of the packet.  T} T{
+
+       saddr T}:T{
+
+       Perform a reverse route lookup: search the fib for route to the source
+       address of the packet.  T} T{
+
+       mark T}:T{
+
+       consider the packet mark (nfmark) when querying the fib.  T} T{
+
+       iif T}:T{
+
+       if fib lookups provides a route then check its output interface is
+       identical to the packets input interface.  T} T{
+
+       oif T}:T{
+
+       if fib lookups provides a route then check its output interface is
+       identical to the packets output interface. This flag can only be used
+       with the type result.  T}
+
+
+       Table 32. FIB_RESULT keywords allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Result Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       oif T}:T{
+
+       Output interface index T}:T{
+
+       iface_index T} T{
+
+       oifname T}:T{
+
+       Output interface name T}:T{
+
+       ifname T} T{
+
+       type T}:T{
+
+       Address type T}:T{
+
+       fib_addrtype (see nft describe fib_addrtype for a list) T}
+
+
+       The oif and oifname result is only valid in the prerouting, input and
+       forward hooks. The type can be queried from any one of prerouting,
+       input, forward output and postrouting.
+
+       For type, the presence of the iif keyword in the FIB_TUPLE modifiers
+       restrict the available hooks to those where the packet is associated
+       with an incoming interface, i.e. prerouting, input and forward.
+       Likewise, the oif keyword in the FIB_TUPLE modifier list will limit the
+       available hooks to forward, output and postrouting.
+
+       Using fib expressions.
+
+           # drop packets without a reverse path
+           filter prerouting fib saddr . iif oif missing drop
+
+           In this example, &#x27;saddr . iif&#x27; looks up a route to the *source address* of the packet and restricts matching
+           results to the interface that the packet arrived on, then stores the output interface index from the obtained
+           fib route result.
+
+           If no route was found for the source address/input interface combination, the output interface index is zero.
+           Hence, this rule will drop all packets that do not have a strict reverse path (hypothetical reply packet
+           would be sent via the interface the tested packet arrived on).
+
+           If only &#x27;saddr oif&#x27; is used as the input key, then this rule would only drop packets where the fib cannot
+           find a route. In most setups this will never drop packets because the default route is returned.
+
+           # drop packets if the destination ip address is not configured on the incoming interface
+           filter prerouting fib daddr . iif type != { local, broadcast, multicast } drop
+
+           This queries the fib based on the current packets&#x27; destination address and the incoming interface.
+
+           If the packet is sent to a unicast address that is configured on a different interface, then the packet
+           will be dropped as such an address would be classified as &#x27;unicast&#x27; type.
+           Without the &#x27;iif&#x27; modifier, any address configured on the local machine is &#x27;local&#x27;, and unicast addresses
+           not configured on any interface would return the type &#x27;unicast&#x27;.
+
+           # perform lookup in a specific &#x27;blackhole&#x27; table (0xdead, needs ip appropriate ip rule)
+           filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : drop, prohibit : jump prohibited, unreachable : drop }
+
+
+   ROUTING EXPRESSIONS
+           rt [ip | ip6] {classid | nexthop | mtu | ipsec}
+
+       A routing expression refers to routing data associated with a packet.
+
+       Table 33. Routing expression types allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       classid T}:T{
+
+       Routing realm T}:T{
+
+       realm T} T{
+
+       nexthop T}:T{
+
+       Routing nexthop T}:T{
+
+       ipv4_addr/ipv6_addr T} T{
+
+       mtu T}:T{
+
+       TCP maximum segment size of route T}:T{
+
+       integer (16 bit) T} T{
+
+       ipsec T}:T{
+
+       route via ipsec tunnel or transport T}:T{
+
+       boolean T}
+
+
+       Table 34. Routing expression specific types allbox tab(:); ltB ltB.  T{
+       Type T}:T{ Description T} lt lt.  T{
+
+       realm T}:T{
+
+       Routing Realm (32 bit number). Can be specified numerically or as
+       symbolic name defined in /etc/iproute2/rt_realms.  T}
+
+
+       Using routing expressions.
+
+           # IP family independent rt expression
+           filter output rt classid 10
+
+           # IP family dependent rt expressions
+           ip filter output rt nexthop 192.168.0.1
+           ip6 filter output rt nexthop fd00::1
+           inet filter output rt ip nexthop 192.168.0.1
+           inet filter output rt ip6 nexthop fd00::1
+
+           # outgoing packet will be encapsulated/encrypted by ipsec
+           filter output rt ipsec exists
+
+
+   IPSEC EXPRESSIONS
+           ipsec {in | out} [ spnum NUM ]  {reqid | spi}
+           ipsec {in | out} [ spnum NUM ]  {ip | ip6} {saddr | daddr}
+
+       An ipsec expression refers to ipsec data associated with a packet.
+
+       The in or out keyword needs to be used to specify if the expression
+       should examine inbound or outbound policies. The in keyword can be used
+       in the prerouting, input and forward hooks. The out keyword applies to
+       forward, output and postrouting hooks. The optional keyword spnum can
+       be used to match a specific state in a chain, it defaults to 0.
+
+       Table 35. Ipsec expression types allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       reqid T}:T{
+
+       Request ID T}:T{
+
+       integer (32 bit) T} T{
+
+       spi T}:T{
+
+       Security Parameter Index T}:T{
+
+       integer (32 bit) T} T{
+
+       saddr T}:T{
+
+       Source address of the tunnel T}:T{
+
+       ipv4_addr/ipv6_addr T} T{
+
+       daddr T}:T{
+
+       Destination address of the tunnel T}:T{
+
+       ipv4_addr/ipv6_addr T}
+
+
+       Note: When using xfrm_interface, this expression is not useable in
+       output hook as the plain packet does not traverse it with IPsec info
+       attached - use a chain in postrouting hook instead.
+
+   NUMGEN EXPRESSION
+           numgen {inc | random} mod NUM [ offset NUM ]
+
+       Create a number generator. The inc or random keywords control its
+       operation mode: In inc mode, the last returned value is simply
+       incremented. In random mode, a new random number is returned. The value
+       after mod keyword specifies an upper boundary (read: modulus) which is
+       not reached by returned numbers. The optional offset allows one to
+       increment the returned value by a fixed offset.
+
+       A typical use-case for numgen is load-balancing:
+
+       Using numgen expression.
+
+           # round-robin between 192.168.10.100 and 192.168.20.200:
+           add rule nat prerouting dnat to numgen inc mod 2 map \
+                   { 0 : 192.168.10.100, 1 : 192.168.20.200 }
+
+           # probability-based with odd bias using intervals:
+           add rule nat prerouting dnat to numgen random mod 10 map \
+                   { 0-2 : 192.168.10.100, 3-9 : 192.168.20.200 }
+
+
+   HASH EXPRESSIONS
+           jhash {ip saddr | ip6 daddr | tcp dport | udp sport | ether saddr} [. ...] mod NUM [ seed NUM ] [ offset NUM ]
+           symhash mod NUM [ offset NUM ]
+
+       Use a hashing function to generate a number. The functions available
+       are jhash, known as Jenkins Hash, and symhash, for Symmetric Hash. The
+       jhash requires an expression to determine the parameters of the packet
+       header to apply the hashing, concatenations are possible as well. The
+       value after mod keyword specifies an upper boundary (read: modulus)
+       which is not reached by returned numbers. The optional seed is used to
+       specify an init value used as seed in the hashing function. The
+       optional offset allows one to increment the returned value by a fixed
+       offset.
+
+       A typical use-case for jhash and symhash is load-balancing:
+
+       Using hash expressions.
+
+           # load balance based on source ip between 2 ip addresses:
+           add rule nat prerouting dnat to jhash ip saddr mod 2 map \
+                   { 0 : 192.168.10.100, 1 : 192.168.20.200 }
+
+           # symmetric load balancing between 2 ip addresses:
+           add rule nat prerouting dnat to symhash mod 2 map \
+                   { 0 : 192.168.10.100, 1 : 192.168.20.200 }
+
+
+PAYLOAD EXPRESSIONS
+       Payload expressions refer to data from the packet’s payload.
+
+   ETHERNET HEADER EXPRESSION
+           ether {daddr | saddr | type}
+
+       Table 36. Ethernet header expression types allbox tab(:); ltB ltB ltB.
+       T{ Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.
+       T{
+
+       daddr T}:T{
+
+       Destination MAC address T}:T{
+
+       ether_addr T} T{
+
+       saddr T}:T{
+
+       Source MAC address T}:T{
+
+       ether_addr T} T{
+
+       type T}:T{
+
+       EtherType T}:T{
+
+       ether_type T}
+
+
+   VLAN HEADER EXPRESSION
+           vlan {id | dei | pcp | type}
+
+       The vlan expression is used to match on the vlan header fields. This
+       expression will not work in the ip, ip6 and inet families, unless the
+       vlan interface is configured with the reorder_hdr off setting. The
+       default is reorder_hdr on which will automatically remove the vlan tag
+       from the packet. See ip-link(8) for more information. For these
+       families its easier to match the vlan interface name instead, using the
+       meta iif or meta iifname expression.
+
+       Table 37. VLAN header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       id T}:T{
+
+       VLAN ID (VID) T}:T{
+
+       integer (12 bit) T} T{
+
+       dei T}:T{
+
+       Drop Eligible Indicator T}:T{
+
+       integer (1 bit) T} T{
+
+       pcp T}:T{
+
+       Priority code point T}:T{
+
+       integer (3 bit) T} T{
+
+       type T}:T{
+
+       EtherType T}:T{
+
+       ether_type T}
+
+
+   ARP HEADER EXPRESSION
+           arp {htype | ptype | hlen | plen | operation | saddr { ip | ether } | daddr { ip | ether }
+
+       Table 38. ARP header expression allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       htype T}:T{
+
+       ARP hardware type T}:T{
+
+       integer (16 bit) T} T{
+
+       ptype T}:T{
+
+       EtherType T}:T{
+
+       ether_type T} T{
+
+       hlen T}:T{
+
+       Hardware address len T}:T{
+
+       integer (8 bit) T} T{
+
+       plen T}:T{
+
+       Protocol address len T}:T{
+
+       integer (8 bit) T} T{
+
+       operation T}:T{
+
+       Operation T}:T{
+
+       arp_op T} T{
+
+       saddr ether T}:T{
+
+       Ethernet sender address T}:T{
+
+       ether_addr T} T{
+
+       daddr ether T}:T{
+
+       Ethernet target address T}:T{
+
+       ether_addr T} T{
+
+       saddr ip T}:T{
+
+       IPv4 sender address T}:T{
+
+       ipv4_addr T} T{
+
+       daddr ip T}:T{
+
+       IPv4 target address T}:T{
+
+       ipv4_addr T}
+
+
+   IPV4 HEADER EXPRESSION
+           ip {version | hdrlength | dscp | ecn | length | id | frag-off | ttl | protocol | checksum | saddr | daddr }
+
+       Table 39. IPv4 header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       version T}:T{
+
+       IP header version (4) T}:T{
+
+       integer (4 bit) T} T{
+
+       hdrlength T}:T{
+
+       IP header length including options T}:T{
+
+       integer (4 bit) FIXME scaling T} T{
+
+       dscp T}:T{
+
+       Differentiated Services Code Point T}:T{
+
+       dscp T} T{
+
+       ecn T}:T{
+
+       Explicit Congestion Notification T}:T{
+
+       ecn T} T{
+
+       length T}:T{
+
+       Total packet length T}:T{
+
+       integer (16 bit) T} T{
+
+       id T}:T{
+
+       IP ID T}:T{
+
+       integer (16 bit) T} T{
+
+       frag-off T}:T{
+
+       Fragment offset T}:T{
+
+       integer (16 bit) T} T{
+
+       ttl T}:T{
+
+       Time to live T}:T{
+
+       integer (8 bit) T} T{
+
+       protocol T}:T{
+
+       Upper layer protocol T}:T{
+
+       inet_proto T} T{
+
+       checksum T}:T{
+
+       IP header checksum T}:T{
+
+       integer (16 bit) T} T{
+
+       saddr T}:T{
+
+       Source address T}:T{
+
+       ipv4_addr T} T{
+
+       daddr T}:T{
+
+       Destination address T}:T{
+
+       ipv4_addr T}
+
+
+       Careful with matching on ip length: If GRO/GSO is enabled, then the
+       Linux kernel might aggregate several packets into one big packet that
+       is larger than MTU. Moreover, if GRO/GSO maximum size is larger than
+       65535 (see man ip-link(8), specifically gro_ipv6_max_size and
+       gso_ipv6_max_size), then ip length might be 0 for such jumbo packets.
+       meta length allows you to match on the packet length including the IP
+       header size. If you want to perform heuristics on the ip length field,
+       then disable GRO/GSO.
+
+   ICMP HEADER EXPRESSION
+           icmp {type | code | checksum | id | sequence | gateway | mtu}
+
+       This expression refers to ICMP header fields. When using it in inet,
+       bridge or netdev families, it will cause an implicit dependency on IPv4
+       to be created. To match on unusual cases like ICMP over IPv6, one has
+       to add an explicit meta protocol ip6 match to the rule.
+
+       Table 40. ICMP header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       type T}:T{
+
+       ICMP type field T}:T{
+
+       icmp_type T} T{
+
+       code T}:T{
+
+       ICMP code field T}:T{
+
+       integer (8 bit) T} T{
+
+       checksum T}:T{
+
+       ICMP checksum field T}:T{
+
+       integer (16 bit) T} T{
+
+       id T}:T{
+
+       ID of echo request/response T}:T{
+
+       integer (16 bit) T} T{
+
+       sequence T}:T{
+
+       sequence number of echo request/response T}:T{
+
+       integer (16 bit) T} T{
+
+       gateway T}:T{
+
+       gateway of redirects T}:T{
+
+       integer (32 bit) T} T{
+
+       mtu T}:T{
+
+       MTU of path MTU discovery T}:T{
+
+       integer (16 bit) T}
+
+
+   IGMP HEADER EXPRESSION
+           igmp {type | mrt | checksum | group}
+
+       This expression refers to IGMP header fields. When using it in inet,
+       bridge or netdev families, it will cause an implicit dependency on IPv4
+       to be created. To match on unusual cases like IGMP over IPv6, one has
+       to add an explicit meta protocol ip6 match to the rule.
+
+       Table 41. IGMP header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       type T}:T{
+
+       IGMP type field T}:T{
+
+       igmp_type T} T{
+
+       mrt T}:T{
+
+       IGMP maximum response time field T}:T{
+
+       integer (8 bit) T} T{
+
+       checksum T}:T{
+
+       IGMP checksum field T}:T{
+
+       integer (16 bit) T} T{
+
+       group T}:T{
+
+       Group address T}:T{
+
+       integer (32 bit) T}
+
+
+   IPV6 HEADER EXPRESSION
+           ip6 {version | dscp | ecn | flowlabel | length | nexthdr | hoplimit | saddr | daddr}
+
+       This expression refers to the ipv6 header fields. Caution when using
+       ip6 nexthdr, the value only refers to the next header, i.e. ip6 nexthdr
+       tcp will only match if the ipv6 packet does not contain any extension
+       headers. Packets that are fragmented or e.g. contain a routing
+       extension headers will not be matched. Please use meta l4proto if you
+       wish to match the real transport header and ignore any additional
+       extension headers instead.
+
+       Table 42. IPv6 header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       version T}:T{
+
+       IP header version (6) T}:T{
+
+       integer (4 bit) T} T{
+
+       dscp T}:T{
+
+       Differentiated Services Code Point T}:T{
+
+       dscp T} T{
+
+       ecn T}:T{
+
+       Explicit Congestion Notification T}:T{
+
+       ecn T} T{
+
+       flowlabel T}:T{
+
+       Flow label T}:T{
+
+       integer (20 bit) T} T{
+
+       length T}:T{
+
+       Payload length T}:T{
+
+       integer (16 bit) T} T{
+
+       nexthdr T}:T{
+
+       Nexthdr protocol T}:T{
+
+       inet_proto T} T{
+
+       hoplimit T}:T{
+
+       Hop limit T}:T{
+
+       integer (8 bit) T} T{
+
+       saddr T}:T{
+
+       Source address T}:T{
+
+       ipv6_addr T} T{
+
+       daddr T}:T{
+
+       Destination address T}:T{
+
+       ipv6_addr T}
+
+
+       Careful with matching on ip6 length: If GRO/GSO is enabled, then the
+       Linux kernel might aggregate several packets into one big packet that
+       is larger than MTU. Moreover, if GRO/GSO maximum size is larger than
+       65535 (see man ip-link(8), specifically gro_ipv6_max_size and
+       gso_ipv6_max_size), then ip6 length might be 0 for such jumbo packets.
+       meta length allows you to match on the packet length including the IP
+       header size. If you want to perform heuristics on the ip6 length field,
+       then disable GRO/GSO.
+
+       Using ip6 header expressions.
+
+           # matching if first extension header indicates a fragment
+           ip6 nexthdr ipv6-frag
+
+
+   ICMPV6 HEADER EXPRESSION
+           icmpv6 {type | code | checksum | parameter-problem | packet-too-big | id | sequence | max-delay | taddr | daddr}
+
+       This expression refers to ICMPv6 header fields. When using it in inet,
+       bridge or netdev families, it will cause an implicit dependency on IPv6
+       to be created. To match on unusual cases like ICMPv6 over IPv4, one has
+       to add an explicit meta protocol ip match to the rule.
+
+       Table 43. ICMPv6 header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       type T}:T{
+
+       ICMPv6 type field T}:T{
+
+       icmpv6_type T} T{
+
+       code T}:T{
+
+       ICMPv6 code field T}:T{
+
+       integer (8 bit) T} T{
+
+       checksum T}:T{
+
+       ICMPv6 checksum field T}:T{
+
+       integer (16 bit) T} T{
+
+       parameter-problem T}:T{
+
+       pointer to problem T}:T{
+
+       integer (32 bit) T} T{
+
+       packet-too-big T}:T{
+
+       oversized MTU T}:T{
+
+       integer (32 bit) T} T{
+
+       id T}:T{
+
+       ID of echo request/response T}:T{
+
+       integer (16 bit) T} T{
+
+       sequence T}:T{
+
+       sequence number of echo request/response T}:T{
+
+       integer (16 bit) T} T{
+
+       max-delay T}:T{
+
+       maximum response delay of MLD queries T}:T{
+
+       integer (16 bit) T} T{
+
+       taddr T}:T{
+
+       target address of neighbor solicit/advert, redirect or MLD T}:T{
+
+       ipv6_addr T} T{
+
+       daddr T}:T{
+
+       destination address of redirect T}:T{
+
+       ipv6_addr T}
+
+
+   TCP HEADER EXPRESSION
+           tcp {sport | dport | sequence | ackseq | doff | reserved | flags | window | checksum | urgptr}
+
+       Table 44. TCP header expression allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       sport T}:T{
+
+       Source port T}:T{
+
+       inet_service T} T{
+
+       dport T}:T{
+
+       Destination port T}:T{
+
+       inet_service T} T{
+
+       sequence T}:T{
+
+       Sequence number T}:T{
+
+       integer (32 bit) T} T{
+
+       ackseq T}:T{
+
+       Acknowledgement number T}:T{
+
+       integer (32 bit) T} T{
+
+       doff T}:T{
+
+       Data offset T}:T{
+
+       integer (4 bit) FIXME scaling T} T{
+
+       reserved T}:T{
+
+       Reserved area T}:T{
+
+       integer (4 bit) T} T{
+
+       flags T}:T{
+
+       TCP flags T}:T{
+
+       tcp_flag T} T{
+
+       window T}:T{
+
+       Window T}:T{
+
+       integer (16 bit) T} T{
+
+       checksum T}:T{
+
+       Checksum T}:T{
+
+       integer (16 bit) T} T{
+
+       urgptr T}:T{
+
+       Urgent pointer T}:T{
+
+       integer (16 bit) T}
+
+
+   UDP HEADER EXPRESSION
+           udp {sport | dport | length | checksum}
+
+       Table 45. UDP header expression allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt.
+       T{
+
+       sport T}:T{
+
+       Source port T}:T{
+
+       inet_service T} T{
+
+       dport T}:T{
+
+       Destination port T}:T{
+
+       inet_service T} T{
+
+       length T}:T{
+
+       Total packet length T}:T{
+
+       integer (16 bit) T} T{
+
+       checksum T}:T{
+
+       Checksum T}:T{
+
+       integer (16 bit) T}
+
+
+   UDP-LITE HEADER EXPRESSION
+           udplite {sport | dport | checksum}
+
+       Table 46. UDP-Lite header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       sport T}:T{
+
+       Source port T}:T{
+
+       inet_service T} T{
+
+       dport T}:T{
+
+       Destination port T}:T{
+
+       inet_service T} T{
+
+       checksum T}:T{
+
+       Checksum T}:T{
+
+       integer (16 bit) T}
+
+
+   SCTP HEADER EXPRESSION
+           sctp {sport | dport | vtag | checksum}
+           sctp chunk CHUNK [ FIELD ]
+
+           CHUNK := data | init | init-ack | sack | heartbeat |
+                      heartbeat-ack | abort | shutdown | shutdown-ack | error |
+                      cookie-echo | cookie-ack | ecne | cwr | shutdown-complete
+                      | asconf-ack | forward-tsn | asconf
+
+           FIELD := COMMON_FIELD | DATA_FIELD | INIT_FIELD | INIT_ACK_FIELD |
+                      SACK_FIELD | SHUTDOWN_FIELD | ECNE_FIELD | CWR_FIELD |
+                      ASCONF_ACK_FIELD | FORWARD_TSN_FIELD | ASCONF_FIELD
+
+           COMMON_FIELD := type | flags | length
+           DATA_FIELD := tsn | stream | ssn | ppid
+           INIT_FIELD := init-tag | a-rwnd | num-outbound-streams |
+                           num-inbound-streams | initial-tsn
+           INIT_ACK_FIELD := INIT_FIELD
+           SACK_FIELD := cum-tsn-ack | a-rwnd | num-gap-ack-blocks |
+                           num-dup-tsns
+           SHUTDOWN_FIELD := cum-tsn-ack
+           ECNE_FIELD := lowest-tsn
+           CWR_FIELD := lowest-tsn
+           ASCONF_ACK_FIELD := seqno
+           FORWARD_TSN_FIELD := new-cum-tsn
+           ASCONF_FIELD := seqno
+
+       Table 47. SCTP header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt.  T{
+
+       sport T}:T{
+
+       Source port T}:T{
+
+       inet_service T} T{
+
+       dport T}:T{
+
+       Destination port T}:T{
+
+       inet_service T} T{
+
+       vtag T}:T{
+
+       Verification Tag T}:T{
+
+       integer (32 bit) T} T{
+
+       checksum T}:T{
+
+       Checksum T}:T{
+
+       integer (32 bit) T} T{
+
+       chunk T}:T{
+
+       Search chunk in packet T}:T{
+
+       without FIELD, boolean indicating existence T}
+
+
+       Table 48. SCTP chunk fields allbox tab(:); ltB ltB ltB ltB.  T{ Name
+       T}:T{ Width in bits T}:T{ Chunk T}:T{ Notes T} lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       type T}:T{
+
+       8 T}:T{
+
+       all T}:T{
+
+       not useful, defined by chunk type T} T{
+
+       flags T}:T{
+
+       8 T}:T{
+
+       all T}:T{
+
+       semantics defined on per-chunk basis T} T{
+
+       length T}:T{
+
+       16 T}:T{
+
+       all T}:T{
+
+       length of this chunk in bytes excluding padding T} T{
+
+       tsn T}:T{
+
+       32 T}:T{
+
+       data T}:T{
+
+       transmission sequence number T} T{
+
+       stream T}:T{
+
+       16 T}:T{
+
+       data T}:T{
+
+       stream identifier T} T{
+
+       ssn T}:T{
+
+       16 T}:T{
+
+       data T}:T{
+
+       stream sequence number T} T{
+
+       ppid T}:T{
+
+       32 T}:T{
+
+       data T}:T{
+
+       payload protocol identifier T} T{
+
+       init-tag T}:T{
+
+       32 T}:T{
+
+       init, init-ack T}:T{
+
+       initiate tag T} T{
+
+       a-rwnd T}:T{
+
+       32 T}:T{
+
+       init, init-ack, sack T}:T{
+
+       advertised receiver window credit T} T{
+
+       num-outbound-streams T}:T{
+
+       16 T}:T{
+
+       init, init-ack T}:T{
+
+       number of outbound streams T} T{
+
+       num-inbound-streams T}:T{
+
+       16 T}:T{
+
+       init, init-ack T}:T{
+
+       number of inbound streams T} T{
+
+       initial-tsn T}:T{
+
+       32 T}:T{
+
+       init, init-ack T}:T{
+
+       initial transmit sequence number T} T{
+
+       cum-tsn-ack T}:T{
+
+       32 T}:T{
+
+       sack, shutdown T}:T{
+
+       cumulative transmission sequence number acknowledged T} T{
+
+       num-gap-ack-blocks T}:T{
+
+       16 T}:T{
+
+       sack T}:T{
+
+       number of Gap Ack Blocks included T} T{
+
+       num-dup-tsns T}:T{
+
+       16 T}:T{
+
+       sack T}:T{
+
+       number of duplicate transmission sequence numbers received T} T{
+
+       lowest-tsn T}:T{
+
+       32 T}:T{
+
+       ecne, cwr T}:T{
+
+       lowest transmission sequence number T} T{
+
+       seqno T}:T{
+
+       32 T}:T{
+
+       asconf-ack, asconf T}:T{
+
+       sequence number T} T{
+
+       new-cum-tsn T}:T{
+
+       32 T}:T{
+
+       forward-tsn T}:T{
+
+       new cumulative transmission sequence number T}
+
+
+   DCCP HEADER EXPRESSION
+           dccp {sport | dport | type}
+
+       Table 49. DCCP header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       sport T}:T{
+
+       Source port T}:T{
+
+       inet_service T} T{
+
+       dport T}:T{
+
+       Destination port T}:T{
+
+       inet_service T} T{
+
+       type T}:T{
+
+       Packet type T}:T{
+
+       dccp_pkttype T}
+
+
+   AUTHENTICATION HEADER EXPRESSION
+           ah {nexthdr | hdrlength | reserved | spi | sequence}
+
+       Table 50. AH header expression allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       nexthdr T}:T{
+
+       Next header protocol T}:T{
+
+       inet_proto T} T{
+
+       hdrlength T}:T{
+
+       AH Header length T}:T{
+
+       integer (8 bit) T} T{
+
+       reserved T}:T{
+
+       Reserved area T}:T{
+
+       integer (16 bit) T} T{
+
+       spi T}:T{
+
+       Security Parameter Index T}:T{
+
+       integer (32 bit) T} T{
+
+       sequence T}:T{
+
+       Sequence number T}:T{
+
+       integer (32 bit) T}
+
+
+   ENCRYPTED SECURITY PAYLOAD HEADER EXPRESSION
+           esp {spi | sequence}
+
+       Table 51. ESP header expression allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt.  T{
+
+       spi T}:T{
+
+       Security Parameter Index T}:T{
+
+       integer (32 bit) T} T{
+
+       sequence T}:T{
+
+       Sequence number T}:T{
+
+       integer (32 bit) T}
+
+
+   IPCOMP HEADER EXPRESSION
+       comp {nexthdr | flags | cpi}
+
+       Table 52. IPComp header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       nexthdr T}:T{
+
+       Next header protocol T}:T{
+
+       inet_proto T} T{
+
+       flags T}:T{
+
+       Flags T}:T{
+
+       bitmask T} T{
+
+       cpi T}:T{
+
+       compression Parameter Index T}:T{
+
+       integer (16 bit) T}
+
+
+   GRE HEADER EXPRESSION
+           gre {flags | version | protocol}
+           gre ip {version | hdrlength | dscp | ecn | length | id | frag-off | ttl | protocol | checksum | saddr | daddr }
+           gre ip6 {version | dscp | ecn | flowlabel | length | nexthdr | hoplimit | saddr | daddr}
+
+       The gre expression is used to match on the gre header fields. This
+       expression also allows to match on the IPv4 or IPv6 packet within the
+       gre header.
+
+       Table 53. GRE header expression allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       flags T}:T{
+
+       checksum, routing, key, sequence and strict source route flags T}:T{
+
+       integer (5 bit) T} T{
+
+       version T}:T{
+
+       gre version field, 0 for GRE and 1 for PPTP T}:T{
+
+       integer (3 bit) T} T{
+
+       protocol T}:T{
+
+       EtherType of encapsulated packet T}:T{
+
+       integer (16 bit) T}
+
+
+       Matching inner IPv4 destination address encapsulated in gre.
+
+           netdev filter ingress gre ip daddr 9.9.9.9 counter
+
+
+   GENEVE HEADER EXPRESSION
+           geneve {vni | flags}
+           geneve ether {daddr | saddr | type}
+           geneve vlan {id | dei | pcp | type}
+           geneve ip {version | hdrlength | dscp | ecn | length | id | frag-off | ttl | protocol | checksum | saddr | daddr }
+           geneve ip6 {version | dscp | ecn | flowlabel | length | nexthdr | hoplimit | saddr | daddr}
+           geneve tcp {sport | dport | sequence | ackseq | doff | reserved | flags | window | checksum | urgptr}
+           geneve udp {sport | dport | length | checksum}
+
+       The geneve expression is used to match on the geneve header fields. The
+       geneve header encapsulates a ethernet frame within a udp packet. This
+       expression requires that you restrict the matching to udp packets
+       (usually at port 6081 according to IANA-assigned ports).
+
+       Table 54. GENEVE header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt.  T{
+
+       protocol T}:T{
+
+       EtherType of encapsulated packet T}:T{
+
+       integer (16 bit) T} T{
+
+       vni T}:T{
+
+       Virtual Network ID (VNI) T}:T{
+
+       integer (24 bit) T}
+
+
+       Matching inner TCP destination port encapsulated in geneve.
+
+           netdev filter ingress udp dport 4789 geneve tcp dport 80 counter
+
+
+   GRETAP HEADER EXPRESSION
+           gretap {vni | flags}
+           gretap ether {daddr | saddr | type}
+           gretap vlan {id | dei | pcp | type}
+           gretap ip {version | hdrlength | dscp | ecn | length | id | frag-off | ttl | protocol | checksum | saddr | daddr }
+           gretap ip6 {version | dscp | ecn | flowlabel | length | nexthdr | hoplimit | saddr | daddr}
+           gretap tcp {sport | dport | sequence | ackseq | doff | reserved | flags | window | checksum | urgptr}
+           gretap udp {sport | dport | length | checksum}
+
+       The gretap expression is used to match on the encapsulated ethernet
+       frame within the gre header. Use the gre expression to match on the gre
+       header fields.
+
+       Matching inner TCP destination port encapsulated in gretap.
+
+           netdev filter ingress gretap tcp dport 80 counter
+
+
+   VXLAN HEADER EXPRESSION
+           vxlan {vni | flags}
+           vxlan ether {daddr | saddr | type}
+           vxlan vlan {id | dei | pcp | type}
+           vxlan ip {version | hdrlength | dscp | ecn | length | id | frag-off | ttl | protocol | checksum | saddr | daddr }
+           vxlan ip6 {version | dscp | ecn | flowlabel | length | nexthdr | hoplimit | saddr | daddr}
+           vxlan tcp {sport | dport | sequence | ackseq | doff | reserved | flags | window | checksum | urgptr}
+           vxlan udp {sport | dport | length | checksum}
+
+       The vxlan expression is used to match on the vxlan header fields. The
+       vxlan header encapsulates a ethernet frame within a udp packet. This
+       expression requires that you restrict the matching to udp packets
+       (usually at port 4789 according to IANA-assigned ports).
+
+       Table 55. VXLAN header expression allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt.  T{
+
+       flags T}:T{
+
+       vxlan flags T}:T{
+
+       integer (8 bit) T} T{
+
+       vni T}:T{
+
+       Virtual Network ID (VNI) T}:T{
+
+       integer (24 bit) T}
+
+
+       Matching inner TCP destination port encapsulated in vxlan.
+
+           netdev filter ingress udp dport 4789 vxlan tcp dport 80 counter
+
+
+   RAW PAYLOAD EXPRESSION
+           @base,offset,length
+
+       The raw payload expression instructs to load length bits starting at
+       offset bits. Bit 0 refers to the very first bit — in the C programming
+       language, this corresponds to the topmost bit, i.e. 0x80 in case of an
+       octet. They are useful to match headers that do not have a
+       human-readable template expression yet. Note that nft will not add
+       dependencies for Raw payload expressions. If you e.g. want to match
+       protocol fields of a transport header with protocol number 5, you need
+       to manually exclude packets that have a different transport header, for
+       instance by using meta l4proto 5 before the raw expression.
+
+       Table 56. Supported payload protocol bases allbox tab(:); ltB ltB.  T{
+       Base T}:T{ Description T} lt lt lt lt lt lt lt lt.  T{
+
+       ll T}:T{
+
+       Link layer, for example the Ethernet header T} T{
+
+       nh T}:T{
+
+       Network header, for example IPv4 or IPv6 T} T{
+
+       th T}:T{
+
+       Transport Header, for example TCP T} T{
+
+       ih T}:T{
+
+       Inner Header / Payload, i.e. after the L4 transport level header T}
+
+
+       Matching destination port of both UDP and TCP.
+
+           inet filter input meta l4proto {tcp, udp} @th,16,16 { 53, 80 }
+
+       The above can also be written as
+
+           inet filter input meta l4proto {tcp, udp} th dport { 53, 80 }
+
+       it is more convenient, but like the raw expression notation no
+       dependencies are created or checked. It is the users responsibility to
+       restrict matching to those header types that have a notion of ports.
+       Otherwise, rules using raw expressions will errnously match unrelated
+       packets, e.g. mis-interpreting ESP packets SPI field as a port.
+
+       Rewrite arp packet target hardware address if target protocol address
+       matches a given address.
+
+           input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566 accept
+
+
+   EXTENSION HEADER EXPRESSIONS
+       Extension header expressions refer to data from variable-sized protocol
+       headers, such as IPv6 extension headers, TCP options and IPv4 options.
+
+       nftables currently supports matching (finding) a given ipv6 extension
+       header, TCP option or IPv4 option.
+
+           hbh {nexthdr | hdrlength}
+           frag {nexthdr | frag-off | more-fragments | id}
+           rt {nexthdr | hdrlength | type | seg-left}
+           dst {nexthdr | hdrlength}
+           mh {nexthdr | hdrlength | checksum | type}
+           srh {flags | tag | sid | seg-left}
+           tcp option {eol | nop | maxseg | window | sack-perm | sack | sack0 | sack1 | sack2 | sack3 | timestamp | mptcp } tcp_option_field
+           ip option { lsrr | ra | rr | ssrr } ip_option_field
+
+       The following syntaxes are valid only in a relational expression with
+       boolean type on right-hand side for checking header existence only:
+
+           exthdr {hbh | frag | rt | dst | mh}
+           tcp option {eol | nop | maxseg | window | sack-perm | sack | sack0 | sack1 | sack2 | sack3 | timestamp | mptcp }
+           ip option { lsrr | ra | rr | ssrr }
+           dccp option dccp_option_type
+
+       Table 57. IPv6 extension headers allbox tab(:); ltB ltB.  T{ Keyword
+       T}:T{ Description T} lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       hbh T}:T{
+
+       Hop by Hop T} T{
+
+       rt T}:T{
+
+       Routing Header T} T{
+
+       frag T}:T{
+
+       Fragmentation header T} T{
+
+       dst T}:T{
+
+       dst options T} T{
+
+       mh T}:T{
+
+       Mobility Header T} T{
+
+       srh T}:T{
+
+       Segment Routing Header T}
+
+
+       Table 58. TCP Options allbox tab(:); ltB ltB ltB.  T{ Keyword T}:T{
+       Description T}:T{ TCP option fields T} lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt.  T{
+
+       eol T}:T{
+
+       End if option list T}:T{
+
+       - T} T{
+
+       nop T}:T{
+
+       1 Byte TCP Nop padding option T}:T{
+
+       - T} T{
+
+       maxseg T}:T{
+
+       TCP Maximum Segment Size T}:T{
+
+       length, size T} T{
+
+       window T}:T{
+
+       TCP Window Scaling T}:T{
+
+       length, count T} T{
+
+       sack-perm T}:T{
+
+       TCP SACK permitted T}:T{
+
+       length T} T{
+
+       sack T}:T{
+
+       TCP Selective Acknowledgement (alias of block 0) T}:T{
+
+       length, left, right T} T{
+
+       sack0 T}:T{
+
+       TCP Selective Acknowledgement (block 0) T}:T{
+
+       length, left, right T} T{
+
+       sack1 T}:T{
+
+       TCP Selective Acknowledgement (block 1) T}:T{
+
+       length, left, right T} T{
+
+       sack2 T}:T{
+
+       TCP Selective Acknowledgement (block 2) T}:T{
+
+       length, left, right T} T{
+
+       sack3 T}:T{
+
+       TCP Selective Acknowledgement (block 3) T}:T{
+
+       length, left, right T} T{
+
+       timestamp T}:T{
+
+       TCP Timestamps T}:T{
+
+       length, tsval, tsecr T} T{
+
+       mptcp T}:T{
+
+       Multipath TCP T}:T{
+
+       subtype T}
+
+
+       Data types can be queried with nft describe tcp option keyword [
+       fieldname ].
+
+       TCP option matching also supports raw expression syntax to access
+       arbitrary options:
+
+           tcp option
+
+           tcp option @number,offset,length
+
+       Table 59. IP Options allbox tab(:); ltB ltB ltB.  T{ Keyword T}:T{
+       Description T}:T{ IP option fields T} lt lt lt lt lt lt lt lt lt lt lt
+       lt.  T{
+
+       lsrr T}:T{
+
+       Loose Source Route T}:T{
+
+       length, ptr, addr T} T{
+
+       ra T}:T{
+
+       Router Alert T}:T{
+
+       length, value T} T{
+
+       rr T}:T{
+
+       Record Route T}:T{
+
+       length, ptr, addr T} T{
+
+       ssrr T}:T{
+
+       Strict Source Route T}:T{
+
+       length, ptr, addr T}
+
+
+       finding TCP options.
+
+           filter input tcp option sack-perm exists counter
+
+       matching TCP options.
+
+           filter input tcp option maxseg size lt 536
+
+       matching IPv6 exthdr.
+
+           ip6 filter input frag more-fragments 1 counter
+
+       finding IP option.
+
+           filter input ip option lsrr exists counter
+
+       finding DCCP option.
+
+           filter input dccp option 40 exists counter
+
+
+   CONNTRACK EXPRESSIONS
+       Conntrack expressions refer to meta data of the connection tracking
+       entry associated with a packet.
+
+       There are three types of conntrack expressions. Some conntrack
+       expressions require the flow direction before the conntrack key, others
+       must be used directly because they are direction agnostic. The packets,
+       bytes and avgpkt keywords can be used with or without a direction. If
+       the direction is omitted, the sum of the original and the reply
+       direction is returned. The same is true for the zone, if a direction is
+       given, the zone is only matched if the zone id is tied to the given
+       direction.
+
+           ct {state | direction | status | mark | expiration | helper | label | count | id}
+           ct [original | reply] {l3proto | protocol | bytes | packets | avgpkt | zone}
+           ct {original | reply} {proto-src | proto-dst}
+           ct {original | reply} {ip | ip6} {saddr | daddr}
+
+       The conntrack-specific types in this table are described in the
+       sub-section CONNTRACK TYPES above.
+
+       Table 60. Conntrack expressions allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       state T}:T{
+
+       State of the connection T}:T{
+
+       ct_state T} T{
+
+       direction T}:T{
+
+       Direction of the packet relative to the connection T}:T{
+
+       ct_dir T} T{
+
+       status T}:T{
+
+       Status of the connection T}:T{
+
+       ct_status T} T{
+
+       mark T}:T{
+
+       Connection mark T}:T{
+
+       mark T} T{
+
+       expiration T}:T{
+
+       Connection expiration time T}:T{
+
+       time T} T{
+
+       helper T}:T{
+
+       Helper associated with the connection T}:T{
+
+       string T} T{
+
+       label T}:T{
+
+       Connection tracking label bit or symbolic name defined in
+       connlabel.conf in the nftables include path T}:T{
+
+       ct_label T} T{
+
+       l3proto T}:T{
+
+       Layer 3 protocol of the connection T}:T{
+
+       nf_proto T} T{
+
+       saddr T}:T{
+
+       Source address of the connection for the given direction T}:T{
+
+       ipv4_addr/ipv6_addr T} T{
+
+       daddr T}:T{
+
+       Destination address of the connection for the given direction T}:T{
+
+       ipv4_addr/ipv6_addr T} T{
+
+       protocol T}:T{
+
+       Layer 4 protocol of the connection for the given direction T}:T{
+
+       inet_proto T} T{
+
+       proto-src T}:T{
+
+       Layer 4 protocol source for the given direction T}:T{
+
+       integer (16 bit) T} T{
+
+       proto-dst T}:T{
+
+       Layer 4 protocol destination for the given direction T}:T{
+
+       integer (16 bit) T} T{
+
+       packets T}:T{
+
+       packet count seen in the given direction or sum of original and reply
+       T}:T{
+
+       integer (64 bit) T} T{
+
+       bytes T}:T{
+
+       byte count seen, see description for packets keyword T}:T{
+
+       integer (64 bit) T} T{
+
+       avgpkt T}:T{
+
+       average bytes per packet, see description for packets keyword T}:T{
+
+       integer (64 bit) T} T{
+
+       zone T}:T{
+
+       conntrack zone T}:T{
+
+       integer (16 bit) T} T{
+
+       count T}:T{
+
+       number of current connections T}:T{
+
+       integer (32 bit) T} T{
+
+       id T}:T{
+
+       Connection id T}:T{
+
+       ct_id T}
+
+
+       restrict the number of parallel connections to a server.
+
+           nft add set filter ssh_flood &#x27;{ type ipv4_addr; flags dynamic; }&#x27;
+           nft add rule filter input tcp dport 22 add @ssh_flood &#x27;{ ip saddr ct count over 2 }&#x27; reject
+
+
+STATEMENTS
+       Statements represent actions to be performed. They can alter control
+       flow (return, jump to a different chain, accept or drop the packet) or
+       can perform actions, such as logging, rejecting a packet, etc.
+
+       Statements exist in two kinds. Terminal statements unconditionally
+       terminate evaluation of the current rule, non-terminal statements
+       either only conditionally or never terminate evaluation of the current
+       rule, in other words, they are passive from the ruleset evaluation
+       perspective. There can be an arbitrary amount of non-terminal
+       statements in a rule, but only a single terminal statement as the final
+       statement.
+
+   VERDICT STATEMENT
+       The verdict statement alters control flow in the ruleset and issues
+       policy decisions for packets.
+
+           {accept | drop | queue | continue | return}
+           {jump | goto} chain
+
+       accept and drop are absolute verdicts — they terminate ruleset
+       evaluation immediately.  tab(:); lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt.  T{
+
+       accept T}:T{
+
+       Terminate ruleset evaluation and accept the packet. The packet can
+       still be dropped later by another hook, for instance accept in the
+       forward hook still allows one to drop the packet later in the
+       postrouting hook, or another forward base chain that has a higher
+       priority number and is evaluated afterwards in the processing pipeline.
+       T} T{
+
+       drop T}:T{
+
+       Terminate ruleset evaluation and drop the packet. The drop occurs
+       instantly, no further chains or hooks are evaluated. It is not possible
+       to accept the packet in a later chain again, as those are not evaluated
+       anymore for the packet.  T} T{
+
+       queue T}:T{
+
+       Terminate ruleset evaluation and queue the packet to userspace.
+       Userspace must provide a drop or accept verdict. In case of accept,
+       processing resumes with the next base chain hook, not the rule
+       following the queue verdict.  T} T{
+
+       continue T}:T{
+
+       Continue ruleset evaluation with the next rule. This is the default
+       behaviour in case a rule issues no verdict.  T} T{
+
+       return T}:T{
+
+       Return from the current chain and continue evaluation at the next rule
+       in the last chain. If issued in a base chain, it is equivalent to the
+       base chain policy.  T} T{
+
+       jump chain T}:T{
+
+       Continue evaluation at the first rule in chain. The current position in
+       the ruleset is pushed to a call stack and evaluation will continue
+       there when the new chain is entirely evaluated or a return verdict is
+       issued. In case an absolute verdict is issued by a rule in the chain,
+       ruleset evaluation terminates immediately and the specific action is
+       taken.  T} T{
+
+       goto chain T}:T{
+
+       Similar to jump, but the current position is not pushed to the call
+       stack, meaning that after the new chain evaluation will continue at the
+       last chain instead of the one containing the goto statement.  T}
+
+
+       Using verdict statements.
+
+           # process packets from eth0 and the internal network in from_lan
+           # chain, drop all packets from eth0 with different source addresses.
+
+           filter input iif eth0 ip saddr 192.168.0.0/24 jump from_lan
+           filter input iif eth0 drop
+
+
+   PAYLOAD STATEMENT
+           payload_expression set value
+
+       The payload statement alters packet content. It can be used for example
+       to set ip DSCP (diffserv) header field or ipv6 flow labels.
+
+       route some packets instead of bridging.
+
+           # redirect tcp:http from 192.160.0.0/16 to local machine for routing instead of bridging
+           # assumes 00:11:22:33:44:55 is local MAC address.
+           bridge input meta iif eth0 ip saddr 192.168.0.0/16 tcp dport 80 meta pkttype set host ether daddr set 00:11:22:33:44:55
+
+       Set IPv4 DSCP header field.
+
+           ip forward ip dscp set 42
+
+
+   EXTENSION HEADER STATEMENT
+           extension_header_expression set value
+
+       The extension header statement alters packet content in variable-sized
+       headers. This can currently be used to alter the TCP Maximum segment
+       size of packets, similar to the TCPMSS target in iptables.
+
+       change tcp mss.
+
+           tcp flags syn tcp option maxseg size set 1360
+           # set a size based on route information:
+           tcp flags syn tcp option maxseg size set rt mtu
+
+       You can also remove tcp options via reset keyword.
+
+       remove tcp option.
+
+           tcp flags syn reset tcp option sack-perm
+
+
+   LOG STATEMENT
+           log [prefix quoted_string] [level syslog-level] [flags log-flags]
+           log group nflog_group [prefix quoted_string] [queue-threshold value] [snaplen size]
+           log level audit
+
+       The log statement enables logging of matching packets. When this
+       statement is used from a rule, the Linux kernel will print some
+       information on all matching packets, such as header fields, via the
+       kernel log (where it can be read with dmesg(1) or read in the syslog).
+
+       In the second form of invocation (if nflog_group is specified), the
+       Linux kernel will pass the packet to nfnetlink_log which will send the
+       log through a netlink socket to the specified group. One userspace
+       process may subscribe to the group to receive the logs, see man(8)
+       ulogd for the Netfilter userspace log daemon and libnetfilter_log
+       documentation for details in case you would like to develop a custom
+       program to digest your logs.
+
+       In the third form of invocation (if level audit is specified), the
+       Linux kernel writes a message into the audit buffer suitably formatted
+       for reading with auditd. Therefore no further formatting options (such
+       as prefix or flags) are allowed in this mode.
+
+       This is a non-terminating statement, so the rule evaluation continues
+       after the packet is logged.
+
+       Table 61. log statement options allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       prefix T}:T{
+
+       Log message prefix T}:T{
+
+       quoted string T} T{
+
+       level T}:T{
+
+       Syslog level of logging T}:T{
+
+       string: emerg, alert, crit, err, warn [default], notice, info, debug,
+       audit T} T{
+
+       group T}:T{
+
+       NFLOG group to send messages to T}:T{
+
+       unsigned integer (16 bit) T} T{
+
+       snaplen T}:T{
+
+       Length of packet payload to include in netlink message T}:T{
+
+       unsigned integer (32 bit) T} T{
+
+       queue-threshold T}:T{
+
+       Number of packets to queue inside the kernel before sending them to
+       userspace T}:T{
+
+       unsigned integer (32 bit) T}
+
+
+       Table 62. log-flags allbox tab(:); ltB ltB.  T{ Flag T}:T{ Description
+       T} lt lt lt lt lt lt lt lt lt lt lt lt.  T{
+
+       tcp sequence T}:T{
+
+       Log TCP sequence numbers.  T} T{
+
+       tcp options T}:T{
+
+       Log options from the TCP packet header.  T} T{
+
+       ip options T}:T{
+
+       Log options from the IP/IPv6 packet header.  T} T{
+
+       skuid T}:T{
+
+       Log the userid of the process which generated the packet.  T} T{
+
+       ether T}:T{
+
+       Decode MAC addresses and protocol.  T} T{
+
+       all T}:T{
+
+       Enable all log flags listed above.  T}
+
+
+       Using log statement.
+
+           # log the UID which generated the packet and ip options
+           ip filter output log flags skuid flags ip options
+
+           # log the tcp sequence numbers and tcp options from the TCP packet
+           ip filter output log flags tcp sequence,options
+
+           # enable all supported log flags
+           ip6 filter output log flags all
+
+
+   REJECT STATEMENT
+           reject [ with REJECT_WITH ]
+
+           REJECT_WITH := icmp icmp_reject_code |
+                            icmpv6 icmpv6_reject_code |
+                            icmpx icmpx_reject_code |
+                            tcp reset
+
+       A reject statement is used to send back an error packet in response to
+       the matched packet otherwise it is equivalent to drop so it is a
+       terminating statement, ending rule traversal. This statement is only
+       valid in base chains using the prerouting, input, forward or output
+       hooks, and user-defined chains which are only called from those chains.
+
+       Table 63. Keywords may be used to reject when specifying the ICMP code
+       allbox tab(:); ltB ltB.  T{ Keyword T}:T{ Value T} lt lt lt lt lt lt lt
+       lt lt lt lt lt lt lt lt lt.  T{
+
+       net-unreachable T}:T{
+
+       0 T} T{
+
+       host-unreachable T}:T{
+
+       1 T} T{
+
+       prot-unreachable T}:T{
+
+       2 T} T{
+
+       port-unreachable T}:T{
+
+       3 T} T{
+
+       frag-needed T}:T{
+
+       4 T} T{
+
+       net-prohibited T}:T{
+
+       9 T} T{
+
+       host-prohibited T}:T{
+
+       10 T} T{
+
+       admin-prohibited T}:T{
+
+       13 T}
+
+
+       Table 64. keywords may be used to reject when specifying the ICMPv6
+       code allbox tab(:); ltB ltB.  T{ Keyword T}:T{ Value T} lt lt lt lt lt
+       lt lt lt lt lt lt lt.  T{
+
+       no-route T}:T{
+
+       0 T} T{
+
+       admin-prohibited T}:T{
+
+       1 T} T{
+
+       addr-unreachable T}:T{
+
+       3 T} T{
+
+       port-unreachable T}:T{
+
+       4 T} T{
+
+       policy-fail T}:T{
+
+       5 T} T{
+
+       reject-route T}:T{
+
+       6 T}
+
+
+       The ICMPvX Code type abstraction is a set of values which overlap
+       between ICMP and ICMPv6 Code types to be used from the inet family.
+
+       Table 65. keywords may be used when specifying the ICMPvX code allbox
+       tab(:); ltB ltB.  T{ Keyword T}:T{ Value T} lt lt lt lt lt lt lt lt.
+       T{
+
+       no-route T}:T{
+
+       0 T} T{
+
+       port-unreachable T}:T{
+
+       1 T} T{
+
+       host-unreachable T}:T{
+
+       2 T} T{
+
+       admin-prohibited T}:T{
+
+       3 T}
+
+
+       The common default ICMP code to reject is port-unreachable.
+
+       Note that in bridge family, reject statement is only allowed in base
+       chains which hook into input or prerouting.
+
+   COUNTER STATEMENT
+       A counter statement sets the hit count of packets along with the number
+       of bytes.
+
+           counter packets number bytes number
+           counter { packets number | bytes number }
+
+   CONNTRACK STATEMENT
+       The conntrack statement can be used to set the conntrack mark and
+       conntrack labels.
+
+           ct {mark | event | label | zone} set value
+
+       The ct statement sets meta data associated with a connection. The zone
+       id has to be assigned before a conntrack lookup takes place, i.e. this
+       has to be done in prerouting and possibly output (if locally generated
+       packets need to be placed in a distinct zone), with a hook priority of
+       raw (-300).
+
+       Unlike iptables, where the helper assignment happens in the raw table,
+       the helper needs to be assigned after a conntrack entry has been found,
+       i.e. it will not work when used with hook priorities equal or before
+       -200.
+
+       Table 66. Conntrack statement types allbox tab(:); ltB ltB ltB.  T{
+       Keyword T}:T{ Description T}:T{ Value T} lt lt lt lt lt lt lt lt lt lt
+       lt lt lt lt lt.  T{
+
+       event T}:T{
+
+       conntrack event bits T}:T{
+
+       bitmask, integer (32 bit) T} T{
+
+       helper T}:T{
+
+       name of ct helper object to assign to the connection T}:T{
+
+       quoted string T} T{
+
+       mark T}:T{
+
+       Connection tracking mark T}:T{
+
+       mark T} T{
+
+       label T}:T{
+
+       Connection tracking label T}:T{
+
+       label T} T{
+
+       zone T}:T{
+
+       conntrack zone T}:T{
+
+       integer (16 bit) T}
+
+
+       save packet nfmark in conntrack.
+
+           ct mark set meta mark
+
+       set zone mapped via interface.
+
+           table inet raw {
+             chain prerouting {
+                 type filter hook prerouting priority raw;
+                 ct zone set iif map { &quot;eth1&quot; : 1, &quot;veth1&quot; : 2 }
+             }
+             chain output {
+                 type filter hook output priority raw;
+                 ct zone set oif map { &quot;eth1&quot; : 1, &quot;veth1&quot; : 2 }
+             }
+           }
+
+       restrict events reported by ctnetlink.
+
+           ct event set new,related,destroy
+
+
+   NOTRACK STATEMENT
+       The notrack statement allows one to disable connection tracking for
+       certain packets.
+
+           notrack
+
+       Note that for this statement to be effective, it has to be applied to
+       packets before a conntrack lookup happens. Therefore, it needs to sit
+       in a chain with either prerouting or output hook and a hook priority of
+       -300 (raw) or less.
+
+       See SYNPROXY STATEMENT for an example usage.
+
+   META STATEMENT
+       A meta statement sets the value of a meta expression. The existing meta
+       fields are: priority, mark, pkttype, nftrace.
+
+           meta {mark | priority | pkttype | nftrace | broute} set value
+
+       A meta statement sets meta data associated with a packet.
+
+       Table 67. Meta statement types allbox tab(:); ltB ltB ltB.  T{ Keyword
+       T}:T{ Description T}:T{ Value T} lt lt lt lt lt lt lt lt lt lt lt lt lt
+       lt lt.  T{
+
+       priority T}:T{
+
+       TC packet priority T}:T{
+
+       tc_handle T} T{
+
+       mark T}:T{
+
+       Packet mark T}:T{
+
+       mark T} T{
+
+       pkttype T}:T{
+
+       packet type T}:T{
+
+       pkt_type T} T{
+
+       nftrace T}:T{
+
+       ruleset packet tracing on/off. Use monitor trace command to watch
+       traces T}:T{
+
+       0, 1 T} T{
+
+       broute T}:T{
+
+       broute on/off. packets are routed instead of being bridged T}:T{
+
+       0, 1 T}
+
+
+   LIMIT STATEMENT
+           limit rate [over] packet_number / TIME_UNIT [burst packet_number packets]
+           limit rate [over] byte_number BYTE_UNIT / TIME_UNIT [burst byte_number BYTE_UNIT]
+
+           TIME_UNIT := second | minute | hour | day
+           BYTE_UNIT := bytes | kbytes | mbytes
+
+       A limit statement matches at a limited rate using a token bucket
+       filter. A rule using this statement will match until this limit is
+       reached. It can be used in combination with the log statement to give
+       limited logging. The optional over keyword makes it match over the
+       specified rate.
+
+       The burst value influences the bucket size, i.e. jitter tolerance. With
+       packet-based limit, the bucket holds exactly burst packets, by default
+       five. If you specify packet burst, it must be a non-zero value. With
+       byte-based limit, the bucket’s minimum size is the given rate’s byte
+       value and the burst value adds to that, by default zero bytes.
+
+       Table 68. limit statement values allbox tab(:); ltB ltB ltB.  T{ Value
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt.  T{
+
+       packet_number T}:T{
+
+       Number of packets T}:T{
+
+       unsigned integer (32 bit) T} T{
+
+       byte_number T}:T{
+
+       Number of bytes T}:T{
+
+       unsigned integer (32 bit) T}
+
+
+   NAT STATEMENTS
+           snat [[ip | ip6] [ prefix ] to] ADDR_SPEC [:PORT_SPEC] [FLAGS]
+           dnat [[ip | ip6] [ prefix ] to] ADDR_SPEC [:PORT_SPEC] [FLAGS]
+           masquerade [to :PORT_SPEC] [FLAGS]
+           redirect [to :PORT_SPEC] [FLAGS]
+
+           ADDR_SPEC := address | address - address
+           PORT_SPEC := port | port - port
+
+           FLAGS  := FLAG [, FLAGS]
+           FLAG  := persistent | random | fully-random
+
+       The nat statements are only valid from nat chain types.
+
+       The snat and masquerade statements specify that the source address of
+       the packet should be modified. While snat is only valid in the
+       postrouting and input chains, masquerade makes sense only in
+       postrouting. The dnat and redirect statements are only valid in the
+       prerouting and output chains, they specify that the destination address
+       of the packet should be modified. You can use non-base chains which are
+       called from base chains of nat chain type too. All future packets in
+       this connection will also be mangled, and rules should cease being
+       examined.
+
+       The masquerade statement is a special form of snat which always uses
+       the outgoing interface’s IP address to translate to. It is particularly
+       useful on gateways with dynamic (public) IP addresses.
+
+       The redirect statement is a special form of dnat which always
+       translates the destination address to the local host’s one. It comes in
+       handy if one only wants to alter the destination port of incoming
+       traffic on different interfaces.
+
+       When used in the inet family (available with kernel 5.2), the dnat and
+       snat statements require the use of the ip and ip6 keyword in case an
+       address is provided, see the examples below.
+
+       Before kernel 4.18 nat statements require both prerouting and
+       postrouting base chains to be present since otherwise packets on the
+       return path won’t be seen by netfilter and therefore no reverse
+       translation will take place.
+
+       The optional prefix keyword allows to map to map n source addresses to
+       n destination addresses. See Advanced NAT examples below.
+
+       Table 69. NAT statement values allbox tab(:); ltB ltB ltB.  T{
+       Expression T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt.  T{
+
+       address T}:T{
+
+       Specifies that the source/destination address of the packet should be
+       modified. You may specify a mapping to relate a list of tuples composed
+       of arbitrary expression key with address value.  T}:T{
+
+       ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g.
+       meta mark map { 10 : 192.168.1.2, 20 : 192.168.1.3 } T} T{
+
+       port T}:T{
+
+       Specifies that the source/destination port of the packet should be
+       modified.  T}:T{
+
+       port number (16 bit) T}
+
+
+       Table 70. NAT statement flags allbox tab(:); ltB ltB.  T{ Flag T}:T{
+       Description T} lt lt lt lt lt lt.  T{
+
+       persistent T}:T{
+
+       Gives a client the same source-/destination-address for each
+       connection.  T} T{
+
+       random T}:T{
+
+       In kernel 5.0 and newer this is the same as fully-random. In earlier
+       kernels the port mapping will be randomized using a seeded MD5 hash mix
+       using source and destination address and destination port.  T} T{
+
+       fully-random T}:T{
+
+       If used then port mapping is generated based on a 32-bit pseudo-random
+       algorithm.  T}
+
+
+       Using NAT statements.
+
+           # create a suitable table/chain setup for all further examples
+           add table nat
+           add chain nat prerouting { type nat hook prerouting priority dstnat; }
+           add chain nat postrouting { type nat hook postrouting priority srcnat; }
+
+           # translate source addresses of all packets leaving via eth0 to address 1.2.3.4
+           add rule nat postrouting oif eth0 snat to 1.2.3.4
+
+           # redirect all traffic entering via eth0 to destination address 192.168.1.120
+           add rule nat prerouting iif eth0 dnat to 192.168.1.120
+
+           # translate source addresses of all packets leaving via eth0 to whatever
+           # locally generated packets would use as source to reach the same destination
+           add rule nat postrouting oif eth0 masquerade
+
+           # redirect incoming TCP traffic for port 22 to port 2222
+           add rule nat prerouting tcp dport 22 redirect to :2222
+
+           # inet family:
+           # handle ip dnat:
+           add rule inet nat prerouting dnat ip to 10.0.2.99
+           # handle ip6 dnat:
+           add rule inet nat prerouting dnat ip6 to fe80::dead
+           # this masquerades both ipv4 and ipv6:
+           add rule inet nat postrouting meta oif ppp0 masquerade
+
+       Advanced NAT examples.
+
+           # map prefixes in one network to that of another, e.g. 10.141.11.4 is mangled to 192.168.2.4,
+           # 10.141.11.5 is mangled to 192.168.2.5 and so on.
+           add rule nat postrouting snat ip prefix to ip saddr map { 10.141.11.0/24 : 192.168.2.0/24 }
+
+           # map a source address, source port combination to a pool of destination addresses and ports:
+           add rule nat postrouting dnat to ip saddr . tcp dport map { 192.168.1.2 . 80 : 10.141.10.2-10.141.10.5 . 8888-8999 }
+
+           # The above example generates the following NAT expression:
+           #
+           # [ nat dnat ip addr_min reg 1 addr_max reg 10 proto_min reg 9 proto_max reg 11 ]
+           #
+           # which expects to obtain the following tuple:
+           # IP address (min), source port (min), IP address (max), source port (max)
+           # to be obtained from the map. The given addresses and ports are inclusive.
+
+           # This also works with named maps and in combination with both concatenations and ranges:
+           table ip nat {
+                   map ipportmap {
+                           typeof ip saddr : interval ip daddr . tcp dport
+                           flags interval
+                           elements = { 192.168.1.2 : 10.141.10.1-10.141.10.3 . 8888-8999, 192.168.2.0/24 : 10.141.11.5-10.141.11.20 . 8888-8999 }
+                   }
+
+                   chain prerouting {
+                           type nat hook prerouting priority dstnat; policy accept;
+                           ip protocol tcp dnat ip to ip saddr map @ipportmap
+                   }
+           }
+
+           @ipportmap maps network prefixes to a range of hosts and ports.
+           The new destination is taken from the range provided by the map element.
+           Same for the destination port.
+
+           Note the use of the &quot;interval&quot; keyword in the typeof description.
+           This is required so nftables knows that it has to ask for twice the
+           amount of storage for each key-value pair in the map.
+
+           &quot;: ipv4_addr . inet_service&quot; would allow associating one address and one port
+           with each key.  But for this case, for each key, two addresses and two ports
+           (The minimum and maximum values for both) have to be stored.
+
+
+   TPROXY STATEMENT
+       Tproxy redirects the packet to a local socket without changing the
+       packet header in any way. If any of the arguments is missing the data
+       of the incoming packet is used as parameter. Tproxy matching requires
+       another rule that ensures the presence of transport protocol header is
+       specified.
+
+           tproxy to address:port
+           tproxy to {address | :port}
+
+       This syntax can be used in ip/ip6 tables where network layer protocol
+       is obvious. Either IP address or port can be specified, but at least
+       one of them is necessary.
+
+           tproxy {ip | ip6} to address[:port]
+           tproxy to :port
+
+       This syntax can be used in inet tables. The ip/ip6 parameter defines
+       the family the rule will match. The address parameter must be of this
+       family. When only port is defined, the address family should not be
+       specified. In this case the rule will match for both families.
+
+       Table 71. tproxy attributes allbox tab(:); ltB ltB.  T{ Name T}:T{
+       Description T} lt lt lt lt.  T{
+
+       address T}:T{
+
+       IP address the listening socket with IP_TRANSPARENT option is bound to.
+       T} T{
+
+       port T}:T{
+
+       Port the listening socket with IP_TRANSPARENT option is bound to.  T}
+
+
+       Example ruleset for tproxy statement.
+
+           table ip x {
+               chain y {
+                   type filter hook prerouting priority mangle; policy accept;
+                   tcp dport ntp tproxy to 1.1.1.1 accept
+                   udp dport ssh tproxy to :2222 accept
+               }
+           }
+           table ip6 x {
+               chain y {
+                  type filter hook prerouting priority mangle; policy accept;
+                  tcp dport ntp tproxy to [dead::beef] accept
+                  udp dport ssh tproxy to :2222 accept
+               }
+           }
+           table inet x {
+               chain y {
+                   type filter hook prerouting priority mangle; policy accept;
+                   tcp dport 321 tproxy to :22 accept
+                   tcp dport 99 tproxy ip to 1.1.1.1:999 accept
+                   udp dport 155 tproxy ip6 to [dead::beef]:smux accept
+               }
+           }
+
+       Note that the tproxy statement is non-terminal to allow post-processing
+       of packets. This allows packets to be logged for debugging as well as
+       updating the mark to ensure that packets are delivered locally through
+       policy routing rules.
+
+       Example ruleset for tproxy statement with logging and meta mark.
+
+           table inet x {
+               chain y {
+                   type filter hook prerouting priority mangle; policy accept;
+                   udp dport 9999 goto {
+                       tproxy to :1234 log prefix &quot;packet tproxied: &quot; meta mark set 1 accept
+                       log prefix &quot;no socket on port 1234 or not transparent?: &quot; drop
+                   }
+               }
+           }
+
+       As packet headers are unchanged, packets might be forwarded instead of
+       delivered locally. As mentioned above, this can be avoided by adding
+       policy routing rules and the packet mark.
+
+       Example policy routing rules for local redirection.
+
+           ip rule add fwmark 1 lookup 100
+           ip route add local 0.0.0.0/0 dev lo table 100
+
+       This is a change in behavior compared to the legacy iptables TPROXY
+       target which is terminal. To terminate the packet processing after the
+       tproxy statement, remember to issue a verdict as in the example above.
+
+   SYNPROXY STATEMENT
+       This statement will process TCP three-way-handshake parallel in
+       netfilter context to protect either local or backend system. This
+       statement requires connection tracking because sequence numbers need to
+       be translated.
+
+           synproxy [mss mss_value] [wscale wscale_value] [SYNPROXY_FLAGS]
+
+       Table 72. synproxy statement attributes allbox tab(:); ltB ltB.  T{
+       Name T}:T{ Description T} lt lt lt lt.  T{
+
+       mss T}:T{
+
+       Maximum segment size announced to clients. This must match the backend.
+       T} T{
+
+       wscale T}:T{
+
+       Window scale announced to clients. This must match the backend.  T}
+
+
+       Table 73. synproxy statement flags allbox tab(:); ltB ltB.  T{ Flag
+       T}:T{ Description T} lt lt lt lt.  T{
+
+       sack-perm T}:T{
+
+       Pass client selective acknowledgement option to backend (will be
+       disabled if not present).  T} T{
+
+       timestamp T}:T{
+
+       Pass client timestamp option to backend (will be disabled if not
+       present, also needed for selective acknowledgement and window scaling).
+       T}
+
+
+       Example ruleset for synproxy statement.
+
+           Determine tcp options used by backend, from an external system
+
+                         tcpdump -pni eth0 -c 1 &#x27;tcp[tcpflags] == (tcp-syn|tcp-ack)&#x27;
+                             port 80 &amp;
+                         telnet 192.0.2.42 80
+                         18:57:24.693307 IP 192.0.2.42.80 &gt; 192.0.2.43.48757:
+                             Flags [S.], seq 360414582, ack 788841994, win 14480,
+                             options [mss 1460,sackOK,
+                             TS val 1409056151 ecr 9690221,
+                             nop,wscale 9],
+                             length 0
+
+           Switch tcp_loose mode off, so conntrack will mark out-of-flow packets as state INVALID.
+
+                         echo 0 &gt; /proc/sys/net/netfilter/nf_conntrack_tcp_loose
+
+           Make SYN packets untracked.
+
+                   table ip x {
+                           chain y {
+                                   type filter hook prerouting priority raw; policy accept;
+                                   tcp flags syn notrack
+                           }
+                   }
+
+           Catch UNTRACKED (SYN  packets) and INVALID (3WHS ACK packets) states and send
+           them to SYNPROXY. This rule will respond to SYN packets with SYN+ACK
+           syncookies, create ESTABLISHED for valid client response (3WHS ACK packets) and
+           drop incorrect cookies. Flags combinations not expected during  3WHS will not
+           match and continue (e.g. SYN+FIN, SYN+ACK). Finally, drop invalid packets, this
+           will be out-of-flow packets that were not matched by SYNPROXY.
+
+               table ip x {
+                       chain z {
+                               type filter hook input priority filter; policy accept;
+                               ct state invalid, untracked synproxy mss 1460 wscale 9 timestamp sack-perm
+                               ct state invalid drop
+                       }
+               }
+
+
+   FLOW STATEMENT
+       A flow statement allows us to select what flows you want to accelerate
+       forwarding through layer 3 network stack bypass. You have to specify
+       the flowtable name where you want to offload this flow.
+
+       flow add @flowtable
+
+   QUEUE STATEMENT
+       This statement passes the packet to userspace using the nfnetlink_queue
+       handler. The packet is put into the queue identified by its 16-bit
+       queue number. Userspace can inspect and modify the packet if desired.
+       Userspace must then drop or re-inject the packet into the kernel. See
+       libnetfilter_queue documentation for details.
+
+           queue [flags QUEUE_FLAGS] [to queue_number]
+           queue [flags QUEUE_FLAGS] [to queue_number_from - queue_number_to]
+           queue [flags QUEUE_FLAGS] [to QUEUE_EXPRESSION ]
+
+           QUEUE_FLAGS := QUEUE_FLAG [, QUEUE_FLAGS]
+           QUEUE_FLAG  := bypass | fanout
+           QUEUE_EXPRESSION := numgen | hash | symhash | MAP STATEMENT
+
+       QUEUE_EXPRESSION can be used to compute a queue number at run-time with
+       the hash or numgen expressions. It also allows one to use the map
+       statement to assign fixed queue numbers based on external inputs such
+       as the source ip address or interface names.
+
+       Table 74. queue statement values allbox tab(:); ltB ltB ltB.  T{ Value
+       T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt lt lt lt.  T{
+
+       queue_number T}:T{
+
+       Sets queue number, default is 0.  T}:T{
+
+       unsigned integer (16 bit) T} T{
+
+       queue_number_from T}:T{
+
+       Sets initial queue in the range, if fanout is used.  T}:T{
+
+       unsigned integer (16 bit) T} T{
+
+       queue_number_to T}:T{
+
+       Sets closing queue in the range, if fanout is used.  T}:T{
+
+       unsigned integer (16 bit) T}
+
+
+       Table 75. queue statement flags allbox tab(:); ltB ltB.  T{ Flag T}:T{
+       Description T} lt lt lt lt.  T{
+
+       bypass T}:T{
+
+       Let packets go through if userspace application cannot back off. Before
+       using this flag, read libnetfilter_queue documentation for performance
+       tuning recommendations.  T} T{
+
+       fanout T}:T{
+
+       Distribute packets between several queues.  T}
+
+
+   DUP STATEMENT
+       The dup statement is used to duplicate a packet and send the copy to a
+       different destination.
+
+           dup to device
+           dup to address device device
+
+       Table 76. Dup statement values allbox tab(:); ltB ltB ltB.  T{
+       Expression T}:T{ Description T}:T{ Type T} lt lt lt lt lt lt.  T{
+
+       address T}:T{
+
+       Specifies that the copy of the packet should be sent to a new gateway.
+       T}:T{
+
+       ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g.
+       ip saddr map { 192.168.1.2 : 10.1.1.1 } T} T{
+
+       device T}:T{
+
+       Specifies that the copy should be transmitted via device.  T}:T{
+
+       string T}
+
+
+       Using the dup statement.
+
+           # send to machine with ip address 10.2.3.4 on eth0
+           ip filter forward dup to 10.2.3.4 device &quot;eth0&quot;
+
+           # copy raw frame to another interface
+           netdev ingress dup to &quot;eth0&quot;
+           dup to &quot;eth0&quot;
+
+           # combine with map dst addr to gateways
+           dup to ip daddr map { 192.168.7.1 : &quot;eth0&quot;, 192.168.7.2 : &quot;eth1&quot; }
+
+
+   FWD STATEMENT
+       The fwd statement is used to redirect a raw packet to another
+       interface. It is only available in the netdev family ingress and egress
+       hooks. It is similar to the dup statement except that no copy is made.
+
+       You can also specify the address of the next hop and the device to
+       forward the packet to. This updates the source and destination MAC
+       address of the packet by transmitting it through the neighboring layer.
+       This also decrements the ttl field of the IP packet. This provides a
+       way to effectively bypass the classical forwarding path, thus skipping
+       the fib (forwarding information base) lookup.
+
+           fwd to device
+           fwd [ip | ip6] to address device device
+
+       Using the fwd statement.
+
+           # redirect raw packet to device
+           netdev ingress fwd to &quot;eth0&quot;
+
+           # forward packet to next hop 192.168.200.1 via eth0 device
+           netdev ingress ether saddr set fwd ip to 192.168.200.1 device &quot;eth0&quot;
+
+
+   SET STATEMENT
+       The set statement is used to dynamically add or update elements in a
+       set from the packet path. The set setname must already exist in the
+       given table and must have been created with one or both of the dynamic
+       and the timeout flags. The dynamic flag is required if the set
+       statement expression includes a stateful object. The timeout flag is
+       implied if the set is created with a timeout, and is required if the
+       set statement updates elements, rather than adding them. Furthermore,
+       these sets should specify both a maximum set size (to prevent memory
+       exhaustion), and their elements should have a timeout (so their number
+       will not grow indefinitely) either from the set definition or from the
+       statement that adds or updates them. The set statement can be used to
+       e.g. create dynamic blacklists.
+
+       Dynamic updates are also supported with maps. In this case, the add or
+       update rule needs to provide both the key and the data element (value),
+       separated via :.
+
+           {add | update} @setname { expression [timeout timeout] [comment string] }
+
+       Example for simple blacklist.
+
+           # declare a set, bound to table &quot;filter&quot;, in family &quot;ip&quot;.
+           # Timeout and size are mandatory because we will add elements from packet path.
+           # Entries will timeout after one minute, after which they might be
+           # re-added if limit condition persists.
+           nft add set ip filter blackhole \
+               &quot;{ type ipv4_addr; flags dynamic; timeout 1m; size 65536; }&quot;
+
+           # declare a set to store the limit per saddr.
+           # This must be separate from blackhole since the timeout is different
+           nft add set ip filter flood \
+               &quot;{ type ipv4_addr; flags dynamic; timeout 10s; size 128000; }&quot;
+
+           # whitelist internal interface.
+           nft add rule ip filter input meta iifname &quot;internal&quot; accept
+
+           # drop packets coming from blacklisted ip addresses.
+           nft add rule ip filter input ip saddr @blackhole counter drop
+
+           # add source ip addresses to the blacklist if more than 10 tcp connection
+           # requests occurred per second and ip address.
+           nft add rule ip filter input tcp flags syn tcp dport ssh \
+               add @flood { ip saddr limit rate over 10/second } \
+               add @blackhole { ip saddr } \
+               drop
+
+           # inspect state of the sets.
+           nft list set ip filter flood
+           nft list set ip filter blackhole
+
+           # manually add two addresses to the blackhole.
+           nft add element filter blackhole { 10.2.3.4, 10.23.1.42 }
+
+
+   MAP STATEMENT
+       The map statement is used to lookup data based on some specific input
+       key.
+
+           expression map { MAP_ELEMENTS }
+
+           MAP_ELEMENTS := MAP_ELEMENT [, MAP_ELEMENTS]
+           MAP_ELEMENT  := key : value
+
+       The key is a value returned by expression.
+
+       Using the map statement.
+
+           # select DNAT target based on TCP dport:
+           # connections to port 80 are redirected to 192.168.1.100,
+           # connections to port 8888 are redirected to 192.168.1.101
+           nft add rule ip nat prerouting dnat tcp dport map { 80 : 192.168.1.100, 8888 : 192.168.1.101 }
+
+           # source address based SNAT:
+           # packets from net 192.168.1.0/24 will appear as originating from 10.0.0.1,
+           # packets from net 192.168.2.0/24 will appear as originating from 10.0.0.2
+           nft add rule ip nat postrouting snat to ip saddr map { 192.168.1.0/24 : 10.0.0.1, 192.168.2.0/24 : 10.0.0.2 }
+
+
+   VMAP STATEMENT
+       The verdict map (vmap) statement works analogous to the map statement,
+       but contains verdicts as values.
+
+           expression vmap { VMAP_ELEMENTS }
+
+           VMAP_ELEMENTS := VMAP_ELEMENT [, VMAP_ELEMENTS]
+           VMAP_ELEMENT  := key : verdict
+
+       Using the vmap statement.
+
+           # jump to different chains depending on layer 4 protocol type:
+           nft add rule ip filter input ip protocol vmap { tcp : jump tcp-chain, udp : jump udp-chain , icmp : jump icmp-chain }
+
+
+   XT STATEMENT
+       This represents an xt statement from xtables compat interface. It is a
+       fallback if translation is not available or not complete.
+
+           xt TYPE NAME
+
+           TYPE := match | target | watcher
+
+       Seeing this means the ruleset (or parts of it) were created by
+       iptables-nft and one should use that to manage it.
+
+       BEWARE: nftables won’t restore these statements.
+
+ADDITIONAL COMMANDS
+       These are some additional commands included in nft.
+
+   LIST HOOKS
+       This shows the list of functions that have been registered for the
+       given protocol family, including functions that have been registered
+       implicitly by kernel modules such as nf_conntrack.
+
+           list hooks [family]
+           list hooks netdev [ device DEVICE_NAME ]
+
+       list hooks is enough to display everything that is active on the
+       system. Hooks in the netdev family are tied to a network device. If no
+       device name is given, nft will query all network devices in the current
+       network namespace. Example Usage:
+
+       List all active netfilter hooks in either the ip or ip6 stack.
+
+           % nft list hooks inet
+           family ip {
+                   hook prerouting {
+                           -0000000400 ipv4_conntrack_defrag [nf_defrag_ipv4]
+                           -0000000200 ipv4_conntrack_in [nf_conntrack]
+                           -0000000100 nf_nat_ipv4_pre_routing [nf_nat]
+                   }
+                   hook input {
+                            0000000000 chain inet filter input [nf_tables]
+                           +0000000100 nf_nat_ipv4_local_in [nf_nat]
+           [..]
+
+       The above shows a host that has nat, conntrack and ipv4 packet
+       defragmentation enabled. For each hook location for the queried family
+       a list of active hooks using the format
+
+       priority identifier [module_name]
+
+       will be shown.
+
+       The priority value dictates the order in which the hooks are called.
+       The list is sorted, the lowest number is run first.
+
+       The priority value of hooks registered by the kernel cannot be changed.
+       For basechains registered by nftables, this value corresponds to the
+       priority value specified in the base chain definition.
+
+       After the numerical value, information about the hook is shown. For
+       basechains defined in nftables this includes the table family, the
+       table name and the basechains name. For hooks coming from kernel
+       modules, the function name is used instead.
+
+       If a module name is given, the hook was registered by the kernel module
+       with this name. You can use modinfo module name to obtain more
+       information about the module.
+
+       This functionality requires a kernel built with the option
+       CONFIG_NETFILTER_NETLINK_HOOK enabled, either as a module or builtin.
+       The module is named nfnetlink_hook.
+
+   MONITOR
+       The monitor command allows you to listen to Netlink events produced by
+       the nf_tables subsystem. These are either related to creation and
+       deletion of objects or to packets for which meta nftrace was enabled.
+       When they occur, nft will print to stdout the monitored events in
+       either JSON or native nft format.
+
+           monitor [new | destroy] MONITOR_OBJECT
+           monitor trace
+
+           MONITOR_OBJECT := tables | chains | sets | rules | elements | ruleset
+
+       To filter events related to a concrete object, use one of the keywords
+       in MONITOR_OBJECT.
+
+       To filter events related to a concrete action, use keyword new or
+       destroy.
+
+       The second form of invocation takes no further options and exclusively
+       prints events generated for packets with nftrace enabled.
+
+       Hit ^C to finish the monitor operation.
+
+       Listen to all events, report in native nft format.
+
+           % nft monitor
+
+       Listen to deleted rules, report in JSON format.
+
+           % nft -j monitor destroy rules
+
+       Listen to both new and destroyed chains, in native nft format.
+
+           % nft monitor chains
+
+       Listen to ruleset events such as table, chain, rule, set, counters and
+       quotas, in native nft format.
+
+           % nft monitor ruleset
+
+       Trace incoming packets from host 10.0.0.1.
+
+           % nft add rule filter input ip saddr 10.0.0.1 meta nftrace set 1
+           % nft monitor trace
+
+
+ERROR REPORTING
+       When an error is detected, nft shows the line(s) containing the error,
+       the position of the erroneous parts in the input stream and marks up
+       the erroneous parts using carets (^). If the error results from the
+       combination of two expressions or statements, the part imposing the
+       constraints which are violated is marked using tildes (~).
+
+       For errors returned by the kernel, nft cannot detect which parts of the
+       input caused the error and the entire command is marked.
+
+       Error caused by single incorrect expression.
+
+           &lt;cmdline&gt;:1:19-22: Error: Interface does not exist
+           filter output oif eth0
+                             ^^^^
+
+       Error caused by invalid combination of two expressions.
+
+           &lt;cmdline&gt;:1:28-36: Error: Right hand side of relational expression (==) must be constant
+           filter output tcp dport == tcp dport
+                                   ~~ ^^^^^^^^^
+
+       Error returned by the kernel.
+
+           &lt;cmdline&gt;:0:0-23: Error: Could not process rule: Operation not permitted
+           filter output oif wlan0
+           ^^^^^^^^^^^^^^^^^^^^^^^
+
+
+EXIT STATUS
+       On success, nft exits with a status of 0. Unspecified errors cause it
+       to exit with a status of 1, memory allocation errors with a status of
+       2, unable to open Netlink socket with 3.
+
+SEE ALSO
+           libnftables(3), libnftables-json(5), iptables(8), ip6tables(8), arptables(8), ebtables(8), ip(8), tc(8)
+
+       There is an official wiki at: https://wiki.nftables.org
+
+AUTHORS
+       nftables was written by Patrick McHardy and Pablo Neira Ayuso, among
+       many other contributors from the Netfilter community.
+
+COPYRIGHT
+       Copyright © 2008-2014 Patrick McHardy &lt;kaber@trash.net&gt; Copyright ©
+       2013-2018 Pablo Neira Ayuso &lt;pablo@netfilter.org&gt;
+
+       nftables is free software; you can redistribute it and/or modify it
+       under the terms of the GNU General Public License version 2 as
+       published by the Free Software Foundation.
+
+       This documentation is licensed under the terms of the Creative Commons
+       Attribution-ShareAlike 4.0 license, CC BY-SA 4.0
+       http://creativecommons.org/licenses/by-sa/4.0/.
+
+                                  04/22/2025                            NFT(8)
+</pre></body></html>

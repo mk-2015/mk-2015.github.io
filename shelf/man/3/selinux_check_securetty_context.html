@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>selinux_check_securetty_context(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>selinux_c...ty_context(3)  SELinux API documentation selinux_c...ty_context(3)
+
+NAME
+       selinux_check_securetty_context  - check whether a SELinux tty security
+       context is defined as a securetty context
+
+SYNOPSIS
+       #include &lt;selinux/selinux.h&gt;
+
+       int selinux_check_securetty_context(const char *tty_context);
+
+DESCRIPTION
+       selinux_check_securetty_context() returns 0 if  tty_context  is  a  se‐
+       curetty context, returns &lt; 0 otherwise.
+
+SEE ALSO
+       selinux(8)
+
+dwalsh@redhat.com               1 January 2007       selinux_c...ty_context(3)
+</pre></body></html>

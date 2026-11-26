@@ -1,0 +1,124 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_SIGNATURE-ML-DSA-65(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_SIGNATURE-ML-DSA(7SSL)          OpenSSL         EVP_SIGNATURE-ML-DSA(7SSL)
+
+NAME
+       EVP_SIGNATURE-ML-DSA, EVP_SIGNATURE-ML-DSA-44, EVP_SIGNATURE-ML-DSA-65,
+       EVP_SIGNATURE-ML-DSA-87 - The EVP_PKEY ML-DSA signature implementations
+
+DESCRIPTION
+       The ML-DSA-44, ML-DSA-65 and ML-DSA-87 EVP_PKEY implementations support
+       key generation, and one-shot sign and verify using the ML-DSA signature
+       schemes described in FIPS 204
+       &lt;https://csrc.nist.gov/pubs/fips/204/final&gt;.
+
+       The different algorithms names correspond to the parameter sets defined
+       in FIPS 204 &lt;https://csrc.nist.gov/pubs/fips/204/final&gt; Section 4 Table
+       1.  (The signatures range in size from ~2.5K to ~4.5K depending on the
+       type chosen).  There are 3 different security categories also depending
+       on the type.
+
+       EVP_SIGNATURE_fetch(3) can be used to explicitly fetch one of the 3
+       algorithms which can then be used with EVP_PKEY_sign_message_init(3),
+       EVP_PKEY_sign(3), EVP_PKEY_verify_message_init(3), and
+       EVP_PKEY_verify(3) to perform one-shot message signing or signature
+       verification.
+
+       The normal signing process (called Pure ML-DSA Signature Generation)
+       encodes the message internally as 0x00 || len(ctx) || ctx || message.
+       where ctx is some optional value of size 0x00..0xFF.  This process is
+       defined in FIPS 204 &lt;https://csrc.nist.gov/pubs/fips/204/final&gt;
+       Algorithm 2 step 10 and Algorithm 3 step 5.  OpenSSL also allows the
+       message to not be encoded which is required for testing. OpenSSL does
+       not support Pre Hash ML-DSA Signature Generation, but this may be done
+       by the user by doing Pre hash encoding externally and then choosing the
+       option to not encode the message.
+
+   ML-DSA Signature Parameters
+       The following parameter can be used for both signing and verification.
+       it may be set by passing an OSSL_PARAM array to
+       EVP_PKEY_sign_message_init(3) or EVP_PKEY_verify_message_init(3)
+
+       &quot;context-string&quot; (OSSL_SIGNATURE_PARAM_CONTEXT_STRING) &lt;octet string&gt;
+           A  string  of  octets with length at most 255. By default it is the
+           empty string.
+
+       The following parameters can be used when signing: They can be  set  by
+       passing an OSSL_PARAM array to EVP_PKEY_sign_init_ex2(3).
+
+       &quot;message-encoding&quot; (OSSL_SIGNATURE_PARAM_MESSAGE_ENCODING) &lt;integer&gt;
+           The  default  value of 1 uses &#x27;Pure ML-DSA Signature Generation&#x27; as
+           described above. Setting it to 0 does not encode the message, which
+           is used for testing.  The message encoding  steps  are  defined  in
+           FIPS  204  &lt;https://csrc.nist.gov/pubs/fips/204/final&gt;  Algorithm 2
+           step 10 and Algorithm 3 step 5.
+
+       &quot;test-entropy&quot; (OSSL_SIGNATURE_PARAM_TEST_ENTROPY) &lt;octet string&gt;
+           Used for testing to pass  an  optional  deterministic  per  message
+           random value.  If set the size must be 32 bytes.
+
+       &quot;deterministic&quot; (OSSL_SIGNATURE_PARAM_DETERMINISTIC) &lt;integer&gt;
+           The  default  value  of  0  causes the per message randomness to be
+           randomly generated using a DRBG. Setting this to 1 causes  the  per
+           message  randomness  to  be set to 32 bytes of zeros. This value is
+           ignored if &quot;test-entropy&quot; is set.
+
+       &quot;mu&quot; (OSSL_SIGNATURE_PARAM_MU) &lt;integer&gt;
+           The default value of 0 causes sign and verify operations to process
+           a raw message.  Setting this to 1 causes those operations to assume
+           the    input    is    the    &quot;mu&quot;    value    from     FIPS     204
+           &lt;https://csrc.nist.gov/pubs/fips/204/final&gt;  Algorithm 7 step 6 and
+           Algorithm 8 step 7.
+
+           Note   that   the   message   encoding   steps   from   FIPS    204
+           &lt;https://csrc.nist.gov/pubs/fips/204/final&gt; Algorithm 2 step 10 and
+           Algorithm 3 step 5 are omitted when this setting is 1.
+
+       See EVP_PKEY-ML-DSA(7) for information related to ML-DSA keys.
+
+NOTES
+       For    backwards    compatibility    reasons   EVP_DigestSignInit_ex(),
+       EVP_DigestSign(), EVP_DigestVerifyInit_ex() and EVP_DigestVerify()  may
+       also be used, but the digest passed in mdname must be NULL.
+
+EXAMPLES
+       To sign a message using an ML-DSA EVP_PKEY structure:
+
+           void do_sign(EVP_PKEY *key, unsigned char *msg, size_t msg_len)
+           {
+               size_t sig_len;
+               unsigned char *sig = NULL;
+               const OSSL_PARAM params[] = {
+                   OSSL_PARAM_octet_string(&quot;context-string&quot;, (unsigned char *)&quot;A context string&quot;, 16),
+                   OSSL_PARAM_END
+               };
+               EVP_PKEY_CTX *sctx = EVP_PKEY_CTX_new_from_pkey(NULL, pkey, NULL);
+               EVP_SIGNATURE *sig_alg = EVP_SIGNATURE_fetch(NULL, &quot;ML-DSA-65&quot;, NULL);
+
+               EVP_PKEY_sign_message_init(sctx, sig_alg, params);
+               /* Calculate the required size for the signature by passing a NULL buffer. */
+               EVP_PKEY_sign(sctx, NULL, &amp;sig_len, msg, msg_len);
+               sig = OPENSSL_zalloc(sig_len);
+               EVP_PKEY_sign(sctx, sig, &amp;sig_len, msg, msg_len);
+               ...
+               OPENSSL_free(sig);
+               EVP_SIGNATURE_free(sig_alg);
+               EVP_PKEY_CTX_free(sctx);
+           }
+
+SEE ALSO
+       EVP_PKEY-ML-DSA(7)       provider-signature(7),       EVP_PKEY_sign(3),
+       EVP_PKEY_verify(3),                      FIPS                       204
+       &lt;https://csrc.nist.gov/pubs/fips/204/final&gt;
+
+HISTORY
+       This functionality was added in OpenSSL 3.5.
+
+COPYRIGHT
+       Copyright 2025-2026 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09        EVP_SIGNATURE-ML-DSA(7SSL)
+</pre></body></html>

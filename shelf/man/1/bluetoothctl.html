@@ -1,0 +1,339 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL(1)           Linux System Administration          BLUETOOTHCTL(1)
+
+NAME
+       bluetoothctl - Bluetooth Control Command Line Tool
+
+SYNOPSIS
+       bluetoothctl [-a capability] [-e] [-m] [-t seconds] [-v] [-h]
+
+DESCRIPTION
+       bluetoothctl(1) interactive bluetooth control tool. The tool works with
+       Bluetooth Classic (BR/EDR) and Bluetooth Low Energy (LE) controllers.
+
+       The  tool  is  menu  driven but can be automated from the command line.
+       Examples are given in the automation section.
+
+OPTIONS
+       -a capability, --agent capability
+              Register agent handler: &lt;capability&gt;
+
+       -e, --endpoints
+              Register Media endpoints
+
+       -m, --monitor
+              Enable monitor output
+
+       -t seconds, --timeout seconds
+              Timeout in seconds for non-interactive mode
+
+       -v, --version
+              Display version
+
+       -h, --help
+              Display help
+
+COMMANDS
+   list
+       List available controllers.
+
+       Usage  &gt; list
+
+   show
+       Controller information.
+
+       Usage  &gt; show [ctrl]
+
+   select
+       Select default controller.
+
+       Usage  &gt; select &lt;ctrl&gt;
+
+   devices
+       List available devices, with an optional property as the filter.
+
+       Usage  &gt; devices [Paired/Bonded/Trusted/Connected]
+
+   system-alias
+       Set controller alias.
+
+       Usage  &gt; system-alias &lt;name&gt;
+
+   reset-alias
+       Reset controller alias.
+
+       Usage  &gt; reset-alias
+
+   power
+       Set controller power.
+
+       When the controller is powered off, the USB port the controller is  at‐
+       tached to is put into a suspend state.
+
+       Usage  &gt; power &lt;on/off&gt;
+
+   advertise
+       Enable/disable advertising with given type.
+
+       If you exit the program advertising will be disabled.
+
+       When  advertising  the  controller should advertise with random address
+       but may use its public address if it does not support the feature  (ad‐
+       dress of the device).
+
+       A device can advertise if it initiated the connection to another adver‐
+       tising device.
+
+       Usage  &gt; advertise &lt;on/off/type&gt;
+
+   set-alias
+       Set device alias.
+
+       Usage  &gt; set-alias &lt;alias&gt;
+
+   scan
+       Scan for devices.
+
+       For LE, scanning is an important requirement before connecting or pair‐
+       ing.
+
+       The  purpose  of  scanning is to find devices that are advertising with
+       their discoverable flag set (either limited or general). Once you  have
+       found the address then you can connect or pair.
+
+       Note the following when scanning:
+
+          • When scanning the controller will use a random address that is not
+            resolvable  so  the public address is not leaked. A new random ad‐
+            dress is created every time scan on is used.
+
+          • When turning on scanning the device will start receiving advertis‐
+            ing reports of what devices are advertising.
+
+          • The filtering of duplicate advertising reports may be enabled  de‐
+            pending on the filtering settings.
+
+          • Device  objects found during a scan session will only be persisted
+            if they are connected/paired otherwise they are removed after some
+            time.
+
+       Usage  &gt; scan &lt;on/off/bredr/le&gt;
+
+   pair
+       Pair with device.
+
+       This will pair with a device and then trust and connect to it.  If  the
+       device is already paired this will first remove the pairing.
+
+       The command can either be used while the controller is in the connected
+       or not connected state.
+
+       If  the  controller  is  already connected then the pair command can be
+       used without an arguments. If the controller is not connected, the pair
+       command can be given the address of a device with an active scan report
+       and it will initiate the connection before pairing.
+
+       Before pairing the agent must be selected to choose the  authentication
+       mechanism.
+
+       Usage  &gt; pair &lt;dev&gt;
+
+   pairable
+       Set controller pairable mode.
+
+       This  enables/disables  pairing.  If  pairing is disabled then the con‐
+       troller will not accept any pairing requests.
+
+       Usage  &gt; pairable &lt;on/off&gt;
+
+   discoverable
+       Set discoverable mode.
+
+       This enables/disables discoverable mode. If  discoverable  is  disabled
+       then the controller will not respond to any scan requests.
+
+       In  LE  if  discoverable if off the controller will just passively scan
+       and not make scan requests to advertising devices. If on it  will  make
+       the advertising requests.
+
+       It will use a random address if supported by the controller. The length
+       of  time &quot;discoverable on&quot; is valid is determined by discoverable-time‐
+       out command.
+
+       Usage  &gt; discoverable &lt;on/off&gt;
+
+   discoverable-timeout
+       Set discoverable timeout.
+
+       The time in seconds that &quot;discoverable on&quot; is valid.
+
+       Usage  &gt; discoverable-timeout [value]
+
+   agent
+       Enable/disable agent with given capability.
+
+       This chooses the local authentication mechanism of the  controller.  It
+       is  needed  for pairing and allows you to choose the IO capabilities of
+       the controller.
+
+       The valid agent capabilities are: DisplayOnly, DisplayYesNo,  Keyboard‐
+       Display, KeyboardOnly, NoInputNoOutput.
+
+       Usage  &gt; agent &lt;on/off/capability&gt;
+
+   default-agent
+       Set current agent as the default one.
+
+       After selecting the agent this will make it the default agent.
+
+       Usage  &gt; default-agent
+
+   trust
+       Trust device.
+
+       Usage  &gt; trust &lt;dev&gt;
+
+   untrust
+       Untrust device.
+
+       Usage  &gt; untrust &lt;dev&gt;
+
+   block
+       Block device.
+
+       Usage  &gt; block &lt;dev&gt;
+
+   unblock
+       Unblock device
+
+       Usage  &gt; unblock &lt;dev&gt;
+
+   remove
+       Remove device.
+
+       Usage  &gt; remove &lt;dev&gt;
+
+   connect
+       Connect device.
+
+       This will initiate a connection to a device.
+
+       By  default  this commands tries to connect all the profiles the remote
+       device supports and have been flagged as auto-connectable. In case when
+       the UUID of the remote service is given only that service will be  con‐
+       nected.  The  UUID  can  be either a short form (16-bit UUID) or a long
+       form (128-bit UUID). There are also some special values for  well-known
+       profiles  like &quot;a2dp-sink&quot;, &quot;a2dp-source&quot;, &quot;hfp-hf&quot;, &quot;hfp-ag&quot;, &quot;ftp&quot; or
+       &quot;spp&quot;.
+
+       To connect with an LE device the controller must have  an  active  scan
+       report of the device it wants to connect to.
+
+       If  no  advertising  report is received before the timeout a le-connec‐
+       tion-abort-by-local error will be issued. In that case either try again
+       to connect assuming the device is advertising.
+
+       Usage  &gt; connect &lt;dev&gt; [uuid]
+
+       Example
+              &gt; connect 1C:48:F9:9D:81:5C
+
+       Example
+              &gt; connect 1C:48:F9:9D:81:5C hsp-hs
+
+       Example
+              &gt; connect 1C:48:F9:9D:81:5C 00001108-0000-1000-8000-00805f9b34fb
+
+       Example
+              &gt; connect 1C:48:F9:9D:81:5C 0x1108
+
+   disconnect
+       Disconnect device.
+
+       By default this commands disconnects all profiles and  then  terminates
+       the  connection.  In  case when the UUID of the remote service is given
+       only that service will be disconnected.
+
+       For LE when disconnecting from an active connection the device  address
+       is not needed.
+
+       Usage  &gt; disconnect &lt;dev&gt; [uuid]
+
+   info
+       Device information.
+
+       Usage  &gt; info &lt;dev&gt;
+
+   bearer
+       Get/Set preferred bearer.
+
+       Usage  &gt; bearer &lt;dev&gt; [last-seen/bredr/le]
+
+       Example get preferred bearer
+              &gt; bearer &lt;addr&gt;
+                PreferredBearer: last-seen
+
+
+       Example set preferred bearer to LE
+              &gt; bearer &lt;addr&gt; le
+              [CHG] Device &lt;addr&gt; PreferredBearer: le
+              Changing le succeeded
+
+
+       Example set preferred bearer to BREDR
+              &gt; bearer &lt;addr&gt; bredr
+              [CHG] Device &lt;addr&gt; PreferredBearer: bredr
+              Changing bredr succeeded
+
+
+ADVERTISE SUBMENU
+       See bluetoothctl-advertise(1).
+
+MONITOR SUBMENU
+       See bluetoothctl-monitor(1)
+
+SCAN SUBMENU
+       See bluetoothctl-scan(1)
+
+GATT SUBMENU
+       See bluetoothctl-gatt(1)
+
+ADMIN SUBMENU
+       See bluetoothctl-admin(1)
+
+PLAYER SUBMENU
+       See bluetoothctl-player(1)
+
+ENDPOINT SUBMENU
+       See bluetoothctl-endpoint(1)
+
+TRANSPORT SUBMENU
+       See bluetoothctl-transport(1)
+
+MANAGEMENT SUBMENU
+       See bluetoothctl-mgmt(1)
+
+ASSISTANT SUBMENU
+       See bluetoothctl-assistant(1)
+
+AUTOMATION
+       Two  common  ways to automate the tool are to use Here Docs or the pro‐
+       gram expect.  Using Here Docs to show information about  the  Bluetooth
+       controller.
+
+          bluetoothctl &lt;&lt;EOF
+          list
+          show
+          EOF
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free  use of this software is granted under the terms of the GNU Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                             March 2024                   BLUETOOTHCTL(1)
+</pre></body></html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>db_verify(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>DB5.3_VERIFY(1)             General Commands Manual            DB5.3_VERIFY(1)
+
+NAME
+       db5.3_verify -  Verifies the structure databases
+
+SYNOPSIS
+       db5.3_verify [-NoqV] [-h home] [-P password] file ...
+
+DESCRIPTION
+       The  db5.3_verify  utility  verifies the structure of one or more files
+       and the databases they contain.
+
+OPTIONS
+       -h     Specify a home directory for the database  environment;  by  de‐
+              fault, the current working directory is used.
+
+       -o     Skip  the database checks for btree and duplicate sort order and
+              for hashing.
+
+              If the file being verified contains databases  with  non-default
+              comparison  or  hashing configurations, calling the db5.3_verify
+              utility without the -o flag will usually return failure.  The -o
+              flag causes db5.3_verify to ignore database sort or hash  order‐
+              ing and allows db5.3_verify to be used on these files.  To fully
+              verify  these files, verify them explicitly using the DB-&gt;verify
+              method, after configuring  the  correct  comparison  or  hashing
+              functions.
+
+       -N     Do not acquire shared region mutexes while running.  Other prob‐
+              lems,  such  as potentially fatal errors in Berkeley DB, will be
+              ignored as well.  This option is intended only for debugging er‐
+              rors, and should not be used under any other circumstances.
+
+       -P     Specify an environment password.  Although Berkeley DB utilities
+              overwrite password strings as soon as possible, be  aware  there
+              may  be  a window of vulnerability on systems where unprivileged
+              users can see command-line arguments or where utilities are  not
+              able  to  overwrite the memory containing the command-line argu‐
+              ments.
+
+       -q     Suppress the printing of any  error  descriptions,  simply  exit
+              success or failure.
+
+       -V     Write  the  library  version  number to the standard output, and
+              exit.
+
+       The db5.3_verify utility does not perform any locking, even in Berkeley
+       DB environments that are configured with a locking subsystem.  As such,
+       it should only be used on files that are not being modified by  another
+       thread of control.
+
+       The db5.3_verify utility may be used with a Berkeley DB environment (as
+       described  for  the -h option, the environment variable DB_HOME, or be‐
+       cause the utility was run in a directory containing a Berkeley DB envi‐
+       ronment).  In order to avoid environment corruption when using a Berke‐
+       ley DB environment, db5.3_verify should always be given the  chance  to
+       detach from the environment and exit gracefully.  To cause db5.3_verify
+       to  release  all environment resources and exit cleanly, send it an in‐
+       terrupt signal (SIGINT).
+
+       The db5.3_verify utility exits 0 on success, and &gt;0 if an error occurs.
+
+ENVIRONMENT
+       DB_HOME
+              If the -h option is not specified and the  environment  variable
+              DB_HOME  is set, it is used as the path of the database home, as
+              described in DB_ENV-&gt;open.
+
+AUTHORS
+       Sleepycat Software, Inc. This manual page was created based on the HTML
+       documentation  for  db_verify  from  Sleepycat,  by   Thijs   Kinkhorst
+       &lt;thijs@kinkhorst.com&gt;,  for  the Debian system (but may be used by oth‐
+       ers).
+
+                                28 January 2005                DB5.3_VERIFY(1)
+</pre></body></html>

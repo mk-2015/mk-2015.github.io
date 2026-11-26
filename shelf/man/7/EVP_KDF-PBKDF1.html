@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KDF-PBKDF1(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KDF-PBKDF1(7SSL)                OpenSSL               EVP_KDF-PBKDF1(7SSL)
+
+NAME
+       EVP_KDF-PBKDF1 - The PBKDF1 EVP_KDF implementation
+
+DESCRIPTION
+       Support for computing the PBKDF1 password-based KDF through the EVP_KDF
+       API.
+
+       The EVP_KDF-PBKDF1 algorithm implements the PBKDF1 password-based key
+       derivation function, as described in RFC 8018; it derives a key from a
+       password using a salt and iteration count.
+
+   Identity
+       &quot;PBKDF1&quot; is the name for this implementation; it can be used with the
+       EVP_KDF_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;pass&quot; (OSSL_KDF_PARAM_PASSWORD) &lt;octet string&gt;
+       &quot;salt&quot; (OSSL_KDF_PARAM_SALT) &lt;octet string&gt;
+       &quot;iter&quot; (OSSL_KDF_PARAM_ITER) &lt;unsigned integer&gt;
+           This parameter has a default value of 0 and should be set.
+
+       &quot;properties&quot; (OSSL_KDF_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+       &quot;digest&quot; (OSSL_KDF_PARAM_DIGEST) &lt;UTF8 string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_KDF(3).
+
+NOTES
+       A  typical  application  of this algorithm is to derive keying material
+       for an encryption algorithm from a password in the &quot;pass&quot;,  a  salt  in
+       &quot;salt&quot;, and an iteration count.
+
+       Increasing the &quot;iter&quot; parameter slows down the algorithm which makes it
+       harder  for  an  attacker to perform a brute force attack using a large
+       number of candidate passwords.
+
+       No assumption is made  regarding  the  given  password;  it  is  simply
+       treated as a byte sequence.
+
+       The  legacy  provider  needs  to  be  available in order to access this
+       algorithm.
+
+CONFORMING TO
+       RFC 8018
+
+SEE ALSO
+       EVP_KDF(3),          EVP_KDF_CTX_new(3),           EVP_KDF_CTX_free(3),
+       EVP_KDF_CTX_set_params(3),     EVP_KDF_derive(3),    &quot;PARAMETERS&quot;    in
+       EVP_KDF(3), OSSL_PROVIDER-legacy(7)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2021 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09              EVP_KDF-PBKDF1(7SSL)
+</pre></body></html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Eventloop(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Eventloop(3pm)        User Contributed Perl Documentation       Eventloop(3pm)
+
+NAME
+       Tk::Event - ToolKit for Events
+
+SYNOPSIS
+        use Tk::Event;
+
+        Tk::Event-&gt;fileevent(\*FH, &#x27;readable&#x27; =&gt; callback);
+
+        Tk::Event-&gt;lineavail(\*FH, callback);
+
+        use Tk::Event::Signal qw(INT);
+
+        $SIG{&#x27;INT&#x27;} = callback;
+
+        use Tk::Event::process;
+
+        Tk::Event-&gt;proc($pid, callback);
+
+        QueueEvent(callback [, position])
+
+DESCRIPTION
+       That is better than nothing but still hard to use. Most scripts want
+       higher level result (a line, a &quot;block&quot; of data etc.)
+
+       So it has occured to me that we could use new-ish TIEHANDLE thus:
+
+        my $obj = tie SOMEHANDLE,Tk::Event::IO;
+
+        while (&lt;SOMEHANDLE&gt;)
+         {
+         }
+
+       Then the READLINE routine registers a callback and looks something
+       like:
+
+        sub READLINE
+         {
+          my $obj = shift;
+          Event-&gt;io(*$obj,&#x27;readable&#x27;,sub { sysread(*$obj,${*$obj},1,length(${*$obj}) });
+          my $pos;
+          while (($pos = index(${*$obj},$/) &lt; 0)
+           {
+            DoOneEvent();
+           }
+          Event-&gt;io(*$obj,&#x27;readable&#x27;,&#x27;&#x27;); # unregister
+          $pos += length($/);
+          my $result = substr(${*$obj},0,$pos);
+          substr(${*$obj},0,$pos) = &#x27;&#x27;;
+          return $result;
+         }
+
+       This is using the scalar part of the glob representing the _inner_ IO
+       as a buffer in which to accumulate chars.
+
+perl v5.40.1                      2025-04-13                    Eventloop(3pm)
+</pre></body></html>

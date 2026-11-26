@@ -1,0 +1,104 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>defaults(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>DEFAULTS(1)                  GNUstep System Manual                 DEFAULTS(1)
+
+NAME
+       defaults - read or modify GNUstep user defaults
+
+
+SYNOPSIS
+       defaults [ action ]
+
+
+DESCRIPTION
+       The &#x27;defaults&#x27; command lets you to read and modify a user&#x27;s defaults.
+
+       This program replaces the old NeXTstep style dread, dwrite, and dremove
+       programs.
+
+       If you have access to another user&#x27;s defaults database, you may include
+       &#x27;-u  username&#x27;  before  any  other  options to use that user&#x27;s database
+       rather than your own.
+
+       defaults read [ domain [ key] ]
+
+              read the named default from the specified domain.  If  no  &#x27;key&#x27;
+              is given - read all defaults from the domain.  If no &#x27;domain&#x27; is
+              given  - read all defaults from all domains.  A domain is either
+              an application name, or &quot;NSGlobalDomain&quot;, for system  level  de‐
+              fauts.  (Running programs can access two other domains, &quot;NSArgu‐
+              mentDomain&quot;, for command line arguments, &quot;NSRegistrationDomain&quot;,
+              a  second-chance  domain in which &quot;defaults for defaults&quot; can be
+              registered, and possibly domains for specific locales.)
+
+       defaults readkey key
+
+              read the named default from all domains.
+
+       defaults write domain key value
+
+              write &#x27;value&#x27; as default &#x27;key&#x27; in the specified domain.  &#x27;value&#x27;
+              must be a property list in single quotes.
+
+       defaults write domain dictionary
+
+              write &#x27;dictionary&#x27; as a replacement for  the  specified  domain.
+              &#x27;dictionary&#x27; must be a property list in single quotes.
+
+       defaults write
+
+              reads standard input for defaults in the format produced by &#x27;de‐
+              faults read&#x27; and writes them to the database.
+
+       defaults delete [ domain [ key] ]
+
+              remove the specified default(s) from the domain.  If no &#x27;key&#x27; is
+              given - delete the entire domain.
+
+       defaults delete
+
+              read  standard  input  for a series of lines containing pairs of
+              domains and keys for defaults to be deleted.
+
+       defaults domains
+
+              lists the domains in the database (one per line)
+
+       defaults find word
+
+              searches domain names, default names, and default value  strings
+              for those equal to the specified word and lists them on standard
+              output.
+
+       defaults plist
+
+              output some information about property lists
+
+       defaults help
+
+              list options for the defaults command.
+
+
+FILES
+       ~/GNUstep/Defaults/.GNUstepDefaults
+              holds defaults for a user
+
+
+BUGS
+       None known.
+
+
+DIAGNOSTICS
+       Hopefully self-explanatory.
+
+
+HISTORY
+       The  &#x27;defaults&#x27; command appeared in OpenStep and combined the capabili‐
+       ties of the earlier NeXTstep commands &#x27;dread&#x27;, &#x27;dwrite&#x27;, and &#x27;dremove&#x27;.
+       The GNUstep version was written in 1998.
+
+       This manual page first appeared in gnustep-base 1.9.2 (March 2004).
+
+AUTHORS
+       defaults was written by Richard Frith-Macdonald &lt;rfm@gnu.org&gt;
+
+GNUstep                          February 2004                     DEFAULTS(1)
+</pre></body></html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Popup(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Popup(3pm)            User Contributed Perl Documentation           Popup(3pm)
+
+NAME
+       Tk::Wm::Popup - popup dialog windows.
+
+SYNOPSIS
+        $dialog-&gt;Popup(qw/
+            -popover    =&gt; &#x27;cursor&#x27; | $widget | undef,
+            -overanchor =&gt; c | n | ne | e | se | s | sw | w | nw,
+            -popanchor  =&gt; c | n | ne | e | se | s | sw | w | nw,
+        /);
+
+DESCRIPTION
+       You&#x27;ve probably had occasion to use a Dialog (or DialogBox) widget.
+       These widgets are derived from a Toplevel (which is a subclass of
+       Tk::Wm, the window manager) and spend most of their time in a withdrawn
+       state. It&#x27;s also common to use Toplevels as containers for custom built
+       popup windows.  Menus, too, are dialogs derived from the window manager
+       class. For this discussion, we&#x27;ll use the simple term dialog to refer
+       any widget that pops up and awaits user interaction, whether it be a
+       Menu, a special purpose Toplevel, or any of the dialog-type widgets,
+       including, but not limited to, ColorEditor, Dialog, DialogBox,
+       ErrorDialog, FileSelect, FBox, getOpenFile and getSaveFile.
+
+       When it&#x27;s time to display these dialogs, we call the Perl/Tk window
+       manager Popup method. Popup accepts three special purpose options that
+       specify placement information in high-level terms rather than numerical
+       coordinates. It is Popup&#x27;s responsibility to take our human
+       specifications and turn them into actual screen coordinates before
+       displaying the dialog.
+
+       We can direct the dialog to appear in two general locations, either
+       over another window (e.g. the root window (screen) or a particular
+       widget), or over the cursor. This is called the popover location. Once
+       we&#x27;ve made this decision we can further refine the exact placement of
+       the dialog relative to the popover location by specifying the
+       intersection of two anchor points. The popanchor point is associated
+       with the dialog and the overanchor point is associated with the popover
+       location (whether it be a window or the cursor). The point where the
+       two anchor points coincide is the popup locus. Anchor points are string
+       values and can be c (for center), or any of the eight cardinal compass
+       points: n, ne, e, se, s, sw, w or nw.
+
+       For example, if -popover specifies a widget, -popanchor is sw, and
+       -overanchor is ne, the the dialog&#x27;s southwest corner pops up at the
+       widget&#x27;s northeast corner.
+
+OPTIONS
+       The options recognized by Popup are as follows:
+
+       -popover
+           Specifies  whether  the  dialog &quot;pops over&quot; a window or the cursor.
+           It may be the string cursor, a widget reference, or undef  for  the
+           root window.
+
+       -popanchor
+           Specifies  the  anchor  point of the dialog.  For instance, if e is
+           specified, the right side of the dialog is the anchor.
+
+       -overanchor
+           Specifies where the dialog should anchor relative  to  the  popover
+           location.  For  instance, if e is specified the dialog appears over
+           the right side of the popover location  and  if  it&#x27;s  ne  the  the
+           dialog  is  positioned  at  the  upper-right  corner of the popover
+           location.
+
+AUTHOR
+       Nick Ing-Simmons, Steve Lidie
+
+       This code is distributed under the same terms as Perl.
+
+perl v5.40.1                      2025-04-13                        Popup(3pm)
+</pre></body></html>

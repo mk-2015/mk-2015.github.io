@@ -1,0 +1,71 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-client-node(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipew...ent-node(7) Miscellaneous Information Manual libpipew...ent-node(7)
+
+NAME
+       libpipewire-module-client-node - Client Node
+
+DESCRIPTION
+       Allow clients to export processing nodes to the PipeWire daemon.
+
+       This module creates 2 export types, one for the PW_TYPE_INTERFACE_Node
+       and another for the SPA_TYPE_INTERFACE_Node interfaces.
+
+       With pw_core_export(), objects of these types can be exported to the
+       PipeWire server. All actions performed on the node locally will be
+       visible to connecteced clients and scheduling of the Node will be
+       performed.
+
+       Objects of the PW_TYPE_INTERFACE_Node interface can be made with
+       pw_context_create_node(), for example. You would manually need to
+       create and add an object of the SPA_TYPE_INTERFACE_Node interface.
+       Exporting a SPA_TYPE_INTERFACE_Node directly will first wrap it in a
+       PW_TYPE_INTERFACE_Node interface.
+
+       Usually this module is not used directly but through the Stream and
+       Filter APIs, which provides API to implement the
+       SPA_TYPE_INTERFACE_Node interface.
+
+       In some cases, it is possible to use this factory directly (the
+       PipeWire JACK implementation does this). With pw_core_create_object()
+       on the client-node factory will result in a
+       PW_TYPE_INTERFACE_ClientNode proxy that can be used to control the
+       server side created Node Impl.
+
+       Schematically, the client side Node Impl is wrapped in the ClientNode
+       proxy and unwrapped by the server side resource so that all actions on
+       the client side node are reflected on the server side node and server
+       side actions are reflected in the client.
+
+         client side proxy                            server side resource
+       .------------------------------.            .----------------------------------.
+       | PW_TYPE_INTERFACE_ClientNode |            |  PW_TYPE_INTERFACE_Node          |
+       |.----------------------------.|  IPC       |.--------------------------------.|
+       || PW_TYPE_INTERFACE_Node     || -----&gt;     || SPA_TYPE_INTERFACE_Node        ||
+       ||.--------------------------.||            ||.------------------------------.||
+       ||| SPA_TYPE_INTERFACE_Node  |||            ||| PW_TYPE_INTERFACE_ClientNode |||
+       |||                          |||            |||                              |||
+       ||&#x27;--------------------------&#x27;||            ||&#x27;------------------------------&#x27;||
+       |&#x27;----------------------------&#x27;|            |&#x27;--------------------------------&#x27;|
+
+MODULE NAME
+       libpipewire-module-client-node
+
+MODULE OPTIONS
+       This module has no options.
+
+PROPERTIES FOR THE CREATE_OBJECT CALL
+       All properties are passed directly to the pw_context_create_node()
+       call.
+
+EXAMPLE CONFIGURATION
+       The module is usually added to the config file of the main PipeWire
+       daemon and the clients.
+
+       context.modules = [
+       { name = libpipewire-module-client-node }
+       ]
+
+SEE ALSO
+       • module-spa-node-factory: make nodes from a factory
+
+PipeWire                             1.4.2              libpipew...ent-node(7)
+</pre></body></html>

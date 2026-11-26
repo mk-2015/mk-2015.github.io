@@ -1,0 +1,30 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>proc_pid_syscall(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>proc_pid_syscall(5)           File Formats Manual          proc_pid_syscall(5)
+
+NAME
+       /proc/pid/syscall - currently executed system call
+
+DESCRIPTION
+       /proc/pid/syscall (since Linux 2.6.27)
+              This  file exposes the system call number and argument registers
+              for the system call currently being  executed  by  the  process,
+              followed  by the values of the stack pointer and program counter
+              registers.  The values of all six  argument  registers  are  ex‐
+              posed, although most system calls use fewer registers.
+
+              If  the  process  is blocked, but not in a system call, then the
+              file displays -1 in place of the system call number, followed by
+              just the values of the stack pointer and  program  counter.   If
+              process  is  not blocked, then the file contains just the string
+              &quot;running&quot;.
+
+              This file is present only if the kernel was configured with CON‐
+              FIG_HAVE_ARCH_TRACEHOOK.
+
+              Permission to access this file is governed by  a  ptrace  access
+              mode PTRACE_MODE_ATTACH_FSCREDS check; see ptrace(2).
+
+SEE ALSO
+       proc(5)
+
+Linux man-pages 6.9.1             2024-05-02               proc_pid_syscall(5)
+</pre></body></html>

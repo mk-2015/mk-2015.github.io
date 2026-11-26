@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_TSC(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_TSC(2const)                                          PR_SET_TSC(2const)
+
+NAME
+       PR_SET_TSC  -  change  whether the timestamp counter can be read by the
+       process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_TSC, long flag);
+
+DESCRIPTION
+       Set the state of the flag determining whether the timestamp counter can
+       be read by the process.  Pass PR_TSC_ENABLE to flag to allow it  to  be
+       read, or PR_TSC_SIGSEGV to generate a SIGSEGV when the process tries to
+       read the timestamp counter.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL arg2 is not a valid value.
+
+STANDARDS
+       Linux.  x86 only.
+
+HISTORY
+       Linux 2.6.26 (x86).
+
+SEE ALSO
+       prctl(2), PR_GET_TSC(2const)
+
+Linux man-pages 6.9.1             2024-06-02                PR_SET_TSC(2const)
+</pre></body></html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>re_exec(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>re_comp(3)                 Library Functions Manual                 re_comp(3)
+
+NAME
+       re_comp, re_exec - BSD regex functions
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #define _REGEX_RE_COMP
+       #include &lt;sys/types.h&gt;
+       #include &lt;regex.h&gt;
+
+       [[deprecated]] char *re_comp(const char *regex);
+       [[deprecated]] int re_exec(const char *string);
+
+DESCRIPTION
+       re_comp()  is  used  to  compile the null-terminated regular expression
+       pointed to by regex.  The compiled pattern occupies a static area,  the
+       pattern  buffer,  which  is overwritten by subsequent use of re_comp().
+       If regex is NULL, no operation is performed and  the  pattern  buffer&#x27;s
+       contents are not altered.
+
+       re_exec()  is used to assess whether the null-terminated string pointed
+       to by string matches the previously compiled regex.
+
+RETURN VALUE
+       re_comp() returns NULL on successful compilation of regex otherwise  it
+       returns a pointer to an appropriate error message.
+
+       re_exec() returns 1 for a successful match, zero for failure.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       re_comp(), re_exec() T}   Thread safety  MT-Unsafe
+
+STANDARDS
+       None.
+
+HISTORY
+       4.3BSD.
+
+       These functions are obsolete; the functions documented in regcomp(3)
+       should be used instead.
+
+SEE ALSO
+       regcomp(3), regex(7), GNU regex manual
+
+Linux man-pages 6.9.1             2024-05-02                        re_comp(3)
+</pre></body></html>

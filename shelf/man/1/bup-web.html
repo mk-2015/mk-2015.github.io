@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bup-web(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>bup-ftp(1)                                                          bup-ftp(1)
+
+NAME
+       bup-web - Start web server to browse bup repositiory
+
+SYNOPSIS
+       bup web [[hostname]:port]
+
+       bup web unix://path
+
+DESCRIPTION
+       bup web starts a web server that can browse bup repositories.  The file
+       hierarchy  is  the  same  as  that  shown by bup-fuse(1), bup-ls(1) and
+       bup-ftp(1).
+
+       hostname and port default to  127.0.0.1  and  8080,  respectively,  and
+       hence  bup  web  will  only  offer up the web server to locally running
+       clients.  If you’d like to expose the web server to anyone on your net‐
+       work (dangerous!)  you can omit the bind address to bind to all  avail‐
+       able interfaces: :8080.
+
+       When unix://path is specified, the server will listen on the filesystem
+       socket at path rather than a network socket.
+
+       A  SIGTERM signal may be sent to the server to request an orderly shut‐
+       down.
+
+OPTIONS
+       --human-readable
+              display human readable file sizes (i.e. 3.9K, 4.7M)
+
+       --browser
+              open the site in the default browser
+
+EXAMPLES
+              $ bup web
+              Serving HTTP on 127.0.0.1:8080...
+              ^C
+              Interrupted.
+
+              $ bup web :8080
+              Serving HTTP on 0.0.0.0:8080...
+              ^C
+              Interrupted.
+
+              $ bup web unix://socket &amp;
+              Serving HTTP on filesystem socket &#x27;socket&#x27;
+              $ curl --unix-socket ./socket http://localhost/
+              $ fg
+              bup web unix://socket
+              ^C
+              Interrupted.
+
+              $ bup web &amp;
+              [1] 30980
+              Serving HTTP on 127.0.0.1:8080...
+              $ kill -s TERM 30980
+              Shutdown requested
+              $ wait 30980
+              $ echo $?
+              0
+
+SEE ALSO
+       bup-fuse(1), bup-ls(1), bup-ftp(1), bup-restore(1), kill(1)
+
+BUP
+       Part of the bup(1) suite.
+
+AUTHORS
+       Joe Beda jbeda@gmail.com
+
+Bup 0.33.7                        2025-01-11                        bup-ftp(1)
+</pre></body></html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TCSETSF(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TCSETS(2const)                                                  TCSETS(2const)
+
+NAME
+       TCGETS, TCSETS, TCSETSW, TCSETSF, TCGETS2, TCSETS2, TCSETSW2, TCSETSF2,
+       TCGETA, TCSETA, TCSETAW, TCSETAF - get and set terminal attributes
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TC* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TCGETS, struct termios *argp);
+       int ioctl(int fd, TCSETS, const struct termios *argp);
+       int ioctl(int fd, TCSETSW, const struct termios *argp);
+       int ioctl(int fd, TCSETSF, const struct termios *argp);
+
+       int ioctl(int fd, TCGETS2, struct termios2 *argp);
+       int ioctl(int fd, TCSETS2, const struct termios2 *argp);
+       int ioctl(int fd, TCSETSW2, const struct termios2 *argp);
+       int ioctl(int fd, TCSETSF2, const struct termios2 *argp);
+
+       int ioctl(int fd, TCGETA, struct termio *argp);
+       int ioctl(int fd, TCSETA, const struct termio *argp);
+       int ioctl(int fd, TCSETAW, const struct termio *argp);
+       int ioctl(int fd, TCSETAF, const struct termio *argp);
+
+       #include &lt;asm/termbits.h&gt;
+
+       struct termios;
+       struct termios2;
+       struct termio;
+
+DESCRIPTION
+       TCGETS Equivalent to tcgetattr(fd, argp).
+
+              Get the current serial port settings.
+
+       TCSETS Equivalent to tcsetattr(fd, TCSANOW, argp).
+
+              Set the current serial port settings.
+
+       TCSETSW
+              Equivalent to tcsetattr(fd, TCSADRAIN, argp).
+
+              Allow  the  output  buffer  to drain, and set the current serial
+              port settings.
+
+       TCSETSF
+              Equivalent to tcsetattr(fd, TCSAFLUSH, argp).
+
+              Allow the output buffer to drain, discard pending input, and set
+              the current serial port settings.
+
+       The following four ioctls are just like TCGETS,  TCSETS,  TCSETSW,  TC‐
+       SETSF,  except  that  they take a struct termios2 * instead of a struct
+       termios *.  If the structure member c_cflag contains the  flag  BOTHER,
+       then  the  baud  rate  is  stored in the structure members c_ispeed and
+       c_ospeed as integer values.  These ioctls are not supported on all  ar‐
+       chitectures.
+
+              TCGETS2
+              TCSETS2
+              TCSETSW2
+              TCSETSF2
+
+       The  following  four  ioctls are just like TCGETS, TCSETS, TCSETSW, TC‐
+       SETSF, except that they take a struct termio  *  instead  of  a  struct
+       termios *.
+
+              TCGETA
+              TCSETA
+              TCSETAW
+              TCSETAF
+
+RETURN VALUE
+       On  success,  0 is returned.  On error, -1 is returned and errno is set
+       to indicate the error.
+
+ERRORS
+       EPERM  Insufficient permission.
+
+HISTORY
+       TCGETS2
+       TCSETS2
+       TCSETSW2
+       TCSETSF2
+              Linux 2.6.20.
+
+CAVEATS
+       struct termios from &lt;asm/termbits.h&gt; is different and incompatible with
+       struct termios from &lt;termios.h&gt;.   These  ioctl  calls  require  struct
+       termios from &lt;asm/termbits.h&gt;.
+
+EXAMPLES
+       Get or set arbitrary baudrate on the serial port.
+
+       /* SPDX-License-Identifier: GPL-2.0-or-later */
+
+       #include &lt;asm/termbits.h&gt;
+       #include &lt;fcntl.h&gt;
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;sys/ioctl.h&gt;
+       #include &lt;unistd.h&gt;
+
+       int
+       main(int argc, char *argv[])
+       {
+       #if !defined BOTHER
+           fprintf(stderr, &quot;BOTHER is unsupported\n&quot;);
+           /* Program may fallback to TCGETS/TCSETS with Bnnn constants */
+           exit(EXIT_FAILURE);
+       #else
+           /* Declare tio structure, its type depends on supported ioctl */
+       # if defined TCGETS2
+           struct termios2 tio;
+       # else
+           struct termios tio;
+       # endif
+           int fd, rc;
+
+           if (argc != 2 &amp;&amp; argc != 3 &amp;&amp; argc != 4) {
+               fprintf(stderr, &quot;Usage: %s device [output [input] ]\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           fd = open(argv[1], O_RDWR | O_NONBLOCK | O_NOCTTY);
+           if (fd &lt; 0) {
+               perror(&quot;open&quot;);
+               exit(EXIT_FAILURE);
+           }
+
+           /* Get the current serial port settings via supported ioctl */
+       # if defined TCGETS2
+           rc = ioctl(fd, TCGETS2, &amp;tio);
+       # else
+           rc = ioctl(fd, TCGETS, &amp;tio);
+       # endif
+           if (rc) {
+               perror(&quot;TCGETS&quot;);
+               close(fd);
+               exit(EXIT_FAILURE);
+           }
+
+           /* Change baud rate when more arguments were provided */
+           if (argc == 3 || argc == 4) {
+               /* Clear the current output baud rate and fill a new value */
+               tio.c_cflag &amp;= ~CBAUD;
+               tio.c_cflag |= BOTHER;
+               tio.c_ospeed = atoi(argv[2]);
+
+               /* Clear the current input baud rate and fill a new value */
+               tio.c_cflag &amp;= ~(CBAUD &lt;&lt; IBSHIFT);
+               tio.c_cflag |= BOTHER &lt;&lt; IBSHIFT;
+               /* When 4th argument is not provided reuse output baud rate */
+               tio.c_ispeed = (argc == 4) ? atoi(argv[3]) : atoi(argv[2]);
+
+               /* Set new serial port settings via supported ioctl */
+       # if defined TCSETS2
+               rc = ioctl(fd, TCSETS2, &amp;tio);
+       # else
+               rc = ioctl(fd, TCSETS, &amp;tio);
+       # endif
+               if (rc) {
+                   perror(&quot;TCSETS&quot;);
+                   close(fd);
+                   exit(EXIT_FAILURE);
+               }
+
+               /* And get new values which were really configured */
+       # if defined TCGETS2
+               rc = ioctl(fd, TCGETS2, &amp;tio);
+       # else
+               rc = ioctl(fd, TCGETS, &amp;tio);
+       # endif
+               if (rc) {
+                   perror(&quot;TCGETS&quot;);
+                   close(fd);
+                   exit(EXIT_FAILURE);
+               }
+           }
+
+           close(fd);
+
+           printf(&quot;output baud rate: %u\n&quot;, tio.c_ospeed);
+           printf(&quot;input baud rate: %u\n&quot;, tio.c_ispeed);
+
+           exit(EXIT_SUCCESS);
+       #endif
+       }
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2), termios(3)
+
+Linux man-pages 6.9.1             2024-06-15                    TCSETS(2const)
+</pre></body></html>

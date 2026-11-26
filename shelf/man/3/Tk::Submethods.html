@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Submethods(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Submethods(3pm)       User Contributed Perl Documentation      Submethods(3pm)
+
+NAME
+       Tk::Submethods - add aliases for tk sub-commands
+
+SYNOPSIS
+         use Tk::Submethods ( &#x27;command1&#x27; =&gt; [qw(sub1 sub2 sub3)],
+                              &#x27;command2&#x27; =&gt; [qw(sub1 sub2 sub3)]);
+
+DESCRIPTION
+       Creates &quot;-&gt;commandSub(...)&quot; as an alias for &quot;-&gt;command(&#x27;sub&#x27;,...)&quot;
+       e.g. &quot;-&gt;grabRelease&quot; for &quot;-&gt;grab(&#x27;release&#x27;)&quot;.
+
+       For each command/subcommand pair this creates a closure with command
+       and subcommand as bound lexical variables and assigns a reference to
+       this to a &#x27;glob&#x27; in the callers package.
+
+       Someday the sub-commands may be created directly in the C code.
+
+perl v5.40.1                      2025-04-13                   Submethods(3pm)
+</pre></body></html>

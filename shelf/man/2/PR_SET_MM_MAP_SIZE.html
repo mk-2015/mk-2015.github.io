@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_MM_MAP_SIZE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_MM_MAP(2const)                                    PR_SET_MM_MAP(2const)
+
+NAME
+       PR_SET_MM_MAP, PR_SET_MM_MAP_SIZE - modify kernel memory map descriptor
+       fields
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_MM, PR_SET_MM_MAP,
+                 struct prctl_mm_map *map, unsigned long size, 0L);
+       int prctl(PR_SET_MM, PR_SET_MM_MAP_SIZE, unsigned int *size, 0L, 0L);
+
+DESCRIPTION
+       PR_SET_MM_MAP
+              Provides  one-shot  access  to all the addresses modifyable with
+              PR_SET_MM(2const) by passing in a struct  prctl_mm_map  (as  de‐
+              fined in &lt;linux/prctl.h&gt;).  The size argument should provide the
+              size of the struct.
+
+       PR_SET_MM_MAP_SIZE
+              Returns   (via  the  size  argument)  the  size  of  the  struct
+              prctl_mm_map the kernel expects.  This allows user space to find
+              a compatible struct.
+
+       These features are available only if the kernel is built with the  CON‐
+       FIG_CHECKPOINT_RESTORE option enabled.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL The third argument is an invalid address.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.18.
+
+SEE ALSO
+       prctl(2),       PR_SET_MM(2const),        PR_SET_MM_START_CODE(2const),
+       PR_SET_MM_END_CODE(2const),               PR_SET_MM_START_DATA(2const),
+       PR_SET_MM_END_DATA(2const),              PR_SET_MM_START_STACK(2const),
+       PR_SET_MM_START_BRK(2const),                     PR_SET_MM_BRK(2const),
+       PR_SET_MM_ARG_START(2const),                 PR_SET_MM_ARG_END(2const),
+       PR_SET_MM_ENV_START(2const),                 PR_SET_MM_ENV_END(2const),
+       PR_SET_MM_EXE_FILE(2const)
+
+Linux man-pages 6.9.1             2024-06-01             PR_SET_MM_MAP(2const)
+</pre></body></html>

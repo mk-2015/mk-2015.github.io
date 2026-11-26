@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFDeferStrileArrayWriting(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFDEFERSTRILEARRAYWRITING(3tiff)  LibTIFF TIFFDEFERSTRILEARRAYWRITING(3tiff)
+
+NAME
+       TIFFDeferStrileArrayWriting - defer strile array writing
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFDeferStrileArrayWriting(TIFF *tif)
+
+       int TIFFForceStrileArrayWriting(TIFF *tif)
+
+DESCRIPTION
+       TIFFDeferStrileArrayWriting() is an advanced writing function that must
+       be   used  in  a  particular  sequence,  and  generally  together  with
+       TIFFForceStrileArrayWriting(), to achieve its  intended  effect.  Their
+       aim  is to control when and where the StripOffsets / StripByteCounts or
+       TileOffsets / TileByteCounts arrays are written into the file.
+
+       The purpose of this is  to  generate  &#x27;cloud-optimized  geotiff&#x27;  files
+       where the first KB of the file only contain the IFD entries without the
+       potentially large strile arrays. Those are written afterwards.
+
+       More  precisely,  when  TIFFWriteCheck() is called, the tag entries for
+       those arrays will be written with type = count = offset = 0 as a tempo‐
+       rary value.
+
+       Its effect  is  only  valid  for  the  current  directory,  and  before
+       TIFFWriteDirectory()  is first called, and  will be reset when changing
+       directory.
+
+       The typical sequence of calls is:
+
+          TIFFOpen()
+          /* or TIFFCreateDirectory(tif) */
+          /* Set fields with calls to TIFFSetField(tif, ...) */
+          TIFFDeferStrileArrayWriting(tif)
+          TIFFWriteCheck(tif, ...)
+          TIFFWriteDirectory(tif)
+          /* ... potentially create other directories and come back to the above directory */
+          TIFFForceStrileArrayWriting(tif) /* emit the arrays at the end of file */
+
+RETURNS
+       1 in case of success, 0 otherwise.
+
+DIAGNOSTICS
+       All error messages are directed to the TIFFErrorExtR() routine.   Like‐
+       wise, warning messages are directed to the TIFFWarningExtR() routine.
+
+NOTE
+       This functionality was introduced with libtiff 4.1.
+
+SEE ALSO
+       libtiff (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026TIFFDEFERSTRILEARRAYWRITING(3tiff)
+</pre></body></html>

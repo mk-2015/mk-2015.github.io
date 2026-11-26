@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pow10(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>pow10(3)                   Library Functions Manual                   pow10(3)
+
+NAME
+       pow10, pow10f, pow10l - base-10 power functions
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #define _GNU_SOURCE         /* See feature_test_macros(7) */
+       #include &lt;math.h&gt;
+
+       double pow10(double x);
+       float pow10f(float x);
+       long double pow10l(long double x);
+
+DESCRIPTION
+       These functions return the value of 10 raised to the power x.
+
+       Note  well:  These functions perform exactly the same task as the func‐
+       tions described in exp10(3), with the difference that the latter  func‐
+       tions  are now standardized in TS 18661-4:2015.  Those latter functions
+       should be used in preference to the functions described in this page.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       pow10(), pow10f(), pow10l() T}   Thread safety  MT-Safe
+
+STANDARDS
+       GNU.
+
+VERSIONS
+       glibc 2.1.  Removed in glibc 2.27.
+
+SEE ALSO
+       exp10(3), pow(3)
+
+Linux man-pages 6.9.1             2024-05-02                          pow10(3)
+</pre></body></html>

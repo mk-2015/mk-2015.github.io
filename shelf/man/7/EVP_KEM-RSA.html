@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KEM-RSA(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KEM-RSA(7SSL)                   OpenSSL                  EVP_KEM-RSA(7SSL)
+
+NAME
+       EVP_KEM-RSA - EVP_KEM RSA keytype and algorithm support
+
+DESCRIPTION
+       The RSA keytype and its parameters are described in EVP_PKEY-RSA(7).
+       See EVP_PKEY_encapsulate(3) and EVP_PKEY_decapsulate(3) for more info.
+
+   RSA KEM parameters
+       &quot;operation&quot; (OSSL_KEM_PARAM_OPERATION) &lt;UTF8 string&gt;
+           The OpenSSL RSA Key Encapsulation Mechanism only currently supports
+           the following default operation (operating mode):
+
+           &quot;RSASVE&quot;
+               The encapsulate function simply generates a secret using random
+               bytes  and  then  encrypts  the secret using the RSA public key
+               (with no  padding).   The  decapsulate  function  recovers  the
+               secret using the RSA private key.
+
+           This can be set using EVP_PKEY_CTX_set_kem_op().
+
+       &quot;fips-indicator&quot; (OSSL_KEM_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+       &quot;key-check&quot; (OSSL_KEM_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           These parameters are described in provider-kem(7).
+
+CONFORMING TO
+       SP800-56Br2
+           Section   7.2.1.2   RSASVE  Generate  Operation  (RSASVE.GENERATE).
+           Section 7.2.1.3 RSASVE Recovery Operation (RSASVE.RECOVER).
+
+SEE ALSO
+       EVP_PKEY_CTX_set_kem_op(3),                    EVP_PKEY_encapsulate(3),
+       EVP_PKEY_decapsulate(3)           EVP_KEYMGMT(3),          EVP_PKEY(3),
+       provider-keymgmt(7)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+       The &quot;operation&quot; (operating mode) was  a  required  parameter  prior  to
+       OpenSSL  3.5.   As  of  OpenSSL  3.5, &quot;RSASVE&quot; is the default operating
+       mode, and no explicit value need be specified.
+
+COPYRIGHT
+       Copyright 2020-2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                 EVP_KEM-RSA(7SSL)
+</pre></body></html>

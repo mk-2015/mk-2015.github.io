@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_FPEXC(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_FPEXC(2const)                                      PR_SET_FPEXC(2const)
+
+NAME
+       PR_SET_FPEXC - set the floating-point exception mode
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_FPEXC, unsigned long mode);
+
+DESCRIPTION
+       Set floating-point exception mode to mode.  Pass PR_FP_EXC_SW_ENABLE to
+       use  FPEXC  for  FP exception enables, PR_FP_EXC_DIV for floating-point
+       divide   by   zero,   PR_FP_EXC_OVF   for   floating-point    overflow,
+       PR_FP_EXC_UND for floating-point underflow, PR_FP_EXC_RES for floating-
+       point  inexact  result, PR_FP_EXC_INV for floating-point invalid opera‐
+       tion, PR_FP_EXC_DISABLED for FP exceptions disabled, PR_FP_EXC_NONRECOV
+       for async nonrecoverable exception mode, PR_FP_EXC_ASYNC for async  re‐
+       coverable exception mode, PR_FP_EXC_PRECISE for precise exception mode.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL mode is not a valid value.
+
+STANDARDS
+       Linux.  PowerPC only.
+
+HISTORY
+       Linux 2.4.21, 2.5.32.  (PowerPC)
+
+SEE ALSO
+       prctl(2), PR_GET_FPEXC(2const)
+
+Linux man-pages 6.9.1             2024-06-02              PR_SET_FPEXC(2const)
+</pre></body></html>

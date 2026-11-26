@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>setlogcons(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>SETLOGCONS(8)               System Manager&#x27;s Manual              SETLOGCONS(8)
+
+NAME
+       setlogcons - Send kernel messages to console N
+
+SYNOPSIS
+       setlogcons [options] [N]
+
+
+DESCRIPTION
+       The command setlogcons N sets all kernel messages to the console speci‐
+       fied as N.
+
+       By default kernel messages are sent to the current console.
+
+       To change the level of messages sent, use dmesg
+
+
+OPTIONS
+       -C, --console=DEV
+              the console device to be used.
+
+       -V, --version
+              print version number.
+
+       -h, --help
+              print this usage message.
+
+
+AUTHORS
+       setlogcons  was originally written by Andries Brouwer for the kbd pack‐
+       age.
+
+       This manual page was written by Alastair McKinstry.
+
+SEE ALSO
+       dmesg(1)
+
+kbd                             24 October 2024                  SETLOGCONS(8)
+</pre></body></html>

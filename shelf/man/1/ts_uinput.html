@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ts_uinput(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>TS_UINPUT(1)                         tslib                        TS_UINPUT(1)
+
+NAME
+       ts_uinput  -  A daemon program creating a tslib-filtered and calibrated
+       input event device
+
+
+SYNOPSIS
+       ts_uinput [OPTION]
+
+
+DESCRIPTION
+       ts_uinput provides an alternative for using tslib&#x27;s API in order to get
+       filtered and calibrated touch screen inputs.  Using Linux&#x27; uinput  sys‐
+       tem,  it  creates an input event device to be used in your environment.
+       It uses ts_read_mt() and thus supports single and multi touch.
+
+
+       -d, --daemonize
+
+           Start ts_uinput as a daemon and return.  The  sysfs&#x27;  input  device
+           name  of  the  newly created device is printed to stdout before re‐
+           turning. If --verbose is chosen too, the /dev/input/eventX path  to
+           the device node is printed.
+
+
+       -v, --verbose
+
+           Print  debug  information to stdout and stderr. Only if --daemonize
+           is not chosen. If used together with --daemonize, the path  to  the
+           created input event device node /dev/input/eventX is printed before
+           the program forks and returns.
+
+
+       -n, --name
+
+           Set the name of the new input event device. Default: ts_uinput.
+
+
+       -i, --idev
+
+           Explicitly choose the original input event device for tslib to use.
+           Default: the environment variable TSLIB_TSDEVICE&#x27;s value.
+
+
+       -f, --fbdev
+
+           Explicitly choose the framebuffer device to use. Default: the envi‐
+           ronment variable TSLIB_FBDEVICE&#x27;s value.
+
+
+       -s, --slots
+
+           Explicitly  set  the  possible concurrent touch contacts supported.
+           May be only needed if the original input device doesn&#x27;t report it.
+
+
+       -b, --nofb
+
+           Read the screen resolution values from the input  device,  not  the
+           framebuffer device.
+
+
+
+SEE ALSO
+       ts.conf (5), ts_calibrate (1), ts_test (1)
+
+                                                                  TS_UINPUT(1)
+</pre></body></html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>cos(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>cos(3)                     Library Functions Manual                     cos(3)
+
+NAME
+       cos, cosf, cosl - cosine function
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;math.h&gt;
+
+       double cos(double x);
+       float cosf(float x);
+       long double cosl(long double x);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       cosf(), cosl():
+           _ISOC99_SOURCE || _POSIX_C_SOURCE &gt;= 200112L
+               || /* Since glibc 2.19: */ _DEFAULT_SOURCE
+               || /* glibc &lt;= 2.19: */ _BSD_SOURCE || _SVID_SOURCE
+
+DESCRIPTION
+       These functions return the cosine of x, where x is given in radians.
+
+RETURN VALUE
+       On success, these functions return the cosine of x.
+
+       If x is a NaN, a NaN is returned.
+
+       If  x is positive infinity or negative infinity, a domain error occurs,
+       and a NaN is returned.
+
+ERRORS
+       See math_error(7) for information on how to determine whether an  error
+       has occurred when calling these functions.
+
+       The following errors can occur:
+
+       Domain error: x is an infinity
+              errno  is set to EDOM (but see BUGS).  An invalid floating-point
+              exception (FE_INVALID) is raised.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{ cos(),
+       cosf(), cosl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       C89, POSIX.1-2001.
+
+       The variant returning double also conforms to SVr4, 4.3BSD.
+
+BUGS
+       Before glibc 2.10, the glibc implementation did not set errno to EDOM
+       when a domain error occurred.
+
+SEE ALSO
+       acos(3), asin(3), atan(3), atan2(3), ccos(3), sin(3), sincos(3), tan(3)
+
+Linux man-pages 6.9.1             2024-05-02                            cos(3)
+</pre></body></html>

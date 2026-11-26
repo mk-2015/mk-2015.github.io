@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>va_list(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>va_list(3type)                                                  va_list(3type)
+
+NAME
+       va_list - variable argument list
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;stdarg.h&gt;
+
+       typedef /* ... */  va_list;
+
+DESCRIPTION
+       Used  by functions with a varying number of arguments of varying types.
+       The function must declare an object of type va_list which  is  used  by
+       the  macros  va_start(3),  va_arg(3), va_copy(3), and va_end(3) to tra‐
+       verse the list of arguments.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       C89, POSIX.1-2001.
+
+NOTES
+       The following headers also provide va_list: &lt;stdio.h&gt; and &lt;wchar.h&gt;.
+
+SEE ALSO
+       va_start(3), va_arg(3), va_copy(3), va_end(3)
+
+Linux man-pages 6.9.1             2024-05-02                    va_list(3type)
+</pre></body></html>

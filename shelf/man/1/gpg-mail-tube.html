@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>gpg-mail-tube(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GPG-MAIL-TUBE(1)             GNU Privacy Guard 2.4            GPG-MAIL-TUBE(1)
+
+NAME
+       gpg-mail-tube - Encrypt rfc822 formatted mail in a pipeline
+
+SYNOPSIS
+       gpg-mail-tube [options] recipients
+
+
+DESCRIPTION
+       gpg-mail-tube takes RFC-822 formatted mail on stdin and turns it into a
+       PGP/MIME encrypted mail which is then written to stdout.
+
+       The  recipients must be plain mail addresses (e.g. foo@example.org) and
+       should in general list the To and Cc addresses contained in the mail.
+
+
+OPTIONS
+       gpg-mail-tube understands these options:
+
+
+
+       --verbose
+       -v     Enable extra informational output.
+
+
+       --quiet
+       -q     Try to be as quiet as possible.
+
+
+       --log-file file
+              Write log output to file.  Use ‘socket://’ to log to a socket.
+
+
+       --no-stderr
+              Suppresses all output to stderr.  This  is  useful  for  callers
+              which  don&#x27;t  distinguish stdout and stderr.  To get diagnostics
+              the option --log-file can be used.
+
+
+       --header name=value
+              Add the mail header &quot;name: value&quot; to the output.
+
+
+       --setenv name=value
+              Put the given environment string into the  environment  of  this
+              process and of the called gpg.  This option is required if there
+              is no other way to set the environemt.
+
+
+       --as-attach
+       -a     Do  not  write a PGP/MIME mail but emit a simple body along with
+              an attachment containing the encrypted body of the  input  mail.
+              If  the  input  was a plain text message a simple encrypted file
+              will be attached.  If the input was a multipart MIME message the
+              encrypted file is of type message/rfc822.
+
+
+       --gpg gpgcmd
+              Use the specified command gpgcmd instead of gpg.
+
+
+       --vsd  Use the gpg from a GnuPG VS-DesktopÂ® AppImage.  The AppImage is
+              started   if   it   is   not   running.    A    symlink    named
+              ‘~/.gnupg-vsd/gnupg-vs-desktop.AppImage’  needs  to  link to the
+              actually to be used AppImage.
+
+
+       --version
+              Print version of the program and exit.
+
+
+       --help Display a brief help page and exit.
+
+
+EXAMPLES
+       The following options can be used in a local transport rule of the Exim
+       MTA which assumes that that  check_local_user  has  been  used  in  the
+       router.
+
+         transport_filter = /usr/local/bin/gpg-mail-tube --setenv HOME=${home} \
+                            --no-stderr -- $pipe_addresses
+
+
+       For a remote transport the use of size_addition and an explicit setting
+       of the user and its home directory might be required.
+
+
+
+DIAGNOSTICS
+       The program returns 0 on a successful encryption or a non-zero value on
+       error.   Note that on error some output might have already been written
+       to stdout.
+
+
+SEE ALSO
+       gpg(1),
+
+       The full documentation for this tool is maintained as a Texinfo manual.
+       If GnuPG and the info program are properly installed at your site,  the
+       command
+
+         info gnupg
+
+       should  give  you access to the complete manual including a menu struc‐
+       ture and an index.
+
+
+
+
+
+GnuPG 2.4.7                       2024-11-22                  GPG-MAIL-TUBE(1)
+</pre></body></html>

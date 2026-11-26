@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UFFDIO_UNREGISTER(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>UFFDIO_UNREGISTER(2const)                            UFFDIO_UNREGISTER(2const)
+
+NAME
+       UFFDIO_UNREGISTER - unregister a memory address range from userfaultfd
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, UFFDIO_UNREGISTER, const struct uffdio_range *argp);
+
+DESCRIPTION
+       Unregister  a  memory address range from userfaultfd.  The pages in the
+       range must be “compatible” (see UFFDIO_REGISTER(2const)).
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned and errno  is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL Either argp-&gt;start or the argp-&gt;len fields was not a multiple of
+              the  system page size; or the argp-&gt;len field was zero; or these
+              fields were otherwise invalid.
+
+       EINVAL There as an incompatible mapping in the specified address range.
+
+       EINVAL There was no mapping in the specified address range.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.3.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), ioctl_userfaultfd(2), UFFDIO_REGISTER(2const), userfaultfd(2)
+
+       linux.git/Documentation/admin-guide/mm/userfaultfd.rst
+
+Linux man-pages 6.9.1             2024-06-14         UFFDIO_UNREGISTER(2const)
+</pre></body></html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wcslen(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>wcslen(3)                  Library Functions Manual                  wcslen(3)
+
+NAME
+       wcslen - determine the length of a wide-character string
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wchar.h&gt;
+
+       size_t wcslen(const wchar_t *s);
+
+DESCRIPTION
+       The wcslen() function is the wide-character equivalent of the strlen(3)
+       function.   It  determines  the  length  of  the  wide-character string
+       pointed to by s, excluding the terminating null wide character (L&#x27;\0&#x27;).
+
+RETURN VALUE
+       The wcslen() function returns the number of wide characters in s.
+
+ATTRIBUTES
+       For an explanation of the terms  used  in  this  section,  see  attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       wcslen() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+NOTES
+       In cases where the input buffer may not contain a terminating null wide
+       character, wcsnlen(3) should be used instead.
+
+SEE ALSO
+       strlen(3)
+
+Linux man-pages 6.9.1             2024-06-15                         wcslen(3)
+</pre></body></html>

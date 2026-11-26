@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_CAPBSET_DROP(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_CAPBSET_DROP(2const)                                PR_CAPBSET_DROP(2const)
+
+NAME
+       PR_CAPBSET_DROP  - drop a capability from the calling thread&#x27;s capabil‐
+       ity bounding set
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_CAPBSET_DROP, long cap);
+
+DESCRIPTION
+       Drop the capability specified by cap from the calling thread&#x27;s capabil‐
+       ity bounding set.  Any children of the calling thread will inherit  the
+       newly reduced bounding set.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EINVAL File capabilities are not enabled in the kernel.
+
+       EINVAL cap does not specify a valid capability.
+
+       EPERM  The caller does not have the CAP_SETPCAP capability.
+
+VERSIONS
+       A higher-level interface layered on top of this operation  is  provided
+       in the libcap(3) library in the form of cap_drop_bound(3).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.25.
+
+SEE ALSO
+       prctl(2), PR_CAPBSET_READ(2const) libcap(3), cap_drop_bound(3)
+
+Linux man-pages 6.9.1             2024-06-02           PR_CAPBSET_DROP(2const)
+</pre></body></html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_GET_TAGGED_ADDR_CTRL(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_GET_TAGGED_ADDR_CTRL(2const)                PR_GET_TAGGED_ADDR_CTRL(2const)
+
+NAME
+       PR_GET_TAGGED_ADDR_CTRL  -  get the tagged address mode for the calling
+       thread
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_GET_TAGGED_ADDR_CTRL, 0L, 0L, 0L, 0L);
+
+DESCRIPTION
+       Returns the current tagged address mode for the calling thread.
+
+       The call returns a nonnegative value describing the current tagged  ad‐
+       dress   mode,  encoded  in  the  same  way  as  the  mode  argument  of
+       PR_SET_TAGGED_ADDR_CTRL(2const).
+
+RETURN VALUE
+       On success, this call returns the nonnegative  value  described  above.
+       On error, -1 is returned, and errno is set to indicate the error.
+
+ERRORS
+       This  feature is disabled or unsupported by the kernel, or disabled via
+       /proc/sys/abi/tagged_addr_disabled.
+
+FILES
+       /proc/sys/abi/tagged_addr_disabled
+
+STANDARDS
+       Linux.  arm64 only.
+
+HISTORY
+       Linux 5.4 (arm64).
+
+SEE ALSO
+       prctl(2), PR_SET_TAGGED_ADDR_CTRL(2const)
+
+       For more information, see the kernel source  file  Documentation/arm64/
+       tagged-address-abi.rst.
+
+Linux man-pages 6.9.1             2024-06-01   PR_GET_TAGGED_ADDR_CTRL(2const)
+</pre></body></html>

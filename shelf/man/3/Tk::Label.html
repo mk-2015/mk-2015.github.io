@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Label(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Label(3pm)            User Contributed Perl Documentation           Label(3pm)
+
+NAME
+       Tk::Label - Create and manipulate Label widgets
+
+SYNOPSIS
+       $label = $parent-&gt;Label(?options?);
+
+STANDARD OPTIONS
+       -activebackground -activeforeground -anchor -background -bitmap
+       -borderwidth -compound -cursor -disabledforeground -font -foreground
+       -highlightbackground -highlightcolor -highlightthickness -image
+       -justify -padx -pady -relief -takefocus -text -textvariable -underline
+       -wraplength
+
+       See Tk::options for details of the standard options.
+
+WIDGET-SPECIFIC OPTIONS
+       Name:     height
+       Class:    Height
+       Switch:   -height
+           Specifies a desired height for the label.  If an image or bitmap is
+           being  displayed  in  the  label  then the value is in screen units
+           (i.e. any of the forms acceptable to Tk_GetPixels); for text it  is
+           in  lines  of  text.   If  this option isn&#x27;t specified, the label&#x27;s
+           desired height is computed from the size of the image or bitmap  or
+           text being displayed in it.
+
+       Name:     state
+       Class:    State
+       Switch:   -state
+           Specifies  one  of  three  states for the label: normal, active, or
+           disabled.  In  normal  state  the  label  is  displayed  using  the
+           foreground  and  background  options.  In active state the label is
+           displayed using the activeForeground and activeBackground  options.
+           In the disabled state the disabledForeground and background options
+           determine how the button is displayed.
+
+       Name:     width
+       Class:    Width
+       Switch:   -width
+           Specifies  a desired width for the label.  If an image or bitmap is
+           being displayed in the label then the  value  is  in  screen  units
+           (i.e.  any of the forms acceptable to Tk_GetPixels); for text it is
+           in characters.  If this option isn&#x27;t specified, the label&#x27;s desired
+           width is computed from the size of the  image  or  bitmap  or  text
+           being displayed in it.
+
+DESCRIPTION
+       The  Label  method creates a new window (given by the $widget argument)
+       and makes it into a label widget.  Additional options, described above,
+       may be specified on the command line  or  in  the  option  database  to
+       configure  aspects  of  the  label  such as its colors, font, text, and
+       initial relief.  The label command returns its  $widget  argument.   At
+       the  time  this command is invoked, there must not exist a window named
+       $widget, but $widget&#x27;s parent must exist.
+
+       A label is a widget that displays a textual string,  bitmap  or  image.
+       If  text  is  displayed,  it  must  all be in a single font, but it can
+       occupy multiple lines on the screen (if  it  contains  newlines  or  if
+       wrapping  occurs  because  of  the  wrapLength  option)  and one of the
+       characters may optionally be underlined  using  the  underline  option.
+       The label can be manipulated in a few simple ways, such as changing its
+       relief or text, using the commands described below.
+
+WIDGET METHODS
+       The  Label  method  creates  a widget object.  This object supports the
+       configure and cget methods described in Tk::options which can  be  used
+       to  enquire  and  modify  the options described above.  The widget also
+       inherits all the methods provided by the generic Tk::Widget class.
+
+BINDINGS
+       When a new label is created, it has no default event  bindings:  labels
+       are not intended to be interactive.
+
+KEYWORDS
+       label, widget
+
+perl v5.40.1                      2025-04-13                        Label(3pm)
+</pre></body></html>

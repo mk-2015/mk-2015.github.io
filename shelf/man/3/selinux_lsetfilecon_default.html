@@ -1,0 +1,25 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>selinux_lsetfilecon_default(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>selinux_l...on_default(3)  SELinux API documentation selinux_l...on_default(3)
+
+NAME
+       selinux_lsetfilecon_default  -  set  the file context to the system de‐
+       faults
+
+SYNOPSIS
+       #include &lt;selinux/selinux.h&gt;
+
+       int selinux_lsetfilecon_default(const char *path);
+
+DESCRIPTION
+       selinux_lsetfilecon_default() sets the file context to the  system  de‐
+       faults.
+
+RETURN VALUE
+       Returns zero on success or -1 otherwise.
+
+SEE ALSO
+       selinux(8), selinux_file_context_cmp(3),
+       selinux_file_context_verify(3), matchpathcon(3), freecon(3),
+       setfilecon(3), setfscreatecon(3)
+
+stephen.smalley.work@gmail.com 21 November 2009      selinux_l...on_default(3)
+</pre></body></html>

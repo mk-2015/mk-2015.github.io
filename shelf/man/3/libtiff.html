@@ -1,0 +1,545 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libtiff(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>LIBTIFF(3tiff)                      LibTIFF                     LIBTIFF(3tiff)
+
+NAME
+       libtiff  -  introduction  to libtiff, a library for reading and writing
+       TIFF files
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+          cc file.c -ltiff
+
+DESCRIPTION
+       libtiff is a library for reading and writing data  files  encoded  with
+       the  &quot;Tag Image File&quot; format, Revision 6.0 (or revision 5.0 or revision
+       4.0). This file format is suitable for archiving multi-color and  mono‐
+       chromatic image data.
+
+       The  library  supports  several compression algorithms, as indicated by
+       the Compression field, including: no compression (1), CCITT 1D  Huffman
+       compression (2), CCITT Group 3 Facsimile compression (3), CCITT Group 4
+       Facsimile compression (4), Lempel-Ziv &amp; Welch compression (5), baseline
+       JPEG  compression  (7),  word-aligned  1D  Huffman compression (32771),
+       PackBits compression (32773).  In addition,  several  nonstandard  com‐
+       pression algorithms are supported: the 4-bit compression algorithm used
+       by  the  ThunderScan program (32809) (decompression only), NeXT&#x27;s 2-bit
+       compression algorithm (32766)  (decompression  only),  an  experimental
+       LZ-style  algorithm  known  as Deflate (32946), and an experimental CIE
+       LogLuv compression scheme designed for images with high  dynamic  range
+       (32845 for LogL and 32845 for LogLuv).  Directory information may be in
+       either little- or big-endian byte order; byte swapping is automatically
+       done  by  the library. Data bit ordering may be either Most Significant
+       Bit (MSB) to Least Significant Bit (LSB) or LSB to MSB.   Finally,  the
+       library does not support files in which the BitsPerSample , Compression
+       ,  MinSampleValue , or MaxSampleValue fields are defined differently on
+       a per-sample basis (in Rev. 6.0 the Compression tag is not defined on a
+       per-sample basis, so this is immaterial).
+
+DATA TYPES
+       The library makes extensive use of C typedefs to  promote  portability.
+       Two  sets  of  typedefs are used, one for communication with clients of
+       the library and one for internal data structures  and  parsing  of  the
+       TIFF  format.   The  following  typedefs  are  exposed  to users either
+       through function definitions or through parameters passed  through  the
+       varargs interfaces.
+
+          typedef uint32_t ttag_t;    // directory tag
+          typedef uint32_t tdir_t;    // directory index
+          typedef uint16_t tsample_t; // sample number
+          typedef uint32_t tstrip_t;  // strip number
+          typedef uint32_t ttile_t;   // tile number
+          typedef int64_t tmsize_t;   // signed size type (int32_t on 32-bit platforms)
+          typedef tmsize_t tsize_t;   // i/o size in bytes
+          typedef void* tdata_t;      // image data ref
+          typedef void* thandle_t;    // client data handle
+          typedef uint64_t toff_t;    // file offset
+
+       Note  that tstrip_t, ttile_t, and tsize_t are constrained to be no more
+       than 32-bit quantities by 32-bit fields they are stored in in the  TIFF
+       image.  Likewise tsample_t is limited by the 16-bit field used to store
+       the SamplesPerPixel tag.
+
+       tdir_t  constrains the maximum number of IFDs that may appear in an im‐
+       age and may be an arbitrary size (w/o penalty).  Starting with  libtiff
+       4.5.0, tdir_t is a 32-bit unsigned integer. Previously, it was a 16-bit
+       unsigned integer.
+
+       ttag_t must be either int, unsigned int, pointer, or double because the
+       library  uses a varargs interface and C restricts the type of the para‐
+       meter before an ellipsis to be a promoted type.  toff_t is  defined  as
+       uint64_t  because  TIFF  file offsets are (unsigned) 32-bit quantities,
+       and BigTIFF file offsets are  unsigned  64-bit  quantities.   A  signed
+       value is used because some interfaces return -1 on error. Finally, note
+       that  user-specified  data  references are passed as opaque handles and
+       only cast at the lowest layers where their type is presumed.
+
+LIST OF ROUTINES
+       The following routines are part of the library. Consult specific manual
+       pages for details on their operation; on most systems doing  man  func‐
+       tion-name will work.
+
+LIBTIFF FUNCTIONS
+       box   center;   l|l.    T{   Name   T}   T{   Description   T}   _   T{
+       TIFFAccessTagMethods() T}   T{ provides read/write access to the  TIFF‐
+       TagMethods within the TIFF structure to application code without giving
+       access  to the private TIFF structure T} _ T{ TIFFCheckpointDirectory()
+       T}   T{  writes  the  current  state  of  the   directory   T}   _   T{
+       TIFFCheckTile()  T}   T{  very  x,y,z,sample  is  within  image T} _ T{
+       TIFFCIELabToRGBInit() T}   T{ initialize CIE L*a*b* 1976 to RGB conver‐
+       sion state T} _ T{ TIFFCIELabToXYZ() T}   T{ perform CIE L*a*b* 1976 to
+       CIE XYZ conversion T} _ T{ TIFFCleanup() T}   T{ auxiliary function  to
+       free  the  TIFF  structure T} _ T{ TIFFClientdata() T}   T{ return open
+       file&#x27;s clientdata handle, which represents  the  file  descriptor  used
+       within libtiff.  T} _ T{ TIFFClientOpen() T}   T{ open a file for read‐
+       ing  or  writing  T}  _  T{ TIFFClientOpenExt() T}   T{ open a file for
+       reading or writing with options, such as re-entrant error  and  warning
+       handlers  may  be passed T} _ T{ TIFFClose() T}   T{ close a previously
+       opened TIFF file T} _ T{ TIFFComputeStrip() T}   T{ return  strip  con‐
+       taining y,sample T} _ T{ TIFFComputeTile() T}   T{ return tile contain‐
+       ing  x,y,z,sample T} _ T{ TIFFCreateCustomDirectory() T}   T{ setup for
+       a custom directory in a open TIFF file T}  _  T{  TIFFCreateDirectory()
+       T}   T{   setup   for  a  directory  in  a  open  TIFF  file  T}  _  T{
+       TIFFCreateEXIFDirectory() T}   T{ setup for a EXIF custom directory  in
+       a  open  TIFF  file  within a TIFF tag T} _ T{ TIFFCreateGPSDirectory()
+       T}   T{ setup for a GPS custom directory in a open TIFF file  within  a
+       TIFF tag T} _ T{ TIFFCurrentDirectory() T}   T{ return index of current
+       directory  T} _ T{ TIFFCurrentDirOffset() T}   T{ return file offset of
+       the current directory (instead of an index) T}  _  T{  TIFFCurrentRow()
+       T}   T{  return  index  of  current scanline T} _ T{ TIFFCurrentStrip()
+       T}   T{ return index of current strip T} _ T{ TIFFCurrentTile() T}   T{
+       return index of current tile T} _ T{ TIFFDataWidth() T}   T{ return the
+       size of TIFF data types T} _ T{ TIFFDefaultStripSize()  T}   T{  return
+       number  of  rows  for a reasonable-sized strip according to the current
+       settings of the ImageWidth, BitsPerSample and SamplesPerPixel, tags and
+       any compression-specific requirements  T}  _  T{  TIFFDefaultTileSize()
+       T}   T{ return pixel width and height of a reasonable-sized tile; suit‐
+       able  for  setting  up  the  TileWidth  and  TileLength  tags  T}  _ T{
+       TIFFDeferStrileArrayWriting() T}   T{ is an advanced  writing  function
+       to  control  when/where the [Strip/Tile][Offsets/ByteCounts] arrays are
+       written into the file, and must be used in a  particular  sequence  to‐
+       gether  with  TIFFForceStrileArrayWriting()  (see  description) T} _ T{
+       TIFFError() T}   T{ library-wide error handling  function  printing  to
+       stderr  T} _ T{ TIFFErrorExt() T}   T{ user-specific library-wide error
+       handling function that can be passed a file handle, which is set to the
+       open TIFF file within libtiff T} _ T{ TIFFErrorExtR() T}   T{ user-spe‐
+       cific re-entrant library error handling function,  to  which  its  TIFF
+       structure  is passed containing the pointer to a user-specific data ob‐
+       ject T} _ T{ TIFFFdOpen() T}   T{ open a file for reading or writing T}
+       _ T{ TIFFFdOpenExt() T}   T{ open a file for reading  or  writing  with
+       options, such as re-entrant error and warning handlers may be passed T}
+       _  T{  TIFFFieldDataType() T}   T{ get data type from field information
+       T} _ T{ TIFFFieldIsAnonymous() T}   T{ returns if field was unknown  to
+       libtiff  and  has  been auto-registered T} _ T{ TIFFFieldName() T}   T{
+       get field name from field  information  T}  _  T{  TIFFFieldPassCount()
+       T}   T{  get  whether  to  pass  a  value count to Get/SetField T} _ T{
+       TIFFFieldReadCount() T}   T{ get number of values to be read from field
+       T} _ T{ TIFFFieldSetGetCountSize() T}   T{ returns size of count  para‐
+       meter    of    TIFFSetField()    and    TIFFGetField()    T}    _    T{
+       TIFFFieldSetGetSize() T}   T{ return data size in bytes  of  the  field
+       data  type  used  for libtiff internal storage.  T} _ T{ TIFFFieldTag()
+       T}   T{   get   tag   value   from   field   information   T}   _    T{
+       TIFFFieldWithName() T}   T{ get field information given field name T} _
+       T{  TIFFFieldWithTag()  T}   T{ get field information given tag T} _ T{
+       TIFFFieldWriteCount() T}   T{ get number of values  to  be  written  to
+       field  T}  _ T{ TIFFFileName() T}   T{ return name of open file T} _ T{
+       TIFFFileno()  T}   T{   return   open   file   descriptor   T}   _   T{
+       TIFFFindCODEC()  T}   T{ find standard codec for the specific scheme T}
+       _ T{ TIFFFindField() T}   T{ get field information given tag  and  data
+       type  T}  _  T{  TIFFFlush()  T}   T{  flush all pending writes T} _ T{
+       TIFFFlushData()  T}   T{  flush   pending   data   writes   T}   _   T{
+       TIFFForceStrileArrayWriting()  T}   T{  is an advanced writing function
+       that writes the [Strip/Tile][Offsets/ByteCounts] arrays at the  end  of
+       the  file (see description) T} _ T{ TIFFFreeDirectory() T}   T{ release
+       storage associated  with  a  directory  T}  _  T{  TIFFGetBitRevTable()
+       T}   T{  return  bit reversal table T} _ T{ TIFFGetClientInfo() T}   T{
+       returns a pointer to the data of the named entry in the clientinfo-list
+       T} _ T{ TIFFGetCloseProc() T}   T{ returns  a  pointer  to  file  close
+       method  T}  _ T{ TIFFGetConfiguredCODECs() T}   T{ gets list of config‐
+       ured  codecs,  both  built-in  and  registered  by   user   T}   _   T{
+       TIFFGetField()  T}   T{  return  tag value in current directory T} _ T{
+       TIFFGetFieldDefaulted() T}   T{ return tag value in  current  directory
+       with default value set if the value is not already set and a default is
+       defined  T} _ T{ TIFFGetMapFileProc() T}   T{ returns a pointer to mem‐
+       ory mapping method T} _ T{ TIFFGetMode() T}   T{ return open file  mode
+       T} _ T{ TIFFGetReadProc() T}   T{ returns a pointer to file read method
+       T} _ T{ TIFFGetSeekProc() T}   T{ returns a pointer to file seek method
+       T}  _  T{  TIFFGetSizeProc() T}   T{ returns a pointer to file size re‐
+       questing method T} _ T{ TIFFGetStrileByteCount() T}   T{  return  value
+       of   the   TileByteCounts/StripByteCounts   array   for  the  specified
+       tile/strile T} _ T{  TIFFGetStrileByteCountWithErr()  T}   T{  same  as
+       TIFFGetStrileByteCount() and additionally provides an error return T} _
+       T{   TIFFGetStrileOffset()   T}   T{   return  value  of  the  TileOff‐
+       sets/StripOffsets  array  for  the  specified  tile/strile  T}   _   T{
+       TIFFGetStrileOffsetWithErr()  T}   T{ same as TIFFGetStrileOffset() and
+       additionally provides an error return  T}  _  T{  TIFFGetTagListCount()
+       T}   T{  return  number  of  entries  in  the  custom  tag list T} _ T{
+       TIFFGetTagListEntry() T}   T{ return tag number of the (n.th - 1) entry
+       within the custom tag list T} _ T{ TIFFGetUnmapFileProc()  T}   T{  re‐
+       turns  a  pointer  to  memory unmapping method T} _ T{ TIFFGetVersion()
+       T}   T{ return  library  version  string  T}  _  T{  TIFFGetWriteProc()
+       T}   T{   returns   a   pointer   to   file   write   method  T}  _  T{
+       TIFFIsBigEndian() T}   T{ returns a non-zero value if the file  is  Bi‐
+       gEndian  and  zero  if the file is LittleEndian T} _ T{ TIFFIsBigTIFF()
+       T}   T{ returns a non-zero value if the file is in BigTIFF style  T}  _
+       T{   TIFFIsByteSwapped()   T}   T{   return   true  if  image  data  is
+       byte-swapped T} _ T{ TIFFIsCODECConfigured() T}   T{ check, whether  we
+       have working codec T} _ T{ TIFFIsMSB2LSB() T}   T{ return true if image
+       data  is  being returned with bit 0 as the most significant bit T} _ T{
+       TIFFIsTiled() T}   T{ return true if  image  data  is  tiled  T}  _  T{
+       TIFFIsUpSampled()  T}   T{  returns  a non-zero value if image data re‐
+       turned through the read interface Routines is being up-sampled T} _  T{
+       TIFFLastDirectory() T}   T{ returns a non-zero value if the current di‐
+       rectory  is  the last directory in the file; otherwise zero is returned
+       T} _ T{ TIFFMergeFieldInfo() T}   T{ adds application defined TIFF tags
+       to the list of known libtiff tags  T}  _  T{  TIFFNumberOfDirectories()
+       T}   T{   return   number   of   directories   in   a   file  T}  _  T{
+       TIFFNumberOfStrips() T}   T{ return number of strips in an image  T}  _
+       T{  TIFFNumberOfTiles() T}   T{ return number of tiles in an image T} _
+       T{ TIFFOpen() T}   T{ open a file  for  reading  or  writing  T}  _  T{
+       TIFFOpenExt() T}   T{ open a file for reading or writing  with options,
+       such  as  re-entrant  error  and warning handlers may be passed T} _ T{
+       TIFFOpenW() T}   T{ opens a TIFF file  with  a  Unicode  filename,  for
+       read/writing  T}  _  T{ TIFFOpenWExt() T}   T{ opens a TIFF file with a
+       Unicode filename, for read/writing with options, such as re-entrant er‐
+       ror and warning handlers may be passed T} _  T{  TIFFOpenOptionsAlloc()
+       T}   T{  allocates  memory for TIFFOpenOptions opaque structure T} _ T{
+       TIFFOpenOptionsFree()  T}   T{  releases  the  allocated   memory   for
+       TIFFOpenOptions  T}  _ T{ TIFFOpenOptionsSetMaxSingleMemAlloc() T}   T{
+       limits the maximum single memory allocation  within  libtiff  T}  _  T{
+       TIFFOpenOptionsSetMaxCumulatedMemAlloc() T}   T{ limits the maximum cu‐
+       mulated     memory     allocation    within    libtiff    T}    _    T{
+       TIFFOpenOptionsSetErrorHandlerExtR() T}   T{ setup of  a  user-specific
+       and    per-TIFF   handle   (re-entrant)   error   handler   T}   _   T{
+       TIFFOpenOptionsSetWarningHandlerExtR() T}   T{ setup of a user-specific
+       and  per-TIFF   handle   (re-entrant)   warning   handler   T}   _   T{
+       TIFFPrintDirectory() T}   T{ print description of the current directory
+       T} _ T{ TIFFRasterScanlineSize() T}   T{ returns the size in bytes of a
+       complete    decoded    and    packed    raster   scanline   T}   _   T{
+       TIFFRasterScanlineSize64() T}   T{ return size  as  uint64_t  T}  _  T{
+       TIFFRawStripSize()  T}   T{  return number of bytes in a raw strip T} _
+       T{ TIFFRawStripSize64() T}   T{ return number of bytes in a  raw  strip
+       as  uint64_t  T}  _ T{ TIFFReadBufferSetup() T}   T{ specify i/o buffer
+       for reading T} _ T{ TIFFReadCustomDirectory() T}   T{ read  the  custom
+       directory  from the given offset and set the context of the TIFF-handle
+       tif to that custom directory T} _ T{ TIFFReadDirectory()  T}   T{  read
+       the  next directory T} _ T{ TIFFReadEncodedStrip() T}   T{ read and de‐
+       code a strip of data T} _ T{ TIFFReadEncodedTile() T}   T{ read and de‐
+       code a tile of data T} _ T{ TIFFReadEXIFDirectory()  T}   T{  read  the
+       EXIF  directory  from  the  given  offset  and  set  the context of the
+       TIFF-handle tif to that EXIF directory T} _ T{ TIFFReadFromUserBuffer()
+       T}   T{    replaces    the    use    of    TIFFReadEncodedStrip()     /
+       TIFFReadEncodedTile()  when the user can provide the buffer for the in‐
+       put data T} _ T{ TIFFReadGPSDirectory() T}   T{ read the GPS  directory
+       from  the  given  offset  and set the context of the TIFF-handle tif to
+       that GPS directory T} _ T{ TIFFReadRawStrip() T}   T{ read a raw  strip
+       of  data T} _ T{ TIFFReadRawTile() T}   T{ read a raw tile of data T} _
+       T{ TIFFReadRGBAImage() T}   T{ read an image into a fixed format raster
+       T}   _    T{    TIFFReadRGBAImageOriented()    T}   T{    works    like
+       TIFFReadRGBAImage()  except that the user can specify the raster origin
+       position T} _ T{ TIFFReadRGBAStrip() T}   T{ reads a single strip of  a
+       strip-based  image into memory, storing the result in the user supplied
+       RGBA  raster  T}  _   T{   TIFFReadRGBAStripExt()   T}   T{   same   as
+       TIFFReadRGBAStrip()  but  providing the parameter stop_on_error T} _ T{
+       TIFFReadRGBATile() T}   T{ reads a single tile of  a  tile-based  image
+       into  memory,  storing the result in the user supplied RGBA raster T} _
+       T{ TIFFReadRGBATileExt() T}   T{ same as TIFFReadRGBATile() but provid‐
+       ing the parameter stop_on_error T} _ T{ TIFFReadScanline() T}   T{ read
+       and decode a row of data T} _ T{ TIFFReadTile() T}   T{ read and decode
+       a tile of data T} _ T{ TIFFRegisterCODEC()  T}   T{  override  standard
+       codec for the specific scheme T} _ T{ TIFFReverseBits() T}   T{ reverse
+       bits  in an array of bytes T} _ T{ TIFFRewriteDirectory() T}   T{ oper‐
+       ates similarly to TIFFWriteDirectory(), but can be called with directo‐
+       ries previously read or written that already have an established  loca‐
+       tion  in  the  file  and  places  it  at  the  end  of the file T} _ T{
+       TIFFRGBAImageBegin() T}   T{ setup decoder state  for  TIFFRGBAImageGet
+       T}  _ T{ TIFFRGBAImageEnd() T}   T{ release TIFFRGBAImage decoder state
+       T} _ T{ TIFFRGBAImageGet() T}   T{ read and decode an  image  T}  _  T{
+       TIFFRGBAImageOK() T}   T{ is image readable by TIFFRGBAImageGet T} _ T{
+       TIFFScanlineSize()   T}   T{   return  size  of  a  scanline  T}  _  T{
+       TIFFScanlineSize64() T}   T{ return size of a scanline as uint64_t T} _
+       T{ TIFFSetClientdata() T}   T{ set open  file&#x27;s  clientdata  (file  de‐
+       scriptor/handle), and return previous value T} _ T{ TIFFSetClientInfo()
+       T}   T{  adds  or  replaces  an  entry  in  the clientinfo-list T} _ T{
+       TIFFSetCompressionScheme() T}   T{  set  compression  scheme  T}  _  T{
+       TIFFSetDirectory()   T}   T{   set   the  current  directory  T}  _  T{
+       TIFFSetErrorHandler() T}   T{  set  error  handler  function  T}  _  T{
+       TIFFSetErrorHandlerExt() T}   T{ set error handler function with a file
+       handle as parameter T} _ T{ TIFFSetField() T}   T{ set a tag&#x27;s value in
+       the  current  directory T} _ T{ TIFFSetFileName() T}   T{ sets the file
+       name in the TIFF-structure and returns  the  old  file  name  T}  _  T{
+       TIFFSetFileno()  T}   T{  overwrites  a copy of the open file&#x27;s I/O de‐
+       scriptor, and return previous value (refer to detailed description)  T}
+       _   T{  TIFFSetMode()  T}   T{  sets  the  libtiff  open  mode  in  the
+       TIFF-structure and returns the old mode T} _  T{  TIFFSetSubDirectory()
+       T}   T{  set the current directory T} _ T{ TIFFSetTagExtender() T}   T{
+       is used to register the merge function for user defined tags as an  ex‐
+       tender  callback  with  libtiff T} _ T{ TIFFSetupStrips() T}   T{ setup
+       or  reset  strip  parameters  and  strip   array   memory   T}   _   T{
+       TIFFSetWarningHandler()  T}   T{  set  warning handler function T} _ T{
+       TIFFSetWarningHandlerExt() T}   T{ set warning handler function with  a
+       file  handle as parameter T} _ T{ TIFFSetWriteOffset() T}   T{ set cur‐
+       rent write offset T} _ T{ TIFFStripSize()  T}   T{  return  size  of  a
+       strip  T}  _  T{ TIFFStripSize64() T}   T{ return equivalent size for a
+       strip of data as uint64_t T} _ T{ TIFFSwabArrayOfDouble() T}   T{  swap
+       bytes  of  an  array  of doubles T} _ T{ TIFFSwabArrayOfFloat() T}   T{
+       swap bytes of an array of floats T} _ T{ TIFFSwabArrayOfLong()  T}   T{
+       swap  bytes of an array of longs T} _ T{ TIFFSwabArrayOfLong8() T}   T{
+       swap bytes of an array  of  uint64_t  T}  _  T{  TIFFSwabArrayOfShort()
+       T}   T{    swap    bytes    of   an   array   of   shorts   T}   _   T{
+       TIFFSwabArrayOfTriples() T}   T{ swap the first and third byte of  each
+       triple  within  an array of bytes T} _ T{ TIFFSwabDouble() T}   T{ swap
+       bytes of double T} _ T{ TIFFSwabFloat() T}   T{ swap bytes of float  T}
+       _  T{ TIFFSwabLong() T}   T{ swap bytes of long T} _ T{ TIFFSwabLong8()
+       T}   T{ swap bytes of long long  (uint64_t)  T}  _  T{  TIFFSwabShort()
+       T}   T{  swap  bytes  of short T} _ T{ TIFFTileRowSize() T}   T{ return
+       size of a row in a tile T} _ T{ TIFFTileRowSize64() T}   T{ return size
+       of a row in a tile as uint64_t T} _ T{  TIFFTileSize()  T}   T{  return
+       size  of  a tile T} _ T{ TIFFTileSize64() T}   T{ return size of a tile
+       as uint64_t T} _ T{ TIFFUnlinkDirectory() T}   T{ unlink the  specified
+       directory  from  the  directory  chain  T}  _  T{ TIFFUnRegisterCODEC()
+       T}   T{ unregisters the codec T} _ T{  TIFFUnsetField()  T}   T{  clear
+       the   contents  of  the  field  in  the  internal  structure  T}  _  T{
+       TIFFVGetField() T}   T{ return tag value in current directory T}  _  T{
+       TIFFVGetFieldDefaulted()  T}   T{ return tag value in current directory
+       T} _ T{ TIFFVSetField() T}   T{ set a tag&#x27;s value in the current direc‐
+       tory T} _ T{ TIFFVStripSize() T}   T{ return number of bytes in a strip
+       T} _ T{ TIFFVStripSize64() T}   T{ return number of bytes  in  a  strip
+       with nrows rows of data as uint64_t T} _ T{ TIFFVTileSize() T}   T{ re‐
+       turns the number of bytes in a row-aligned tile with nrows of data T} _
+       T{   TIFFVTileSize64()  T}   T{  returns  the  number  of  bytes  in  a
+       row-aligned tile  with  nrows  of  data  a  uint64_t  number  T}  _  T{
+       TIFFWarning()  T}   T{  library-wide warning handling function printing
+       to stderr T} _ T{ TIFFWarningExt() T}   T{  user-specific  library-wide
+       warning  handling  function  that can be passed a file handle, which is
+       set to the open TIFF file within  libtiff  T}  _  T{  TIFFWarningExtR()
+       T}   T{  user-specific re-entrant library warning handling function, to
+       which its  TIFF  structure  is  passed  containing  the  pointer  to  a
+       user-specific  data  object T} _ T{ TIFFWriteBufferSetup() T}   T{ sets
+       up the data buffer used to write raw (encoded) data to a file T}  _  T{
+       TIFFWriteCheck() T}   T{ verify file is writable and that the directory
+       information  is  setup  properly  T}  _  T{  TIFFWriteCustomDirectory()
+       T}   T{ write the current custom directory (also EXIF or GPS)  to  file
+       T}  _  T{ TIFFWriteDirectory() T}   T{ write the current directory T} _
+       T{ TIFFWriteEncodedStrip() T}   T{ compress and write a strip  of  data
+       T}  _  T{  TIFFWriteEncodedTile()  T}   T{ compress and write a tile of
+       data T} _ T{ TIFFWriteRawStrip() T}   T{ write a raw strip of data T} _
+       T{ TIFFWriteRawTile() T}   T{  write  a  raw  tile  of  data  T}  _  T{
+       TIFFWriteScanline()   T}   T{   write  a  scanline  of  data  T}  _  T{
+       TIFFWriteTile() T}   T{ compress and write a  tile  of  data  T}  _  T{
+       TIFFXYZToRGB()  T}   T{  perform  CIE  XYZ  to  RGB  conversion T} _ T{
+       TIFFYCbCrtoRGB() T}   T{ perform  YCbCr  to  RGB  conversion  T}  _  T{
+       TIFFYCbCrToRGBInit()  T}   T{  initialize YCbCr to RGB conversion state
+       T}
+
+LIBTIFF AUXILLARY FUNCTIONS
+       box   center;   l|l.    T{   Name   T}   T{   Description   T}   _   T{
+       _TIFFCheckMalloc() T}   T{ checking for integer overflow before dynami‐
+       cally allocate memory buffer T} _ T{ _TIFFCheckRealloc() T}   T{ check‐
+       ing for integer overflow before dynamically reallocate memory buffer T}
+       _  T{  _TIFFClampDoubleToUInt32() T}   T{ clamps double values into the
+       range of uint32_t (i.e. 0 .. 0xFFFFFFFF) T} _  T{  _TIFFfree()  T}   T{
+       free  memory  buffer  T}  _  T{  _TIFFGetExifFields()  T}   T{ return a
+       pointer to the libtiff internal definition list of the EXIF tags  T}  _
+       T{ _TIFFGetGpsFields() T}   T{ return a pointer to the libtiff internal
+       definition  list  of the GPS tags T} _ T{ _TIFFmalloc() T}   T{ dynami‐
+       cally allocate memory buffer T} _ T{ _TIFFmemcmp() T}   T{ compare con‐
+       tents of the memory buffers T} _ T{ _TIFFmemcpy() T}   T{ copy contents
+       of the one buffer to another T} _ T{ _TIFFmemset() T}   T{ fill  memory
+       buffer  with  a  constant byte T} _ T{ _TIFFMultiply32() T}   T{ checks
+       for an integer overflow of the multiplication result  of  uint32_t  and
+       return  the multiplication result or 0 if an overflow would happen T} _
+       T{ _TIFFMultiply64() T}   T{ checks for an integer overflow of the mul‐
+       tiplication result of uint64_t and return the multiplication result  or
+       0  if  an  overflow would happen T} _ T{ _TIFFrealloc() T}   T{ dynami‐
+       cally reallocate memory buffer  T}  _  T{  _TIFFRewriteField()  T}   T{
+       Rewrite a field in the directory on disk without regard to updating the
+       TIFF directory structure in memory T}
+
+TAG USAGE
+       For  a  table  of  TIFF tags recognized by the library refer to LibTIFF
+       Coverage of the TIFF 6.0 Specification.
+
+PSEUDO TAGS
+       In addition to the normal TIFF tags the library supports  a  collection
+       of  tags  whose  values  lie in a range outside the valid range of TIFF
+       tags. These tags are termed pseudo-tags and are used to control various
+       codec-specific functions within the library.  The  table  below  summa‐
+       rizes the defined pseudo-tags.
+
+LIBTIFF SUPPORTED TAGS
+       box center; l|l|l|l.  T{ Tag name T}   T{ Codec T}   T{ R/W T}   T{ Li‐
+       brary  Use/Notes T} _ T{ TIFFTAG_FAXMODE T}   T{ G3 T}   T{ R/W T}   T{
+       general codec operation  T}  _  T{  TIFFTAG_FAXFILLFUNC  T}   T{  G3/G4
+       T}   T{  R/W  T}   T{  bitmap fill function T} _ T{ TIFFTAG_JPEGQUALITY
+       T}   T{ JPEG T}   T{ R/W T}   T{ compression quality control  T}  _  T{
+       TIFFTAG_JPEGCOLORMODE  T}   T{  JPEG T}   T{ R/W T}   T{ control color‐
+       space conversions T} _ T{ TIFFTAG_JPEGTABLESMODE T}   T{  JPEG  T}   T{
+       R/W T}   T{ control contents of JPEGTables tag T} _ T{ TIFFTAG_ZIPQUAL‐
+       ITY  T}   T{ Deflate T}   T{ R/W T}   T{ compression quality level T} _
+       T{ TIFFTAG_PIXARLOGDATAFMT T}   T{ PixarLog T}   T{  R/W  T}   T{  user
+       data  format  T}  _ T{ TIFFTAG_PIXARLOGQUALITY T}   T{ PixarLog T}   T{
+       R/W T}   T{ compression quality level  T}  _  T{  TIFFTAG_SGILOGDATAFMT
+       T}   T{ SGILog T}   T{ R/W T}   T{ user data format T}
+
+       TIFFTAG_FAXMODE:
+          Control  the operation of the Group 3 codec.  Possible values (inde‐
+          pendent bits that can be combined by or&#x27;ing them together) are:
+
+          FAXMODE_CLASSIC:
+              (enable old-style format in which the RTC is written at the  end
+              of the last strip),
+
+          FAXMODE_NORTC:
+              (opposite of FAXMODE_CLASSIC; also called FAXMODE_CLASSF),
+
+          FAXMODE_NOEOL:
+              (do not write EOL codes at the start of each row of data),
+
+          FAXMODE_BYTEALIGN:
+              (align each encoded row to an 8-bit boundary),
+
+          FAXMODE_WORDALIGN:
+              (align each encoded row to an 16-bit boundary),
+
+          The  default  value  is  dependent  on  the compression scheme; this
+          pseudo-tag is used by the various G3 and G4 codecs to share code.
+
+       TIFFTAG_FAXFILLFUNC:
+          Control the function used to convert arrays of black and white  runs
+          to  packed bit arrays.  This hook can be used to image decoded scan‐
+          lines in multi-bit depth rasters (e.g. for display in colormap mode)
+          or for other purposes.  The default value is a pointer to a  builtin
+          function that images packed bilevel data.
+
+       TIFFTAG_IPTCNEWSPHOTO:
+          Tag  contains  image metadata per the IPTC newsphoto spec: Headline,
+          captioning, credit, etc... Used by most wire services.
+
+       TIFFTAG_PHOTOSHOP:
+          Tag contains Photoshop captioning information and  metadata.  Photo‐
+          shop uses in parallel and redundantly alongside IPTCNEWSPHOTO infor‐
+          mation.
+
+       TIFFTAG_JPEGQUALITY:
+          Control  the  compression  quality  level used in the baseline algo‐
+          rithm.  Note that quality levels are in the range 0-100 with  a  de‐
+          fault value of 75.
+
+       TIFFTAG_JPEGCOLORMODE:
+          Control whether or not conversion is done between RGB and YCbCr col‐
+          orspaces.  Possible values are:
+
+          JPEGCOLORMODE_RAW:
+              (do not convert), and
+
+          JPEGCOLORMODE_RGB:
+              (convert to/from RGB)
+
+          The default value is JPEGCOLORMODE_RAW.
+
+       TIFFTAG_JPEGTABLESMODE:
+          Control  the  information  written  in the JPEGTables tag.  Possible
+          values (independent bits that can be combined  by  or&#x27;ing  them  to‐
+          gether) are:
+
+          JPEGTABLESMODE_QUANT:
+              (include quantization tables), and
+
+          JPEGTABLESMODE_HUFF:
+              (include Huffman encoding tables).
+
+          The default value is JPEGTABLESMODE_QUANT | JPEGTABLESMODE_HUFF.
+
+       TIFFTAG_ZIPQUALITY:
+          Control  the compression technique used by the Deflate codec.  Qual‐
+          ity levels are in the range 1-9 with larger numbers yielding  better
+          compression  at  the  cost of more computation.  The default quality
+          level is 6 which yields a good time-space tradeoff.
+
+       TIFFTAG_PIXARLOGDATAFMT:
+          Control the format of user data passed in to the PixarLog codec when
+          encoding and passed out from when decoding. Possible values are:
+
+          PIXARLOGDATAFMT_8BIT:
+              for 8-bit unsigned pixels,
+
+          PIXARLOGDATAFMT_8BITABGR:
+              for 8-bit unsigned ABGR-ordered pixels,
+
+          PIXARLOGDATAFMT_11BITLOG:
+              for 11-bit log-encoded raw data,
+
+          PIXARLOGDATAFMT_12BITPICIO:
+              for 12-bit PICIO-compatible data,
+
+          PIXARLOGDATAFMT_16BIT:
+              for 16-bit signed samples, and
+
+          PIXARLOGDATAFMT_FLOAT:
+              for 32-bit IEEE floating point samples.
+
+       TIFFTAG_PIXARLOGQUALITY:
+          Control the compression technique used by the PixarLog codec.   This
+          value  is  treated  identically to TIFFTAG_ZIPQUALITY; see the above
+          description.
+
+       TIFFTAG_SGILOGDATAFMT:
+          Control the format of client data passed in to the SGILog codec when
+          encoding and passed out from when decoding.  Possible values are:
+
+          SGILOGDATAFMT_FLTXYZ:
+              for converting between LogLuv and 32-bit  IEEE  floating  valued
+              XYZ pixels,
+
+          SGILOGDATAFMT_16BITLUV:
+              for 16-bit encoded Luv pixels,
+
+          SGILOGDATAFMT_32BITRAW: SGILOGDATAFMT_24BITRAW:
+              for no conversion of data,
+
+          SGILOGDATAFMT_8BITRGB:
+              for   returning   8-bit  RGB  data  (valid  only  when  decoding
+              LogLuv-encoded data),
+
+          SGILOGDATAFMT_FLTY:
+              for converting between LogL and 32-bit IEEE  floating  valued  Y
+              pixels,
+
+          SGILOGDATAFMT_16BITL:
+              for 16-bit encoded L pixels, and
+
+          SGILOGDATAFMT_8BITGRY:
+              for  returning  8-bit  greyscale  data (valid only when decoding
+              LogL-encoded data).
+
+DIAGNOSTICS
+       All error messages are directed through  the  TIFFErrorExtR()  routine.
+       By  default  messages  are directed to stderr in the form: module: mes‐
+       sage\n.   Warning  messages   are   likewise   directed   through   the
+       TIFFWarningExtR() routine.
+
+SEE ALSO
+       fax2tiff,  pal2rgb, ppm2tiff, rgb2ycbcr, raw2tiff, tiff2bw, tiffdither,
+       tiffdump, tiffcp, tiffcmp, tiffgt, tiffinfo, tiffmedian, tiffsplit,
+
+       &quot;Tag Image File Format Specification *Revision 6.0*&quot;, an Aldus  Techni‐
+       cal Memorandum.
+
+       &quot;The  Spirit  of TIFF Class F&quot; , an appendix to the TIFF 5.0 specifica‐
+       tion prepared by Cygnet Technologies.
+
+BUGS
+       • The library does not support multi-sample images where  some  samples
+         have different bits/sample.
+
+       • The library does not support random access to compressed data that is
+         organized with more than one row per tile or strip.
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026                   LIBTIFF(3tiff)
+</pre></body></html>

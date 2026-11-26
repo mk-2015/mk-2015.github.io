@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-x11-bell(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...x11-bell(7)  Miscellaneous Information Manual  libpipe...x11-bell(7)
+
+NAME
+       libpipewire-module-x11-bell - X11 Bell
+
+DESCRIPTION
+       The x11-bell module intercept the X11 bell events and uses libcanberra
+       to play a sound.
+
+MODULE NAME
+       libpipewire-module-x11-bell
+
+MODULE OPTIONS
+       • sink.name = &lt;str&gt;: node.name of the sink to connect to
+
+       • sample.name  =  &lt;str&gt;: the name of the sample to play, default &#x27;bell-
+         window-system&#x27;
+
+       • x11.display = &lt;str&gt;: the X11 display to use
+
+       • x11.xauthority  =  &lt;str&gt;:  the  X11  XAuthority  string   placed   in
+         XAUTHORITY env
+
+GENERAL OPTIONS
+       There are no general options for this module.
+
+EXAMPLE CONFIGURATION
+       context.modules = [
+        {   name = libpipewire-module-x11-bell }
+            args = {
+                #sink.name = @DEFAULT_SINK@
+                sample.name = &quot;bell-window-system&quot;
+                #x11.display = &quot;:1&quot;
+                #x11.xauthority = &quot;test&quot;
+       ]
+
+PipeWire                             1.4.2               libpipe...x11-bell(7)
+</pre></body></html>

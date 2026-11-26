@@ -1,0 +1,315 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::form(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>form(3pm)             User Contributed Perl Documentation            form(3pm)
+
+NAME
+       Tk::form - Geometry manager based on attachment rules
+
+SYNOPSIS
+           $widget-&gt;form?(args)?
+
+           $widget-&gt;formOption?(args)?
+
+DESCRIPTION
+       The form method is used to communicate with the form Geometry Manager,
+       a geometry manager that arranges the geometry of the children in a
+       parent window according to attachment rules. The form geometry manager
+       is very flexible and powerful; it can be used to emulate all the
+       existing features of the Tk packer and placer geometry managers (see
+       pack, place).  The form method can have any of several forms, depending
+       on Option:
+
+       $slave-&gt;form?(options)?
+           Sets or adjusts the attachment values of the slave window according
+           to the -option=&gt;value argument pairs.
+
+           -b =&gt; attachment
+                   Abbreviation for the -bottom option.
+
+           -bottom =&gt; attachment
+                   Specifies  an  attachment  for the bottom edge of the slave
+                   window.  The  attachment  must   specified   according   to
+                   &quot;SPECIFYING ATTACHMENTS&quot; below.
+
+           -bottomspring =&gt; weight
+                   Specifies  the  weight  of the spring at the bottom edge of
+                   the slave window. See &quot;USING SPRINGS&quot; below.
+
+           -bp =&gt; value
+                   Abbreviation for the -padbottom option.
+
+           -bs =&gt; weight
+                   Abbreviation for the -bottomspring option.
+
+           -fill =&gt; style
+                   Specifies the fillings  when  springs  are  used  for  this
+                   widget. The value must be x, y, both or none.
+
+           -in =&gt; $master
+                   Places  the slave window into the specified $master window.
+                   If the slave was originally in another master  window,  all
+                   attachment  values  with  respect  to  the  original master
+                   window are discarded. Even if the attachment values are the
+                   same as in the original master  window,  they  need  to  be
+                   specified again.  The -in flag, when needed, must appear as
+                   the first flag of options. Otherwise an error is generated.
+
+           -l =&gt; attachment
+                   Abbreviation for the -left option.
+
+           -left =&gt; attachment
+                   Specifies  an  attachment  for  the  left edge of the slave
+                   window.  The  attachment  must   specified   according   to
+                   &quot;SPECIFYING ATTACHMENTS&quot; below.
+
+           -leftspring =&gt; weight
+                   Specifies  the weight of the spring at the left edge of the
+                   slave window. See &quot;USING SPRINGS&quot; below.
+
+           -lp =&gt; value
+                   Abbreviation for the -padleft option.
+
+           -ls =&gt; weight
+                   Abbreviation for the -leftspring option.
+
+           -padbottom =&gt; value
+                   Specifies the amount of external padding to  leave  on  the
+                   bottom  side  of  the  slave. The value may have any of the
+                   forms acceptable to Tk_GetPixels.
+
+           -padleft =&gt; value
+                   Specifies the amount of external padding to  leave  on  the
+                   left side of the slave.
+
+           -padright =&gt; value
+                   Specifies  the  amount  of external padding to leave on the
+                   right side of the slave.
+
+           -padtop =&gt; value
+                   Specifies the amount of external padding to  leave  on  the
+                   top side of the slave.
+
+           -padx =&gt; value
+                   Specifies  the  amount of external padding to leave on both
+                   the left and the right sides of the slave.
+
+           -pady =&gt; value
+                   Specifies the amount of external padding to leave  on  both
+                   the top and the bottom sides of the slave.
+
+           -r =&gt; attachment
+                   Abbreviation for the -right option.
+
+           -right =&gt; attachment
+                   Specifies  an  attachment  for  the right edge of the slave
+                   window.  The  attachment  must   specified   according   to
+                   &quot;SPECIFYING ATTACHMENTS&quot; below.
+
+           -rightspring =&gt; weight
+                   Specifies the weight of the spring at the right edge of the
+                   slave window. See &quot;USING SPRINGS&quot; below.
+
+           -rp  =&gt; value
+                   Abbreviation for the -padright option.
+
+           -rs =&gt; weight
+                   Abbreviation for the -rightspring option.
+
+           -t =&gt; attachment
+                   Abbreviation for the -top option.
+
+           -top =&gt; attachment
+                   Specifies  an  attachment  for  the  top  edge of the slave
+                   window.  The  attachment  must   specified   according   to
+                   &quot;SPECIFYING ATTACHMENTS&quot; below.
+
+           -topspring =&gt; weight
+                   Specifies  the  weight of the spring at the top edge of the
+                   slave window. See &quot;USING SPRINGS&quot; below.
+
+           -tp =&gt; value
+                   Abbreviation for the -padtop option.
+
+           -ts =&gt; weight
+                   Abbreviation for the -topspring option.
+
+       $master-&gt;formCheck
+           This method checks whether there  is  circular  dependency  in  the
+           attachments  of  the  master&#x27;s  slaves  (see  &quot;CIRCULAR DEPENDENCY&quot;
+           below).  It returns the Boolean value TRUE if it discover  circular
+           dependency and FALSE otherwise.
+
+       $slave-&gt;formForget
+           Removes the slave from its master and unmaps its window.  The slave
+           will  no  longer  be  managed  by  form. All attachment values with
+           respect to its master window are discarded.  If  another  slave  is
+           attached to this slave, then the attachment of the other slave will
+           be changed to grid attachment based on its geometry.
+
+       $master-&gt;formGrid?(x_size, y_size)?
+           When x_size and y_size are given, this method returns the number of
+           grids  of  the  $master  window  in  a pair of integers of the form
+           (x_size, y_size). When both  x_size  and  y_size  are  given,  this
+           method  changes  the number of horizontal and vertical grids on the
+           master window.
+
+       $slave-&gt;formInfo?(-option)?
+           Queries the attachment options of a slave window.  -option  can  be
+           any  of  the  options  accepted  by  the form method. If -option is
+           given, only the value of that option is returned.  Otherwise,  this
+           method  returns a list whose elements are the current configuration
+           state of the slave given in the same option-value form  that  might
+           be  specified to form. The first two elements in this list list are
+           &quot;-in=&gt;$master&quot; where $master is the slave&#x27;s master window.
+
+       $master-&gt;formSlaves
+           Returns a list of all of the slaves  for  the  master  window.  The
+           order  of  the slaves in the list is the same as their order in the
+           packing order. If master has no slaves  then  an  empty  string  is
+           returned.
+
+SPECIFYING ATTACHMENTS
+       One  can  specify an attachment for each side of a slave window managed
+       by form.  An  attachment  is  specified  in  the  the  form  &quot;-side  =&gt;
+       [anchor_point,  offset]&quot;.  -side  can be one of -top, -bottom, -left or
+       -right.
+
+       Offset is given in screen units (i.e. any of the  forms  acceptable  to
+       Tk_GetPixels).   A  positive offset indicates shifting to a position to
+       the right or bottom of an anchor point.  A  negative  offset  indicates
+       shifting to a position to the left or top of an anchor point.
+
+       Anchor_point can be given in one of the following forms:
+
+       Grid Attachment
+           The  master  window  is  divided  into  a  number of horizontal and
+           vertical grids. By  default  the  master  window  is  divided  into
+           100x100  grids; the number of grids can be adjusted by the formGrid
+           method. A grid attachment  anchor  point  is  given  by  a  %  sign
+           followed by an integer value. For example, &#x27;%0&#x27; specifies the first
+           grid  line  (the  top  or  left  edge of the master window). &#x27;%100&#x27;
+           specifies the last grid line (the  bottom  or  right  edge  of  the
+           master window).
+
+       Opposite Side Attachment
+           Opposite  attachment  specifies  an  anchor  point  located  on the
+           opposite side of another slave widget, which  must  be  managed  by
+           form in the same master window. An opposite attachment anchor point
+           is   given   by   the   name   of   another  widget.  For  example,
+           &quot;$b-&gt;form(-top=&gt;[$a,0])&quot; attaches the top side of the widget $b  to
+           the bottom of the widget $a.
+
+       Parallel Side Attachment
+           Opposite  attachment  specifies an anchor point located on the same
+           side of another slave widget, which must be managed by form in  the
+           same master window. An parallel attachment anchor point is given by
+           the  sign  &amp;  follwed  by the name of another widget.  For example,
+           &quot;$b-&gt;form(-top=&gt;[&#x27;&amp;&#x27;,$a,0])&quot; attaches the top side of the widget $b
+           to the top of the widget $a, making the  top  sides  of  these  two
+           widgets at the same vertical position in their parent window.
+
+       No Attachment
+           Specifies  a side of the slave to be attached to nothing, indicated
+           by the keyword none. When the  none  anchor  point  is  given,  the
+           offset  must  be  zero (or not present).  When a side of a slave is
+           attached to [&#x27;none&#x27;, 0], the position of this side is calculated by
+           the position of the other side and the natural size of  the  slave.
+           For  example,  if a the left side of a widget is attached to [&#x27;%0&#x27;,
+           100], its right side attached to [&#x27;none&#x27;, 0], and the natural  size
+           of  the  widget  is 50 pixels, the right side of the widget will be
+           positioned at pixel [&#x27;%0&#x27;, 149].  When both -top  and  -bottom  are
+           attached  to  none, then by default -top will be attached to [&#x27;%0&#x27;,
+           0]. When both -left and  -right  are  attached  to  none,  then  by
+           default -left will be attached to [&#x27;%0&#x27;, 0].
+
+       Shifting  effects  can be achieved by specifying a non-zero offset with
+       an anchor point. In the following example, the top side of  widget  \$b
+       is  attached  to the bottom of \$a; hence \$b always appears below \$a.
+       Also, the left edge of \$b is attached to the left side of \$a  with  a
+       10  pixel offest.  Therefore, the left edge of \$b is always shifted 10
+       pixels to the right of \$a&#x27;s left edge:
+
+           $b-&gt;form(-left=&gt;[$a,10], -top=&gt;[$a,0]);
+
+   ABBREVIATIONS:
+       Certain abbreviations can be made  on  the  attachment  specifications:
+       First  an offset of zero can be omitted.  Thus, the following two lines
+       are equivalent:
+
+           $b-&gt;form(-top=&gt;[$a,0], -right=&gt;[&#x27;%100&#x27;,0]);
+
+           $b-&gt;form(-top=&gt;[$a], -right=&gt;&#x27;%100&#x27;);
+
+       In the second case, when the anchor point is omitted, the  offset  must
+       be  given.  A  default anchor point is chosen according to the value of
+       the offset. If the anchor point is 0 or positive,  the  default  anchor
+       point  %0  is used; thus, &quot;$b-&gt;form(-top=&gt;15)&quot; attaches the top edge of
+       $b to a position 15 pixels below the top edge of the master window.  If
+       the  anchor point is &quot;-0&quot; or negative, the default anchor point %100 is
+       used; thus, &quot;$a-&gt;form(-right=&gt;-2)&quot; attaches the right edge of \$a to  a
+       position  2  pixels  to the left of the master window&#x27;s right edge.  An
+       further example below shows a method with its equivalent abbreviation.
+
+           $b-&gt;form(-top=&gt;[&#x27;%0&#x27;,10], -bottom=&gt;[&#x27;%100&#x27;,0]);
+
+           $b-&gt;form(-top=&gt;10, -bottom=&gt;-0);
+
+USING SPRINGS
+       To be written.
+
+ALGORITHM OF FORM
+       form starts with any slave in the list of slaves of the master  window.
+       Then it tries to determine the position of each side of the slave.
+
+       If  the  attachment  of  a  side  of  the slave is grid attachment, the
+       position of the side is readily determined.
+
+       If the attachment of this side is none, then form  tries  to  determine
+       the  position  of the opposite side first, and then use the position of
+       the opposite side and the natural size of the slave  to  determine  the
+       position of this side.
+
+       If the attachment is opposite or parallel widget attachments, then form
+       tries  to  determine  the positions of the other widget first, and then
+       use the positions of the other widget and the natural size of the slave
+       determine the position of this side. This recursive algorithmis carried
+       on until the positions of all slaves are determined.
+
+CIRCULAR DEPENDENCY
+       The algorithm of form will fail if a circular dependency exists in  the
+       attachments of the slaves. For example:
+
+           $c-&gt;form(-left=&gt;$b);
+
+           $b-&gt;form(-right=&gt;$c);
+
+       In  this  example,  the  position of the left side of $b depends on the
+       right side of $c, which in turn depends on the left side of $b.
+
+       When a circular dependency is discovered during the  execution  of  the
+       form  algorithm, form will generate a background error and the geometry
+       of the slaves are undefined (and will be arbitrary). Notice  that  form
+       only  executes  the  algorithm  when  the  specification of the slaves&#x27;
+       attachments is complete.  Therefore, it allows intermediate  states  of
+       circular   dependency   during   the   specification   of  the  slaves&#x27;
+       attachments.  Also, unlike the Motif Form manager widget, form  defines
+       circular   dependency   as   ``dependency   in  the  same  dimension&#x27;&#x27;.
+       Therefore, the following code fragment  will  does  not  have  circular
+       dependency  because  the two widgets do not depend on each other in the
+       same dimension ($b depends  $c  in  the  horizontal  dimension  and  $c
+       depends on $b in the vertical dimension):
+
+           $b-&gt;form(-left=&gt;$c);
+
+           $c-&gt;form(-top=&gt;$b);
+
+BUGS
+       Springs have not been fully implemented yet.
+
+SEE ALSO
+       Tk::grid Tk::pack Tk::place
+
+KEYWORDS
+       geometry  manager,  form,  attachment, spring, propagation, size, pack,
+       tix, master, slave
+
+perl v5.40.1                      2025-04-13                         form(3pm)
+</pre></body></html>

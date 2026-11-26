@@ -1,0 +1,93 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ptx(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>PTX(1)                           User Commands                          PTX(1)
+
+NAME
+       ptx - produce a permuted index of file contents
+
+SYNOPSIS
+       ptx [OPTION]... [INPUT]...   (without -G)
+       ptx -G [OPTION]... [INPUT [OUTPUT]]
+
+DESCRIPTION
+       Output  a  permuted index, including context, of the words in the input
+       files.
+
+       With no FILE, or when FILE is -, read standard input.
+
+       Mandatory arguments to long options are  mandatory  for  short  options
+       too.
+
+       -A, --auto-reference
+              output automatically generated references
+
+       -G, --traditional
+              behave more like System V &#x27;ptx&#x27;
+
+       -F, --flag-truncation=STRING
+              use STRING for flagging line truncations.  The default is &#x27;/&#x27;
+
+       -M, --macro-name=STRING
+              macro name to use instead of &#x27;xx&#x27;
+
+       -O, --format=roff
+              generate output as roff directives
+
+       -R, --right-side-refs
+              put references at right, not counted in -w
+
+       -S, --sentence-regexp=REGEXP
+              for end of lines or end of sentences
+
+       -T, --format=tex
+              generate output as TeX directives
+
+       -W, --word-regexp=REGEXP
+              use REGEXP to match each keyword
+
+       -b, --break-file=FILE
+              word break characters in this FILE
+
+       -f, --ignore-case
+              fold lower case to upper case for sorting
+
+       -g, --gap-size=NUMBER
+              gap size in columns between output fields
+
+       -i, --ignore-file=FILE
+              read ignore word list from FILE
+
+       -o, --only-file=FILE
+              read only word list from this FILE
+
+       -r, --references
+              first field of each line is a reference
+
+       -t, --typeset-mode               - not implemented -
+
+       -w, --width=NUMBER
+              output width in columns, reference excluded
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+
+AUTHOR
+       Written by F. Pinard.
+
+REPORTING BUGS
+       GNU coreutils online help: &lt;https://www.gnu.org/software/coreutils/&gt;
+       Report any translation bugs to &lt;https://translationproject.org/team/&gt;
+
+SEE ALSO
+       Full documentation &lt;https://www.gnu.org/software/coreutils/ptx&gt;
+       or available locally via: info &#x27;(coreutils) ptx invocation&#x27;
+
+       Packaged by Debian (9.7-3)
+       Copyright © 2025 Free Software Foundation, Inc.
+       License  GPLv3+:  GNU  GPL  version  3  or  later  &lt;https://gnu.org/li‐
+       censes/gpl.html&gt;.
+       This is free software: you are free to change and redistribute it.
+       There is NO WARRANTY, to the extent permitted by law.
+
+GNU coreutils 9.7                  June 2025                            PTX(1)
+</pre></body></html>

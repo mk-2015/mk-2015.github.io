@@ -1,0 +1,190 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>dbwrap_tool(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>DBWRAP_TOOL(1)            System Administration tools           DBWRAP_TOOL(1)
+
+NAME
+       dbwrap_tool - low level TDB/CTDB manipulation tool using the dbwrap
+       interface
+
+SYNOPSIS
+
+
+       dbwrap_tool [-?|--help] [--usage] [--persistent] [--non-persistent]
+        [-d|--debuglevel=DEBUGLEVEL] [--debug-stdout]
+        [--configfile=CONFIGFILE] [--option=name=value]
+        [-l|--log-basename=LOGFILEBASE] [--leak-report] [--leak-report-full]
+        {&lt;database&gt;} {&lt;operation&gt;} [&lt;key&gt; [&lt;type&gt; [&lt;value&gt;]]]
+
+DESCRIPTION
+       This tool is part of the samba(7) suite.
+
+       The dbwrap_tool program is used to read and manipulate TDB/CTDB
+       databases using the dbwrap interface.
+
+       The following database operations are available:
+
+              •   fetch: fetch a record
+
+              •   store: create or modify a record
+
+              •   delete: remove a record
+
+              •   exists: test for existence of a record
+
+              •   erase: remove all records
+
+              •   listkeys: list all available records
+
+              •   listwatchers: list processes, which are waiting for changes
+                  in a record
+
+
+       The following types are available:
+
+              •   int32: signed 32bit integer
+
+              •   uint32: unsigned 32bit integer
+
+              •   string: &quot;hello world&quot;
+
+              •   hex: hex strings like &quot;68656C6C6F20776F726C6400&quot; (&quot;hello
+                  world&quot;)
+
+
+OPTIONS
+       --persistent
+           Open the database as a persistent database.
+
+           Exactly one of --persistent and --non-persistent must be specified.
+
+       --non-persistent
+           Open the database as a non-persistent database.
+
+           Caveat: opening a database as non-persistent when there is
+           currently no other opener will wipe the database.
+
+           Exactly one of --persistent and --non-persistent must be specified.
+
+       -?|--help
+           Print a summary of command line options.
+
+       --usage
+           Display brief usage message.
+
+       -d|--debuglevel=level
+           level is an integer from 0 to 10. The default value if this
+           parameter is not specified is 1 for client applications.
+
+           The higher this value, the more detail will be logged to the log
+           files about the activities of the server. At level 0, only critical
+           errors and serious warnings will be logged. Level 1 is a reasonable
+           level for day-to-day running - it generates a small amount of
+           information about operations carried out.
+
+           Levels above 1 will generate considerable amounts of log data, and
+           should only be used when investigating a problem. Levels above 3
+           are designed for use only by developers and generate HUGE amounts
+           of log data, most of which is extremely cryptic.
+
+           Note that specifying this parameter here will override the log
+           level parameter in the /etc/samba/smb.conf file.
+
+       --debug-stdout
+           This will redirect debug output to STDOUT. By default all clients
+           are logging to STDERR.
+
+       --configfile=&lt;configuration file&gt;
+           The file specified contains the configuration details required by
+           the client. The information in this file can be general for client
+           and server or only provide client specific like options such as
+           client smb encrypt. See /etc/samba/smb.conf for more information.
+           The default configuration file name is determined at compile time.
+
+       --option=&lt;name&gt;=&lt;value&gt;
+           Set the smb.conf(5) option &quot;&lt;name&gt;&quot; to value &quot;&lt;value&gt;&quot; from the
+           command line. This overrides compiled-in defaults and options read
+           from the configuration file. If a name or a value includes a space,
+           wrap whole --option=name=value into quotes.
+
+       -l|--log-basename=logdirectory
+           Base directory name for log/debug files. The extension &quot;.progname&quot;
+           will be appended (e.g. log.smbclient, log.smbd, etc...). The log
+           file is never removed by the client.
+
+       --leak-report
+           Enable talloc leak reporting on exit.
+
+       --leak-report-full
+           Enable full talloc leak reporting on exit.
+
+       -V|--version
+           Prints the program version number.
+
+COMMANDS
+   fetch
+
+
+       dbwrap_tool &lt;database&gt; fetch &lt;key&gt; &lt;type&gt;
+
+   store
+
+
+       dbwrap_tool &lt;database&gt; store &lt;key&gt; &lt;type&gt; &lt;value&gt;
+
+   delete
+
+
+       dbwrap_tool &lt;database&gt; delete &lt;key&gt;
+
+   exists
+
+
+       dbwrap_tool &lt;database&gt; exists &lt;key&gt;
+
+   erase
+
+
+       dbwrap_tool &lt;database&gt; erase
+
+   listkeys
+
+
+       dbwrap_tool &lt;database&gt; listkeys
+
+   listwatchers
+
+
+       dbwrap_tool &lt;database&gt; listwatchers
+
+EXAMPLES
+       List all keys from winbindd_idmap.tdb
+           dbwrap_tool --persistent winbindd_idmap.tdb listkeys
+
+       Fetch record with key &quot;USER HWM&quot; as uint32
+           dbwrap_tool --persistent winbindd_idmap.tdb fetch &quot;USER HWM&quot; uint32
+
+       Remove record with key &quot;USER HWM&quot;
+           dbwrap_tool --persistent winbindd_idmap.tdb remove &quot;USER HWM&quot;
+
+       Store and overwrite record &quot;USER HWM&quot; with value 214
+           uint32: dbwrap_tool --persistent winbindd_idmap.tdb store &quot;USER
+           HWM&quot; uint32 214 hex: dbwrap_tool --persistent winbindd_idmap.tdb
+           store &quot;USER HWM&quot; hex D6000000
+
+NOTES
+       Use with caution!
+
+VERSION
+       This man page is part of version 4.22.11-Debian-4.22.11+dfsg-0+deb13u1
+       of the Samba suite.
+
+SEE ALSO
+       smbd(8), samba(7)
+
+AUTHOR
+       The original Samba software and related utilities were created by
+       Andrew Tridgell. Samba is now developed by the Samba Team as an Open
+       Source project similar to the way the Linux kernel is developed.
+
+       The dbwrap_tool manpage was written by Bjoern Baumbach.
+
+Samba 4.22.11-Debian-4.22.11+d    07/28/2026                    DBWRAP_TOOL(1)
+</pre></body></html>

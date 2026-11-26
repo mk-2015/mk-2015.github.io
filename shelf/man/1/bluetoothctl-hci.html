@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-hci(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-HCI(1)       Linux System Administration      BLUETOOTHCTL-HCI(1)
+
+NAME
+       bluetoothctl-hci - HCI Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [hci.commands]
+
+COMMANDS
+   open
+       Open HCI channel.
+
+       Usage  &gt; open &lt;index&gt; &lt;chan=raw,user&gt;
+
+       Example open user channel
+              In order to open a user channel the controller needs to be power off
+              first:
+              &gt; power off
+              &gt; hci.open 0 user
+              HCI index 0 user channel opened
+
+
+   cmd
+       Send HCI command.
+
+       Usage  &gt; cmd &lt;opcode&gt; [parameters...]
+
+       Example send HCI Reset command
+              &gt; hci.cmd 0x0c03
+              HCI Command complete:
+                00
+
+
+   send
+       Send HCI data packet.
+
+       Usage  &gt; send &lt;type=acl,sco,iso&gt; &lt;handle&gt; [data...]
+
+       Example send ACL data packet to connection handle 0x0000
+              &gt; hci.send acl 0x0000
+
+
+   register
+       Register HCI event handler.
+
+       Usage  &gt; register &lt;event&gt;
+
+   unregister
+       Unregister HCI event handler.
+
+       Usage  &gt; unregister &lt;event&gt;
+
+   close
+       Close HCI channel.
+
+       Usage  &gt; close &lt;index&gt;
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free  use of this software is granted under the terms of the GNU Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                            December 2024             BLUETOOTHCTL-HCI(1)
+</pre></body></html>

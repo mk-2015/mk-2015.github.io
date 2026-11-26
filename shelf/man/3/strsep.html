@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>strsep(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>strsep(3)                  Library Functions Manual                  strsep(3)
+
+NAME
+       strsep - extract token from string
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;string.h&gt;
+
+       char *strsep(char **restrict stringp, const char *restrict delim);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       strsep():
+           Since glibc 2.19:
+               _DEFAULT_SOURCE
+           glibc 2.19 and earlier:
+               _BSD_SOURCE
+
+DESCRIPTION
+       If  *stringp is NULL, the strsep() function returns NULL and does noth‐
+       ing else.  Otherwise, this function finds the first token in the string
+       *stringp that is delimited by one of the bytes  in  the  string  delim.
+       This  token is terminated by overwriting the delimiter with a null byte
+       (&#x27;\0&#x27;), and *stringp is updated to point past the token.   In  case  no
+       delimiter  was  found,  the  token  is  taken  to  be the entire string
+       *stringp, and *stringp is made NULL.
+
+RETURN VALUE
+       The strsep() function returns a pointer to the token, that is,  it  re‐
+       turns the original value of *stringp.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       strsep() T}   Thread safety  MT-Safe
+
+STANDARDS
+       None.
+
+HISTORY
+       4.4BSD.
+
+       The strsep() function was introduced as a replacement for strtok(3),
+       since the latter cannot handle empty fields.  However, strtok(3)
+       conforms to C89/C99 and hence is more portable.
+
+BUGS
+       Be cautious when using this function.  If you do use it, note that:
+
+       •  This function modifies its first argument.
+
+       •  This function cannot be used on constant strings.
+
+       •  The identity of the delimiting character is lost.
+
+EXAMPLES
+       The program below is a port of  the  one  found  in  strtok(3),  which,
+       however, doesn&#x27;t discard multiple delimiters or empty tokens:
+
+           $ ./a.out &#x27;a/bbb///cc;xxx:yyy:&#x27; &#x27;:;&#x27; &#x27;/&#x27;
+           1: a/bbb///cc
+                    --&gt; a
+                    --&gt; bbb
+                    --&gt;
+                    --&gt;
+                    --&gt; cc
+           2: xxx
+                    --&gt; xxx
+           3: yyy
+                    --&gt; yyy
+           4:
+                    --&gt;
+
+   Program source
+
+       #include &lt;stdio.h&gt;
+       #include &lt;stdlib.h&gt;
+       #include &lt;string.h&gt;
+
+       int
+       main(int argc, char *argv[])
+       {
+           char *token, *subtoken;
+
+           if (argc != 4) {
+               fprintf(stderr, &quot;Usage: %s string delim subdelim\n&quot;, argv[0]);
+               exit(EXIT_FAILURE);
+           }
+
+           for (unsigned int j = 1; (token = strsep(&amp;argv[1], argv[2])); j++) {
+               printf(&quot;%u: %s\n&quot;, j, token);
+
+               while ((subtoken = strsep(&amp;token, argv[3])))
+                   printf(&quot;\t --&gt; %s\n&quot;, subtoken);
+           }
+
+           exit(EXIT_SUCCESS);
+       }
+
+SEE ALSO
+       memchr(3),  strchr(3),  string(3),  strpbrk(3),  strspn(3),  strstr(3),
+       strtok(3)
+
+Linux man-pages 6.9.1             2024-06-15                         strsep(3)
+</pre></body></html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>RSA(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_PKEY-RSA(7SSL)                  OpenSSL                 EVP_PKEY-RSA(7SSL)
+
+NAME
+       EVP_PKEY-RSA, EVP_KEYMGMT-RSA, RSA - EVP_PKEY RSA keytype and algorithm
+       support
+
+DESCRIPTION
+       The RSA keytype is implemented in OpenSSL&#x27;s default and FIPS providers.
+       That implementation supports the basic RSA keys, containing the modulus
+       n, the public exponent e, the private exponent d, and a collection of
+       prime factors, exponents and coefficient for CRT calculations, of which
+       the first few are known as p and q, dP and dQ, and qInv.
+
+   Common RSA parameters
+       In addition to the common parameters that all keytypes should support
+       (see &quot;Common parameters&quot; in provider-keymgmt(7)), the RSA keytype
+       implementation supports the following.
+
+       &quot;n&quot; (OSSL_PKEY_PARAM_RSA_N) &lt;unsigned integer&gt;
+           The RSA modulus &quot;n&quot; value.
+
+       &quot;e&quot; (OSSL_PKEY_PARAM_RSA_E) &lt;unsigned integer&gt;
+           The  RSA  public exponent &quot;e&quot; value.  This value must always be set
+           when creating a raw key using EVP_PKEY_fromdata(3).  Note that when
+           a decryption operation is performed, that this value  is  used  for
+           blinding purposes to prevent timing attacks.
+
+       &quot;d&quot; (OSSL_PKEY_PARAM_RSA_D) &lt;unsigned integer&gt;
+           The RSA private exponent &quot;d&quot; value.
+
+       &quot;rsa-factor1&quot; (OSSL_PKEY_PARAM_RSA_FACTOR1) &lt;unsigned integer&gt;
+       &quot;rsa-factor2&quot; (OSSL_PKEY_PARAM_RSA_FACTOR2) &lt;unsigned integer&gt;
+       &quot;rsa-factor3&quot; (OSSL_PKEY_PARAM_RSA_FACTOR3) &lt;unsigned integer&gt;
+       &quot;rsa-factor4&quot; (OSSL_PKEY_PARAM_RSA_FACTOR4) &lt;unsigned integer&gt;
+       &quot;rsa-factor5&quot; (OSSL_PKEY_PARAM_RSA_FACTOR5) &lt;unsigned integer&gt;
+       &quot;rsa-factor6&quot; (OSSL_PKEY_PARAM_RSA_FACTOR6) &lt;unsigned integer&gt;
+       &quot;rsa-factor7&quot; (OSSL_PKEY_PARAM_RSA_FACTOR7) &lt;unsigned integer&gt;
+       &quot;rsa-factor8&quot; (OSSL_PKEY_PARAM_RSA_FACTOR8) &lt;unsigned integer&gt;
+       &quot;rsa-factor9&quot; (OSSL_PKEY_PARAM_RSA_FACTOR9) &lt;unsigned integer&gt;
+       &quot;rsa-factor10&quot; (OSSL_PKEY_PARAM_RSA_FACTOR10) &lt;unsigned integer&gt;
+           RSA  prime  factors. The factors are known as &quot;p&quot;, &quot;q&quot; and &quot;r_i&quot; in
+           RFC8017.  Up to eight additional &quot;r_i&quot; prime factors are supported.
+
+       &quot;rsa-exponent1&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT1) &lt;unsigned integer&gt;
+       &quot;rsa-exponent2&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT2) &lt;unsigned integer&gt;
+       &quot;rsa-exponent3&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT3) &lt;unsigned integer&gt;
+       &quot;rsa-exponent4&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT4) &lt;unsigned integer&gt;
+       &quot;rsa-exponent5&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT5) &lt;unsigned integer&gt;
+       &quot;rsa-exponent6&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT6) &lt;unsigned integer&gt;
+       &quot;rsa-exponent7&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT7) &lt;unsigned integer&gt;
+       &quot;rsa-exponent8&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT8) &lt;unsigned integer&gt;
+       &quot;rsa-exponent9&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT9) &lt;unsigned integer&gt;
+       &quot;rsa-exponent10&quot; (OSSL_PKEY_PARAM_RSA_EXPONENT10) &lt;unsigned integer&gt;
+           RSA CRT (Chinese Remainder Theorem) exponents.  The  exponents  are
+           known  as  &quot;dP&quot;, &quot;dQ&quot; and &quot;d_i&quot; in RFC8017.  Up to eight additional
+           &quot;d_i&quot; exponents are supported.
+
+       &quot;rsa-coefficient1&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT1) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient2&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT2) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient3&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT3) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient4&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT4) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient5&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT5) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient6&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT6) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient7&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT7) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient8&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT8) &lt;unsigned
+       integer&gt;
+       &quot;rsa-coefficient9&quot; (OSSL_PKEY_PARAM_RSA_COEFFICIENT9) &lt;unsigned
+       integer&gt;
+           RSA CRT (Chinese Remainder Theorem) coefficients. The  coefficients
+           are  known  as  &quot;qInv&quot;  and  &quot;t_i&quot;.   Up  to eight additional &quot;t_i&quot;
+           exponents are supported.
+
+   RSA key generation parameters
+       When generating RSA keys, the following key generation  parameters  may
+       be used.
+
+       &quot;bits&quot; (OSSL_PKEY_PARAM_RSA_BITS) &lt;unsigned integer&gt;
+           The   value   should  be  the  cryptographic  length  for  the  RSA
+           cryptosystem, in bits.
+
+       &quot;primes&quot; (OSSL_PKEY_PARAM_RSA_PRIMES) &lt;unsigned integer&gt;
+           The value should be the number of primes for the generated RSA key.
+           The default is 2.  It isn&#x27;t permitted to specify a larger number of
+           primes than 10.  Additionally, the number of primes is  limited  by
+           the  length  of the key being generated so the maximum number could
+           be less.  Some providers may only support a value of 2.
+
+       &quot;e&quot; (OSSL_PKEY_PARAM_RSA_E) &lt;unsigned integer&gt;
+           The RSA &quot;e&quot; value. The value may be any odd number greater than  or
+           equal  to  65537. The default value is 65537.  For legacy reasons a
+           value of 3 is currently accepted but is deprecated.
+
+       &quot;rsa-derive-from-pq&quot;  (OSSL_PKEY_PARAM_RSA_DERIVE_FROM_PQ) &lt;unsigned
+       integer&gt;
+           Indicate that missing parameters not passed in the  parameter  list
+           should  be  derived  if not provided.  Setting a nonzero value will
+           cause all needed exponents and coefficients to be  derived  if  not
+           available.     Setting    this    option    requires    at    least
+           OSSL_PARAM_RSA_FACTOR1,         OSSL_PARAM_RSA_FACTOR2,         and
+           OSSL_PARAM_RSA_N  to  be  provided.   This  option  is  ignored  if
+           OSSL_KEYMGMT_SELECT_PRIVATE_KEY  is  not  set  in   the   selection
+           parameter.
+
+   RSA key generation parameters for FIPS module testing
+       When  generating  RSA  keys,  the  following  additional key generation
+       parameters may be used for algorithm testing purposes only. Do not  use
+       these to generate RSA keys for a production environment.
+
+       &quot;xp&quot; (OSSL_PKEY_PARAM_RSA_TEST_XP) &lt;unsigned integer&gt;
+       &quot;xq&quot; (OSSL_PKEY_PARAM_RSA_TEST_XQ) &lt;unsigned integer&gt;
+           These  2  fields  are  normally  randomly generated and are used to
+           generate &quot;p&quot; and &quot;q&quot;.
+
+       &quot;xp1&quot; (OSSL_PKEY_PARAM_RSA_TEST_XP1) &lt;unsigned integer&gt;
+       &quot;xp2&quot; (OSSL_PKEY_PARAM_RSA_TEST_XP2) &lt;unsigned integer&gt;
+       &quot;xq1&quot; (OSSL_PKEY_PARAM_RSA_TEST_XQ1) &lt;unsigned integer&gt;
+       &quot;xq2&quot; (OSSL_PKEY_PARAM_RSA_TEST_XQ2) &lt;unsigned integer&gt;
+           These 4 fields are normally randomly generated. The  prime  factors
+           &quot;p1&quot;, &quot;p2&quot;, &quot;q1&quot; and &quot;q2&quot; are determined from these values.
+
+   RSA key parameters for FIPS module testing
+       The  following  intermediate values can be retrieved only if the values
+       specified in &quot;RSA key generation parameters for  FIPS  module  testing&quot;
+       are set.  These should not be accessed in a production environment.
+
+       &quot;p1&quot; (OSSL_PKEY_PARAM_RSA_TEST_P1) &lt;unsigned integer&gt;
+       &quot;p2&quot; (OSSL_PKEY_PARAM_RSA_TEST_P2) &lt;unsigned integer&gt;
+       &quot;q1&quot; (OSSL_PKEY_PARAM_RSA_TEST_Q1) &lt;unsigned integer&gt;
+       &quot;q2&quot; (OSSL_PKEY_PARAM_RSA_TEST_Q2) &lt;unsigned integer&gt;
+           The auxiliary probable primes.
+
+   RSA key validation
+       For RSA keys, EVP_PKEY_param_check(3) and EVP_PKEY_param_check_quick(3)
+       both return 1 unconditionally.
+
+       For  RSA  keys,  EVP_PKEY_public_check(3)  conforms  to the SP800-56Br1
+       public key check when the OpenSSL FIPS provider is  used.  The  OpenSSL
+       default  provider  performs  similar  tests  but  relaxes  the  keysize
+       restrictions for backwards compatibility.
+
+       For  RSA  keys,   EVP_PKEY_public_check_quick(3)   is   the   same   as
+       EVP_PKEY_public_check(3).
+
+       For  RSA  keys,  EVP_PKEY_private_check(3)  conforms to the SP800-56Br1
+       private key test.
+
+       For RSA keys, EVP_PKEY_pairwise_check(3) conforms  to  the  SP800-56Br1
+       KeyPair  Validation  check  for  the OpenSSL FIPS provider. The OpenSSL
+       default provider allows testing of the validity of multi-primes.
+
+CONFORMING TO
+       FIPS186-4
+           Section B.3.6  Generation of Probable Primes with Conditions  Based
+           on Auxiliary Probable Primes
+
+       RFC 8017, excluding RSA-PSS and RSA-OAEP
+
+EXAMPLES
+       An EVP_PKEY context can be obtained by calling:
+
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;RSA&quot;, NULL);
+
+       An RSA key can be generated simply like this:
+
+           pkey = EVP_RSA_gen(4096);
+
+       or like this:
+
+           EVP_PKEY *pkey = NULL;
+           EVP_PKEY_CTX *pctx =
+               EVP_PKEY_CTX_new_from_name(NULL, &quot;RSA&quot;, NULL);
+
+           EVP_PKEY_keygen_init(pctx);
+           EVP_PKEY_generate(pctx, &amp;pkey);
+           EVP_PKEY_CTX_free(pctx);
+
+       An RSA key can be generated with key generation parameters:
+
+           unsigned int primes = 3;
+           unsigned int bits = 4096;
+           OSSL_PARAM params[3];
+           EVP_PKEY *pkey = NULL;
+           EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_from_name(NULL, &quot;RSA&quot;, NULL);
+
+           EVP_PKEY_keygen_init(pctx);
+
+           params[0] = OSSL_PARAM_construct_uint(&quot;bits&quot;, &amp;bits);
+           params[1] = OSSL_PARAM_construct_uint(&quot;primes&quot;, &amp;primes);
+           params[2] = OSSL_PARAM_construct_end();
+           EVP_PKEY_CTX_set_params(pctx, params);
+
+           EVP_PKEY_generate(pctx, &amp;pkey);
+           EVP_PKEY_print_private(bio_out, pkey, 0, NULL);
+           EVP_PKEY_CTX_free(pctx);
+
+SEE ALSO
+       EVP_RSA_gen(3), EVP_KEYMGMT(3), EVP_PKEY(3), provider-keymgmt(7)
+
+COPYRIGHT
+       Copyright 2020-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                EVP_PKEY-RSA(7SSL)
+</pre></body></html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_MCE_KILL_CLEAR(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_MCE_KILL_CLEAR(2const)                            PR_MCE_KILL_CLEAR(2const)
+
+NAME
+       PR_MCE_KILL_CLEAR - clear the machine check memory corruption kill pol‐
+       icy
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_MCE_KILL, PR_MCE_KILL_CLEAR, 0L, 0L, 0L);
+
+DESCRIPTION
+       Clear  the thread memory corruption kill policy and use the system-wide
+       default.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+FILES
+       /proc/sys/vm/memory_failure_early_kill
+              This file defines the system-wide default.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.32.
+
+SEE ALSO
+       prctl(2), PR_MCE_KILL(2const), proc_sys_vm(5)
+
+Linux man-pages 6.9.1             2024-06-01         PR_MCE_KILL_CLEAR(2const)
+</pre></body></html>

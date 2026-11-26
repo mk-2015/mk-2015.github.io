@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::Xrm(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Xrm(3pm)              User Contributed Perl Documentation             Xrm(3pm)
+
+NAME
+       Tk::Xrm - X Resource/Defaults/Options routines that obey the rules.
+
+SYNOPSIS
+          use Tk;
+          use Tk::Xrm;
+
+DESCRIPTION
+       Using this modules causes Tk&#x27;s Option code to be replaced by versions
+       which use routines from &lt;X11/Xresource.h&gt; - i.e. same ones every other
+       X toolkit uses.
+
+       Result is that &quot;matching&quot; of name/Class with the options database
+       follows the same rules as other X toolkits. This makes it more
+       predictable, and makes it easier to have a single ~/.Xdefaults file
+       which gives sensible results for both Tk and (say) Motif applications.
+
+BUGS
+       Currently optionAdd(key =&gt; value?, priority?) ignores optional priority
+       completely and just does XrmPutStringResource().  Perhaps it should be
+       more subtle and do XrmMergeDatabases() or XrmCombineDatabase().
+
+       This version is a little slower than Tk&#x27;s re-invention but there is
+       more optimization that can be done.
+
+SEE ALSO
+       Tk::option
+
+KEYWORDS
+       database, option, priority, retrieve
+
+perl v5.40.1                      2025-04-13                          Xrm(3pm)
+</pre></body></html>

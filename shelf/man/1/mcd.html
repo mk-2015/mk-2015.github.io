@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>mcd(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>mcd(1)                      General Commands Manual                     mcd(1)
+
+Name
+       mcd - change MSDOS directory
+
+
+
+Note of warning
+       This  manpage  has  been  automatically generated from mtools&#x27;s texinfo
+       documentation, and may not be entirely accurate or complete.   See  the
+       end of this man page for details.
+
+Description
+       The  mcd  command is used to change the mtools working directory on the
+       MS-DOS disk. It uses the following syntax:
+
+          mcd [msdosdirectory]
+
+
+
+       Without arguments, mcd reports the current device  and  working  direc‐
+       tory.   Otherwise,  mcd  changes the current device and current working
+       directory relative to an MS-DOS file system.
+
+       The environmental variable MCWD may be used to locate  the  file  where
+       the  device  and  current working directory information is stored.  The
+       default is `$HOME/.mcwd&#x27;.  Information in this file is ignored  if  the
+       file is more than 6 hours old.
+
+       Mcd returns 0 on success or 1 on failure.
+
+       Unlike  MS-DOS versions of CD, mcd can be used to change to another de‐
+       vice. It may be wise to remove old `.mcwd&#x27; files at logout.
+
+See Also
+       Mtools&#x27; texinfo doc
+
+Viewing the texi doc
+       This manpage has been automatically  generated  from  mtools&#x27;s  texinfo
+       documentation.  However,  this  process is only approximative, and some
+       items, such as crossreferences, footnotes and indices are lost in  this
+       translation process.  Indeed, these items have no appropriate represen‐
+       tation  in  the manpage format.  Moreover, not all information has been
+       translated into the manpage version.  Thus I strongly advise you to use
+       the original texinfo doc.  See the end of this manpage for instructions
+       how to view the texinfo doc.
+
+       *      To generate a printable copy from the texinfo doc, run the  fol‐
+              lowing commands:
+
+                     ./configure; make dvi; dvips mtools.dvi
+
+
+
+       *      To generate a html copy,  run:
+
+                     ./configure; make html
+
+       A premade html can be found at `http://www.gnu.org/software/mtools/man‐
+       ual/mtools.html&#x27;
+
+       *      To  generate  an  info  copy (browsable using emacs&#x27; info mode),
+              run:
+
+                     ./configure; make info
+
+
+
+       The texinfo doc looks most pretty when printed or as html.  Indeed,  in
+       the  info  version  certain  examples  are difficult to read due to the
+       quoting conventions used in info.
+
+mtools-4.0.48                       22Feb25                             mcd(1)
+</pre></body></html>

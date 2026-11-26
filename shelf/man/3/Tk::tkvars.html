@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::tkvars(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>tkvars(3pm)           User Contributed Perl Documentation          tkvars(3pm)
+
+NAME
+       Tk::tkvars - Variables used or set by Tk
+
+DESCRIPTION
+       The following perl variables are either set or used by Tk at various
+       times in its execution. (For a list of variables used by perl see
+       perlvar.)
+
+       $Tk::library
+           This  variable  holds  the file name for a directory containing the
+           modules related to Tk.  These  modules  include  an  initialization
+           file  that  is  normally processed whenever a Tk application starts
+           up, plus other files containing procedures that  implement  default
+           behaviors  for  widgets.   The initial value of $Tk::library is set
+           when Tk is added to an interpreter;   this  is  done  by  searching
+           searching  for a directory named Tk in the directory where the file
+           Tk.pm, or the first directory Tk in @INC.
+
+           The TK_LIBRARY environment variable used by Tcl/Tk is not supported
+           by perl/Tk.  Please use @INC to change where modules are searched.
+
+           Note: This is Tcl remnant. With perl it makes  more  sense  to  use
+           @INC and %INC).
+
+       $Tk::patchLevel
+           Contains  a  decimal integer giving the current patch level for Tk.
+           The patch level is incremented for each new release or  patch,  and
+           it uniquely identifies an official version of Tk.
+
+           Note:  this  is  Tcl  remnant. With perl it makes more sense to use
+           $Tk::VERSION described below.
+
+       $Tk::strictMotif
+           This variable is set to zero by default.  If an application sets it
+           to one, then Tk attempts to adhere as closely as possible to  Motif
+           look-and-feel  standards.   For  example,  active  elements such as
+           buttons and scrollbar  sliders  will  not  change  color  when  the
+           pointer passes over them.
+
+       $Tk::VERSION
+           The  variable  holds  the  current  version  number  of the perl/Tk
+           release in the form major.minor.  Major and minor are integers.
+
+           The major version number shows on which Tcl/Tk release  perl/Tk  is
+           based.   E.g., 402 means based on Tcls Tk 4.2.  (Patchlevel of Tcls
+           Tk are not incorporated because perl/Tk tended  to be ``ahead&#x27;&#x27;  of
+           them  on  some fixes and behind on others.  The first digest of the
+           major version number increases in  any  Tk  release  that  includes
+           changes  that  are  not backward compatible (i.e. whenever existing
+           perl/Tk applications and scripts may have to change  to  work  with
+           the new release).
+
+           The   minor   version   depends   on  perl/Tk  only.  It  uses  the
+           &#x27;even&#x27;=&#x27;stable&#x27;, &#x27;odd&#x27;=&#x27;experimental&#x27; scheme that linux uses:
+
+            .0xx  - inherently &#x27;alpha&#x27;
+            .1xx  - experimental &#x27;beta&#x27;
+            .2xx  - stable
+            .3xx  - experimental
+            .4xx  - stable
+            ...
+
+           The minor version number increases with each  new  release  of  Tk,
+           except  that  it  resets  to zero whenever the major version number
+           changes.
+
+       $Tk::version
+           The variable holds the current version number of the Tk library  in
+           the  form  major.minor.   Major  and minor are integers.  The major
+           version number increases in any Tk release  that  includes  changes
+           that  are  not  backward  compatible  (i.e.  whenever  existing  Tk
+           applications and scripts may have to change to work  with  the  new
+           release).  The minor version number increases with each new release
+           of  Tk,  except  that  it resets to zero whenever the major version
+           number changes.
+
+           Note: this is Tcl remnant.  With perl it makes more  sense  to  use
+           $Tk::VERSION described above.
+
+KEYWORDS
+       variables, version
+
+perl v5.40.1                      2025-04-13                       tkvars(3pm)
+</pre></body></html>

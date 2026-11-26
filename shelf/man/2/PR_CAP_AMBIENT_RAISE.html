@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_CAP_AMBIENT_RAISE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_CAP_AMBIENT_RAISE(2const)                      PR_CAP_AMBIENT_RAISE(2const)
+
+NAME
+       PR_CAP_AMBIENT_RAISE - add to the ambient capability set of the calling
+       thread
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, long cap, 0L, 0L);
+
+DESCRIPTION
+       The capability specified in cap is added to the ambient capability set.
+       The  specified capability must already be present in both the permitted
+       and the inheritable sets of the process.  This operation is not permit‐
+       ted if the SECBIT_NO_CAP_AMBIENT_RAISE securebit is set.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL cap does not specify a valid capability.
+
+       EPERM  either  the  capability  specified  in cap is not present in the
+              process&#x27;s permitted and  inheritable  capability  sets,  or  the
+              PR_CAP_AMBIENT_LOWER securebit has been set.
+
+VERSIONS
+       See PR_CAP_AMBIENT(2const).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.3.
+
+SEE ALSO
+       prctl(2), PR_CAP_AMBIENT(2const), libcap(3)
+
+Linux man-pages 6.9.1             2024-06-01      PR_CAP_AMBIENT_RAISE(2const)
+</pre></body></html>

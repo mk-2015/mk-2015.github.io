@@ -1,0 +1,120 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-rtp-sink(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...rtp-sink(7)  Miscellaneous Information Manual  libpipe...rtp-sink(7)
+
+NAME
+       libpipewire-module-rtp-sink - RTP sink
+
+DESCRIPTION
+       The rtp-sink module creates a PipeWire sink that sends audio RTP
+       packets.
+
+MODULE NAME
+       libpipewire-module-rtp-sink
+
+MODULE OPTIONS
+       Options specific to the behavior of this module
+
+       • source.ip =&lt;str&gt;: source IP address, default &#x27;0.0.0.0&#x27;
+
+       • destination.ip =&lt;str&gt;: destination IP address, default &#x27;224.0.0.56&#x27;
+
+       • destination.port  =&lt;int&gt;:  destination  port,  default random between
+         46000 and 47024
+
+       • local.ifname = &lt;str&gt;: interface name to use
+
+       • net.mtu = &lt;int&gt;: MTU to use, default 1280
+
+       • net.ttl = &lt;int&gt;: TTL to use, default 1
+
+       • net.loop = &lt;bool&gt;: loopback multicast, default false
+
+       • sess.min-ptime  =  &lt;float&gt;:  minimum  packet  time  in  milliseconds,
+         default 2
+
+       • sess.max-ptime  =  &lt;float&gt;:  maximum  packet  time  in  milliseconds,
+         default 20
+
+       • sess.name = &lt;str&gt;: a session name
+
+       • rtp.ptime = &lt;float&gt;: size of the packets in milliseconds, default  up
+         to MTU but between sess.min-ptime and sess.max-ptime
+
+       • rtp.framecount  =  &lt;int&gt;: number of samples per packet, default up to
+         MTU but between sess.min-ptime and sess.max-ptime
+
+       • sess.latency.msec = &lt;float&gt;: target  node  latency  in  milliseconds,
+         default as rtp.ptime
+
+       • sess.ts-offset  = &lt;int&gt;: an offset to apply to the timestamp, default
+         -1 = random offset
+
+       • sess.ts-refclk = &lt;string&gt;: the name of a reference clock
+
+       • sess.media = &lt;string&gt;: the media type audio|midi|opus, default audio
+
+       • stream.props = {}: properties to be passed to the stream
+
+       • aes67.driver-group = &lt;string&gt;: for AES67 streams, can be specified in
+         order to allow the sink to be driven by a different node than the PTP
+         driver.
+
+GENERAL OPTIONS
+       Options with well-known behavior:
+
+       • remote.name
+
+       • audio.format
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • node.name
+
+       • node.description
+
+       • media.name
+
+       • node.group
+
+       • node.latency
+
+       • node.virtual
+
+       • media.class
+
+EXAMPLE CONFIGURATION
+        # ~/.config/pipewire/pipewire.conf.d/my-rtp-sink.conf
+
+        context.modules = [
+        {   name = libpipewire-module-rtp-sink
+            args = {
+                #local.ifname = &quot;eth0&quot;
+                #source.ip = &quot;0.0.0.0&quot;
+                #destination.ip = &quot;224.0.0.56&quot;
+                #destination.port = 46000
+                #net.mtu = 1280
+                #net.ttl = 1
+                #net.loop = false
+                #sess.min-ptime = 2
+                #sess.max-ptime = 20
+                #sess.name = &quot;PipeWire RTP stream&quot;
+                #sess.media = &quot;audio&quot;
+                #audio.format = &quot;S16BE&quot;
+                #audio.rate = 48000
+                #audio.channels = 2
+                #audio.position = [ FL FR ]
+                stream.props = {
+                    node.name = &quot;rtp-sink&quot;
+                }
+            }
+       }
+       ]
+
+       Since
+           0.3.60
+
+PipeWire                             1.4.2               libpipe...rtp-sink(7)
+</pre></body></html>

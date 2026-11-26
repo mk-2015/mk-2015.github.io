@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_NO_NEW_PRIVS(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_NO_NEW_PRIVS(2const)                        PR_SET_NO_NEW_PRIVS(2const)
+
+NAME
+       PR_SET_NO_NEW_PRIVS - set the calling thread&#x27;s no_new_privs attribute
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_NO_NEW_PRIVS, 1L, 0L, 0L, 0L);
+
+DESCRIPTION
+       Set the calling thread&#x27;s no_new_privs attribute.  With no_new_privs set
+       to  1,  execve(2)  promises not to grant privileges to do anything that
+       could not have been done without the execve(2) call (for example,  ren‐
+       dering  the  set-user-ID and set-group-ID mode bits, and file capabili‐
+       ties non-functional).
+
+       Once set, the no_new_privs attribute cannot be unset.  The  setting  of
+       this  attribute  is  inherited  by  children  created  by  fork(2)  and
+       clone(2), and preserved across execve(2).
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL The second argument is not equal to 1L.
+
+FILES
+       /proc/pid/status
+              Since Linux 4.10, the value of a thread&#x27;s no_new_privs attribute
+              can be viewed via the NoNewPrivs field in this file.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 3.5.
+
+SEE ALSO
+       prctl(2), PR_GET_NO_NEW_PRIVS(2const), seccomp(2)
+
+       For  more  information,  see the kernel source file Documentation/user‐
+       space-api/no_new_privs.rst (or Documentation/prctl/no_new_privs.txt be‐
+       fore Linux 4.13).
+
+Linux man-pages 6.9.1             2024-06-01       PR_SET_NO_NEW_PRIVS(2const)
+</pre></body></html>

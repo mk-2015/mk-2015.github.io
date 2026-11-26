@@ -1,0 +1,98 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_SIGNATURE-DSA(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_SIGNATURE-DSA(7SSL)             OpenSSL            EVP_SIGNATURE-DSA(7SSL)
+
+NAME
+       EVP_SIGNATURE-DSA - The EVP_PKEY DSA signature implementation
+
+DESCRIPTION
+       Support for computing DSA signatures. The signature produced with
+       EVP_PKEY_sign(3) is DER encoded ASN.1 in the form described in RFC
+       3279, section 2.2.2.  See EVP_PKEY-DSA(7) for information related to
+       DSA keys.
+
+       As part of FIPS 140-3 DSA is not longer FIPS approved for key
+       generation and signature validation, but is still allowed for signature
+       verification.
+
+   Algorithm Names
+       In this list, names are grouped together to signify that they are the
+       same algorithm having multiple names.  This also includes the OID in
+       canonical decimal form (which means that they are possible to fetch if
+       the caller has a mere OID which came out in this form after a call to
+       OBJ_obj2txt(3)).
+
+       &quot;DSA&quot;, &quot;dsaEncryption&quot;, &quot;1.2.840.10040.4.1&quot;
+           The  base  signature  algorithm,  supported explicitly fetched with
+           EVP_PKEY_sign_init_ex2(3), and implicitly fetched (through EC keys)
+           with EVP_DigestSignInit(3) and EVP_DigestVerifyInit(3).
+
+           It can&#x27;t be used with EVP_PKEY_sign_message_init(3)
+
+       &quot;DSA-SHA1&quot;, &quot;DSA-SHA-1&quot;, &quot;dsaWithSHA1&quot;, &quot;1.2.840.10040.4.3&quot;
+       &quot;DSA-SHA2-224&quot;, &quot;DSA-SHA224&quot;, &quot;dsa_with_SHA224&quot;,
+       &quot;2.16.840.1.101.3.4.3.1&quot;
+       &quot;DSA-SHA2-256&quot;, &quot;DSA-SHA256&quot;, &quot;dsa_with_SHA256&quot;,
+       &quot;2.16.840.1.101.3.4.3.2&quot;
+       &quot;DSA-SHA2-384&quot;, &quot;DSA-SHA384&quot;, &quot;dsa_with_SHA384&quot;, &quot;id-dsa-with-sha384&quot;,
+       &quot;1.2.840.1.101.3.4.3.3&quot;
+       &quot;DSA-SHA2-512&quot;, &quot;DSA-SHA512&quot;, &quot;dsa_with_SHA512&quot;, &quot;id-dsa-with-sha512&quot;,
+       &quot;1.2.840.1.101.3.4.3.4&quot;
+       &quot;DSA-SHA3-224&quot;, &quot;dsa_with_SHA3-224&quot;, &quot;id-dsa-with-sha3-224&quot;,
+       &quot;2.16.840.1.101.3.4.3.5&quot;
+       &quot;DSA-SHA3-256&quot;, &quot;dsa_with_SHA3-256&quot;, &quot;id-dsa-with-sha3-256&quot;,
+       &quot;2.16.840.1.101.3.4.3.6&quot;
+       &quot;DSA-SHA3-384&quot;, &quot;dsa_with_SHA3-384&quot;, &quot;id-dsa-with-sha3-384&quot;,
+       &quot;2.16.840.1.101.3.4.3.7&quot;
+       &quot;DSA-SHA3-512&quot;, &quot;dsa_with_SHA3-512&quot;, &quot;id-dsa-with-sha3-512&quot;,
+       &quot;2.16.840.1.101.3.4.3.8&quot;
+           DSA signature schemes with diverse message digest algorithms.  They
+           are all supported explicitly fetched with EVP_PKEY_sign_init_ex2(3)
+           and EVP_PKEY_sign_message_init(3).
+
+   Signature Parameters
+       The   following    signature    parameters    can    be    set    using
+       EVP_PKEY_CTX_set_params().      This     may     be     called    after
+       EVP_PKEY_sign_init()  or  EVP_PKEY_verify_init(),  and  before  calling
+       EVP_PKEY_sign()  or  EVP_PKEY_verify().  They  may  also  be  set using
+       EVP_PKEY_sign_init_ex() or EVP_PKEY_verify_init_ex().
+
+       &quot;digest&quot; (OSSL_SIGNATURE_PARAM_DIGEST) &lt;UTF8 string&gt;
+       &quot;properties&quot; (OSSL_SIGNATURE_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+           These two are not supported with the  DSA  signature  schemes  that
+           already  include  a message digest algorithm, See &quot;Algorithm Names&quot;
+           above.
+
+       &quot;nonce-type&quot; (OSSL_SIGNATURE_PARAM_NONCE_TYPE) &lt;unsigned integer&gt;
+       &quot;key-check&quot; (OSSL_SIGNATURE_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+       &quot;digest-check&quot; (OSSL_SIGNATURE_PARAM_FIPS_DIGEST_CHECK) &lt;integer&gt;
+       &quot;sign-check&quot;  (OSSL_SIGNATURE_PARAM_FIPS_SIGN_CHECK) &lt;int&gt;
+           The settable parameters are described in provider-signature(7).
+
+       The   following   signature   parameters   can   be   retrieved   using
+       EVP_PKEY_CTX_get_params().
+
+       &quot;algorithm-id&quot; (OSSL_SIGNATURE_PARAM_ALGORITHM_ID) &lt;octet string&gt;
+       &quot;digest&quot; (OSSL_SIGNATURE_PARAM_DIGEST) &lt;UTF8 string&gt;
+       &quot;nonce-type&quot; (OSSL_SIGNATURE_PARAM_NONCE_TYPE) &lt;unsigned integer&gt;
+       &quot;fips-indicator&quot; (OSSL_SIGNATURE_PARAM_FIPS_APPROVED_INDICATOR)
+       &lt;integer&gt;
+           The gettable parameters are described in provider-signature(7).
+
+SEE ALSO
+       EVP_PKEY_CTX_set_params(3),    EVP_PKEY_sign(3),    EVP_PKEY_verify(3),
+       provider-signature(7),
+
+HISTORY
+       DSA Key generation and signature generation are no longer FIPS approved
+       in OpenSSL 3.4.  See  &quot;FIPS  indicators&quot;  in  fips_module(7)  for  more
+       information.
+
+COPYRIGHT
+       Copyright 2020-2026 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09           EVP_SIGNATURE-DSA(7SSL)
+</pre></body></html>

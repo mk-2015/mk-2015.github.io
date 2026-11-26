@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wint_t(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>wint_t(3type)                                                    wint_t(3type)
+
+NAME
+       wint_t, WEOF - integer type capable of storing any wchar_t of WEOF
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;wchar.h&gt;
+
+       typedef /* ... */  wint_t;
+
+       #define WEOF        /* ... */
+
+       #include &lt;stdint.h&gt;
+
+       #define WINT_WIDTH  /* ... */
+       #define WINT_MAX    /* ... */
+       #define WINT_MIN    /* ... */
+
+DESCRIPTION
+       wint_t  is a type used in functions that work with wide characters.  It
+       is capable of storing any valid wchar_t or  WEOF.   It  is  an  integer
+       type.
+
+       WEOF  is used by wide-character functions to indicate the end of an in‐
+       put file or an error.  It is of type wint_t.
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       C99, POSIX.1-2001.
+
+       The WINT_WIDTH macro was added in C23.
+
+NOTES
+       The following header also provides wint_t and WEOF: &lt;wctype.h&gt;.
+
+SEE ALSO
+       wchar_t(3type), fputwc(3)
+
+Linux man-pages 6.9.1             2024-05-03                     wint_t(3type)
+</pre></body></html>

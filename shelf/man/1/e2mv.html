@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>e2mv(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>E2MV(1)                          User commands                         E2MV(1)
+
+NAME
+       e2mv - moves or renames files on an ext2fs filesystem
+
+SYNOPSIS
+       e2mv [options] files... dest
+
+DESCRIPTION
+       The  e2mv  command  moves or renames files on an ext2fs filesystem. The
+       source files must be explicitly stated. It does not use regular expres‐
+       sions, yet.
+
+OPTIONS
+       -f     Force the operation to remove any existing files.
+
+       -s     Swap names of the two files.
+
+       -v     Be verbose.
+
+EXAMPLES
+       Rename a file:
+
+           e2cp -v /tmp/boot.img:/boot/grub/grub.conf /boot/grub/grub.conf.old
+
+       If `/boot/grub/grub.conf.old` already exists and is  not  a  directory,
+       this will fail.  Use `-f` to force removal.
+
+       Move a file to a different directory (`/data/processed`):
+
+           e2cp -v /dev/hdb1:/data/input0.txt /data/processed
+
+       To swap the names of two files:
+
+           e2cp -vs /tmp/boot.img:/boot/grub/grub.conf /boot/grub/grub.conf.bk
+
+       To swap two files and use a new name for the first one:
+
+           e2cp     -vs    boot.img:/boot/grub/grub.conf    /boot/grub/grub.c2
+       /boot/grub/grub.c1
+
+           `/boot/grub/grub.conf` is now `/boot/grub/grub.c1` and
+           `/boot/grub/grub.c2`   is now `/boot/grub/grub.conf`
+
+SEE ALSO
+       e2tools(7), e2ln(1), e2ls(1), e2mkdir(1), e2cp(1), e2rm(1), e2tail(1).
+
+AUTHOR
+       The e2tools were written by Keith Sheffield &lt;sheff@pobox.com&gt;.
+
+       This manual page was written by Lucas Wall &lt;lwall@debian.org&gt;, for  the
+       Debian project (but may be used by others).
+
+Linux                             2020-02-05                           E2MV(1)
+</pre></body></html>

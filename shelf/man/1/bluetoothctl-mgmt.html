@@ -1,0 +1,397 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetoothctl-mgmt(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>BLUETOOTHCTL-MGMT(1)      Linux System Administration     BLUETOOTHCTL-MGMT(1)
+
+NAME
+       bluetoothctl-mgmt - Management Submenu
+
+SYNOPSIS
+       bluetoothctl [--options] [mgmt.commands]
+
+MGMT COMMANDS
+   select
+       Select a different index
+
+       Usage  &gt; select &lt;index&gt;
+
+   revision
+       Get the MGMT Revision
+
+       Usage  &gt; revision
+
+   commands
+       List supported commands
+
+       Usage  &gt; commands
+
+   config
+       Show configuration info
+
+       Usage  &gt; config
+
+   info
+       Show controller info
+
+       Usage  &gt; info
+
+   extinfo
+       Show extended controller info
+
+       Usage  &gt; extinfo
+
+   auto-power
+       Power all available features
+
+       Usage  &gt; auto-power
+
+   power
+       Toggle powered state
+
+       Usage  &gt; power &lt;on/off&gt;
+
+   discov
+       Toggle discoverable state
+
+       Usage  &gt; discov &lt;yes/no/limited&gt; [timeout]
+
+   connectable
+       Toggle connectable state
+
+       Usage  &gt; connectable &lt;on/off&gt;
+
+   fast-conn
+       Toggle fast connectable state
+
+       Usage  &gt; fast-conn &lt;on/off&gt;
+
+   bondable
+       Toggle bondable state
+
+       Usage  &gt; bondable &lt;on/off&gt;
+
+   pairable
+       Toggle bondable state
+
+       Usage  &gt; pairable &lt;on/off&gt;
+
+   linksec
+       Toggle link level security
+
+       Usage  &gt; linksec &lt;on/off&gt;
+
+   ssp
+       Toggle SSP mode
+
+       Usage  &gt; spp &lt;on/off&gt;
+
+   sc
+       Toggle SC support
+
+       Usage  &gt; sc &lt;on/off/only&gt;
+
+   hs
+       Toggle HS support
+
+       Usage  &gt; hs &lt;on/off&gt;
+
+   le
+       Toggle LE support
+
+       Usage  &gt; le &lt;on/off&gt;
+
+   advertising
+       Toggle LE advertising
+
+       Usage  &gt; advertise &lt;on/off&gt;
+
+   bredr
+       Toggle BR/EDR support
+
+       Usage  &gt; bredr &lt;on/off&gt;
+
+   privacy
+       Toggle privacy support
+
+       Usage  &gt; privacy &lt;on/off&gt; [irk]
+
+   class
+       Set device major/minor class
+
+       Usage  &gt; class &lt;major&gt; &lt;minor&gt;
+
+   disconnect
+       Disconnect device
+
+       Usage  &gt; disconnect [-t type] &lt;remote address&gt;
+
+   con
+       List connections
+
+       Usage  &gt; con
+
+   find
+       Discover nearby devices
+
+       Usage  &gt; find [-l|-b] [-L]
+
+   find-service
+       Discover nearby service
+
+       Usage  &gt; find-service [-u UUID] [-r RSSI_Threshold] [-l|-b]
+
+   stop-find
+       Stop discovery
+
+       Usage  &gt; stop-find [-l|-b]
+
+   name
+       Set local name
+
+       Usage  &gt; name &lt;name&gt; [shortname]
+
+   pair
+       Pair with a remote device
+
+       Usage  &gt; pair [-c cap] [-t type] &lt;remote address&gt;
+
+   cancelpair
+       Cancel pairing
+
+       Usage  &gt; cancelpair [-t type] &lt;remote address&gt;
+
+   unpair
+       Unpair device
+
+       Usage  &gt; unpair [-t type] &lt;remote address&gt;
+
+   keys
+       Load Link Keys
+
+       Usage  keys
+
+   ltks
+       Load Long Term Keys
+
+       Usage  &gt; ltks
+
+   irks
+       Load Identity Resolving Keys
+
+       Usage  &gt; irks [--local index] [--file file path]
+
+   block
+       Block Device
+
+       Usage  &gt; block [-t type] &lt;remote address&gt;
+
+   unblock
+       Unblock Device
+
+       Usage  &gt; unblock [-t type] &lt;remote address&gt;
+
+   add-uuid
+       Add UUID
+
+       Usage  &gt; add-uuid &lt;UUID&gt; &lt;service class hint&gt;
+
+   rm-uuid
+       Remove UUID
+
+       Usage  &gt; rm-uuid &lt;UUID&gt;
+
+   clr-uuids
+       Clear UUIDs
+
+       Usage  &gt; clear-uuids
+
+   local-oob
+       Local OOB data
+
+       Usage  &gt; local-oob
+
+   remote-oob
+       Remote OOB data
+
+       Usage  &gt;  remote-oob [-t &lt;addr_type&gt;] [-r &lt;rand192&gt;] [-h &lt;hash192&gt;] [-R
+              &lt;rand256&gt;] [-H &lt;hash256&gt;] &lt;addr&gt;
+
+   did
+       Set Device ID
+
+       Usage  &gt; did &lt;source&gt;:&lt;vendor&gt;:&lt;product&gt;:&lt;version&gt;
+
+   static-addr
+       Set static address
+
+       Usage  &gt; static-addr &lt;address&gt;
+
+   public-addr
+       Set public address
+
+       Usage  &gt; public-addr &lt;address&gt;
+
+   ext-config
+       External configuration
+
+       Usage  &gt; ext-config &lt;on/off&gt;
+
+   debug-keys
+       Toggle debug keys
+
+       Usage  &gt; debug-keys &lt;on/off&gt;
+
+   conn-info
+       Get connection information
+
+       Usage  &gt; conn-info [-t type] &lt;remote address&gt;
+
+   io-cap
+       Set IO Capability
+
+       Usage  &gt; io-cap &lt;cap&gt;
+
+   scan-params
+       Set Scan Parameters
+
+       Usage  &gt; scan-params &lt;interval&gt; &lt;window&gt;
+
+   get-clock
+       Get Clock Information
+
+       Usage  &gt; get-clock [address]
+
+   add-device
+       Add Device
+
+       Usage  &gt; add-device [-a action] [-t type] &lt;address&gt;
+
+   del-device
+       Remove Device
+
+       Usage  &gt; del-device [-t type] &lt;address&gt;
+
+   clr-devices
+       Clear Devices
+
+       Usage  &gt; clr-devices
+
+   bredr-oob
+       Local OOB data (BR/EDR)
+
+       Usage  &gt; bredr-oob
+
+   le-oob
+       Local OOB data (LE)
+
+       Usage  &gt; le-oob
+
+   advinfo
+       Show advertising features
+
+       Usage  &gt; advinfo
+
+   advsize
+       Show advertising size info
+
+       Usage  &gt; advsize [options] &lt;instance_id&gt;
+
+   add-adv
+       Add advertising instance
+
+       Usage  &gt; add-adv [options] &lt;instance_id&gt;
+
+   rm-adv
+       Remove advertising instance
+
+       Usage  &gt; rm-adv &lt;instance_id&gt;
+
+   clr-adv
+       Clear advertising instances
+
+       Usage  &gt; clr-adv
+
+   add-ext-adv-params
+       Add extended advertising params
+
+       Usage  &gt; add-ext-adv-parms [options] &lt;instance_id&gt;
+
+   add-ext-adv-data
+       Add extended advertising data
+
+       Usage  &gt; add-ext-adv-data [options] &lt;instance_id&gt;
+
+   appearance
+       Set appearance
+
+       Usage  &gt; appearance &lt;appearance&gt;
+
+   phy
+       Get/Set PHY Configuration
+
+       Usage  &gt; phy [LE1MTX] [LE1MRX] [LE2MTX] [LE2MRX]  [LECODEDTX]  [LECODE‐
+              DRX]     [BR1M1SLOT]     [BR1M3SLOT]     [BR1M5SLOT][EDR2M1SLOT]
+              [EDR2M3SLOT] [EDR2M5SLOT][EDR3M1SLOT] [EDR3M3SLOT] [EDR3M5SLOT]
+
+   wbs
+       Toggle Wideband-Speech support
+
+       Usage  &gt; wbs &lt;on/off&gt;
+
+   secinfo
+       Show security information
+
+       Usage  &gt; secinfo
+
+   expinfo
+       Show experimental features
+
+       Usage  &gt; expinfo
+
+   exp-debug
+       Set debug feature
+
+       Usage  &gt; exp-debug &lt;on/off&gt;
+
+   exp-privacy
+       Set LL privacy feature
+
+       Usage  &gt; exp-privacy &lt;on/off&gt;
+
+   exp-quality
+       Set bluetooth quality report feature
+
+       Usage  &gt; exp-quality &lt;on/off&gt;
+
+   exp-offload
+       Toggle codec support
+
+       Usage  &gt; exp-offload &lt;on/off&gt;
+
+   read-sysconfig
+       Read System Configuration
+
+       Usage  &gt; read-sysconfig
+
+   set-sysconfig
+       Set System Configuration
+
+       Usage  &gt; set-sysconfig &lt;-v|-h&gt; [options...]
+
+   get-flags
+       Get device flags
+
+   set-flags
+       Set device flags
+
+       Usage  &gt; set-flags [-f flags] [-t type] &lt;address&gt;
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free use of this software is granted under the terms of the GNU  Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                              July 2023              BLUETOOTHCTL-MGMT(1)
+</pre></body></html>

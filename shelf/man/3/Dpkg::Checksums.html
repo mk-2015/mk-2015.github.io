@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Checksums(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Checksums(3perl)           libdpkg-perl           Dpkg::Checksums(3perl)
+
+NAME
+       Dpkg::Checksums - generate and manipulate file checksums
+
+DESCRIPTION
+       This module provides a class that can generate and manipulate various
+       file checksums as well as some methods to query information about
+       supported checksums.
+
+FUNCTIONS
+       @list = checksums_get_list()
+           Returns the list of supported checksums algorithms.
+
+       $bool = checksums_is_supported($alg)
+           Returns  a  boolean indicating whether the given checksum algorithm
+           is supported. The checksum algorithm is case-insensitive.
+
+       $value = checksums_get_property($alg, $property)
+           Returns the requested property of the checksum  algorithm.  Returns
+           undef  if  either  the  property  or the checksum algorithm doesn&#x27;t
+           exist. Valid properties currently include &quot;name&quot; (returns the  name
+           of  the  digest  algorithm),  &quot;regex&quot;  for  the  regular expression
+           describing the common string representation of  the  checksum,  and
+           &quot;strong&quot; for a boolean describing whether the checksum algorithm is
+           considered cryptographically strong.
+
+METHODS
+       $ck = Dpkg::Checksums-&gt;new()
+           Create  a  new Dpkg::Checksums object. This object is able to store
+           the checksums of several files to later export them or verify them.
+
+       $ck-&gt;reset()
+           Forget about all checksums stored. The object is again in the  same
+           state as if it was newly created.
+
+       $ck-&gt;add_from_file($filename, %opts)
+           Add  or  verify  checksums  information for the file $filename. The
+           file must exists for  the  call  to  succeed.  By  default  if  the
+           $filename  is  known  and  the checksums do not match, the function
+           will error out.
+
+           Options:
+
+           key Set to the public name to use  when  exporting  the  checksums,
+               instead of using $filename.
+
+           checksums
+               Set  an  array  reference  with the list of wanted checksums to
+               generate instead of generating all of them.
+
+           update
+               Set a boolean on whether the object should update the checksums
+               information associated with the $filename (or key), instead  of
+               emitting an error if it does not match.
+
+       $ck-&gt;add_from_string($alg, $value, %opts)
+           Add  checksums of type $alg that are stored in the $value variable.
+           $value can be multi-lines, each line should be  a  space  separated
+           list  of  checksum,  file  size  and  filename. Leading or trailing
+           spaces are not allowed.
+
+           Options:
+
+           update
+               Set a boolean on whether the object should update the checksums
+               information associated with the $filename (or key), instead  of
+               emitting an error if it does not match.
+
+       $ck-&gt;add_from_control($control, %opts)
+           Read  checksums from Checksums-* fields stored in the Dpkg::Control
+           object $control. It  uses  $self-&gt;add_from_string()  on  the  field
+           values   to   do  the  actual  work.  The  default  field  used  is
+           Checksums-Md5.
+
+           Options:
+
+           use_files_for_md5
+               Set to true to use the Files field instead of Checksums-Md5.
+
+               Defaults to false.
+
+       @files = $ck-&gt;get_files()
+           Return the list of files whose checksums are stored in the object.
+
+       $bool = $ck-&gt;has_file($file)
+           Return true if we have checksums for the given file. Returns  false
+           otherwise.
+
+       $ck-&gt;remove_file($file)
+           Remove all checksums of the given file.
+
+       $checksum = $ck-&gt;get_checksum($file, $alg)
+           Return the checksum of type $alg for the requested $file. This will
+           not compute the checksum but only return the checksum stored in the
+           object, if any.
+
+           If  $alg is not defined, it returns a reference to a hash: keys are
+           the checksum algorithms and values are  the  checksums  themselves.
+           The  hash  returned  must  not  be  modified,  it&#x27;s internal to the
+           object.
+
+       $size = $ck-&gt;get_size($file)
+           Return the size of the requested file  if  it&#x27;s  available  in  the
+           object.
+
+       $bool = $ck-&gt;has_strong_checksums($file)
+           Return a boolean on whether the file has a strong checksum.
+
+       $ck-&gt;export_to_string($alg, %opts)
+           Return  a  multi-line string containing the checksums of type $alg.
+           The string  can  be  stored  as-is  in  a  Checksum-*  field  of  a
+           Dpkg::Control object.
+
+       $ck-&gt;export_to_control($control, %opts)
+           Export the checksums in the Checksums-* fields of the Dpkg::Control
+           $control object.
+
+           Options:
+
+           use_files_for_md5
+               Set to true to use the Files field instead of Checksums-Md5.
+
+               Defaults to false.
+
+CHANGES
+   Version 1.04 (dpkg 1.20.0)
+       Remove warning: For obsolete property &#x27;program&#x27;.
+
+   Version 1.03 (dpkg 1.18.5)
+       New property: Add new &#x27;strong&#x27; property.
+
+       New member: $ck-&gt;has_strong_checksums().
+
+   Version 1.02 (dpkg 1.18.0)
+       Obsolete  property:  Getting  the &#x27;program&#x27; checksum property will warn
+       and return undef, the Digest module is used internally now.
+
+       New property: Add new &#x27;name&#x27; property  with  the  name  of  the  Digest
+       algorithm to use.
+
+   Version 1.01 (dpkg 1.17.6)
+       New argument: Accept an options argument in $ck-&gt;export_to_string().
+
+       New  option:  Accept  new  option  &#x27;update&#x27; in $ck-&gt;add_from_file() and
+       $ck-&gt;add_from_control().
+
+   Version 1.00 (dpkg 1.15.6)
+       Mark the module as public.
+
+1.22.22                           2026-03-06            Dpkg::Checksums(3perl)
+</pre></body></html>

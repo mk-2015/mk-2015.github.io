@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCEXCL(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCEXCL(2const)                                              TIOCEXCL(2const)
+
+NAME
+       TIOCEXCL, TIOCGEXCL, TIOCNXCL - exclusive mode
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC*XCL constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCEXCL);
+       int ioctl(int fd, TIOCGEXCL, int *argp);
+       int ioctl(int fd, TIOCNXCL);
+
+DESCRIPTION
+       TIOCEXCL
+              Put the terminal into exclusive mode.  No further open(2) opera‐
+              tions on the terminal are permitted.  (They fail with EBUSY, ex‐
+              cept for a process with the CAP_SYS_ADMIN capability.)
+
+       TIOCGEXCL
+              If  the terminal is currently in exclusive mode, place a nonzero
+              value in the location pointed to by argp; otherwise, place  zero
+              in *argp.
+
+       TIOCNXCL
+              Disable exclusive mode.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+HISTORY
+       TIOCGEXCL
+              Linux 3.8.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13                  TIOCEXCL(2const)
+</pre></body></html>

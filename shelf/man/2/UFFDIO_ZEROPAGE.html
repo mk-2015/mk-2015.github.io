@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>UFFDIO_ZEROPAGE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>UFFDIO_ZEROPAGE(2const)                                UFFDIO_ZEROPAGE(2const)
+
+NAME
+       UFFDIO_ZEROPAGE - zero out a memory range registered with userfaultfd
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/userfaultfd.h&gt;  /* Definition of UFFD* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, UFFDIO_ZEROPAGE, struct uffdio_zeropage *argp);
+
+       #include &lt;linux/userfaultfd.h&gt;
+
+       struct uffdio_zeropage {
+           struct uffdio_range  range;
+           __u64                mode;      /* Flags controlling behavior */
+           __s64                zeropage;  /* Number of bytes zeroed */
+       };
+
+DESCRIPTION
+       Zero out a memory range registered with userfaultfd.
+
+       The  following value may be bitwise ORed in mode to change the behavior
+       of the UFFDIO_ZEROPAGE operation:
+
+       UFFDIO_ZEROPAGE_MODE_DONTWAKE
+              Do not wake up the thread that waits for page-fault resolution.
+
+       The zeropage field is used by the kernel to return the number of  bytes
+       that  was  actually  zeroed,  or  an  error  in the same manner as UFF‐
+       DIO_COPY.  If the value returned in the zeropage  field  doesn&#x27;t  match
+       the value that was specified in range.len, the operation fails with the
+       error EAGAIN.  The zeropage field is output-only; it is not read by the
+       UFFDIO_ZEROPAGE operation.
+
+RETURN VALUE
+       This ioctl(2) operation returns 0 on success.  In this case, the entire
+       area was zeroed.  On error, -1 is returned and errno is set to indicate
+       the error.
+
+ERRORS
+       EAGAIN The  number of bytes zeroed (i.e., the value returned in the ze‐
+              ropage field) does not equal the value that was specified in the
+              range.len field.
+
+       EINVAL Either range.start or range.len was not a multiple of the system
+              page size; or range.len was zero; or the range specified was in‐
+              valid.
+
+       EINVAL An invalid bit was specified in the mode field.
+
+       ESRCH (since Linux 4.13)
+              The faulting process has exited at the time of a UFFDIO_ZEROPAGE
+              operation.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.3.
+
+EXAMPLES
+       See userfaultfd(2).
+
+SEE ALSO
+       ioctl(2), ioctl_userfaultfd(2), userfaultfd(2)
+
+       linux.git/Documentation/admin-guide/mm/userfaultfd.rst
+
+Linux man-pages 6.9.1             2024-06-17           UFFDIO_ZEROPAGE(2const)
+</pre></body></html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::selection(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>selection(3pm)        User Contributed Perl Documentation       selection(3pm)
+
+NAME
+       Tk::Selection - Manipulate the X selection
+
+SYNOPSIS
+       $widget-&gt;SelectionOption?(args)?
+
+DESCRIPTION
+       This command provides an interface to the X selection mechanism and
+       implements the full selection functionality described in the X Inter-
+       Client Communication Conventions Manual (ICCCM).
+
+       The widget object used to invoke the methods below determines which
+       display is used to access the selection.  In order to avoid conflicts
+       with selection methods of widget classes (e.g. Text) this set of
+       methods uses the prefix Selection.  The following methods are currently
+       supported:
+
+       $widget-&gt;SelectionClear?(-selection=&gt;selection)?
+           If selection exists anywhere on $widget&#x27;s display, clear it so that
+           no  window  owns  the selection anymore.  Selection specifies the X
+           selection that should be cleared, and should be an atom  name  such
+           as   PRIMARY  or  CLIPBOARD;  see  the  Inter-Client  Communication
+           Conventions Manual for complete  details.   Selection  defaults  to
+           PRIMARY.  Returns an empty string.
+
+       $widget-&gt;SelectionGet?(?-selection=&gt;selection?,?-type=&gt;type?)?
+           Retrieves the value of selection from $widget&#x27;s display and returns
+           it as a result.  Selection defaults to PRIMARY.
+
+           Type  specifies  the  form in which the selection is to be returned
+           (the desired ``target&#x27;&#x27; for conversion, in ICCCM terminology),  and
+           should  be an atom name such as STRING or FILE_NAME; see the Inter-
+           Client Communication Conventions Manual for complete details.  Type
+           defaults to STRING.  The selection owner may choose to  return  the
+           selection  in any of several different representation formats, such
+           as STRING, ATOM, INTEGER, etc. (this format is different  than  the
+           selection type; see the ICCCM for all the confusing details).
+
+           If  format  is  not  STRING  then  things  get messy, the following
+           description  is  from  the  Tcl/Tk  man  page  as  yet  incompetely
+           translated for the perl version - it is misleading at best.
+
+           If  the  selection  is  returned  in  a  non-string format, such as
+           INTEGER or ATOM, the SelectionGet converts it to  a  list  of  perl
+           values:  atoms  are  converted to their textual names, and anything
+           else is converted integers.
+
+           A goal of the perl port is to provide better handling of  different
+           formats  than  Tcl/Tk  does,  which should be possible given perl&#x27;s
+           wider range of ``types&#x27;&#x27;. Although some thought went into  this  in
+           very early days of perl/Tk what exactly happens is still &quot;not quite
+           right&quot; and subject to change.
+
+       $widget-&gt;SelectionHandle(?-selection=&gt;selection?,?-type=&gt;type?,?-format=&gt;format?
+       callback)
+           Creates  a  handler for selection requests, such that callback will
+           be executed whenever selection is  owned  by  $widget  and  someone
+           attempts  to  retrieve  it  in the form given by type (e.g. type is
+           specified in the selection get  command).   Selection  defaults  to
+           PRIMARY,  type  defaults  to STRING, and format defaults to STRING.
+           If callback is an  empty  string  then  any  existing  handler  for
+           $widget, type, and selection is removed.
+
+           When  selection  is  requested, $widget is the selection owner, and
+           type is the requested type, callback  will  be  executed  with  two
+           additional  arguments.  The two additional arguments are offset and
+           maxBytes:  offset specifies a starting character  position  in  the
+           selection  and  maxBytes  gives  the  maximum  number  of  bytes to
+           retrieve.  The command should return a value consisting of at  most
+           maxBytes  of  the selection, starting at position offset.  For very
+           large selections (larger  than  maxBytes)  the  selection  will  be
+           retrieved  using  several  invocations  of callback with increasing
+           offset values.  If callback returns a string whose length  is  less
+           than  maxBytes,  the  return value is assumed to include all of the
+           remainder of the selection;  if the length of callback&#x27;s result  is
+           equal  to  maxBytes  then  callback will be invoked again, until it
+           eventually returns a result shorter than maxBytes.   The  value  of
+           maxBytes will always be relatively large (thousands of bytes).
+
+           If  callback  returns  an  error  (e.g. via die) then the selection
+           retrieval is rejected just as if the selection didn&#x27;t exist at all.
+
+           The format argument specifies the  representation  that  should  be
+           used  to transmit the selection to the requester (the second column
+           of Table 2 of the ICCCM), and defaults to  STRING.   If  format  is
+           STRING,  the  selection  is  transmitted  as 8-bit ASCII characters
+           (i.e.  just in the form returned by command).
+
+           If format is not  STRING  then  things  get  messy,  the  following
+           description is from the Tcl/Tk man page as yet untranslated for the
+           perl version - it is misleading at best.
+
+           If  format  is  ATOM, then the return value from command is divided
+           into fields separated by white space;  each field is  converted  to
+           its atom value, and the 32-bit atom value is transmitted instead of
+           the atom name.  For any other format, the return value from command
+           is  divided  into fields separated by white space and each field is
+           converted to a 32-bit integer;  an array of integers is transmitted
+           to the selection requester.
+
+           The format argument is needed  only  for  compatibility  with  many
+           selection  requesters,  except  Tcl/Tk.  If Tcl/Tk is being used to
+           retrieve the selection then the value is converted back to a string
+           at the requesting end, so format is irrelevant.
+
+           A goal of the perl port is to provide better handling of  different
+           formats  than  Tcl/Tk  does,  which should be possible given perl&#x27;s
+           wider range of ``types&#x27;&#x27;. Although some thought went into  this  in
+           very early days of perl/Tk what exactly happens is still &quot;not quite
+           right&quot; and subject to change.
+
+       $widget-&gt;SelectionOwner?(-selection=&gt;selection)?
+           SelectionOwner  returns  the  window  in this application that owns
+           selection on the display containing $widget, or an empty string  if
+           no  window  in  this  application  owns  the  selection.  Selection
+           defaults to PRIMARY.
+
+       $widget-&gt;SelectionOwn?(?-command=&gt;callback?,?-selection=&gt;selection?)?
+           SelectionOwn causes $widget to become the new owner of selection on
+           $widget&#x27;s  display,  returning  an  empty  string  as  result.  The
+           existing owner, if any, is notified that it has lost the selection.
+           If  callback  is  specified,  it  will  be executed when some other
+           window  claims  ownership  of  the  selection  away  from  $widget.
+           Selection defaults to PRIMARY.
+
+KEYWORDS
+       clear, format, handler, ICCCM, own, selection, target, type
+
+perl v5.40.1                      2025-04-13                    selection(3pm)
+</pre></body></html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>dpkg-vendor(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>dpkg-vendor(1)                    dpkg suite                    dpkg-vendor(1)
+
+NAME
+       dpkg-vendor - queries information about distribution vendors
+
+SYNOPSIS
+       dpkg-vendor [option...] command
+
+DESCRIPTION
+       dpkg-vendor is a tool to query information about vendors listed in
+       /etc/dpkg/origins.  /etc/dpkg/origins/default contains information
+       about the current vendor.
+
+       The origin files provide metadata about specific vendors, such as their
+       URL or where to file bug reports, and are usually used both to
+       determine the behavior of tools and resulting contents during package
+       builds targeting a specific vendor, and to describe the provenance of
+       packages.
+
+       Packages can explicitly declare their vendor by including an Origin
+       field, otherwise the vendor for a package without such field is assumed
+       to be the one pointed to by the default origin symbolic link.
+
+       The default symbolic link is also used to denote the origin of the
+       current installation managed by dpkg, be that a full distribution or an
+       overlay on top of an existing base system that contains either no
+       packaging system or a native one.
+
+       This program was introduced in dpkg 1.15.1.
+
+COMMANDS
+       --is vendor
+           Exits with 0 if the current vendor is vendor.  Otherwise exits with
+           1.
+
+       --derives-from vendor
+           Exits  with 0 if the current vendor distribution is a derivative of
+           vendor, otherwise exits with 1.  It uses the Parent field to browse
+           all ancestors of the current vendor.
+
+       --query field
+           Print on standard output the value of the vendor-specific field for
+           the current vendor.
+
+       --help
+           Show the usage message and exit.
+
+       --version
+           Show the version and exit.
+
+OPTIONS
+       --vendor vendor
+           Assumes the current vendor is vendor instead of discovering it with
+           the DEB_VENDOR environment variable or /etc/dpkg/origins/default.
+
+ENVIRONMENT
+       DEB_VENDOR
+           This setting defines the current  vendor.   If  not  set,  it  will
+           discover the current vendor by reading /etc/dpkg/origins/default.
+
+       DPKG_COLORS
+           Sets  the  color  mode (since dpkg 1.18.5).  The currently accepted
+           values are: auto (default), always and never.
+
+       DPKG_NLS
+           If set, it will be  used  to  decide  whether  to  activate  Native
+           Language  Support,  also  known  as  internationalization (or i18n)
+           support (since dpkg 1.19.0).  The accepted  values  are:  0  and  1
+           (default).
+
+FILES
+   Packaging support
+       /usr/share/dpkg/vendor.mk
+           Makefile  snippet  that sets the current vendor and its parent into
+           variables, and provides make macros to check for derivatives (since
+           dpkg 1.16.1).
+
+SEE ALSO
+       deb-origin(5).
+
+1.22.22                           2026-03-06                    dpkg-vendor(1)
+</pre></body></html>

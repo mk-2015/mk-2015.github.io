@@ -1,0 +1,83 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>fnmatch(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>FNMATCH(3am)               GNU Awk Extension Modules              FNMATCH(3am)
+
+NAME
+       fnmatch - compare a string against a filename wildcard
+
+SYNOPSIS
+       @load &quot;fnmatch&quot;
+
+       result = fnmatch(pattern, string, flags)
+
+DESCRIPTION
+       The  fnmatch extension provides an AWK interface to the fnmatch(3) rou‐
+       tine.  It adds a single function named fnmatch(), one predefined  vari‐
+       able (FNM_NOMATCH), and an array of flag values named FNM.
+
+       The first argument is the filename wildcard to match, the second is the
+       filename string, and the third is either zero, or the bitwise OR of one
+       or more of the flags in the FNM array.
+
+       The  return value is zero on success, FNM_NOMATCH if the string did not
+       match the pattern, or a different non-zero value if an error occurred.
+
+       The flags are follows:
+
+       FNM[&quot;CASEFOLD&quot;]
+              Corresponds to the FNM_CASEFOLD flag as defined in fnmatch(3).
+
+       FNM[&quot;FILE_NAME&quot;]
+              Corresponds to the FNM_FILE_NAME flag as defined in fnmatch(3).
+
+       FNM[&quot;LEADING_DIR&quot;]
+              Corresponds to  the  FNM_LEADING_DIR  flag  as  defined  in  fn‐
+              match(3).
+
+       FNM[&quot;NOESCAPE&quot;]
+              Corresponds to the FNM_NOESCAPE flag as defined in fnmatch(3).
+
+       FNM[&quot;PATHNAME&quot;]
+              Corresponds to the FNM_PATHNAME flag as defined in fnmatch(3).
+
+       FNM[&quot;PERIOD&quot;]
+              Corresponds to the FNM_PERIOD flag as defined in fnmatch(3).
+
+NOTES
+       Nothing prevents AWK code from changing the predefined variable FNM_NO‐
+       MATCH, but doing so may cause strange results.
+
+EXAMPLE
+       @load &quot;fnmatch&quot;
+       ...
+       flags = or(FNM[&quot;PERIOD&quot;], FNM[&quot;NOESCAPE&quot;])
+       if (fnmatch(&quot;*.a&quot;, &quot;foo.c&quot;, flags) == FNM_NOMATCH)
+            print &quot;no match&quot;
+
+SEE ALSO
+       GAWK:   Effective   AWK  Programming,  filefuncs(3am),  fork(3am),  in‐
+       place(3am), ordchr(3am), readdir(3am),  readfile(3am),  revoutput(3am),
+       rwarray(3am), time(3am).
+
+       fnmatch(3).
+
+AUTHOR
+       Arnold Robbins, arnold@skeeve.com.
+
+COPYING PERMISSIONS
+       Copyright © 2012, 2013, 2018, Free Software Foundation, Inc.
+
+       Permission  is  granted  to make and distribute verbatim copies of this
+       manual page provided the copyright notice and  this  permission  notice
+       are preserved on all copies.
+
+       Permission  is granted to copy and distribute modified versions of this
+       manual page under the conditions for verbatim  copying,  provided  that
+       the  entire  resulting derived work is distributed under the terms of a
+       permission notice identical to this one.
+
+       Permission is granted to copy and distribute translations of this  man‐
+       ual page into another language, under the above conditions for modified
+       versions,  except that this permission notice may be stated in a trans‐
+       lation approved by the Foundation.
+
+Free Software Foundation          Feb 21 2018                     FNMATCH(3am)
+</pre></body></html>

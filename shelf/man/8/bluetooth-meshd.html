@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bluetooth-meshd(8)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/8/">man(8)</a></p><hr><pre>BLUETOOTH-MESHD(8)            Linux Connectivity            BLUETOOTH-MESHD(8)
+
+NAME
+       bluetooth-meshd - Bluetooth Mesh daemon
+
+SYNOPSIS
+       bluetooth-meshd [options ...]
+
+DESCRIPTION
+       Daemon for managing Bluetooth Mesh connections on Linux.
+
+OPTIONS
+       -h, --help
+              Print bluetooth-meshd options and exit.
+
+       -n, --nodetach
+              Enable logging in foreground. Directs log output to the control‐
+              ling terminal in addition to syslog.
+
+       -i &lt;type&gt;, --io &lt;type&gt;
+              Specifies I/O interface type:
+
+              auto  -  Use  first  available controller: via MGMT interface if
+              kernel supports it, otherwise, via raw HCI socket.
+
+              generic:[hci]&lt;index&gt; - Use generic HCI io on  interface  hci&lt;in‐
+              dex&gt;.
+
+              unit:&lt;fd_path&gt;-  Specifies open file descriptor for daemon test‐
+              ing.
+
+              By default, if no type is specified, uses auto I/O on the  first
+              available controller.
+
+       -c &lt;file&gt;, --config &lt;file&gt;
+              Specifies an explicit config file path instead of relying on the
+              default path(/etc/bluetooth/mesh-main.conf) for the config file.
+
+       -s &lt;dir_path&gt;, --storage &lt;dirpath&gt;
+              Specifies  an explicit storage directory path instead of the de‐
+              fault path(/var/lib/bluetooth/mesh)  for  storing  mesh  node(s)
+              configuration.
+
+       -d, --debug
+              Enable debug output.
+
+       -b, --dbus-debug
+              Enable D-Bus debug output.
+
+FILES
+       /etc/bluetooth/mesh-main.conf
+              Location of the global configuration file containing mesh daemon
+              settings.
+
+RESOURCES
+        &lt;http://www.bluez.org&gt;
+
+REPORTING BUGS
+        &lt;linux-bluetooth@vger.kernel.org&gt;
+
+COPYRIGHT
+       Free  use of this software is granted under the terms of the GNU Lesser
+       General Public Licenses (LGPL).
+
+BlueZ                             March 2021                BLUETOOTH-MESHD(8)
+</pre></body></html>

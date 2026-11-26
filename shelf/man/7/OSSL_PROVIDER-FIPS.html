@@ -1,0 +1,403 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OSSL_PROVIDER-FIPS(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>OSSL_PROVIDER-FIPS(7SSL)            OpenSSL           OSSL_PROVIDER-FIPS(7SSL)
+
+NAME
+       OSSL_PROVIDER-FIPS - OpenSSL FIPS provider
+
+DESCRIPTION
+       The OpenSSL FIPS provider is a special provider that conforms to the
+       Federal Information Processing Standards (FIPS) specified in FIPS
+       140-3. This &#x27;module&#x27; contains an approved set of cryptographic
+       algorithms that is validated by an accredited testing laboratory.
+
+   Properties
+       The implementations in this provider specifically have these properties
+       defined for approved algorithms:
+
+       &quot;provider=fips&quot;
+       &quot;fips=yes&quot;
+
+       It  may be used in a property query string with fetching functions such
+       as EVP_MD_fetch(3)  or  EVP_CIPHER_fetch(3),  as  well  as  with  other
+       functions    that    take    a   property   query   string,   such   as
+       EVP_PKEY_CTX_new_from_name(3).
+
+       To be FIPS compliant, it is mandatory to include &quot;fips=yes&quot; as part  of
+       all   property   queries.    This   ensures  that  only  FIPS  approved
+       implementations are used for cryptographic operations.  The  &quot;fips=yes&quot;
+       query may also include other non-crypto support operations that are not
+       in  the FIPS provider, such as asymmetric key encoders, see &quot;Asymmetric
+       Key Management&quot; in OSSL_PROVIDER-default(7).
+
+       It is not mandatory to include &quot;provider=fips&quot; as part of your property
+       query.  Including &quot;provider=fips&quot; in  your  property  query  guarantees
+       that  the  OpenSSL  FIPS  provider is used for cryptographic operations
+       rather than other FIPS capable providers.
+
+   Approved algorithms
+       Algorithms that are fetched using &quot;fips=yes&quot; may still be unapproved if
+       certain conditions are not met. See &quot;FIPS indicators&quot; in fips_module(7)
+       for additional information.
+
+   Provider parameters
+       See &quot;Provider parameters&quot;  in  provider-base(7)  for  a  list  of  base
+       parameters.   The  OpenSSL  FIPS  provider  also handles FIPS indicator
+       related  parameters  as  specified  by  &quot;FIPS  indicator  options&quot;   in
+       fips_config(5).
+
+OPERATIONS AND ALGORITHMS
+       The OpenSSL FIPS provider supports these operations and algorithms:
+
+   Hashing Algorithms / Message Digests
+       SHA1, see EVP_MD-SHA1(7)
+       SHA2, see EVP_MD-SHA2(7)
+       SHA3, see EVP_MD-SHA3(7)
+       KECCAK-KMAC, see EVP_MD-KECCAK-KMAC(7)
+       SHAKE, see EVP_MD-SHAKE(7)
+
+   Symmetric Ciphers
+       AES, see EVP_CIPHER-AES(7)
+       3DES, see EVP_CIPHER-DES(7)
+
+   Message Authentication Code (MAC)
+       CMAC, see EVP_MAC-CMAC(7)
+       GMAC, see EVP_MAC-GMAC(7)
+       HMAC, see EVP_MAC-HMAC(7)
+       KMAC, see EVP_MAC-KMAC(7)
+
+   Key Derivation Function (KDF)
+       HKDF, see EVP_KDF-HKDF(7)
+       TLS13-KDF, see EVP_KDF-TLS13_KDF(7)
+       SSKDF, see EVP_KDF-SS(7)
+       PBKDF2, see EVP_KDF-PBKDF2(7)
+       SSHKDF, see EVP_KDF-SSHKDF(7)
+       TLS1-PRF, see EVP_KDF-TLS1_PRF(7)
+       KBKDF, see EVP_KDF-KB(7)
+       X942KDF-ASN1, see EVP_KDF-X942-ASN1(7)
+       X942KDF-CONCAT, see EVP_KDF-X942-CONCAT(7)
+       X963KDF, see EVP_KDF-X963(7)
+
+   Key Exchange
+       DH, see EVP_KEYEXCH-DH(7)
+       ECDH, see EVP_KEYEXCH-ECDH(7)
+       X25519, see EVP_KEYEXCH-X25519(7)
+       X448, see EVP_KEYEXCH-X448(7)
+       ML-KEM, see EVP_KEM-ML-KEM(7)
+       TLS1-PRF
+       HKDF
+
+   Asymmetric Signature
+       RSA, see EVP_SIGNATURE-RSA(7)
+           The  X931  padding  mode &quot;OSSL_PKEY_RSA_PAD_MODE_X931&quot; is no longer
+           supported  for  signature  generation,  but   may   be   used   for
+           verification   for  legacy  use  cases.   (This  is  a  FIPS  140-3
+           requirement)
+
+       DSA, see EVP_SIGNATURE-DSA(7)
+       ED25519, see EVP_SIGNATURE-ED25519(7)
+       ED448, see EVP_SIGNATURE-ED448(7)
+       ECDSA, see EVP_SIGNATURE-ECDSA(7)
+       ML-DSA-44, see EVP_SIGNATURE-ML-DSA(7)
+       ML-DSA-65, see EVP_SIGNATURE-ML-DSA(7)
+       ML-DSA-87, see EVP_SIGNATURE-ML-DSA(7)
+       SLH-DSA, see EVP_SIGNATURE-SLH-DSA(7)
+       HMAC, see EVP_SIGNATURE-HMAC(7)
+       CMAC, see EVP_SIGNATURE-CMAC(7)
+
+   Asymmetric Cipher
+       RSA, see EVP_ASYM_CIPHER-RSA(7)
+
+   Asymmetric Key Encapsulation
+       RSA, see EVP_KEM-RSA(7)
+
+   Asymmetric Key Management
+       DH, see EVP_KEYMGMT-DH(7)
+       DHX, see EVP_KEYMGMT-DHX(7)
+       DSA, see EVP_KEYMGMT-DSA(7)
+       RSA, see EVP_KEYMGMT-RSA(7)
+       RSA-PSS
+       EC, see EVP_KEYMGMT-EC(7)
+       ED25519, see EVP_KEYMGMT-ED25519(7)
+       ED448, see EVP_KEYMGMT-ED448(7)
+       X25519, see EVP_KEYMGMT-X25519(7)
+           This is an unapproved algorithm.  The FIPS  140-3  IG  states  that
+           &quot;Curves  that  are  included  in  SP 800-186 but not included in SP
+           800-56Arev3 are not approved for key agreement&quot;.
+
+       X448, see EVP_KEYMGMT-X448(7)
+           This is an unapproved algorithm.  The FIPS  140-3  IG  states  that
+           &quot;Curves  that  are  included  in SP 800-186 but not&quot; included in SP
+           800-56Arev3 are not approved for key agreement&quot;.
+
+       TLS1-PRF
+       HKDF
+       HMAC, see EVP_KEYMGMT-HMAC(7)
+       CMAC, see EVP_KEYMGMT-CMAC(7)
+       ML-DSA-44, see EVP_KEYMGMT-ML-DSA(7)
+       ML-DSA-65, see EVP_KEYMGMT-ML-DSA(7)
+       ML-DSA-87, see EVP_KEYMGMT-ML-DSA(7)
+       SLH-DSA-SHA2-128s, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHA2-128f, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHA2-192s, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHA2-192f, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHA2-256s, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHA2-256f, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHAKE-128s, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHAKE-128f, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHAKE-192s, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHAKE-192f, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHAKE-256s, see EVP_KEYMGMT-SLH-DSA(7)
+       SLH-DSA-SHAKE-256f, see EVP_KEYMGMT-SLH-DSA(7)
+
+   Random Number Generation
+       CRNG-TEST, see EVP_RAND-CRNG-TEST(7)
+       CTR-DRBG, see EVP_RAND-CTR-DRBG(7)
+       HASH-DRBG, see EVP_RAND-HASH-DRBG(7)
+       HMAC-DRBG, see EVP_RAND-HMAC-DRBG(7)
+       TEST-RAND, see EVP_RAND-TEST-RAND(7)
+           TEST-RAND is an unapproved algorithm.
+
+SELF TESTING
+       A requirement of FIPS modules is to run  cryptographic  algorithm  self
+       tests.   FIPS 140-3 requires known answer tests to be run on startup as
+       well as conditional tests that run during cryptographic operations.
+
+       An optional callback mechanism is available to  return  information  to
+       the user using OSSL_SELF_TEST_set_callback(3).
+
+       The    parameters   passed   to   the   callback   are   described   in
+       OSSL_SELF_TEST_new(3)
+
+       The OpenSSL  FIPS  module  uses  the  following  mechanism  to  provide
+       information  about  the  self  tests  as  they run.  This is useful for
+       debugging if a self test is failing.  The callback also allows  forcing
+       any  self test to fail, in order to check that it operates correctly on
+       failure.  Note that all self tests run even  if  a  self  test  failure
+       occurs.
+
+       The     FIPS     module     passes    the    following    type(s)    to
+       OSSL_SELF_TEST_onbegin().
+
+       &quot;Module_Integrity&quot; (OSSL_SELF_TEST_TYPE_MODULE_INTEGRITY)
+           Uses HMAC SHA256 on the module file to validate that the module has
+           not been modified. The integrity  value  is  compared  to  a  value
+           written to a configuration file during installation.
+
+       &quot;KAT_Integrity&quot; (OSSL_SELF_TEST_TYPE_KAT_INTEGRITY)
+           Used  during  the  Module  Integrity test to perform a known answer
+           test on HMAC SHA256 prior to using it.
+
+       &quot;KAT_Cipher&quot; (OSSL_SELF_TEST_TYPE_KAT_CIPHER)
+           Known answer test for a symmetric cipher.
+
+       &quot;KAT_AsymmetricCipher&quot; (OSSL_SELF_TEST_TYPE_KAT_ASYM_CIPHER)
+           Known answer test for a asymmetric cipher.
+
+       &quot;KAT_Digest&quot; (OSSL_SELF_TEST_TYPE_KAT_DIGEST)
+           Known answer test for a digest.
+
+       &quot;KAT_AsymmetricKeyGeneration&quot; (OSSL_SELF_TEST_TYPE_KAT_ASYM_KEYGEN)
+           Known answer test for asymmetric key generation.
+
+       &quot;KAT_Signature&quot; (OSSL_SELF_TEST_TYPE_KAT_SIGNATURE)
+           Known answer test for a signature.
+
+       &quot;PCT_Signature&quot; (OSSL_SELF_TEST_TYPE_PCT_SIGNATURE)
+           Pairwise Consistency check for a signature.
+
+       &quot;KAT_KDF&quot; (OSSL_SELF_TEST_TYPE_KAT_KDF)
+           Known answer test for a key derivation function.
+
+       &quot;KAT_KA&quot; (OSSL_SELF_TEST_TYPE_KAT_KA)
+           Known answer test for key agreement.
+
+       &quot;KAT_KEM&quot; (OSSL_SELF_TEST_TYPE_KAT_KEM)
+           Known answer test for key encapsulation.
+
+       &quot;DRBG&quot; (OSSL_SELF_TEST_TYPE_DRBG)
+           Known answer test for a Deterministic Random Bit Generator.
+
+       &quot;Conditional_PCT&quot; (OSSL_SELF_TEST_TYPE_PCT)
+           Conditional test that is run during the generation of key pairs.
+
+       &quot;Import_PCT&quot; (OSSL_SELF_TEST_TYPE_PCT_IMPORT)
+           Conditional test that is run during the import of key pairs.
+
+       &quot;Conditional_KAT&quot; (OSSL_SELF_TEST_TYPE_PCT_KAT)
+           Conditional test run during generation that derive the  public  key
+           from  the  private key and checks that the public key matches. This
+           is a SP 800-56A requirement.
+
+       &quot;Continuous_RNG_Test&quot; (OSSL_SELF_TEST_TYPE_CRNG)
+           Continuous random number generator test.
+
+       &quot;Install_Integrity&quot; (OSSL_SELF_TEST_TYPE_INSTALL_INTEGRITY)
+           This is deprecated. The option is no longer used since  FIPS  140-3
+           requires  self  tests to always run on startup. Previous FIPS 140-2
+           validations allowed the self tests to be run just once.
+
+       The   FIPS   module   passes   the   following    descriptions(s)    to
+       OSSL_SELF_TEST_onbegin().
+
+       &quot;HMAC&quot; (OSSL_SELF_TEST_DESC_INTEGRITY_HMAC)
+           &quot;Module_Integrity&quot; uses this.
+
+       &quot;RSA&quot; (OSSL_SELF_TEST_DESC_PCT_RSA_PKCS1)
+       &quot;RSA&quot; (OSSL_SELF_TEST_DESC_PCT_RSA)
+       &quot;ECDSA&quot; (OSSL_SELF_TEST_DESC_PCT_ECDSA)
+       &quot;EDDSA&quot; (OSSL_SELF_TEST_DESC_PCT_EDDSA)
+       &quot;DSA&quot; (OSSL_SELF_TEST_DESC_PCT_DSA)
+       &quot;ML-DSA&quot; (OSSL_SELF_TEST_DESC_PCT_ML_DSA)
+       &quot;ML-KEM&quot; (OSSL_SELF_TEST_DESC_PCT_ML_KEM)
+       &quot;SLH-DSA&quot; (OSSL_SELF_TEST_DESC_PCT_SLH_DSA)
+           Key  generation  tests  used  with  the &quot;Pairwise_Consistency_Test&quot;
+           type.
+
+       &quot;RSA_Encrypt&quot; (OSSL_SELF_TEST_DESC_ASYM_RSA_ENC)
+       &quot;RSA_Decrypt&quot; (OSSL_SELF_TEST_DESC_ASYM_RSA_DEC)
+           &quot;KAT_AsymmetricCipher&quot; uses this to indicate an encrypt or  decrypt
+           KAT.
+
+       &quot;ML-DSA&quot; (OSSL_SELF_TEST_DESC_KEYGEN_ML_DSA)
+       &quot;ML-KEM&quot; (OSSL_SELF_TEST_DESC_KEYGEN_ML_KEM)
+       &quot;SLH-DSA&quot; (OSSL_SELF_TEST_DESC_KEYGEN_SLH_DSA)
+           &quot;KAT_AsymmetricKeyGeneration&quot;   uses   this   to   indicate  a  key
+           generation KAT.
+
+       &quot;AES_GCM&quot; (OSSL_SELF_TEST_DESC_CIPHER_AES_GCM)
+       &quot;AES_ECB_Decrypt&quot; (OSSL_SELF_TEST_DESC_CIPHER_AES_ECB)
+       &quot;TDES&quot; (OSSL_SELF_TEST_DESC_CIPHER_TDES)
+           Symmetric cipher tests used with the &quot;KAT_Cipher&quot; type.
+
+       &quot;SHA1&quot; (OSSL_SELF_TEST_DESC_MD_SHA1)
+       &quot;SHA2&quot; (OSSL_SELF_TEST_DESC_MD_SHA2)
+       &quot;SHA3&quot; (OSSL_SELF_TEST_DESC_MD_SHA3)
+           Digest tests used with the &quot;KAT_Digest&quot; type.
+
+       &quot;DSA&quot; (OSSL_SELF_TEST_DESC_SIGN_DSA)
+       &quot;RSA&quot; (OSSL_SELF_TEST_DESC_SIGN_RSA)
+       &quot;ECDSA&quot; (OSSL_SELF_TEST_DESC_SIGN_ECDSA)
+       &quot;EDDSA&quot; (OSSL_SELF_TEST_DESC_SIGN_EDDSA)
+       &quot;ML-DSA&quot; (OSSL_SELF_TEST_DESC_SIGN_ML_DSA)
+       &quot;SLH-DSA&quot; (OSSL_SELF_TEST_DESC_SIGN_SLH_DSA)
+           Signature tests used with the &quot;KAT_Signature&quot; type.
+
+       &quot;ECDH&quot; (OSSL_SELF_TEST_DESC_KA_ECDH)
+       &quot;DH&quot; (OSSL_SELF_TEST_DESC_KA_DH)
+           Key agreement tests used with the &quot;KAT_KA&quot; type.
+
+       &quot;HKDF&quot; (OSSL_SELF_TEST_DESC_KDF_HKDF)
+       &quot;TLS13_KDF_EXTRACT&quot; (OSSL_SELF_TEST_DESC_KDF_TLS13_EXTRACT)
+       &quot;TLS13_KDF_EXPAND&quot; (OSSL_SELF_TEST_DESC_KDF_TLS13_EXPAND)
+       &quot;SSKDF&quot; (OSSL_SELF_TEST_DESC_KDF_SSKDF)
+       &quot;X963KDF&quot; (OSSL_SELF_TEST_DESC_KDF_X963KDF)
+       &quot;X942KDF&quot; (OSSL_SELF_TEST_DESC_KDF_X942KDF)
+       &quot;PBKDF2&quot; (OSSL_SELF_TEST_DESC_KDF_PBKDF2)
+       &quot;SSHKDF&quot; (OSSL_SELF_TEST_DESC_KDF_SSHKDF)
+       &quot;TLS12_PRF&quot; (OSSL_SELF_TEST_DESC_KDF_TLS12_PRF)
+       &quot;KBKDF&quot; (OSSL_SELF_TEST_DESC_KDF_KBKDF)
+           Key Encapsulation Function tests used with the &quot;KAT_KEM&quot; type.
+
+       &quot;KEM_Encap&quot; (OSSL_SELF_TEST_DESC_ENCAP_KEM)
+       &quot;KEM_Decap&quot; (OSSL_SELF_TEST_DESC_DECAP_KEM)
+       &quot;KEM_Decap_Reject&quot; (OSSL_SELF_TEST_DESC_DECAP_REJ_KEM)
+           Key Derivation Function tests used with the &quot;KAT_KDF&quot; type.
+
+       &quot;CTR&quot; (OSSL_SELF_TEST_DESC_DRBG_CTR)
+       &quot;HASH&quot; (OSSL_SELF_TEST_DESC_DRBG_HASH)
+       &quot;HMAC&quot; (OSSL_SELF_TEST_DESC_DRBG_HMAC)
+           DRBG tests used with the &quot;DRBG&quot; type.
+
+       &quot;RNG&quot; (OSSL_SELF_TEST_DESC_RNG)
+           &quot;Continuous_RNG_Test&quot; uses this.
+
+EXAMPLES
+       A simple self test callback is shown below for illustrative purposes.
+
+         #include &lt;openssl/self_test.h&gt;
+
+         static OSSL_CALLBACK self_test_cb;
+
+         static int self_test_cb(const OSSL_PARAM params[], void *arg)
+         {
+           int ret = 0;
+           const OSSL_PARAM *p = NULL;
+           const char *phase = NULL, *type = NULL, *desc = NULL;
+
+           p = OSSL_PARAM_locate_const(params, OSSL_PROV_PARAM_SELF_TEST_PHASE);
+           if (p == NULL || p-&gt;data_type != OSSL_PARAM_UTF8_STRING)
+               goto err;
+           phase = (const char *)p-&gt;data;
+
+           p = OSSL_PARAM_locate_const(params, OSSL_PROV_PARAM_SELF_TEST_DESC);
+           if (p == NULL || p-&gt;data_type != OSSL_PARAM_UTF8_STRING)
+               goto err;
+           desc = (const char *)p-&gt;data;
+
+           p = OSSL_PARAM_locate_const(params, OSSL_PROV_PARAM_SELF_TEST_TYPE);
+           if (p == NULL || p-&gt;data_type != OSSL_PARAM_UTF8_STRING)
+               goto err;
+           type = (const char *)p-&gt;data;
+
+           /* Do some logging */
+           if (strcmp(phase, OSSL_SELF_TEST_PHASE_START) == 0)
+               BIO_printf(bio_out, &quot;%s : (%s) : &quot;, desc, type);
+           if (strcmp(phase, OSSL_SELF_TEST_PHASE_PASS) == 0
+                   || strcmp(phase, OSSL_SELF_TEST_PHASE_FAIL) == 0)
+               BIO_printf(bio_out, &quot;%s\n&quot;, phase);
+
+           /* Corrupt the SHA1 self test during the &#x27;corrupt&#x27; phase by returning 0 */
+           if (strcmp(phase, OSSL_SELF_TEST_PHASE_CORRUPT) == 0
+                   &amp;&amp; strcmp(desc, OSSL_SELF_TEST_DESC_MD_SHA1) == 0) {
+               BIO_printf(bio_out, &quot;%s %s&quot;, phase, desc);
+               return 0;
+           }
+           ret = 1;
+         err:
+           return ret;
+         }
+
+NOTES
+       Some released versions of OpenSSL  do  not  include  a  validated  FIPS
+       provider.   To  determine  which versions have undergone the validation
+       process,   please    refer    to    the    OpenSSL    Downloads    page
+       &lt;https://www.openssl.org/source/&gt;.    If   you   require  FIPS-approved
+       functionality, it is essential to build your FIPS provider using one of
+       the validated versions listed  there.   Normally,  it  is  possible  to
+       utilize  a FIPS provider constructed from one of the validated versions
+       alongside libcrypto and libssl compiled from  any  release  within  the
+       same major release series.  This flexibility enables you to address bug
+       fixes and CVEs that fall outside the FIPS boundary.
+
+       You  can  load  the FIPS provider into multiple library contexts as any
+       other provider. However the following  restriction  applies.  The  FIPS
+       provider  cannot  be  used by multiple copies of OpenSSL libcrypto in a
+       single process.
+
+       As the provider saves core callbacks to the libcrypto obtained  in  the
+       OSSL_provider_init()  call  to  global  data it will fail if subsequent
+       invocations  of  its  OSSL_provider_init()  function  yield   different
+       addresses  of  these  callbacks  than in the initial call. This happens
+       when different copies of libcrypto are present in  the  memory  of  the
+       process and both try to load the same FIPS provider. A workaround is to
+       have  a  different  copy  of  the  FIPS provider loaded for each of the
+       libcrypto instances in the process.
+
+SEE ALSO
+       openssl-fipsinstall(1), fips_config(5), OSSL_SELF_TEST_set_callback(3),
+       OSSL_SELF_TEST_new(3),        OSSL_PARAM(3),         openssl-core.h(7),
+       openssl-core_dispatch.h(7),                                provider(7),
+       &lt;https://www.openssl.org/source/&gt;
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2019-2025 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09          OSSL_PROVIDER-FIPS(7SSL)
+</pre></body></html>

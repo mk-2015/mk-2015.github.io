@@ -1,0 +1,76 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>bup-ftp(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>bup-ftp(1)                                                          bup-ftp(1)
+
+NAME
+       bup-ftp - ftp-like client for navigating bup repositories
+
+SYNOPSIS
+       bup ftp
+
+DESCRIPTION
+       bup ftp is a command-line tool for navigating bup repositories.  It has
+       commands similar to the Unix ftp(1) command.  The file hierarchy is the
+       same as that shown by bup-fuse(1) and bup-ls(1).
+
+       Note: if your system has the python-readline library installed, you can
+       use  the  &lt;tab&gt;  key to complete filenames while navigating your backup
+       data.  This will save you a lot of typing.
+
+COMMANDS
+       The following commands are available inside bup ftp:
+
+       ls [-s] [-a] [path]
+              print the contents of a  directory.   If  no  path  argument  is
+              given,  the  current  directory’s contents are listed.  If -a is
+              given, also include hidden files (files which  start  with  a  .
+              character).   If  -s  is  given, each file is displayed with its
+              hash from the bup archive to its left.
+
+       cd dirname
+              change to a different working directory
+
+       pwd    print the path of the current working directory
+
+       cat filenames...
+              print the contents of one or more files to stdout
+
+       get filename localname
+              download the contents of filename and save it to disk as  local‐
+              name.  If localname is omitted, uses filename as the local name.
+
+       mget filenames...
+              download  the contents of the given filenames and stores them to
+              disk under the same names.  The filenames may contain Unix file‐
+              name globs (*, ?, etc.)
+
+       help   print a list of available commands
+
+       quit   exit the bup ftp client
+
+EXAMPLES
+              $ bup ftp
+              bup&gt; ls
+              mybackup/    yourbackup/
+
+              bup&gt; cd mybackup/
+              bup&gt; ls
+              2010-02-05-185507@   2010-02-05-185508@    latest@
+
+              bup&gt; cd latest/
+              bup&gt; ls
+                (...etc...)
+
+              bup&gt; get myfile
+              Saving &#x27;myfile&#x27;
+              bup&gt; quit
+
+SEE ALSO
+       bup-fuse(1), bup-ls(1), bup-save(1), bup-restore(1)
+
+BUP
+       Part of the bup(1) suite.
+
+AUTHORS
+       Avery Pennarun apenwarr@gmail.com
+
+Bup 0.33.7                        2025-01-11                        bup-ftp(1)
+</pre></body></html>

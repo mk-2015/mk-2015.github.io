@@ -1,0 +1,412 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Tk(3pm)                      perl/Tk Documentation                     Tk(3pm)
+
+NAME
+       Tk - a graphical user interface toolkit for Perl
+
+SYNOPSIS
+           use Tk;
+           $top = new MainWindow;
+           MainLoop;
+
+DESCRIPTION
+       The Perl/Tk manual is split up into a number of sections:
+
+   Introduction
+       •   Tk::overview
+
+       •   Tk::UserGuide
+
+   Tk Geometry Management
+       •   Tk::Adjuster
+
+       •   Tk::form
+
+       •   Tk::grid
+
+       •   Tk::pack
+
+       •   Tk::place
+
+       •   Tk::Table
+
+       •   Tk::Tiler
+
+       •   Tk::Wm
+
+   Binding Events and Callbacks
+       •   Tk::after
+
+       •   Tk::bind
+
+       •   Tk::bindtags
+
+       •   Tk::callbacks
+
+       •   Tk::Error
+
+       •   Tk::event
+
+       •   Tk::exit
+
+       •   Tk::fileevent
+
+       •   Tk::IO
+
+   Tk Image Classes
+       •   Tk::Animation
+
+       •   Tk::Bitmap
+
+       •   Tk::Compound
+
+       •   Tk::Image
+
+       •   Tk::JPEG
+
+       •   Tk::Photo
+
+       •   Tk::Pixmap
+
+       •   Tk::PNG
+
+   Tk Widget Classes
+       •   Tk::Button
+
+       •   Tk::Canvas
+
+       •   Tk::Checkbutton
+
+       •   Tk::Entry
+
+       •   Tk::Frame
+
+       •   Tk::HList
+
+       •   Tk::Label
+
+       •   Tk::Listbox
+
+       •   Tk::Menu
+
+       •   Tk::Menubutton
+
+       •   Tk::Message
+
+       •   Tk::Optionmenu
+
+       •   Tk::Radiobutton
+
+       •   Tk::Scale
+
+       •   Tk::Scrollbar
+
+       •   Tk::Text
+
+       •   Tk::Toplevel
+
+   Tix Extensions
+       •   Tk::Balloon
+
+       •   Tk::BrowseEntry
+
+       •   Tk::DialogBox
+
+       •   Tk::DirTree
+
+       •   Tk::DItem
+
+       •   Tk::InputO
+
+       •   Tk::LabFrame
+
+       •   Tk::Mwm
+
+       •   Tk::NoteBook
+
+       •   Tk::TixGrid
+
+       •   Tk::tixWm
+
+       •   Tk::TList
+
+       •   Tk::Tree
+
+   Tk Generic Methods
+       •   Tk::Font
+
+       •   Tk::send
+
+       •   Tk::tkvars
+
+       •   Tk::Widget
+
+       •   Tk::X11Font
+
+   User Interaction
+       •   Tk::DropSite
+
+       •   Tk::Clipboard
+
+       •   Tk::focus
+
+       •   Tk::grab
+
+       •   Tk::selection
+
+   Creating and Configuring Widgets
+       •   Tk::CmdLine
+
+       •   Tk::MainWindow
+
+       •   Tk::option
+
+       •   Tk::options
+
+       •   Tk::palette
+
+       •   Tk::Xrm
+
+   Popups and Dialogs
+       •   Tk::chooseColor
+
+       •   Tk::chooseDirectory
+
+       •   Tk::ColorEditor
+
+       •   Tk::Dialog
+
+       •   Tk::DialogBox
+
+       •   Tk::FBox
+
+       •   Tk::FileSelect
+
+       •   Tk::getOpenFile
+
+       •   Tk::messageBox
+
+       •   Tk::MsgBox
+
+   Derived Widgets
+       •   Tk::composite
+
+       •   Tk::configspec
+
+       •   Tk::Derived
+
+       •   Tk::mega
+
+       •   Tk::ROText
+
+       •   Tk::Scrolled
+
+       •   Tk::TextUndo
+
+       •   Tk::Reindex
+
+       •   Tk::Pane
+
+       •   Tk::ProgressBar
+
+   C Programming
+       •   Internals
+
+       •   pTk
+
+       •   3DBorder
+
+       •   BackgdErr
+
+       •   BindTable
+
+       •   CanvPsY
+
+       •   CanvTkwin
+
+       •   CanvTxtInfo
+
+       •   Clipboard
+
+       •   ClrSelect
+
+       •   ConfigWidg
+
+       •   ConfigWind
+
+       •   CoordToWin
+
+       •   CrtErrHdlr
+
+       •   CrtGenHdlr
+
+       •   CrtImgType
+
+       •   CrtItemType
+
+       •   CrtMainWin
+
+       •   CrtPhImgFmt
+
+       •   CrtSelHdlr
+
+       •   CrtWindow
+
+       •   DeleteImg
+
+       •   DoOneEvent
+
+       •   DoWhenIdle
+
+       •   DrawFocHlt
+
+       •   EventHndlr
+
+       •   EventInit
+
+       •   FileHndlr
+
+       •   FindPhoto
+
+       •   FontId
+
+       •   FreeXId
+
+       •   GeomReq
+
+       •   GetAnchor
+
+       •   GetBitmap
+
+       •   GetCapStyl
+
+       •   GetClrmap
+
+       •   GetColor
+
+       •   GetCursor
+
+       •   GetFont
+
+       •   GetFontStr
+
+       •   GetGC
+
+       •   GetImage
+
+       •   GetJoinStl
+
+       •   GetJustify
+
+       •   GetOption
+
+       •   GetPixels
+
+       •   GetPixmap
+
+       •   GetRelief
+
+       •   GetRootCrd
+
+       •   GetScroll
+
+       •   GetSelect
+
+       •   GetUid
+
+       •   GetVisual
+
+       •   GetVRoot
+
+       •   HandleEvent
+
+       •   IdToWindow
+
+       •   ImgChanged
+
+       •   InternAtom
+
+       •   MainLoop
+
+       •   MaintGeom
+
+       •   MainWin
+
+       •   ManageGeom
+
+       •   MapWindow
+
+       •   MeasureChar
+
+       •   MoveToplev
+
+       •   Name
+
+       •   NameOfImg
+
+       •   OwnSelect
+
+       •   ParseArgv
+
+       •   Preserve
+
+       •   QWinEvent
+
+       •   Restack
+
+       •   RestrictEv
+
+       •   SetAppName
+
+       •   SetClass
+
+       •   SetGrid
+
+       •   SetVisual
+
+       •   Sleep
+
+       •   StrictMotif
+
+       •   TextLayout
+
+       •   TimerHndlr
+
+       •   Tk_Init
+
+       •   WindowId
+
+   Implementation
+       •   Tk::Eventloop
+
+       •   Tk::Menu::Item
+
+       •   Tk::Submethods
+
+       •   Tk::WidgetDemo
+
+       •   Tk::widgets
+
+   Experimental Modules
+       •   Tk::Common
+
+       •   Tk::SunConst
+
+       •   Tk::WinPhoto
+
+   Other Modules and Languages
+       •   Tk::Compile
+
+       •   Tk::Tcl-perl
+
+       •   Tk::X
+
+AUTHOR
+       Nick Ing-Simmons
+
+SEE ALSO
+       perl, wish(1).
+
+       Alternative Perl modules implementing the Tk toolkit: Tkx, Tcl::Tk.
+
+Tk804.036                         2025-04-13                           Tk(3pm)
+</pre></body></html>

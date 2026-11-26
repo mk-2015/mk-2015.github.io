@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>XML::Parser::Style::Tree(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Parser...e::Tree(3pm) User Contributed Perl DocumentationParser...e::Tree(3pm)
+
+NAME
+       XML::Parser::Style::Tree - Tree style parser
+
+SYNOPSIS
+         use XML::Parser;
+         my $p = XML::Parser-&gt;new(Style =&gt; &#x27;Tree&#x27;);
+         my $tree = $p-&gt;parsefile(&#x27;foo.xml&#x27;);
+
+DESCRIPTION
+       This module implements XML::Parser&#x27;s Tree style parser.
+
+       When parsing a document, parse() will return a parse tree for the
+       document. Each node in the tree takes the form of a tag, content pair.
+       Text nodes are represented with a pseudo-tag of &quot;0&quot; and the string that
+       is their content. For elements, the content is an array reference. The
+       first item in the array is a (possibly empty) hash reference containing
+       attributes. The remainder of the array is a sequence of tag-content
+       pairs representing the content of the element.
+
+       So for example the result of parsing:
+
+         &lt;foo&gt;&lt;head id=&quot;a&quot;&gt;Hello &lt;em&gt;there&lt;/em&gt;&lt;/head&gt;&lt;bar&gt;Howdy&lt;ref/&gt;&lt;/bar&gt;do&lt;/foo&gt;
+
+       would be:
+
+                    Tag   Content
+         ==================================================================
+         [foo, [{}, head, [{id =&gt; &quot;a&quot;}, 0, &quot;Hello &quot;,  em, [{}, 0, &quot;there&quot;]],
+                     bar, [         {}, 0, &quot;Howdy&quot;,  ref, [{}]],
+                       0, &quot;do&quot;
+               ]
+         ]
+
+       The root document &quot;foo&quot;, has 3 children: a &quot;head&quot; element, a &quot;bar&quot;
+       element and the text &quot;do&quot;. After the empty attribute hash, these are
+       represented in it&#x27;s contents by 3 tag-content pairs.
+
+perl v5.40.1                      2026-03-21             Parser...e::Tree(3pm)
+</pre></body></html>

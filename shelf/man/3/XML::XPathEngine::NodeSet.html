@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>XML::XPathEngine::NodeSet(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>XML::X...NodeSet(3pm) User Contributed Perl DocumentationXML::X...NodeSet(3pm)
+
+NAME
+       XML::XPathEngine::NodeSet - a list of XML document nodes
+
+DESCRIPTION
+       An XML::XPathEngine::NodeSet object contains an ordered list of nodes.
+       The nodes each take the same format as described in
+       XML::XPathEngine::XMLParser.
+
+SYNOPSIS
+               my $results = $xp-&gt;find(&#x27;//someelement&#x27;);
+               if (!$results-&gt;isa(&#x27;XML::XPathEngine::NodeSet&#x27;)) {
+                       print &quot;Found $results\n&quot;;
+                       exit;
+               }
+               foreach my $context ($results-&gt;get_nodelist) {
+                       my $newresults = $xp-&gt;find(&#x27;./other/element&#x27;, $context);
+                       ...
+               }
+
+API
+   new()
+       You will almost never have to create a new NodeSet object, as it is all
+       done for you by XPath.
+
+   get_nodelist()
+       Returns a list of nodes. See XML::XPathEngine::XMLParser for the format
+       of the nodes.
+
+   string_value()
+       Returns the string-value of the first node in the list.  See the XPath
+       specification for what &quot;string-value&quot; means.
+
+   string_values()
+       Returns a list of the string-values of all the nodes in the list.
+
+   to_literal()
+       Returns the concatenation of all the string-values of all the nodes in
+       the list.
+
+   get_node($pos)
+       Returns the node at $pos. The node position in XPath is based at 1, not
+       0.
+
+   size()
+       Returns the number of nodes in the NodeSet.
+
+   pop()
+       Equivalent to perl&#x27;s pop function.
+
+   push(@nodes)
+       Equivalent to perl&#x27;s push function.
+
+   append($nodeset)
+       Given a nodeset, appends the list of nodes in $nodeset to the end of
+       the current list.
+
+   shift()
+       Equivalent to perl&#x27;s shift function.
+
+   unshift(@nodes)
+       Equivalent to perl&#x27;s unshift function.
+
+   prepend($nodeset)
+       Given a nodeset, prepends the list of nodes in $nodeset to the front of
+       the current list.
+
+perl v5.34.0                      2022-06-28             XML::X...NodeSet(3pm)
+</pre></body></html>

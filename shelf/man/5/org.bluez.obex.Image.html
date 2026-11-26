@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.obex.Image(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ.OBEX.IMAGE(5)   Linux System Administration  ORG.BLUEZ.OBEX.IMAGE(5)
+
+NAME
+       org.bluez.obex.Image - BlueZ D-Bus OBEX Image API documentation
+
+INTERFACE
+       Service
+              org.bluez.obex
+
+       Interface
+              org.bluez.obex.Image1 [experimental]
+
+       Object path
+              [Session object path]
+
+   Methods
+   object, dict Get(string targetfile, string handle, dict description)
+          Retrieves the image corresponding to the handle and the description,
+          as  one  of  the  descriptions  retrieved by GetImageProperties, and
+          store it in a local file.
+
+          If the &quot;transform&quot; property description exists it should be  set  to
+          one of the value listed by GetImageProperties for this description.
+
+          If description is an empty dict, the native image will be retrieved.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Failed
+
+   array{dict} Properties(string handle)
+          Retrieves the image properties corresponding to the handle.
+
+          The  first  dict  entry  is mandatory and correspond to &#x27;handle&#x27; and
+          &#x27;name&#x27; of the image.
+
+          The second dict entry is mandatory and correspond to the native  de‐
+          scription (&#x27;type&#x27;:&#x27;native&#x27;) of the image.
+
+          The  following  dict  entries are optional and correspond to variant
+          descriptions of the image. If the &#x27;transform&#x27; entry  exists  in  the
+          description,  it  lists the available possible image transformations
+          and should be set to one of them before using the description as pa‐
+          rameter to GetImage.
+
+          Possible property values:
+
+          string type
+                 Type of dict properties. Mandatory for each dict.
+
+                 Possible values:
+
+                 &quot;native&quot;
+
+                 &quot;variant&quot;
+
+          string encoding
+                 File encoding format.
+
+                 Possible values:
+
+                 &quot;BMP&quot;
+
+                 &quot;GIF&quot;
+
+                 &quot;JPEG&quot;
+
+                 &quot;JPEG2000&quot;
+
+                 &quot;PNG&quot;
+
+                 &quot;WBMP&quot;
+
+          string pixel
+                 File encoding format size of form &quot;&lt;width&gt;*&lt;height&gt;&quot;.
+
+          uint64 size
+                 File size.
+
+          uint64 maxsize
+                 File maximum size.
+
+          string transformation
+                 List of available transformations separated by space.
+
+                 Possible values:
+
+                 &quot;crop&quot;
+
+                 &quot;fill&quot;
+
+                 &quot;stretch&quot;
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Failed
+
+   object, dict GetThumbnail(string targetfile, string handle)
+          Retrieves the image thumbnail corresponding to the handle and  store
+          it in a local file.
+
+          Possible errors:
+
+          org.bluez.obex.Error.InvalidArguments
+
+          org.bluez.obex.Error.Failed
+
+BlueZ                             August 2024          ORG.BLUEZ.OBEX.IMAGE(5)
+</pre></body></html>

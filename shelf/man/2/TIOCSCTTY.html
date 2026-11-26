@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCSCTTY(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSCTTY(2const)                                            TIOCSCTTY(2const)
+
+NAME
+       TIOCSCTTY, TIOCNOTTY - controlling the terminal
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC*TTY constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCSCTTY, int arg);
+       int ioctl(int fd, TIOCNOTTY);
+
+DESCRIPTION
+       TIOCSCTTY
+              Make  the given terminal the controlling terminal of the calling
+              process.  The calling process must be a session leader  and  not
+              have  a controlling terminal already.  For this case, arg should
+              be specified as zero.
+
+              If this terminal is already the controlling terminal of  a  dif‐
+              ferent  session  group,  then the ioctl fails with EPERM, unless
+              the caller has the CAP_SYS_ADMIN capability and arg equals 1, in
+              which case the terminal is stolen, and all processes that had it
+              as controlling terminal lose it.
+
+       TIOCNOTTY
+              If the given terminal was the controlling terminal of the  call‐
+              ing  process, give up this controlling terminal.  If the process
+              was session leader, then send SIGHUP and SIGCONT  to  the  fore‐
+              ground  process  group  and all processes in the current session
+              lose their controlling terminal.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EPERM  Insufficient permission.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13                 TIOCSCTTY(2const)
+</pre></body></html>

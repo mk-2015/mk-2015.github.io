@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCCONS(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCCONS(2const)                                              TIOCCONS(2const)
+
+NAME
+       TIOCCONS - redirecting console output
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOCCONS */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCCONS);
+
+DESCRIPTION
+       Redirect  output  that  would have gone to /dev/console or /dev/tty0 to
+       the given terminal.  If that was a pseudoterminal master,  send  it  to
+       the slave.
+
+       Only a process with the CAP_SYS_ADMIN capability may do this.
+
+       If  output was redirected already, then EBUSY is returned, but redirec‐
+       tion can be stopped by using this ioctl with fd pointing  at  /dev/con‐
+       sole or /dev/tty0.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       EBUSY  Output was redirected already.
+
+       EPERM  Insufficient permission.
+
+HISTORY
+       Before Linux 2.6.10, anybody can do this as long as the output was  not
+       redirected yet; CAP_SYS_ADMIN was not necessary.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13                  TIOCCONS(2const)
+</pre></body></html>

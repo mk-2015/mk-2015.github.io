@@ -1,0 +1,123 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFWriteDirectory(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFWRITEDIRECTORY(3tiff)           LibTIFF          TIFFWRITEDIRECTORY(3tiff)
+
+NAME
+       TIFFWriteDirectory - write the current directory in an open TIFF file
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFWriteDirectory(TIFF *tif)
+
+       int TIFFRewriteDirectory(TIFF *tif)
+
+       int TIFFCheckpointDirectory(TIFF *tif)
+
+       void TIFFSetWriteOffset(TIFF *tif, toff_t off)
+
+       int TIFFWriteCheck(TIFF *tif, int tiles, const char *module)
+
+DESCRIPTION
+       TIFFWriteDirectory()  will  write the contents of the current directory
+       (IFD) to the file and setup to  create  a  new  directory  (IFD)  using
+       TIFFCreateDirectory().      Applications     only    need    to    call
+       TIFFWriteDirectory() when writing multiple subfiles (images) to a  sin‐
+       gle  TIFF file.  This is called &quot;multi-page TIFF&quot; or &quot;multi-image TIFF&quot;
+       (see Multi Page / Multi Image TIFF).  TIFFWriteDirectory() is automati‐
+       cally called by TIFFClose() and TIFFFlush() to write a modified  direc‐
+       tory if the file is open for writing.
+
+       The    TIFFRewriteDirectory()    function    operates    similarly   to
+       TIFFWriteDirectory(), but can be  called  with  directories  previously
+       read  or written that already have an established location in the file.
+       It will rewrite the directory, but instead of placing it at its old lo‐
+       cation (as TIFFWriteDirectory() would, if the size of the directory has
+       not grown) it will place them at the end of the  file,  correcting  the
+       pointer  from  the  preceding directory or file header to point to it&#x27;s
+       new location.  This is particularly important in cases where  the  size
+       of  the directory and pointed to data has grown, so it won&#x27;t fit in the
+       space available at the old location.
+
+       The TIFFCheckpointDirectory() writes the current state of the tiff  di‐
+       rectory  into  the file to make what is currently in the file readable.
+       Unlike TIFFWriteDirectory(), TIFFCheckpointDirectory() does not free up
+       the directory data structures in memory, so they  can  be  updated  (as
+       strips/tiles  are  written)  and written again.  Reading such a partial
+       file you will at worst get a tiff read error for the  first  strip/tile
+       encountered that is incomplete, but you will at least get all the valid
+       data  in  the  file  before  that.  When the file is complete, just use
+       TIFFWriteDirectory() as usual to finish it off cleanly.
+
+       The TIFFSetWriteOffset() sets the current write  offset.   This  should
+       only be used to set the offset to a known previous location (very care‐
+       fully),  or to 0 so that the next write gets appended to the end of the
+       file.
+
+       The TIFFWriteCheck()  verify file is writable and  that  the  directory
+       information  is  setup  properly.  In doing the latter we also &quot;freeze&quot;
+       the state of  the  directory  so  that  important  information  is  not
+       changed.
+
+RETURN VALUES
+       1  is  returned when the contents are successfully written to the file.
+       Otherwise, 0 is returned if an error was encountered when  writing  the
+       directory contents.
+
+DIAGNOSTICS
+       All error messages are directed to the TIFFErrorExtR() routine.
+
+       &quot;Error post-encoding before directory write&quot;:
+          Before  writing  the  contents of the current directory, any pending
+          data are flushed. This message  indicates  that  an  error  occurred
+          while doing this.
+
+       &quot;Error flushing data before directory write&quot;:
+          Before  writing  the  contents of the current directory, any pending
+          data are flushed. This message  indicates  that  an  error  occurred
+          while doing this.
+
+       &quot;Cannot write directory, out of space&quot;:
+          There  was not enough space to allocate a temporary area for the di‐
+          rectory that was to be written.
+
+       &quot;Error writing directory count&quot;:
+          A write error occurred when writing the count of fields in  the  di‐
+          rectory.
+
+       &quot;Error writing directory contents&quot;:
+          A write error occurred when writing the directory fields.
+
+       &quot;Error writing directory link&quot;:
+          A write error occurred when writing the link to the next directory.
+
+       Error writing data for field &quot;%s&quot;:
+          A  write error occurred when writing indirect data for the specified
+          field.
+
+       &quot;Error writing TIFF header&quot;:
+          A write error occurred when re-writing header at the  front  of  the
+          file.
+
+       &quot;Error fetching directory count&quot;:
+          A  read error occurred when fetching the directory count field for a
+          previous directory.  This can occur when setting up a  link  to  the
+          directory that is being written.
+
+       &quot;Error fetching directory link&quot;:
+          A  read  error occurred when fetching the directory link field for a
+          previous directory.  This can occur when setting up a  link  to  the
+          directory that is being written.
+
+SEE ALSO
+       TIFFquery   (3tiff),  TIFFOpen  (3tiff),  TIFFCreateDirectory  (3tiff),
+       TIFFCustomDirectory      (3tiff),       TIFFSetDirectory       (3tiff),
+       TIFFReadDirectory  (3tiff), TIFFError (3tiff), Multi Page / Multi Image
+       TIFF, libtiff (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026        TIFFWRITEDIRECTORY(3tiff)
+</pre></body></html>

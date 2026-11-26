@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pw-mididump(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>pw-mididump(1)              General Commands Manual             pw-mididump(1)
+
+NAME
+       pw-mididump - The PipeWire MIDI dump
+
+SYNOPSIS
+       pw-mididump [options] [FILE]
+
+DESCRIPTION
+       Dump MIDI messages to stdout.
+
+       When a MIDI file is given, the events inside the file are printed.
+
+       When no file is given, pw-mididump creates a PipeWire MIDI input stream
+       and will print all MIDI events received on the port to stdout.
+
+OPTIONS
+       -r | --remote=NAME
+           The name the remote instance to monitor. If left unspecified, a
+           connection is made to the default PipeWire instance.
+
+       -h | --help
+           Show help.
+
+       --version
+           Show version information.
+
+AUTHORS
+       The PipeWire Developers
+       &lt;https://gitlab.freedesktop.org/pipewire/pipewire/issues&gt;; PipeWire is
+       available from &lt;https://pipewire.org&gt;
+
+SEE ALSO
+       pipewire(1), pw-cat(1)
+
+
+PipeWire                             1.4.2                      pw-mididump(1)
+</pre></body></html>

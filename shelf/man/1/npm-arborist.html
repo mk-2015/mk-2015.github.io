@@ -1,0 +1,91 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>npm-arborist(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>INDEX.JS(1)                      User Commands                     INDEX.JS(1)
+
+NAME
+       index.js - the npm tree doctor
+
+DESCRIPTION
+       node:internal/modules/cjs/loader:1148
+
+              throw err; ^
+
+       Error:   Cannot   find   module  &#x27;http-proxy-agent&#x27;  Require  stack:  -
+       /build/reproducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+       pen/lib/agent.js   -   /build/reproducible-path/npm-9.2.0~ds1/node_mod‐
+       ules/make-fetch-happen/lib/remote.js           -          /build/repro‐
+       ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-happen/lib/cache/en‐
+       try.js        -        /build/reproducible-path/npm-9.2.0~ds1/node_mod‐
+       ules/make-fetch-happen/lib/cache/index.js        -        /build/repro‐
+       ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-happen/lib/fetch.js
+       -   /build/reproducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+       pen/lib/index.js   -   /build/reproducible-path/npm-9.2.0~ds1/node_mod‐
+       ules/npm-registry-fetch/lib/index.js          -           /build/repro‐
+       ducible-path/npm-9.2.0~ds1/node_modules/pacote/lib/remote.js          -
+       /build/reproducible-path/npm-9.2.0~ds1/node_modules/pacote/lib/git.js -
+       /build/reproducible-path/npm-9.2.0~ds1/node_modules/pa‐
+       cote/lib/fetcher.js -  /build/reproducible-path/npm-9.2.0~ds1/node_mod‐
+       ules/pacote/lib/index.js                 -                /build/repro‐
+       ducible-path/npm-9.2.0~ds1/node_modules/@npmcli/metavuln-calcula‐
+       tor/lib/index.js     -     /build/reproducible-path/npm-9.2.0~ds1/work‐
+       spaces/arborist/lib/audit-report.js           -           /build/repro‐
+       ducible-path/npm-9.2.0~ds1/workspaces/arborist/lib/arborist/audit.js  -
+       /build/reproducible-path/npm-9.2.0~ds1/workspaces/arborist/lib/ar‐
+       borist/index.js - /build/reproducible-path/npm-9.2.0~ds1/workspaces/ar‐
+       borist/lib/index.js    -   /build/reproducible-path/npm-9.2.0~ds1/work‐
+       spaces/arborist/bin/actual.js              -              /build/repro‐
+       ducible-path/npm-9.2.0~ds1/workspaces/arborist/bin/index.js
+
+              at          Module._resolveFilename          (node:internal/mod‐
+              ules/cjs/loader:1145:15)  at  Module._load   (node:internal/mod‐
+              ules/cjs/loader:986:27)  at  Module.require  (node:internal/mod‐
+              ules/cjs/loader:1233:19)    at    require    (node:internal/mod‐
+              ules/helpers:179:18)    at   Object.&lt;anonymous&gt;   (/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+              pen/lib/agent.js:172:26) at Module._compile  (node:internal/mod‐
+              ules/cjs/loader:1358:14)  at Module._extensions..js (node:inter‐
+              nal/modules/cjs/loader:1416:10)  at   Module.load   (node:inter‐
+              nal/modules/cjs/loader:1208:32)   at  Module._load  (node:inter‐
+              nal/modules/cjs/loader:1024:12) at  Module.require  (node:inter‐
+              nal/modules/cjs/loader:1233:19) {
+
+              code: &#x27;MODULE_NOT_FOUND&#x27;, requireStack: [
+
+              &#x27;/build/reproducible-path/npm-9.2.0~ds1/node_mod‐
+              ules/make-fetch-happen/lib/agent.js&#x27;,             &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+              pen/lib/remote.js&#x27;,                               &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+              pen/lib/cache/entry.js&#x27;,                          &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+              pen/lib/cache/index.js&#x27;,                          &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+              pen/lib/fetch.js&#x27;,                                &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/make-fetch-hap‐
+              pen/lib/index.js&#x27;,                                &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/npm-reg‐
+              istry-fetch/lib/index.js&#x27;,                        &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/pacote/lib/remote.js&#x27;,
+              &#x27;/build/reproducible-path/npm-9.2.0~ds1/node_modules/pa‐
+              cote/lib/git.js&#x27;,                                 &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/pacote/lib/fetcher.js&#x27;,
+              &#x27;/build/reproducible-path/npm-9.2.0~ds1/node_modules/pa‐
+              cote/lib/index.js&#x27;,                               &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/node_modules/@npmcli/metavuln-calcu‐
+              lator/lib/index.js&#x27;,                              &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/workspaces/arborist/lib/audit-re‐
+              port.js&#x27;, &#x27;/build/reproducible-path/npm-9.2.0~ds1/workspaces/ar‐
+              borist/lib/arborist/audit.js&#x27;,                    &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/workspaces/arborist/lib/arborist/in‐
+              dex.js&#x27;,  &#x27;/build/reproducible-path/npm-9.2.0~ds1/workspaces/ar‐
+              borist/lib/index.js&#x27;,                             &#x27;/build/repro‐
+              ducible-path/npm-9.2.0~ds1/workspaces/arborist/bin/actual.js&#x27;,
+              &#x27;/build/reproducible-path/npm-9.2.0~ds1/workspaces/ar‐
+              borist/bin/index.js&#x27;
+
+              ]
+
+       }
+
+       Node.js v20.13.1
+
+index.js 6.1.5                     May 2024                        INDEX.JS(1)
+</pre></body></html>

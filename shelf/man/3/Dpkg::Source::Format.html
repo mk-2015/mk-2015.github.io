@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::Source::Format(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Source::Format(3perl)      libdpkg-perl      Dpkg::Source::Format(3perl)
+
+NAME
+       Dpkg::Source::Format - manipulate debian/source/format files
+
+DESCRIPTION
+       This module provides a class that can manipulate Debian source package
+       debian/source/format files.
+
+METHODS
+       $f = Dpkg::Source::Format-&gt;new(%opts)
+           Creates   a   new   object  corresponding  to  a  source  package&#x27;s
+           debian/source/format file.
+
+           Options:
+
+           filename
+               Set the filename to use to parse and set the format.
+
+           format
+               Set and validate the format  to  use  instead  of  loading  the
+               default file, if no filename has been specified.
+
+       $f-&gt;set_from_parts($major[, $minor[, $variant]])
+           Sets  the  source  format  from  its  parts.  The  $major  part  is
+           mandatory.  The $minor and $variant parts are optional.
+
+           Notice: This function performs no validation.
+
+       ($major, $minor, $variant) = $f-&gt;set($format)
+           Sets (and validates) the source $format specified. Will return  the
+           parsed  format  parts  as  a list, the optional $minor and $variant
+           parts might be undef.
+
+       ($major, $minor, $variant) = $f-&gt;get()
+       $format = $f-&gt;get()
+           Gets the source format, either as properly formatted scalar, or  as
+           a  list  of its parts, where the optional $minor and $variant parts
+           might be undef.
+
+       $count = $f-&gt;parse($fh, $desc)
+           Parse  the  source  format  string  from   $fh,   with   filehandle
+           description $desc.
+
+       $count = $f-&gt;load($filename)
+           Parse $filename contents for a source package format string.
+
+       $str = $f-&gt;output([$fh])
+       &quot;$f&quot;
+           Returns  a  string  representing the source package format version.
+           If $fh is set, it prints the string to the filehandle.
+
+       $f-&gt;save($filename)
+           Save the source package format into the given $filename.
+
+CHANGES
+   Version 1.00 (dpkg 1.19.3)
+       Mark the module as public.
+
+1.22.22                           2026-03-06       Dpkg::Source::Format(3perl)
+</pre></body></html>

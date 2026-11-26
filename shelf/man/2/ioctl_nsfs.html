@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ioctl_nsfs(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>ioctl_nsfs(2)                 System Calls Manual                ioctl_nsfs(2)
+
+NAME
+       ioctl_nsfs - ioctl() operations for Linux namespaces
+
+SYNOPSIS
+       #include &lt;linux/nsfs.h&gt;  /* Definition of NS_* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, unsigned long op, ...);
+
+DESCRIPTION
+   Discovering namespace relationships
+       NS_GET_USERNS(2const)
+       NS_GET_PARENT(2const)
+
+   Discovering the namespace type
+       NS_GET_NSTYPE(2const)
+
+   Discovering the owner of a user namespace
+       NS_GET_OWNER_UID(2const)
+
+ERRORS
+       ENOTTY fd does not refer to a /proc/pid/ns/* file.
+
+STANDARDS
+       Linux.
+
+SEE ALSO
+       ioctl(2), fstat(2), proc(5), namespaces(7)
+
+Linux man-pages 6.9.1             2024-06-14                     ioctl_nsfs(2)
+</pre></body></html>

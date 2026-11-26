@@ -1,0 +1,347 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>pamundice(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>Pamundice User Manual(1)    General Commands Manual   Pamundice User Manual(1)
+
+NAME
+       pamundice - combine grid of images (tiles) into one
+
+
+EXAMPLE
+           $ pamdice myimage.ppm -outstem=myimage_part -width=10 -height=8
+           $ pamundice myimage_part_%1d_%1a.ppm -across=10 -down=8 &gt;myimage.ppm
+
+           $ pamundice myimage_part_%2a -across=13 -hoverlap=9
+
+
+       See pamdice  for more examples.
+
+
+SYNOPSIS
+       pamundice
+
+       { [-across=n]
+
+       [-down=n] , -indexfile=pamfilename }
+
+
+       [-hoverlap=pixels]
+
+       [-voverlap=pixels]
+
+       [-verbose]
+
+       {input_filename_pattern, -listfile=textfilename}
+
+       You  can  use  the minimum unique abbreviation of the options.  You can
+       use two hyphens instead of one.  You can separate an option  name  from
+       its value with white space instead of an equals sign.
+
+
+DESCRIPTION
+       This program is part of Netpbm(1).
+
+       pamundice  reads a bunch of Netpbm images as input and combines them as
+       a grid of tiles into a single output image of the same kind on Standard
+       Output.
+
+       You can optionally make the pieces overlap.
+
+       The images can either be in files whose names indicate where they go in
+       the output (e.g. &#x27;myimage_part_03_04&#x27; could be the  image  for  Row  3,
+       Column  4  -  see  the  input_filename_pattern argument) or listed in a
+       file, with a -listfile option.
+
+       The input images must all have the same format (PAM,  PPM,  etc.)   and
+       maxval  and  for  PAM must have the same depth and tuple type.  All the
+       images in a rank (horizontal row of tiles) must have the  same  height.
+       All  the images in a file (vertical column of tiles) must have the same
+       width.  But it is not required that every rank have the same height  or
+       every file have the same width.
+
+       pamdice is the inverse of pamundice.  You can use pamundice to reassem‐
+       ble an image sliced up by pamdice.  You can use pamdice to recreate the
+       tiles  of  an  image created by pamundice, but to do this, the original
+       ranks must all have been the same height except for the bottom one  and
+       the  original  files must all have been the same width except the right
+       one.
+
+       One use for this is to process an image in pieces when the whole  image
+       is too large to process.  For example, you might have an image so large
+       that an image editor can&#x27;t read it all into memory or processes it very
+       slowly.  You can split it into smaller pieces with pamdice, edit one at
+       a time, and then reassemble them with pamundice.
+
+       Of  course,  you  can  also  use  pamundice to compose various kinds of
+       checkerboard images, for example, you could write a program to render a
+       chessboard by computing an image of each square, then  using  pamundice
+       to assemble them into a board.
+
+
+       An alternative to join images in a single direction (i.e. a single rank
+       or a single file) is pamcat.  pamcat provides alternative ways to iden‐
+       tify  the  input images: you can supply them serially on Standard Input
+       or list them by name as command line arguments.
+
+       To join piecewise photographs, use pnmstitch instead of pamundice,  be‐
+       cause it figures out where the pieces overlap, even if they don&#x27;t over‐
+       lap exactly vertically or horizontally.
+
+       To create an image of the same tile repeated in a grid, that&#x27;s pnmtile.
+
+       pnmindex  does  a  similar  thing  to pamundice: it combines a bunch of
+       small images in a grid into a big one.  But its purpose is  to  produce
+       an  index  image  of the input images.  So it leaves space between them
+       and has labels for them, for example.
+
+
+
+ARGUMENTS
+       Unless you use a -listfile option, there is  one  non-option  argument,
+       and it is mandatory: input_filename_pattern.  This tells pamundice what
+       files contain the input tiles.
+
+       pamundice reads the input images from files which are named with a pat‐
+       tern  that  indicates their positions in the combined image.  For exam‐
+       ple, tile_00_05.ppm could be the 6th tile over in the 1st  rank,  while
+       tile_04_01 is the 2nd tile over in the 5th rank.
+
+       (But see -indexfile, which can cause the tiles to be rearranged so that
+       the  file  whose name indicates it is the 6th tile over in the 1st rank
+       could actually be placed by pamundice in any arbitrary position in  its
+       output).
+
+
+       You cannot supply any of the data on Standard Input, and the files must
+       be the kind that pamundice can close and reopen and read the same image
+       a  second  time  (e.g. a regular file is fine; a named pipe is probably
+       not).
+
+       input_filename_pattern is a printf-style pattern.  (See the standard  C
+       library  printf  subroutine).   For  the  example  above,  it  would be
+       tile_%2d_%2a.ppm.  The only possible conversion specifiers are:
+
+
+
+
+       d      &quot;down&quot;: The rank (row) number, starting with 0.
+
+
+       a      &quot;across&quot;: The file (column) number, starting with 0.
+
+
+       %      The per cent character (%).
+
+
+
+       The number between the % and the conversion specifier is the  precision
+       and  is required.  It says how many characters of the file name are de‐
+       scribed by that conversion.  The rank or file  number  is  filled  with
+       leading zeroes as necessary.
+
+       So  the example tile_%2d_%2a.ppm means to get the name of the file that
+       contains the tile at Rank 0, File 5, you:
+
+
+
+
+       •      replace the &quot;%2d&quot; with the rank number, as  a  2  digit  decimal
+              number: &quot;00&quot;
+
+
+       •      Replace  the  &quot;%2a&quot;  with  the file number, as a 2 digit decimal
+              number: &quot;05&quot;
+
+
+       Note that this pattern describes file names that pamdice produces,  ex‐
+       cept that the precision may be more or less.  (See the -numberwidth op‐
+       tion of pamdice).
+
+
+
+OPTIONS
+       In  addition  to  the options common to all programs based on libnetpbm
+       (most notably -quiet, see  Common Options ), pamundice  recognizes  the
+       following command line options:
+
+
+
+       -across=N
+              This  is the number of tiles across in the grid, i.e. the number
+              of tiles in each rank, or the number of files.
+
+              You cannot specify this together with -indexfile.
+
+              Default is 1.
+
+
+       -down=N
+              This is the number of tiles up and down in the  grid,  i.e.  the
+              number of tiles in each file, or the number of ranks.
+
+              You cannot specify this together with -indexfile.
+
+              Default is 1.
+
+
+       -hoverlap=pixels
+              This  is the amount in pixels to overlap the tiles horizontally.
+              pamundice clips this much off the right edge of every  tile  be‐
+              fore  joining  it to the adjacent image to the right.  The tiles
+              along the right edge remain whole.
+
+              There must not be any input image narrower than this.
+
+              Note that this undoes the effect of the same -hoverlap option of
+              pamdice.
+
+              Default is zero -- no overlap.
+
+
+       -voverlap=pixels
+              This is analogous to -hoverlap, but pamundice clips  the  bottom
+              edge of each image before joining it to the one below.
+
+
+       -listfile=textfilename
+              This  option names a file that contains the names of all the in‐
+              put files.  This is an alternative to  specifying  a  file  name
+              pattern as an argument.
+
+              The  named  file  contains  file names, one per line.  Each file
+              contains the
+                image for one tile, in row-major order, top to bottom, left to
+              right.  So
+                the first file is the upper left tile, the second is  the  one
+              to right of
+                that,  etc.   The number of lines in the file must be equal to
+              the number of
+                tiles in the output, the product of the -across and -down
+                values.
+
+              The file names have no meaning to pamundice.  You can  list  the
+              same
+                file multiple times to have identical tiles in the output.
+
+              If  you  create  the  tile  files  with pamdice, you can use the
+              -listfile option of pamdice to produce a suitable list file  for
+              reassembling  the  tiles into the same positions they had in the
+              original large image.
+
+              You cannot specify this together with -indexfile.
+
+              This option was new in Netpbm 10.90 (March 2020).
+
+
+       -indexfile=pamfilename
+              This option names a file that contains a PAM  image  that  tells
+              which  tile files to put where in the assembled output.  See the
+              pamfile -indexfile option for details on its format.
+
+              A typical way to generate an index image to use  with  pamundice
+              is  to  use  the -indexfile option of pamdice, and then possibly
+              manipulate the resulting index image with other Netpbm tools.
+
+              While the sample values in the index image  are  defined  to  be
+              rank and file positions in some original large image, and so are
+              documented in those terms, in practice, pamundice doesn&#x27;t assign
+              any  meaning  to  the numbers -- they are just substitutions for
+              two variables in the input file name pattern (given as a program
+              argument).
+
+              The maxval of the index image is irrelevant, except that no sam‐
+              ple in the index image can be greater than it.
+
+              The depth of the index file must  be  at  least  two  (rank  and
+              file), but the program ignores any additional planes.
+
+              The program ignores the tuple type.
+
+              If  you don&#x27;t specify this option, the position of a tile in the
+              ouput is given directly by the rank and  file  portions  of  the
+              tile  file  name, or if you specify -listfile, by order in which
+              the tile files are listed in the list file.
+
+              You cannot specify  this  together  with  -listfile,  -down,  or
+              -across.
+
+              This option was new in Netpbm 11.10 (March 2025).
+
+
+       -verbose
+              This  says to print information about the processing to Standard
+              Error.
+
+
+
+
+
+Usage
+       Here is an example of using a list file:
+
+
+           Example usage of -listfile:
+
+           pamdice -width=100 -height=100 -outstem=img_part -listfile=listfile \
+               img.ppm
+           pamundice -listfile=listfile -across=6 -down=4 &gt; img_copy.ppm
+
+
+
+       Note that in the above example, you have to know somehow that you got 6
+       files and 4 ranks from pamdice and then specify the correct -across and
+       -down options on pamundice.  A slight error ruins the process.  A  bet‐
+       ter way is to use -indexfile:
+
+
+           pamdice -width=100 -height=100 -outstem=img_part \
+                  -numberwidth=3 -indexfile=index.pam img.pam
+           pamundice -indexfile=index.pam img_part_%3d_%3a.pam &gt; img_copy.pam
+
+
+
+
+
+       Here  is  an example of flipping a large image.  pamflip often requires
+       the entire image to be in real memory at once, which can be  impossible
+       or impractical with a very large image.  This method does it in smaller
+       pieces so as to require less memory:
+
+
+           Example of -indexfile with pamflip operation:
+
+           pamdice -width=2500 -height=2500 -outstem=tile \
+                  -numberwidth=3 -indexfile=index.pam hugeImage.ppm
+
+           # flip every tile
+           for tile in tile_???_???.ppm
+           do
+               pamflip -r180 $tile &gt; ${tile%.ppm}.flipped.ppm
+           done
+
+           # flip indexfile  - Simply apply the same flip operation
+           pamflip -r180 index.pam &gt; index_flipped.pam
+
+           pamundice -indexfile=index_flipped.pam tile_%3d_%3a.flipped.ppm \
+               &gt; hugeImage_flipped.ppm
+
+
+
+
+
+
+HISTORY
+       pamundice  was new in Netpbm 10.39 (June 2007).  Before that, pamcat is
+       the best substitute.
+
+
+
+SEE ALSO
+       pamdice(1), pamcat(1),  pnmindex(1),  pnmtile(1),  pnmtile(1),  pnm(1),
+       pam(1)
+
+DOCUMENT SOURCE
+       This  manual  page was generated by the Netpbm tool &#x27;makeman&#x27; from HTML
+       source.  The master documentation is at
+
+              http://netpbm.sourceforge.net/doc/pamundice.html
+
+netpbm documentation           08 February 2025       Pamundice User Manual(1)
+</pre></body></html>

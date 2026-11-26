@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::demos::widget_lib::trace2(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>demos::wi...ib::trace2(3pm)  perl/Tk Documentation demos::wi...ib::trace2(3pm)
+
+NAME
+       Tk::TraceText - Text contents defined by a traced variable.
+
+SYNOPSIS
+        $tt = $parent-&gt;TraceText(-option =&gt; value, ... );
+
+DESCRIPTION
+       Create a new TraceText widget that is derived from the standard Text
+       widget. Because it inherits all the base options and methods it behaves
+       just like a Text widget.  Additionally, TraceText adds a -textvariable
+       option, which is a reference to a Perl scalar that defines the contents
+       of the widget.
+
+       Based on the Tcl/Tk TracedText &quot;overridden widget&quot; by Kevin Kenny.
+
+       -textvariable
+           A scalar reference.  The value of the variable defines the contents
+           of  the  TraceText  widget.  Using the keyboard to insert or delete
+           text changes the value of the variable, and changing  the  variable
+           alters the contents of the TraceText widget.
+
+METHODS
+       Standard Text widget methods.
+
+ADVERTISED SUBWIDGETS
+       None.
+
+EXAMPLE
+        my $tt = $mw-&gt;TraceText( -textvariable =&gt; \$scalar );
+
+AUTHOR
+       Stephen.O.Lidie@Lehigh.EDU
+
+       Copyright (C) 2003 - 2004, Steve Lidie. All rights reserved.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+KEYWORDS
+       text, trace
+
+Tk804.036                         2025-04-13       demos::wi...ib::trace2(3pm)
+</pre></body></html>

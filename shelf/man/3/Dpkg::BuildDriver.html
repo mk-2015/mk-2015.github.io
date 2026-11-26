@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::BuildDriver(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::BuildDriver(3perl)         libdpkg-perl         Dpkg::BuildDriver(3perl)
+
+NAME
+       Dpkg::BuildDriver - drive the build of a Debian package
+
+DESCRIPTION
+       This class is used by dpkg-buildpackage to drive the build of a Debian
+       package.
+
+       Note: This is a private module, its API can change at any time.
+
+METHODS
+       $bd = Dpkg::BuildDriver-&gt;new(%opts)
+           Create a new Dpkg::BuildDriver object.  It will load a build driver
+           module  as  requested in the Build-Drivers field in the $opts{ctrl}
+           Dpkg::Control::Info object or if not present, it will fall back  to
+           load the default debian-rules driver.
+
+           Options:
+
+           ctrl (required)
+               A Dpkg::Control::Info object.
+
+           root_cmd
+               A  string  with  the  gain-root-command  to use when needing to
+               execute a command with root-like rights.  If needed and  unset,
+               it  will  default  to fakeroot if it is available or the module
+               will error out.
+
+           as_root
+               A boolean to force debian/rules target calls as root-like, even
+               if they would normally not require to be executed as root-like.
+               This option is applied to all targets globally.
+
+               Note: This  option  is  only  relevant  for  drivers  that  use
+               debian/rules.
+
+           debian_rules
+               An  array  containing  the  command to execute the debian/rules
+               file  and   any   additional   arguments.    It   defaults   to
+               debian/rules.
+
+               Note:  This  option  is  only  relevant  for  drivers  that use
+               debian/rules.
+
+           rrr_override
+               A string that overrides the Rules-Requires-Root field value.
+
+               Note: This  option  is  only  relevant  for  drivers  that  use
+               debian/rules.
+
+       $bd-&gt;pre_check()
+           Perform build driver specific checks, before anything else.
+
+           This  will  run  after  the  init  hook,  and  before  &quot;dpkg-source
+           --before-build&quot;.
+
+           Note: This is an optional method  that  can  be  omitted  from  the
+           driver implementation.
+
+       $bool = $bd-&gt;need_build_task($build_task, binary_task)
+           Returns whether we need to use the build task.
+
+           Note: This method is needed as long as we support building as root-
+           like.  Once that is not needed this method will be deprecated.
+
+       $bd-&gt;run_build_task($build_task, $binary_task)
+           Executes the build task for the build.
+
+           Note:  This  is  an  optional  method  needed as long as we support
+           building as root-like.  Once that is not needed this method will be
+           deprecated.
+
+       $bd-&gt;run_task($task)
+           Executes the given task for the build.
+
+CHANGES
+   Version 0.xx
+       This is a private module.
+
+1.22.22                           2026-03-06          Dpkg::BuildDriver(3perl)
+</pre></body></html>

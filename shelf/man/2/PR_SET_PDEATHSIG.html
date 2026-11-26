@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_PDEATHSIG(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_PDEATHSIG(2const)                              PR_SET_PDEATHSIG(2const)
+
+NAME
+       PR_SET_PDEATHSIG - set the parent-death signal of the calling process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_PDEATHSIG, long sig);
+
+DESCRIPTION
+       Set  the  parent-death  signal  of the calling process to sig (either a
+       signal value in the range [1, NSIG - 1], or 0 to clear).  This  is  the
+       signal that the calling process will get when its parent dies.
+
+       The parent-death signal is sent upon subsequent termination of the par‐
+       ent  thread  and  also  upon termination of each subreaper process (see
+       PR_SET_CHILD_SUBREAPER(2const)) to which the caller is subsequently re‐
+       parented.  If the parent thread and all ancestor  subreapers  have  al‐
+       ready terminated by the time of the PR_SET_PDEATHSIG operation, then no
+       parent-death signal is sent to the caller.
+
+       The parent-death signal is process-directed (see signal(7)) and, if the
+       child  installs  a  handler using the sigaction(2) SA_SIGINFO flag, the
+       si_pid field of the siginfo_t argument of the handler contains the  PID
+       of the terminating parent process.
+
+       The  parent-death signal setting is cleared for the child of a fork(2).
+       It is also (since Linux 2.4.36 / 2.6.23) cleared when executing a  set-
+       user-ID  or  set-group-ID binary, or a binary that has associated capa‐
+       bilities (see capabilities(7));  otherwise,  this  value  is  preserved
+       across execve(2).  The parent-death signal setting is also cleared upon
+       changes  to any of the following thread credentials: effective user ID,
+       effective group ID, filesystem user ID, or filesystem group ID.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       EINVAL sig is not a valid signal number.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.1.57.
+
+CAVEATS
+       The  &quot;parent&quot;  in this case is considered to be the thread that created
+       this process.  In other words, the signal will be sent when that thread
+       terminates (via, for example, pthread_exit(3)), rather than  after  all
+       of the threads in the parent process terminate.
+
+SEE ALSO
+       prctl(2), PR_GET_PDEATHSIG(2const)
+
+Linux man-pages 6.9.1             2024-06-02          PR_SET_PDEATHSIG(2const)
+</pre></body></html>

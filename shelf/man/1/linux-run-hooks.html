@@ -1,0 +1,39 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>linux-run-hooks(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>LINUX-RUN-HOOKS(1)          General Commands Manual         LINUX-RUN-HOOKS(1)
+
+NAME
+       linux-run-hooks - run package installation or removal hooks
+
+
+SYNOPSIS
+       linux-run-hooks image MAINT-SCRIPT KERNEL-VER IMAGE-PATH
+                       -- MAINT-PARAMS ...
+
+       linux-run-hooks headers MAINT-SCRIPT KERNEL-VER
+                       -- MAINT-PARAMS ...
+
+DESCRPTION
+       linux-run-hooks is intended to be called from the maintainer scripts of
+       Linux kernel image and headers packages.  It uses the run-parts command
+       to  execute  hooks  installed  in  the  appropriate  subdirectories  of
+       /etc/kernel and /usr/share/kernel.
+
+       The first argument is the package type; either image or headers.
+
+       The MAINT-SCRIPT argument must be the name of  the  maintainer  script:
+       preinst, postinst, prerm, or postrm.
+
+       The  KERNEL-VER  argument must be the kernel version string as shown by
+       uname -r and used in filenames, not the package version.
+
+       The IMAGE-PATH argument must be the absolute filename of the kernel im‐
+       age.
+
+       The MAINT-PARAMS arguments must be the parameters received by the main‐
+       tainer script.
+
+AUTHOR
+       linux-run-hooks and this manual page were written by Ben  Hutchings  as
+       part of the Debian linux-base package.
+
+                                  3 May 2025                LINUX-RUN-HOOKS(1)
+</pre></body></html>

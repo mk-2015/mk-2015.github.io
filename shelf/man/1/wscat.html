@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>wscat(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>WSCAT(1)                         User Commands                        WSCAT(1)
+
+NAME
+       wscat - Communicate over websocket
+
+SYNOPSIS
+       wscat [options] (--listen &lt;port&gt; | --connect &lt;url&gt;)
+
+OPTIONS
+       -V, --version
+              output the version number
+
+       --auth &lt;username:password&gt;
+              add basic HTTP authentication header
+
+       --ca &lt;ca&gt;
+              specify a Certificate Authority (--connect only)
+
+       --cert &lt;cert&gt;
+              specify a Client SSL Certificate (--connect only)
+
+       --host &lt;host&gt;
+              optional host
+
+       --key &lt;key&gt;
+              specify a Client SSL Certificate&#x27;s key (--connect only)
+
+       --max-redirects [num]
+              maximum number of redirects allowed (default: 10)
+
+       --no-color
+              run without color
+
+       --passphrase [passphrase]
+              specify  a  Client  SSL  Certificate Key&#x27;s passphrase (--connect
+              only). If you don&#x27;t provide a value, it will be prompted for
+
+       --proxy &lt;[protocol://]host[:port]&gt;
+              connect via a proxy. Proxy must support CONNECT method
+
+       --slash
+              enable slash commands for control frames  (/ping  [data],  /pong
+              [data], /close [code [, reason]]) (--connect only)
+
+       -c, --connect &lt;url&gt;
+              connect to a WebSocket server
+
+       -H, --header &lt;header:value&gt;
+              set an HTTP header. Repeat to set multiple (--connect only) (de‐
+              fault: [])
+
+       -l, --listen &lt;port&gt;
+              listen on port
+
+       -L, --location
+              follow redirects
+
+       -n, --no-check
+              do not check for unauthorized certificates (--connect only)
+
+       -o, --origin &lt;origin&gt;
+              optional origin
+
+       -p, --protocol &lt;version&gt;
+              optional protocol version
+
+       -P, --show-ping-pong
+              print  a notification when a ping or pong is received (--connect
+              only)
+
+       -s, --subprotocol &lt;protocol&gt;
+              optional subprotocol. Repeat to specify more than one  (default:
+              [])
+
+       -w, --wait &lt;seconds&gt;
+              wait given seconds after executing command
+
+       -x, --execute &lt;command&gt;
+              execute command after connecting (--connect only)
+
+       -h, --help
+              display help for command
+
+wscat 6.0.1                       April 2025                          WSCAT(1)
+</pre></body></html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFSetTagExtender(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFSETTAGEXTENDER(3tiff)           LibTIFF          TIFFSETTAGEXTENDER(3tiff)
+
+NAME
+       TIFFSetTagExtender  - register the merge function for user defined tags
+       as an extender callback with libtiff
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       TIFFExtendProc TIFFSetTagExtender(TIFFExtendProc extender)
+
+DESCRIPTION
+       TIFFSetTagExtender() is used to register the merge  function  for  user
+       defined tags as an extender callback with libtiff.  A brief description
+       can be found at Defining Application Tags.
+
+       NOTE:
+          TIFFSetTagExtender()  cannot  be  used  to extend custom directories
+          (for example EXIF, GPS or other custom directories).  Only the  TIFF
+          directory can be extended with additional tags.
+
+SEE ALSO
+       libtiff  (3tiff),  Defining  New  TIFF Tags (3tiff), TIFFMergeFieldInfo
+       (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026        TIFFSETTAGEXTENDER(3tiff)
+</pre></body></html>

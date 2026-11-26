@@ -1,0 +1,572 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Tk::options(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>options(3pm)          User Contributed Perl Documentation         options(3pm)
+
+NAME
+       Tk::options - Standard options supported by widgets and their
+       manipulation
+
+SYNOPSIS
+           $value = $widget-&gt;cget(&#x27;-option&#x27;);
+
+           $widget-&gt;configure(-option=&gt;value ?,-option=&gt;value ...?);
+
+           @list = $widget-&gt;configure(&#x27;-option&#x27;);
+
+           @lol = $widget-&gt;configure;
+
+DESCRIPTION
+       All widgets, and images have a standard mechanism for setting and
+       querying attibutes or options. The mechanism is based on two methods
+       configure and cget. The behaviour of these methods is as follows:
+
+       $widget-&gt;configure(-option=&gt;value ?,-option=&gt;value ...?);
+           Sets  the  values of -option to value for each -option=&gt;value pair.
+           The internal new method does an implicit  configure  in  this  form
+           with options passed in at widget create time.
+
+       $widget-&gt;configure(&#x27;-option&#x27;)
+           In  array  context  returns  a  list  of  five or two elements.  If
+           -option is an alias for another options it return a list consisting
+           of the alias option and the name for the option is is an alias for,
+           e.g., &quot;(&#x27;-bg&#x27;, &#x27;background&#x27;)&quot;.  If -option  is  not  an  alias  the
+           returned list has the following five elements:
+
+           Option Name
+                   The value of -option, e.g., -background.
+
+           Name    The   option&#x27;s   name   in   the   option  database,  e.g.,
+                   &quot;background&quot;.
+
+           Class   The option&#x27;s class value  in  the  option  database,  e.g.,
+                   &quot;Background&quot;.
+
+           Default The default value for the option if not specified or in the
+                   option database, e.g., &quot;grey&quot;.
+
+           Value   The current value (as returned by cget), e.g., &quot;white&quot;.
+
+       $widget-&gt;configure
+           Returns  a  list of lists for all the options supported by $widget.
+           Each sub-list is in  the  form  returned  by  configure(&#x27;-option&#x27;).
+           (This  mechanism  is used by the Tk::Derived class to determine the
+           options available from base class.)
+
+       $widget-&gt;cget(&#x27;-option&#x27;)
+           Returns the current value of -option for $widget.
+
+           cget(&#x27;-option&#x27;) is clumsy with  the  need  for  &#x27;&#x27;  due  to  perl&#x27;s
+           parsing rules. Something more subtle using tie might look better.
+
+       The  following  paragraphs  describe  the  common configuration options
+       supported by  widgets  in  the  Tk  toolkit.   Every  widget  does  not
+       necessarily support every option (see the the documentation entries for
+       individual widgets for a list of the standard options supported by that
+       widget),  but  if a widget does support an option with one of the names
+       listed below, then the option has exactly the effect described below.
+
+       In the descriptions below, ``Name&#x27;&#x27; refers to the option&#x27;s name in  the
+       option  database.   ``Class&#x27;&#x27; refers to the option&#x27;s class value in the
+       option database.  ``Switch&#x27;&#x27; refers  to  the  switch  used  in  widget-
+       creation  and  configure widget methods to set this value. For example,
+       if an option&#x27;s configure option  is  -foreground  and  there  exists  a
+       widget $widget, then the call:
+
+           $widget-&gt;configure(-foreground=&gt;&#x27;black&#x27;)
+
+       may  be  used  to  specify the value black for the option in the widget
+       $widget.   Configure  options  may  be  abbreviated,  as  long  as  the
+       abbreviation is unambiguous (abbreviation is deprecated in perl/Tk).
+
+   Creation options: Widget Name and Class
+       The  Name  and  -class  options  can only be specified when a widget is
+       created, and cannot be changed with configure.  These options determine
+       the widget&#x27;s identity and how  Tk  applies  resource  values  from  the
+       option  database (see Tk::option) and so they cannot be assigned by the
+       options database.
+
+       Name:     name
+       Switch:   Name
+           Specifies the path element for the widget.  Names  generally  begin
+           with a lowercase letter.
+
+           Each  widget  has a unique pathname that follows the hierarchy from
+           the MainWindow to the widget itself.  Since the  widget&#x27;s  PathName
+           is  used  to  assign  options  from  the  options  database,  it is
+           important to specify a distinctive Name for any  widget  that  will
+           have non-default options.  See Tk::option for details.
+
+       Name:     class
+       Switch:   -class
+           Specifies  a class for the window.  Classes generally begin with an
+           uppercase letter.
+
+           This class will be used when querying the option database  for  the
+           window&#x27;s  other options (see Tk::options), and it will also be used
+           later for other purposes such as bindings.  One typically assigns a
+           class to a TopLevel or Frame so that the class will apply to all of
+           that widget&#x27;s children.
+
+   Reconfigurable options
+       These options can be set  at  widget  creation  or  changed  later  via
+       configure.
+
+       Name:     activeBackground
+       Class:    Foreground
+       Switch:   -activebackground
+           Specifies background color to use when drawing active elements.  An
+           element  (a  widget  or portion of a widget) is active if the mouse
+           cursor is positioned over the element and pressing a  mouse  button
+           will  cause  some  action to occur.  If strict Motif compliance has
+           been requested  by  setting  the  $Tk::strictMotif  variable,  this
+           option  will normally be ignored;  the normal background color will
+           be used instead.   For  some  elements  on  Windows  and  Macintosh
+           systems, the active color will only be used while mouse button 1 is
+           pressed over the element.
+
+       Name:     activeBorderWidth
+       Class:    BorderWidth
+       Switch:   -activeborderwidth
+           Specifies  a  non-negative  value  indicating  the width of the 3-D
+           border drawn around active elements.  See above for  definition  of
+           active elements.  The value may have any of the forms acceptable to
+           Tk_GetPixels.   This  option is typically only available in widgets
+           displaying more than one element at a  time  (e.g.  menus  but  not
+           buttons).
+
+       Name:     activeForeground
+       Class:    Background
+       Switch:   -activeforeground
+           Specifies  foreground  color  to  use when drawing active elements.
+           See above for definition of active elements.
+
+       Name:     activetile
+       Class:    Tile
+       Switch:   -activetile
+           Specifies image used to  display  inside  active  elements  of  the
+           widget.  See above for definition of active elements.
+
+       Name:     anchor
+       Class:    Anchor
+       Switch:   -anchor
+           Specifies  how  the information in a widget (e.g. text or a bitmap)
+           is to be displayed in the widget.  Must be one of the values n, ne,
+           e, se, s, sw, w, nw, or center.  For example, nw means display  the
+           information such that its top-left corner is at the top-left corner
+           of the widget.
+
+       Name:     background
+       Class:    Background
+       Switch:   -background
+       Alias:    -bg
+           Specifies  the  normal  background color to use when displaying the
+           widget.
+
+       Name:     bitmap
+       Class:    Bitmap
+       Switch:   -bitmap
+           Specifies a bitmap to display in the widget, in any  of  the  forms
+           acceptable  to  Tk_GetBitmap.  The exact way in which the bitmap is
+           displayed may be affected by  other  options  such  as  -anchor  or
+           -justify.  Typically, if this option is specified then it overrides
+           other  options  that  specify  a  textual  value  to display in the
+           widget; the -bitmap option may be reset to an empty string  to  re-
+           enable  a  text  display.  In widgets that support both -bitmap and
+           -image options, -image will usually override -bitmap.
+
+       Name:     borderWidth
+       Class:    BorderWidth
+       Switch:   -borderwidth
+       Alias:    -bd
+           Specifies a non-negative value indicating  the  width  of  the  3-D
+           border  to  draw around the outside of the widget (if such a border
+           is being drawn;  the relief option typically determines this).  The
+           value may also be used when drawing 3-D effects in the interior  of
+           the  widget.   The  value  may  have any of the forms acceptable to
+           Tk_GetPixels.
+
+       Name:     compound
+       Class:    Compound
+       Switch:   -compound
+           Specifies if the widget should display text and  bitmaps/images  at
+           the  same  time, and if so, where the bitmap/image should be placed
+           relative to the text. Must be one of the values none, bottom,  top,
+           left,  right,  or  center.  For  example,  the (default) value none
+           specifies that the bitmap or image should (if defined) be displayed
+           instead of the text, the value left specifies that  the  bitmap  or
+           image  should  be  displayed to the left of the text, and the value
+           center specifies that the bitmap or image should  be  displayed  on
+           top of the text.
+
+       Name:     cursor
+       Class:    Cursor
+       Switch:   -cursor
+           Specifies  the  mouse  cursor to be used for the widget.  The value
+           may have any of the forms acceptable to Tk_GetCursor.
+
+       Name:     dash
+       Class:    Dash
+       Switch:   -dash
+           The value may have any of the forms accepted by Tk_GetDash, such as
+           4, [6,4], ., -, -., or -...
+
+       Name:     dashoffset
+       Class:    Dashoffset
+       Switch:   -dashoffset
+           Specifies the offset in the dash list where the drawing starts.
+
+       Name:     disabledForeground
+       Class:    DisabledForeground
+       Switch:   -disabledforeground
+           Specifies foreground color to use when drawing a disabled  element.
+           If  the  option is specified as an empty string (which is typically
+           the case on monochrome displays), disabled elements are drawn  with
+           the  normal  foreground  color  but they are dimmed by drawing them
+           with a stippled fill pattern.
+
+       Name:     disabledtile
+       Class:    Tile
+       Switch:   -disabledtile
+           Specifies image to use when drawing a disabled element.
+
+       Name:     exportSelection
+       Class:    ExportSelection
+       Switch:   -exportselection
+           Specifies whether or not a selection in the widget should  also  be
+           the  X  selection.  The value may have any of the forms accepted by
+           Tcl_GetBoolean, such as true, false, 0, 1,  yes,  or  no.   If  the
+           selection  is  exported, then selecting in the widget deselects the
+           current X selection, selecting outside  the  widget  deselects  any
+           widget   selection,  and  the  widget  will  respond  to  selection
+           retrieval requests when it has a selection.  The default is usually
+           for widgets to export selections.
+
+       Name:     font
+       Class:    Font
+       Switch:   -font
+           Specifies the font to use when drawing text inside the widget.
+
+       Name:     foreground
+       Class:    Foreground
+       Switch:   -foreground
+       Alias:    -fg
+           Specifies the normal foreground color to use  when  displaying  the
+           widget.
+
+       Name:     highlightBackground
+       Class:    HighlightBackground
+       Switch:   -highlightbackground
+           Specifies  the  color  to display in the traversal highlight region
+           when the widget does not have the input focus.
+
+       Name:     highlightColor
+       Class:    HighlightColor
+       Switch:   -highlightcolor
+           Specifies the color to use for the  traversal  highlight  rectangle
+           that is drawn around the widget when it has the input focus.
+
+       Name:     highlightThickness
+       Class:    HighlightThickness
+       Switch:   -highlightthickness
+           Specifies   a  non-negative  value  indicating  the  width  of  the
+           highlight rectangle to draw around the outside of the  widget  when
+           it  has  the  input  focus.   The  value  may have any of the forms
+           acceptable to  Tk_GetPixels.   If  the  value  is  zero,  no  focus
+           highlight is drawn around the widget.
+
+       Name:     image
+       Class:    Image
+       Switch:   -image
+           Specifies  an  image to display in the widget, which must have been
+           created with an image create. (See Tk::Image for details  of  image
+           creation.)   Typically,  if  the -image option is specified then it
+           overrides other options that specify a bitmap or textual  value  to
+           display  in  the widget; the -image option may be reset to an empty
+           string to re-enable a bitmap or text display.
+
+       Name:     insertBackground
+       Class:    Foreground
+       Switch:   -insertbackground
+           Specifies the color to use as background in the area covered by the
+           insertion cursor.  This color will  normally  override  either  the
+           normal  background  for  the widget (or the selection background if
+           the insertion cursor happens to fall in the selection).
+
+       Name:     insertBorderWidth
+       Class:    BorderWidth
+       Switch:   -insertborderwidth
+           Specifies a non-negative value indicating  the  width  of  the  3-D
+           border to draw around the insertion cursor.  The value may have any
+           of the forms acceptable to Tk_GetPixels.
+
+       Name:     insertOffTime
+       Class:    OffTime
+       Switch:   -insertofftime
+           Specifies  a  non-negative  integer  value indicating the number of
+           milliseconds the insertion cursor should  remain  ``off&#x27;&#x27;  in  each
+           blink cycle.  If this option is zero then the cursor doesn&#x27;t blink:
+           it is on all the time.
+
+       Name:     insertOnTime
+       Class:    OnTime
+       Switch:   -insertontime
+           Specifies  a  non-negative  integer  value indicating the number of
+           milliseconds the insertion cursor  should  remain  ``on&#x27;&#x27;  in  each
+           blink cycle.
+
+       Name:     insertWidth
+       Class:    InsertWidth
+       Switch:   -insertwidth
+           Specifies  a   value  indicating  the  total width of the insertion
+           cursor.  The  value  may  have  any  of  the  forms  acceptable  to
+           Tk_GetPixels.   If  a  border  has been specified for the insertion
+           cursor (using the insertBorderWidth option),  the  border  will  be
+           drawn inside the width specified by the insertWidth option.
+
+       Name:     jump
+       Class:    Jump
+       Switch:   -jump
+           For  widgets  with  a slider that can be dragged to adjust a value,
+           such as scrollbars, this option determines when  notifications  are
+           made  about  changes  in  the  value.  The option&#x27;s value must be a
+           boolean of the form accepted by Tcl_GetBoolean.  If  the  value  is
+           false,  updates are made continuously as the slider is dragged.  If
+           the value is true, updates are delayed until the  mouse  button  is
+           released  to  end the drag;  at that point a single notification is
+           made (the value ``jumps&#x27;&#x27; rather than changing smoothly).
+
+       Name:     justify
+       Class:    Justify
+       Switch:   -justify
+           When there are multiple lines of text displayed in a  widget,  this
+           option  determines  how the lines line up with each other.  Must be
+           one of left, center, or right.  Left means  that  the  lines&#x27;  left
+           edges  all  line  up,  center  means  that  the  lines&#x27; centers are
+           aligned, and right means that the lines&#x27; right edges line up.
+
+       Name:     offset
+       Class:    Offset
+       Switch:   -offset
+           Specifies the offset of tiles (see also -tile option). It can  have
+           two  different  formats -offset x,y or -offset side, where side can
+           be n, ne, e, se, s, sw, w, nw, or center. In  the  first  case  the
+           origin  is  the  origin of the toplevel of the current window.  For
+           the canvas itself and canvas  objects  the  origin  is  the  canvas
+           origin,  but  putting  #  in front of the coordinate pair indicates
+           using the toplevel origin in stead. For canvas objects, the -offset
+           option is used for stippling as well.  For  the  line  and  polygon
+           canvas  items  you  can  also  specify  an index as argument, which
+           connects the stipple or tile origin to one of the coordinate points
+           of the line/polygon.
+
+       Name:     orient
+       Class:    Orient
+       Switch:   -orient
+           For widgets that can lay themselves out with either a horizontal or
+           vertical orientation, such as  scrollbars,  this  option  specifies
+           which  orientation  should  be  used.  Must be either horizontal or
+           vertical or an abbreviation of one of these.
+
+       Name:     padX
+       Class:    Pad
+       Switch:   -padx
+           Specifies a non-negative value indicating how much extra  space  to
+           request  for the widget in the X-direction.  The value may have any
+           of the forms acceptable to Tk_GetPixels.  When computing how  large
+           a  window it needs, the widget will add this amount to the width it
+           would normally need (as determined  by  the  width  of  the  things
+           displayed in the widget);  if the geometry manager can satisfy this
+           request,  the  widget  will end up with extra internal space to the
+           left and/or right of what it displays inside.   Most  widgets  only
+           use  this option for padding text:  if they are displaying a bitmap
+           or image, then they usually ignore padding options.
+
+       Name:     padY
+       Class:    Pad
+       Switch:   -pady
+           Specifies a non-negative value indicating how much extra  space  to
+           request  for the widget in the Y-direction.  The value may have any
+           of the forms acceptable to Tk_GetPixels.  When computing how  large
+           a window it needs, the widget will add this amount to the height it
+           would  normally  need  (as  determined  by the height of the things
+           displayed in the widget);  if the geometry manager can satisfy this
+           request, the widget will end up with  extra  internal  space  above
+           and/or  below  what it displays inside.  Most widgets only use this
+           option for padding text:  if they are displaying a bitmap or image,
+           then they usually ignore padding options.
+
+       Name:     relief
+       Class:    Relief
+       Switch:   -relief
+           Specifies the 3-D effect desired for the widget.  Acceptable values
+           are raised, sunken, flat, ridge,  solid,  and  groove.   The  value
+           indicates  how the interior of the widget should appear relative to
+           its exterior;  for example, raised means the interior of the widget
+           should appear to protrude from the screen, relative to the exterior
+           of the widget.
+
+       Name:     repeatDelay
+       Class:    RepeatDelay
+       Switch:   -repeatdelay
+           Specifies the number of milliseconds a button or key must  be  held
+           down  before  it  begins to auto-repeat.  Used, for example, on the
+           up- and down-arrows in scrollbars.
+
+       Name:     repeatInterval
+       Class:    RepeatInterval
+       Switch:   -repeatinterval
+           Used in conjunction with  repeatDelay:   once  auto-repeat  begins,
+           this  option  determines  the  number of milliseconds between auto-
+           repeats.
+
+       Name:     selectBackground
+       Class:    Foreground
+       Switch:   -selectbackground
+           Specifies the background color  to  use  when  displaying  selected
+           items.
+
+       Name:     selectBorderWidth
+       Class:    BorderWidth
+       Switch:   -selectborderwidth
+           Specifies  a  non-negative  value  indicating  the width of the 3-D
+           border to draw around selected items.  The value may  have  any  of
+           the forms acceptable to Tk_GetPixels.
+
+       Name:     selectForeground
+       Class:    Background
+       Switch:   -selectforeground
+           Specifies  the  foreground  color  to  use when displaying selected
+           items.
+
+       Name:     setGrid
+       Class:    SetGrid
+       Switch:   -setgrid
+           Specifies a boolean  value  that  determines  whether  this  widget
+           controls  the  resizing grid for its top-level window.  This option
+           is typically used in text widgets, where  the  information  in  the
+           widget  has  a  natural size (the size of a character) and it makes
+           sense for the window&#x27;s dimensions to be integral numbers  of  these
+           units.   These  natural  window  sizes form a grid.  If the setGrid
+           option is set to true then the widget  will  communicate  with  the
+           window manager so that when the user interactively resizes the top-
+           level window that contains the widget, the dimensions of the window
+           will  be  displayed  to  the user in grid units and the window size
+           will be  constrained  to  integral  numbers  of  grid  units.   See
+           &quot;GRIDDED GEOMETRY MANAGEMENT&quot; in Tk::Wm for more details.
+
+       Name:     takeFocus
+       Class:    TakeFocus
+       Switch:   -takefocus
+           Determines  whether  the  window  accepts the focus during keyboard
+           traversal (e.g., Tab and Shift-Tab).  Before setting the focus to a
+           window, the traversal scripts consult the value  of  the  takeFocus
+           option.   A  value  of  0  means  that the window should be skipped
+           entirely during keyboard traversal.  1 means that the window should
+           receive the input focus as long as it is viewable (it  and  all  of
+           its  ancestors  are  mapped).   An empty value for the option means
+           that the traversal scripts make the decision about whether  or  not
+           to  focus  on  the  window:   the  current algorithm is to skip the
+           window if it is disabled, if it has no key bindings, or  if  it  is
+           not  viewable.  If the value has any other form, then the traversal
+           scripts take the value, append the name of the window to it (with a
+           separator space), and evaluate the resulting string as a  Callback.
+           The  script  must  return 0, 1, or an empty string:  a 0 or 1 value
+           specifies whether the window will receive the input focus,  and  an
+           empty  string  results  in  the  default  decision described above.
+           Note: this interpretation of the option is defined entirely by  the
+           Callbacks  that  implement  traversal:   the widget implementations
+           ignore the option entirely, so you can change its  meaning  if  you
+           redefine the keyboard traversal scripts.
+
+       Name:     text
+       Class:    Text
+       Switch:   -text
+           Specifies  a  string to be displayed inside the widget.  The way in
+           which the string is displayed depends on the particular widget  and
+           may be determined by other options, such as anchor or justify.
+
+       Name:     textVariable
+       Class:    Variable
+       Switch:   -textvariable
+           Specifies  the  name of a variable.  The value of the variable is a
+           text string to be displayed inside the  widget;   if  the  variable
+           value  changes  then the widget will automatically update itself to
+           reflect the new value.  The way in which the string is displayed in
+           the widget depends on the particular widget and may  be  determined
+           by other options, such as anchor or justify.
+
+       Name:     tile
+       Class:    Tile
+       Switch:   -tile
+           Specifies  image  used to display the widget. If image is the empty
+           string, then the normal background color is displayed.
+
+       Name:     troughColor
+       Class:    Background
+       Switch:   -troughcolor
+           Specifies the color to use for  the  rectangular  trough  areas  in
+           widgets such as scrollbars and scales.
+
+       Name:     troughTile
+       Class:    Tile
+       Switch:   -troughtile
+           Specifies  image used to display in the rectangular trough areas in
+           widgets such as scrollbars and scales.
+
+       Name:     underline
+       Class:    Underline
+       Switch:   -underline
+           Specifies the integer index of a  character  to  underline  in  the
+           widget.   This  option is used by the default bindings to implement
+           keyboard  traversal  for  menu  buttons  and   menu   entries.    0
+           corresponds  to  the  first  character of the text displayed in the
+           widget, 1 to the next character, and so on.
+
+       Name:     wrapLength
+       Class:    WrapLength
+       Switch:   -wraplength
+           For widgets that can perform word-wrapping, this  option  specifies
+           the  maximum  line length.  Lines that would exceed this length are
+           wrapped onto the next line, so that no  line  is  longer  than  the
+           specified  length.   The  value  may  be  specified  in  any of the
+           standard forms for screen distances.  If this value is less than or
+           equal to 0 then no wrapping is done:   lines  will  break  only  at
+           newline characters in the text.
+
+       Name:     xScrollCommand
+       Class:    ScrollCommand
+       Switch:   -xscrollcommand
+           Specifies   a   callback   used   to  communicate  with  horizontal
+           scrollbars.  When the view  in  the  widget&#x27;s  window  changes  (or
+           whenever  anything  else  occurs that could change the display in a
+           scrollbar, such as a change in  the  total  size  of  the  widget&#x27;s
+           contents),  the  widget  will  make  a callback passing two numeric
+           arguments in addition to any specified in the  callback.   Each  of
+           the  numbers  is  a  fraction  between  0  and 1, which indicates a
+           position in  the  document.   0  indicates  the  beginning  of  the
+           document,  1 indicates the end, .333 indicates a position one third
+           the way through the  document,  and  so  on.   The  first  fraction
+           indicates  the first information in the document that is visible in
+           the window, and the second fraction indicates the information  just
+           after   the   last   portion   that   is  visible.   Typically  the
+           xScrollCommand option consists of the scrollbar widget  object  and
+           the method ``set&#x27;&#x27; i.e. [set =&gt; $sb]: this will cause the scrollbar
+           to  be  updated  whenever  the view in the window changes.  If this
+           option is not specified, then no command will be executed.
+
+       Name:     yScrollCommand
+       Class:    ScrollCommand
+       Switch:   -yscrollcommand
+           Specifies a calback used to communicate with  vertical  scrollbars.
+           This  option  is  treated  in  the  same  way as the xScrollCommand
+           option, except that it is  used  for  vertical  scrollbars  and  is
+           provided  by  widgets  that  support  vertical  scrolling.  See the
+           description of xScrollCommand for details on  how  this  option  is
+           used.
+
+SEE ALSO
+       Tk::option Tk::callbacks Tk::ConfigSpecs Tk_GetPixels
+
+KEYWORDS
+       class, name, standard option, switch
+
+perl v5.40.1                      2025-04-13                      options(3pm)
+</pre></body></html>

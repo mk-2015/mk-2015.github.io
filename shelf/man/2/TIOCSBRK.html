@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCSBRK(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TCSBRK(2const)                                                  TCSBRK(2const)
+
+NAME
+       TCSBRK, TCSBRKP, TIOCSBRK, TIOCCBRK - sending a break
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of T*BRK* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TCSBRK, int arg);
+       int ioctl(int fd, TCSBRKP, int arg);
+       int ioctl(int fd, TIOCSBRK);
+       int ioctl(int fd, TIOCCBRK);
+
+DESCRIPTION
+       TCSBRK Equivalent to tcsendbreak(fd, arg).
+
+              If  the terminal is using asynchronous serial data transmission,
+              and arg is zero, then send a break (a stream of zero  bits)  for
+              between  0.25  and  0.5  seconds.   If the terminal is not using
+              asynchronous serial data transmission, then either  a  break  is
+              sent,  or the function returns without doing anything.  When arg
+              is nonzero, nobody knows what will happen.
+
+              (SVr4, UnixWare, Solaris, and  Linux  treat  tcsendbreak(fd,arg)
+              with nonzero arg like tcdrain(fd).  SunOS treats arg as a multi‐
+              plier,  and sends a stream of bits arg times as long as done for
+              zero arg.  DG/UX and AIX treat arg (when nonzero) as a time  in‐
+              terval measured in milliseconds.  HP-UX ignores arg.)
+
+       TCSBRKP
+              So-called &quot;POSIX version&quot; of TCSBRK.  It treats nonzero arg as a
+              time interval measured in deciseconds, and does nothing when the
+              driver does not support breaks.
+
+       TIOCSBRK
+              Turn break on, that is, start sending zero bits.
+
+       TIOCCBRK
+              Turn break off, that is, stop sending zero bits.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13                    TCSBRK(2const)
+</pre></body></html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>spectacle(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>SPECTACLE(1)                Spectacle User&#x27;s Manual               SPECTACLE(1)
+
+NAME
+       spectacle - screenshot capture Utility
+
+SYNOPSIS
+
+
+       spectacle [Spectacle options]
+
+DESCRIPTION
+       spectacle is a simple application for capturing desktop screenshots. It
+       can capture images of the entire desktop, a single monitor, the
+       currently active window, the window currently under the mouse, or a
+       rectangular region of the screen. The images can then be annotated,
+       printed, sent to other applications for manipulation, or quickly be
+       saved as-is.
+
+SPECTACLE OPTIONS
+       -h, --help
+           Displays help on commandline options.
+
+       --help-all
+           Displays help including Qt specific options.
+
+       -v, --version
+           Displays version information.
+
+       -f, --fullscreen
+           Capture the entire desktop (default).
+
+       -m, --current
+           Capture the current monitor.
+
+       -a, --activewindow
+           Capture the active window.
+
+       -u, --windowundercursor
+           Capture the window currently under the cursor, including parents of
+           pop-up menus.
+
+       -t, --transientonly
+           Capture the window currently under the cursor, excluding parents of
+           pop-up menus.
+
+       -r, --region
+           Capture a rectangular region of the screen.
+
+       -l, --launchonly
+           Launch Spectacle without taking a screenshot.
+
+       -g, --gui
+           Start in GUI mode (default).
+
+       -b, --background
+           Take a screenshot and exit without showing the GUI.
+
+       -s, --dbus
+           Start in DBus-Activation mode.
+
+       -n, --nonotify
+           In background mode, do not pop up a notification when the
+           screenshot is taken.
+
+       -o, --output fileName
+           In background mode, save image to specified file fileName.
+
+       -d, --delay delayMsec
+           In background mode, delay before taking the shot (in milliseconds).
+
+       -c, --copy-image
+           In background mode, copy screenshot only to clipboard, unless -o is
+           also used.
+
+       -C, --copy-path
+           In background mode, copy screenshot file path to clipboard.
+
+       -w, --onclick
+           Wait for a click before taking screenshot. Invalidates delay..
+
+       -i, --new-instance
+           Starts a new GUI instance of spectacle without registering to DBus.
+
+       -p, --pointer
+           In background mode, include pointer in the screenshot.
+
+       -e, --no-decoration
+           In background mode, do not include window decorations in the
+           screenshot.
+
+       -E, --edit-existing existingFileName
+           Open and edit existing screenshot file.
+
+FEEDBACK
+       On IRC, irc.libera.chat #kde or via email, kde-graphics-devel@kde.org
+       or on the web, &lt;https://apps.kde.org/spectacle&gt;
+
+SEE ALSO
+           More detailed user documentation is available from help:/spectacle
+           (either enter this URL into Konqueror, or run khelpcenter
+           help:/spectacle).
+           kf6options(7)
+           qt6options(7)
+           There is also further information available at
+           https://apps.kde.org/spectacle
+
+COPYRIGHT
+       Copyright (c) 2015 Boudhayan Gupta
+
+       License: GNU General Public Version 2
+       &lt;https://www.gnu.org/licenses/gpl-2.0.html&gt;
+
+AUTHOR
+       Yuri Chornoivan &lt;yurchor@ukr.net&gt;
+           Spectacle man page.
+
+KDE Applications Spectacle 23.    2023-11-26                      SPECTACLE(1)
+</pre></body></html>

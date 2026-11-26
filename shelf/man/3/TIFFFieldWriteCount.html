@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFFieldWriteCount(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFFIELDWRITECOUNT(3tiff)          LibTIFF         TIFFFIELDWRITECOUNT(3tiff)
+
+NAME
+       TIFFFieldWriteCount - get number of values to be written to field
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFFieldWriteCount(const TIFFField *fip)
+
+DESCRIPTION
+       TIFFFieldWriteCount()  returns  the number of values to be written into
+       the specified TIFF field; that is, the number of arguments that  should
+       be  supplied  to  TIFFSetField().  For most field types this is a small
+       positive integer, typically 1 or 2, but there are some special values:
+
+       • TIFF_VARIABLE indicates that a variable number of values is possible;
+         then, a uint16_t count argument and a pointer data argument  must  be
+         supplied to TIFFSetField().
+
+       • TIFF_VARIABLE2 is the same as TIFF_VARIABLE except that the count ar‐
+         gument  must have type uint32_t. (On most modern machines, this makes
+         no practical difference, and the count argument can simply be an  int
+         in either case.)
+
+       • TIFF_SPP  indicates that the number of arguments must be equal to the
+         image&#x27;s number of samples per pixel.
+
+       fip  is  a   field   information   pointer   previously   returned   by
+       TIFFFindField(), TIFFFieldWithTag(), or TIFFFieldWithName().
+
+       For  most  field types, TIFFFieldWriteCount() returns the same value as
+       TIFFFieldReadCount(), but there are some exceptions.
+
+RETURN VALUES
+       TIFFFieldWriteCount() returns an integer.
+
+SEE ALSO
+       TIFFFieldDataType (3tiff),  TIFFFieldName  (3tiff),  TIFFFieldPassCount
+       (3tiff),    TIFFFieldQuery    (3tiff),    TIFFFieldReadCount   (3tiff),
+       TIFFFieldTag (3tiff), libtiff (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026       TIFFFIELDWRITECOUNT(3tiff)
+</pre></body></html>

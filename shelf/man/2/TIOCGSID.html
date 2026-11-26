@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCGSID(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSPGRP(2const)                                            TIOCSPGRP(2const)
+
+NAME
+       TIOCGPGRP, TIOCSPGRP, TIOCGSID - process group and session ID
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC* constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCGPGRP, pid_t *argp);
+       int ioctl(int fd, TIOCSPGRP, const pid_t *argp);
+       int ioctl(int fd, TIOCGSID, pid_t *argp);
+
+DESCRIPTION
+       TIOCGPGRP
+              When successful, equivalent to *argp = tcgetpgrp(fd).
+
+              Get the process group ID of the foreground process group on this
+              terminal.
+
+       TIOCSPGRP
+              Equivalent to tcsetpgrp(fd, *argp).
+
+              Set the foreground process group ID of this terminal.
+
+       TIOCGSID
+              When successful, equivalent to *argp = tcgetsid(fd).
+
+              Get  the  session ID of the given terminal.  This fails with the
+              error ENOTTY if the terminal is not a master pseudoterminal  and
+              not our controlling terminal.  Strange.
+
+RETURN VALUE
+       On  success, 0 is returned.  On error, -1 is returned, and errno is set
+       to indicate the error.
+
+ERRORS
+       ENOTTY The terminal is not a master pseudoterminal and not our control‐
+              ling terminal.
+
+       EPERM  Insufficient permission.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2), tcgetpgrp(3), tcsetpgrp(3), tcgetsid(3)
+
+Linux man-pages 6.9.1             2024-06-13                 TIOCSPGRP(2const)
+</pre></body></html>

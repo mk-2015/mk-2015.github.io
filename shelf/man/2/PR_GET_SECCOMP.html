@@ -1,0 +1,59 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_GET_SECCOMP(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_GET_SECCOMP(2)             System Calls Manual            PR_GET_SECCOMP(2)
+
+NAME
+       PR_GET_SECCOMP - get the secure computing mode
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_GET_SECCOMP);
+
+DESCRIPTION
+       Return the secure computing mode of the calling thread.
+
+       If  the  caller is not in secure computing mode, this operation returns
+       0; if the caller is in strict secure computing mode, then  the  prctl()
+       call  will  cause  a  SIGKILL signal to be sent to the process.  If the
+       caller is in filter mode, and this system call is allowed by  the  sec‐
+       comp  filters,  it  returns  2; otherwise, the process is killed with a
+       SIGKILL signal.
+
+       This operation is available only if the kernel is configured with  CON‐
+       FIG_SECCOMP enabled.
+
+RETURN VALUE
+       On  success,  this  call returns the nonnegative value described above.
+       On error, -1 is returned, and errno is set to indicate  the  error;  or
+       the process is killed.
+
+ERRORS
+       EINVAL The kernel was not configured with CONFIG_SECCOMP.
+
+       SIGKILL
+              The caller is in strict secure computing mode.
+
+       SIGKILL
+              The  caller  is  in filter mode, and this system call is not al‐
+              lowed by the seccomp filters.
+
+FILES
+       /proc/pid/status
+              Since Linux 3.8, the Seccomp  field  of  this  file  provides  a
+              method  of obtaining the same information, without the risk that
+              the process is killed; see proc_pid_status(5).
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.23.
+
+SEE ALSO
+       prctl(2), PR_SET_SECCOMP(2const), seccomp(2)
+
+Linux man-pages 6.9.1             2024-06-02                 PR_GET_SECCOMP(2)
+</pre></body></html>

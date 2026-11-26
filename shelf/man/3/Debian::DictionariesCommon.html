@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Debian::DictionariesCommon(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>DictionariesCommon(3pm)                                DictionariesCommon(3pm)
+
+NAME
+       Debian::DictionariesCommon.pm - dictionaries-common library
+
+SYNOPSIS
+           use Debian::DictionariesCommon q(:all)
+           $dictionaries = parseinfo (&#x27;/var/lib/dictionaries-common/ispell/iwolof&#x27;);
+           loaddb (&#x27;ispell&#x27;)
+           updatedb (&#x27;wordlist&#x27;)
+
+DESCRIPTION
+       Common functions for use from the dictionaries-common system.
+
+CALLING FUNCTIONS
+       &quot;dico_checkroot&quot;
+           Check for rootness and fail if not.
+
+       &quot;build_emacsen_support&quot;
+           Put info from dicts info files into emacsen-ispell-dicts.el
+
+       &quot;build_jed_support&quot;
+           Put info from dicts info files into jed-ispell-dicts.sl
+
+       &quot;build_squirrelmail_support&quot;
+           Build  support  file  for  squirrelmail  with  a  list of available
+           dictionaries and associated spellchecker calls, in php format.
+
+       &quot;$libdir = getlibdir($class)&quot;
+           Return info dir for given class.
+
+       &quot;$default = dico_getsysdefault($class)&quot;
+           Return system default value for given class.
+
+       &quot;$libdir = getuserdefault&quot;
+           Return value for user default ispell dictionary.
+
+       &quot;dico_get_spellchecker_params($class,\%language)&quot;
+           Get right params for $class (currently unused) and $language
+
+       &quot;\%dictionaries = loaddb($class)&quot;
+           Read class .db file and return a  reference  to  a  hash  with  its
+           contents.
+
+       &quot;\%result = parseinfo($file)&quot;
+           Parse  given  info  file  and return a reference to a hash with the
+           relevant data.
+
+       setsysdefault($value)
+           Set value for system default ispell dictionary.
+
+       &quot;setuserdefault&quot;
+           Set value for user  default  ispell  dictionary,  after  asking  to
+           select it from the available values.
+
+       updatedb($class)
+           Parse  info  files  for given class and update class .db file under
+           dictionaries-common cache dir.
+
+SEE ALSO
+       Debian dictionaries-common policy.
+
+AUTHORS
+        Rafael Laboissiere
+        Agustin Martin
+
+1.30.10                            2025-3-02           DictionariesCommon(3pm)
+</pre></body></html>

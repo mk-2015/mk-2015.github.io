@@ -1,0 +1,129 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KDF-TLS1_PRF(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KDF-TLS1_PRF(7SSL)              OpenSSL             EVP_KDF-TLS1_PRF(7SSL)
+
+NAME
+       EVP_KDF-TLS1_PRF - The TLS1 PRF EVP_KDF implementation
+
+DESCRIPTION
+       Support for computing the TLS1 PRF through the EVP_KDF API.
+
+       The EVP_KDF-TLS1_PRF algorithm implements the PRF used by TLS versions
+       up to and including TLS 1.2.
+
+       The output is considered to be keying material.
+
+   Identity
+       &quot;TLS1-PRF&quot; is the name for this implementation; it can be used with the
+       EVP_KDF_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;properties&quot; (OSSL_KDF_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+       &quot;digest&quot; (OSSL_KDF_PARAM_DIGEST) &lt;UTF8 string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_KDF(3).
+
+           The  OSSL_KDF_PARAM_DIGEST  parameter  is  used  to set the message
+           digest associated with the TLS PRF.  EVP_md5_sha1() is treated as a
+           special case which uses the PRF algorithm using both MD5  and  SHA1
+           as used in TLS 1.0 and 1.1.
+
+       &quot;secret&quot; (OSSL_KDF_PARAM_SECRET) &lt;octet string&gt;
+           This  parameter sets the secret value of the TLS PRF.  Any existing
+           secret value is replaced.
+
+       &quot;seed&quot; (OSSL_KDF_PARAM_SEED) &lt;octet string&gt;
+           This parameter sets the context seed.  The length  of  the  context
+           seed  cannot exceed 1024 bytes; this should be more than enough for
+           any normal use of the TLS PRF.
+
+       The OpenSSL FIPS provider also supports the following parameters:
+
+       &quot;fips-indicator&quot; (OSSL_KDF_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           A getter that returns 1 if the operation is  FIPS  approved,  or  0
+           otherwise.   This  may  be  used  after  calling EVP_KDF_derive. It
+           returns 0 if any &quot;***-check&quot; related parameter is set to 0 and  the
+           check fails.
+
+       &quot;ems_check&quot; (OSSL_KDF_PARAM_FIPS_EMS_CHECK) &lt;integer&gt;
+           The  default  value of 1 causes an error during EVP_KDF_derive() if
+           &quot;master secret&quot; is used instead of &quot;extended master secret&quot; Setting
+           this to zero will ignore the error  and  set  the  approved  &quot;fips-
+           indicator&quot;  to  0.  This option breaks FIPS compliance if it causes
+           the approved &quot;fips-indicator&quot; to return 0.
+
+       &quot;digest-check&quot; (OSSL_KDF_PARAM_FIPS_DIGEST_CHECK) &lt;integer&gt;
+           The   default   value    of    1    causes    an    error    during
+           EVP_KDF_CTX_set_params()  if  used digest is not approved.  Setting
+           this to zero will ignore the error  and  set  the  approved  &quot;fips-
+           indicator&quot;  to  0.  This option breaks FIPS compliance if it causes
+           the approved &quot;fips-indicator&quot; to return 0.
+
+           According to  SP  800-135r1,  the  following  are  approved  digest
+           algorithms: SHA2-256, SHA2-384, SHA2-512.
+
+       &quot;key-check&quot; (OSSL_KDF_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           The    default    value    of    1    causes    an   error   during
+           EVP_KDF_CTX_set_params() if the length of used  key-derivation  key
+           (OSSL_KDF_PARAM_SECRET)  is shorter than 112 bits.  Setting this to
+           zero will ignore the error and set the approved &quot;fips-indicator&quot; to
+           0.  This option breaks FIPS compliance if it  causes  the  approved
+           &quot;fips-indicator&quot; to return 0.
+
+NOTES
+       A context for the TLS PRF can be obtained by calling:
+
+        EVP_KDF *kdf = EVP_KDF_fetch(NULL, &quot;TLS1-PRF&quot;, NULL);
+        EVP_KDF_CTX *kctx = EVP_KDF_CTX_new(kdf);
+
+       The  digest,  secret value and seed must be set before a key is derived
+       otherwise an error will occur.
+
+       The output length of the PRF is specified by the  keylen  parameter  to
+       the EVP_KDF_derive() function.
+
+EXAMPLES
+       This  example  derives  10  bytes  using  SHA-256  with  the secret key
+       &quot;secret&quot; and seed value &quot;seed&quot;:
+
+        EVP_KDF *kdf;
+        EVP_KDF_CTX *kctx;
+        unsigned char out[10];
+        OSSL_PARAM params[4], *p = params;
+
+        kdf = EVP_KDF_fetch(NULL, &quot;TLS1-PRF&quot;, NULL);
+        kctx = EVP_KDF_CTX_new(kdf);
+        EVP_KDF_free(kdf);
+
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST,
+                                                SN_sha256, strlen(SN_sha256));
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET,
+                                                 &quot;secret&quot;, (size_t)6);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SEED,
+                                                 &quot;seed&quot;, (size_t)4);
+        *p = OSSL_PARAM_construct_end();
+        if (EVP_KDF_derive(kctx, out, sizeof(out), params) &lt;= 0) {
+            error(&quot;EVP_KDF_derive&quot;);
+        }
+        EVP_KDF_CTX_free(kctx);
+
+CONFORMING TO
+       RFC 2246, RFC 5246 and NIST SP 800-135 r1
+
+SEE ALSO
+       EVP_KDF(3),          EVP_KDF_CTX_new(3),           EVP_KDF_CTX_free(3),
+       EVP_KDF_CTX_set_params(3),     EVP_KDF_derive(3),    &quot;PARAMETERS&quot;    in
+       EVP_KDF(3)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2018-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in   the   file   LICENSE   in   the   source   distribution   or    at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09            EVP_KDF-TLS1_PRF(7SSL)
+</pre></body></html>

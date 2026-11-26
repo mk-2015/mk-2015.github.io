@@ -1,0 +1,53 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>isfdtype(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>isfdtype(3)                Library Functions Manual                isfdtype(3)
+
+NAME
+       isfdtype - test file type of a file descriptor
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;sys/stat.h&gt;
+       #include &lt;sys/socket.h&gt;
+
+       int isfdtype(int fd, int fdtype);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       isfdtype():
+           Since glibc 2.20:
+               _DEFAULT_SOURCE
+           Before glibc 2.20:
+               _BSD_SOURCE || _SVID_SOURCE
+
+DESCRIPTION
+       The  isfdtype() function tests whether the file descriptor fd refers to
+       a file of type fdtype.  The fdtype argument specifies one of the  S_IF*
+       constants  defined  in  &lt;sys/stat.h&gt;  and  documented in stat(2) (e.g.,
+       S_IFREG).
+
+RETURN VALUE
+       The isfdtype() function returns 1 if the file descriptor fd is of  type
+       fdtype and 0 if it is not.  On failure, -1 is returned and errno is set
+       to indicate the error.
+
+ERRORS
+       The  isfdtype()  function  can  fail with any of the same errors as fs‐
+       tat(2).
+
+VERSIONS
+       Portable applications should use fstat(2) instead.
+
+STANDARDS
+       None.
+
+HISTORY
+       It appeared in the draft POSIX.1g standard.  It is present  on  OpenBSD
+       and  Tru64  UNIX  (where the required header file in both cases is just
+       &lt;sys/stat.h&gt;, as shown in the POSIX.1g draft).
+
+SEE ALSO
+       fstat(2)
+
+Linux man-pages 6.9.1             2024-05-02                       isfdtype(3)
+</pre></body></html>

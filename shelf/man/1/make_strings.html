@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>make_strings(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>make_strings(1)              GNUstep System Manual             make_strings(1)
+
+NAME
+       make_strings  -  tool to build lists of localizable strings from Objec‐
+       tive-C files
+
+
+SYNOPSIS
+       make_strings [--help] [--verbose]  [--aggresive-import]  [--aggressive-
+       match] [--aggressive-remove] [-L languages] files.[hmc...]
+
+
+DESCRIPTION
+       make_strings  parses  Objective-C files and builds lists of localizable
+       strings.  It then creates new .strings files or merges the strings with
+       existing .strings files.  It&#x27;s fairly intelligent when matching old and
+       new strings, and produces .strings files that are (supposed to be) easy
+       for a translator to work with.
+
+       make_strings accepts the following options:
+
+
+OPTIONS
+       --help Prints a short list of available options.
+
+       --verbose
+              Prints additional information while processing.
+
+       -L languages
+              Specify which languages to process.  Multuple -L options are ac‐
+              cepted, or multiple languages defined in one -L flag.
+
+       --aggressive-import
+              Activates --aggresive-match and  automatically  removes  &quot;dummy&quot;
+              entries  that  are  added by importing .strings files which were
+              not created by make_strings program.  This  option  is  suitable
+              when  make_strings is run for the first time and there is an ex‐
+              isting .strings file which contains a fairly  accurate  transla‐
+              tion.
+
+       --aggressive-match
+              This  option  will  make  make_strings assume that matching keys
+              should have matching translations.  This can save lots of  work,
+              but it increases the risk of erroneous translation.
+
+       --aggressive-remove
+              Removes obsolete strings/keys.
+
+
+EXAMPLES
+       make_strings -L &quot;English Swedish Russian&quot; *.[hm]
+
+
+SEE ALSO
+       GNUstep(7).
+
+
+AUTHORS
+       make_strings was written Alexander Malmberg &lt;alexander@malmberg.org&gt;.
+
+       This manual page was added by Yavor Doganov &lt;yavor@gnu.org&gt;.
+
+
+COPYRIGHT
+       Copyright (C) 2009 Free Software Foundation, Inc.
+
+       Copying  and  distribution  of this file, with or without modification,
+       are permitted in any medium without royalty provided the copyright  no‐
+       tice and this notice are preserved.
+
+GNUstep                         August 16, 2009                make_strings(1)
+</pre></body></html>

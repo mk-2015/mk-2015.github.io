@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>sd_journal_has_persistent_files(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>SD_JOURNA...IME_FILES(3) sd_journal_has_runtime_files SD_JOURNA...IME_FILES(3)
+
+NAME
+       sd_journal_has_runtime_files, sd_journal_has_persistent_files - Query
+       availability of runtime or persistent journal files
+
+SYNOPSIS
+       #include &lt;systemd/sd-journal.h&gt;
+
+
+       int sd_journal_has_runtime_files(sd_journal *j);
+
+       int sd_journal_has_persistent_files(sd_journal *j);
+
+DESCRIPTION
+       sd_journal_has_runtime_files() returns a positive value if runtime
+       journal files (present in /run/systemd/journal/) have been found.
+       Otherwise, returns 0.
+
+       sd_journal_has_persistent_files() returns a positive value if
+       persistent journal files (present in /var/log/journal/) have been
+       found. Otherwise, returns 0.
+
+RETURN VALUE
+       Both sd_journal_has_runtime_files() and
+       sd_journal_has_persistent_files() return -EINVAL if their argument is
+       NULL.
+
+NOTES
+       All functions listed here are thread-agnostic and only a single thread
+       may operate on a given object at any given time. Different threads may
+       access the same object at different times. Multiple independent objects
+       may be used from different threads in parallel.
+
+       Functions described here are available as a shared library, which can
+       be compiled against and linked to with the libsystemd pkg-config(1)
+       file.
+
+HISTORY
+       sd_journal_has_runtime_files() and sd_journal_has_persistent_files()
+       were added in version 229.
+
+SEE ALSO
+       systemd(1), sd-journal(3)
+
+systemd 257.13                                        SD_JOURNA...IME_FILES(3)
+</pre></body></html>

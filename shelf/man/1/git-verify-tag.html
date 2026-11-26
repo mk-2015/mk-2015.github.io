@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>git-verify-tag(1)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/1/">man(1)</a></p><hr><pre>GIT-VERIFY-TAG(1)                 Git Manual                 GIT-VERIFY-TAG(1)
+
+NAME
+       git-verify-tag - Check the GPG signature of tags
+
+SYNOPSIS
+       git verify-tag [-v | --verbose] [--format=&lt;format&gt;] [--raw] &lt;tag&gt;...
+
+
+DESCRIPTION
+       Validates the gpg signature created by git tag.
+
+OPTIONS
+       --raw
+           Print the raw gpg status output to standard error instead of the
+           normal human-readable output.
+
+       -v, --verbose
+           Print the contents of the tag object before validating it.
+
+       &lt;tag&gt;...
+           SHA-1 identifiers of Git tag objects.
+
+GIT
+       Part of the git(1) suite
+
+Git 2.47.3                        07/30/2025                 GIT-VERIFY-TAG(1)
+</pre></body></html>

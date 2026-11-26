@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFMergeFieldInfo(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFMERGEFIELDINFO(3tiff)           LibTIFF          TIFFMERGEFIELDINFO(3tiff)
+
+NAME
+       TIFFMergeFieldInfo  -  add application-defined TIFF tags to the list of
+       known libtiff tags
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       int TIFFMergeFieldInfo(TIFF *tif, const TIFFFieldInfo info[], uint32_t
+       n)
+
+DESCRIPTION
+       TIFFMergeFieldInfo() is used to add application-defined  TIFF  tags  to
+       the  list  of  known  libtiff  tags.   A  brief description is given at
+       Defining Application Tags and a description of the TIFFFieldInfo  array
+       elements can be found at TIFFFFieldInfo definition.
+
+DIAGNOSTICS
+       None.
+
+SEE ALSO
+       libtiff (3tiff), Defining New TIFF Tags, TIFFSetTagExtender
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026        TIFFMERGEFIELDINFO(3tiff)
+</pre></body></html>

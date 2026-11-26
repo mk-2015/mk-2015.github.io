@@ -1,0 +1,102 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>org.bluez.obex.Transfer(5)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/5/">man(5)</a></p><hr><pre>ORG.BLUEZ...X.TRANSFER(5) Linux System AdministrationORG.BLUEZ...X.TRANSFER(5)
+
+NAME
+       org.bluez.obex.Transfer - BlueZ D-Bus OBEX Transfer API documentation
+
+INTERFACE
+       Service
+              org.bluez.obex
+
+       Interface
+              org.bluez.obex.Transfer1
+
+       Object path
+              [Session object path]/transfer{#}
+
+   Methods
+   void Cancel()
+          Cancels the current transference.
+
+          Possible errors:
+
+          org.bluez.obex.Error.NotAuthorized
+
+          org.bluez.obex.Error.InProgress
+
+          org.bluez.obex.Error.Failed
+
+   void Suspend()
+          Suspends transference.
+
+          Possible errors:
+
+          org.bluez.obex.Error.NotAuthorized
+
+          org.bluez.obex.Error.NotInProgress
+                 If transfer is still in with Status &quot;queued&quot;.
+
+   void Resume()
+          Resumes  transference  previously  suspended  with  use of Suspend()
+          method.
+
+          Possible errors:
+
+          org.bluez.obex.Error.NotAuthorized
+
+          org.bluez.obex.Error.NotInProgress
+                 If transfer is still in with Status &quot;queued&quot;.
+
+   Properties
+   string Status [readonly]
+          Indicates the current status of the transfer.
+
+          Possible values:
+
+          &quot;queued&quot;
+
+          &quot;active&quot;
+
+          &quot;suspended&quot;
+
+          &quot;complete&quot;
+
+          &quot;error&quot;
+
+   object Session [readonly]
+          The object path of the session the transfer belongs to.
+
+   string Name [readonly, optional]
+          Name of the object being transferred.
+
+          Either Name or Type or both will be present.
+
+   string Type [readonly, optional]
+          Type of the object transferred being transferred.
+
+          Either Name or Type or both will be present.
+
+   uint64 Time [readonly, optional]
+          Time of the object being transferred if this is provided by the  re‐
+          mote party.
+
+   uint64 Size [readonly, optional]
+          Size of the object being transferred.
+
+          If the size is unknown, then this property will not be present.
+
+   uint64 Transferred [readonly, optional]
+          Number of bytes transferred.
+
+          For  transfers  with  Status set to &quot;queued&quot;, this value will not be
+          present.
+
+   string Filename [readonly, optional]
+          Complete name of the file being received or sent.
+
+          For incoming object push transaction, this will be the proposed  de‐
+          fault  location  and  name.  It can be overwritten by the Authorize‐
+          Push() in org.bluez.obex.Agent(5) and will be then  updated  accord‐
+          ingly.
+
+BlueZ                            October 2023        ORG.BLUEZ...X.TRANSFER(5)
+</pre></body></html>

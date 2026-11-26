@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_KDF-SS(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_KDF-SS(7SSL)                    OpenSSL                   EVP_KDF-SS(7SSL)
+
+NAME
+       EVP_KDF-SS - The Single Step / One Step EVP_KDF implementation
+
+DESCRIPTION
+       The EVP_KDF-SS algorithm implements the Single Step key derivation
+       function (SSKDF).  SSKDF derives a key using input such as a shared
+       secret key (that was generated during the execution of a key
+       establishment scheme) and fixedinfo.  SSKDF is also informally referred
+       to as &#x27;Concat KDF&#x27;.
+
+       The output is considered to be keying material.
+
+   Auxiliary function
+       The implementation uses a selectable auxiliary function H, which can be
+       one of:
+
+       H(x) = hash(x, digest=md)
+       H(x) = HMAC_hash(x, key=salt, digest=md)
+       H(x) = KMACxxx(x, key=salt, custom=&quot;KDF&quot;, outlen=mac_size)
+
+       Both  the  HMAC  and  KMAC implementations set the key using the &#x27;salt&#x27;
+       value.  The hash and HMAC also require the digest to be set.
+
+   Identity
+       &quot;SSKDF&quot; is the name for this implementation; it can be  used  with  the
+       EVP_KDF_fetch() function.
+
+   Supported parameters
+       The supported parameters are:
+
+       &quot;properties&quot; (OSSL_KDF_PARAM_PROPERTIES) &lt;UTF8 string&gt;
+       &quot;digest&quot; (OSSL_KDF_PARAM_DIGEST) &lt;UTF8 string&gt;
+           This parameter is ignored for KMAC.
+
+       &quot;mac&quot; (OSSL_KDF_PARAM_MAC) &lt;UTF8 string&gt;
+       &quot;maclen&quot; (OSSL_KDF_PARAM_MAC_SIZE) &lt;unsigned integer&gt;
+       &quot;salt&quot; (OSSL_KDF_PARAM_SALT) &lt;octet string&gt;
+           These parameters work as described in &quot;PARAMETERS&quot; in EVP_KDF(3).
+
+       &quot;key&quot; (OSSL_KDF_PARAM_SECRET) &lt;octet string&gt;
+           This  parameter  set  the  shared  secret  that  is  used  for  key
+           derivation.
+
+       &quot;info&quot; (OSSL_KDF_PARAM_INFO) &lt;octet string&gt;
+           This parameter sets an optional value for fixedinfo, also known  as
+           otherinfo.
+
+       The OpenSSL FIPS provider also supports the following parameters:
+
+       &quot;fips-indicator&quot; (OSSL_KDF_PARAM_FIPS_APPROVED_INDICATOR) &lt;integer&gt;
+           A  getter  that  returns  1 if the operation is FIPS approved, or 0
+           otherwise.  This may  be  used  after  calling  EVP_KDF_derive.  It
+           returns 0 if &quot;key-check&quot; is set to 0 and the check fails.
+
+       &quot;key-check&quot; (OSSL_KDF_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           The    default    value    of    1    causes    an   error   during
+           EVP_KDF_CTX_set_params() if the length of used  key-derivation  key
+           (OSSL_KDF_PARAM_KEY)  is  shorter  than  112 bits.  Setting this to
+           zero will ignore the error and set the approved &quot;fips-indicator&quot; to
+           0.  This option breaks FIPS compliance if it  causes  the  approved
+           &quot;fips-indicator&quot; to return 0.
+
+NOTES
+       A context for SSKDF can be obtained by calling:
+
+        EVP_KDF *kdf = EVP_KDF_fetch(NULL, &quot;SSKDF&quot;, NULL);
+        EVP_KDF_CTX *kctx = EVP_KDF_CTX_new(kdf);
+
+       The  output length of an SSKDF is specified via the keylen parameter to
+       the EVP_KDF_derive(3) function.
+
+EXAMPLES
+       This example derives 10 bytes using H(x) = SHA-256, with the secret key
+       &quot;secret&quot; and fixedinfo value &quot;label&quot;:
+
+        EVP_KDF *kdf;
+        EVP_KDF_CTX *kctx;
+        unsigned char out[10];
+        OSSL_PARAM params[4], *p = params;
+
+        kdf = EVP_KDF_fetch(NULL, &quot;SSKDF&quot;, NULL);
+        kctx = EVP_KDF_CTX_new(kdf);
+        EVP_KDF_free(kdf);
+
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST,
+                                                SN_sha256, strlen(SN_sha256));
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_KEY,
+                                                 &quot;secret&quot;, (size_t)6);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_INFO,
+                                                 &quot;label&quot;, (size_t)5);
+        *p = OSSL_PARAM_construct_end();
+        if (EVP_KDF_derive(kctx, out, sizeof(out), params) &lt;= 0) {
+            error(&quot;EVP_KDF_derive&quot;);
+        }
+
+        EVP_KDF_CTX_free(kctx);
+
+       This example derives 10 bytes using  H(x)  =  HMAC(SHA-256),  with  the
+       secret key &quot;secret&quot;, fixedinfo value &quot;label&quot; and salt &quot;salt&quot;:
+
+        EVP_KDF *kdf;
+        EVP_KDF_CTX *kctx;
+        unsigned char out[10];
+        OSSL_PARAM params[6], *p = params;
+
+        kdf = EVP_KDF_fetch(NULL, &quot;SSKDF&quot;, NULL);
+        kctx = EVP_KDF_CTX_new(kdf);
+        EVP_KDF_free(kdf);
+
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_MAC,
+                                                SN_hmac, strlen(SN_hmac));
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST,
+                                                SN_sha256, strlen(SN_sha256));
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET,
+                                                 &quot;secret&quot;, (size_t)6);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_INFO,
+                                                 &quot;label&quot;, (size_t)5);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SALT,
+                                                 &quot;salt&quot;, (size_t)4);
+        *p = OSSL_PARAM_construct_end();
+        if (EVP_KDF_derive(kctx, out, sizeof(out), params) &lt;= 0) {
+            error(&quot;EVP_KDF_derive&quot;);
+        }
+
+        EVP_KDF_CTX_free(kctx);
+
+       This example derives 10 bytes using H(x) = KMAC128(x,salt,outlen), with
+       the  secret  key  &quot;secret&quot;  fixedinfo value &quot;label&quot;, salt of &quot;salt&quot; and
+       KMAC outlen of 20:
+
+        EVP_KDF *kdf;
+        EVP_KDF_CTX *kctx;
+        unsigned char out[10];
+        OSSL_PARAM params[6], *p = params;
+
+        kdf = EVP_KDF_fetch(NULL, &quot;SSKDF&quot;, NULL);
+        kctx = EVP_KDF_CTX_new(kdf);
+        EVP_KDF_free(kdf);
+
+        *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_MAC,
+                                                SN_kmac128, strlen(SN_kmac128));
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SECRET,
+                                                 &quot;secret&quot;, (size_t)6);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_INFO,
+                                                 &quot;label&quot;, (size_t)5);
+        *p++ = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SALT,
+                                                 &quot;salt&quot;, (size_t)4);
+        *p++ = OSSL_PARAM_construct_size_t(OSSL_KDF_PARAM_MAC_SIZE, (size_t)20);
+        *p = OSSL_PARAM_construct_end();
+        if (EVP_KDF_derive(kctx, out, sizeof(out), params) &lt;= 0) {
+            error(&quot;EVP_KDF_derive&quot;);
+        }
+
+        EVP_KDF_CTX_free(kctx);
+
+CONFORMING TO
+       NIST SP800-56Cr1.
+
+SEE ALSO
+       EVP_KDF(3),          EVP_KDF_CTX_new(3),           EVP_KDF_CTX_free(3),
+       EVP_KDF_CTX_set_params(3),                 EVP_KDF_CTX_get_kdf_size(3),
+       EVP_KDF_derive(3), &quot;PARAMETERS&quot; in EVP_KDF(3)
+
+HISTORY
+       This functionality was added in OpenSSL 3.0.
+
+COPYRIGHT
+       Copyright 2019-2024 The OpenSSL Project Authors. All  Rights  Reserved.
+       Copyright (c) 2019, Oracle and/or its affiliates.  All rights reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                  EVP_KDF-SS(7SSL)
+</pre></body></html>

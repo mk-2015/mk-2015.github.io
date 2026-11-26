@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>iswgraph(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>iswgraph(3)                Library Functions Manual                iswgraph(3)
+
+NAME
+       iswgraph - test for graphic wide character
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;wctype.h&gt;
+
+       int iswgraph(wint_t wc);
+
+DESCRIPTION
+       The  iswgraph()  function  is  the wide-character equivalent of the is‐
+       graph(3) function.  It tests whether wc is a wide  character  belonging
+       to the wide-character class &quot;graph&quot;.
+
+       The  wide-character  class  &quot;graph&quot; is a subclass of the wide-character
+       class &quot;print&quot;.
+
+       Being a subclass of the wide-character class &quot;print&quot;, the  wide-charac‐
+       ter class &quot;graph&quot; is disjoint from the wide-character class &quot;cntrl&quot;.
+
+       The  wide-character  class  &quot;graph&quot; is disjoint from the wide-character
+       class &quot;space&quot; and therefore also disjoint from its subclass &quot;blank&quot;.
+
+       The wide-character class &quot;graph&quot; contains all the wide characters  from
+       the wide-character class &quot;print&quot; except the space character.  It there‐
+       fore contains the wide-character classes &quot;alnum&quot; and &quot;punct&quot;.
+
+RETURN VALUE
+       The  iswgraph()  function returns nonzero if wc is a wide character be‐
+       longing to the wide-character class  &quot;graph&quot;.   Otherwise,  it  returns
+       zero.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       iswgraph() T}   Thread safety  MT-Safe locale
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       POSIX.1-2001, C99.
+
+NOTES
+       The behavior of iswgraph() depends on the LC_CTYPE category of the
+       current locale.
+
+SEE ALSO
+       isgraph(3), iswctype(3)
+
+Linux man-pages 6.9.1             2024-05-02                       iswgraph(3)
+</pre></body></html>

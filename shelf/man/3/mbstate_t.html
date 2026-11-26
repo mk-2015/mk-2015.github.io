@@ -1,0 +1,59 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>mbstate_t(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>mbstate_t(3type)                                              mbstate_t(3type)
+
+NAME
+       mbstate_t - multi-byte-character conversion state
+
+LIBRARY
+       Standard C library (libc)
+
+SYNOPSIS
+       #include &lt;wchar.h&gt;
+
+       typedef /* ... */  mbstate_t;
+
+DESCRIPTION
+       Character  conversion between the multibyte representation and the wide
+       character representation uses  conversion  state,  of  type  mbstate_t.
+       Conversion  of  a string uses a finite-state machine; when it is inter‐
+       rupted after the complete conversion of a number of characters, it  may
+       need  to  save a state for processing the remaining characters.  Such a
+       conversion  state  is  needed  for  the  sake  of  encodings  such   as
+       ISO/IEC 2022 and UTF-7.
+
+       The  initial  state  is  the  state at the beginning of conversion of a
+       string.  There are two kinds of state: the one  used  by  multibyte  to
+       wide  character conversion functions, such as mbsrtowcs(3), and the one
+       used by wide character to multibyte conversion functions, such as wcsr‐
+       tombs(3), but they both fit in a mbstate_t, and they both have the same
+       representation for an initial state.
+
+       For 8-bit encodings, all states are equivalent to  the  initial  state.
+       For  multibyte  encodings  like  UTF-8,  EUC-*, BIG5, or SJIS, the wide
+       character to multibyte conversion functions never  produce  non-initial
+       states,  but  the multibyte to wide-character conversion functions like
+       mbrtowc(3) do produce non-initial states when interrupted in the middle
+       of a character.
+
+       One possible way to create an mbstate_t in initial state is to  set  it
+       to zero:
+
+           mbstate_t state;
+           memset(&amp;state, 0, sizeof(state));
+
+       On  Linux,  the  following  works  as well, but might generate compiler
+       warnings:
+
+           mbstate_t state = { 0 };
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       C99, POSIX.1-2001.
+
+SEE ALSO
+       mbrlen(3),  mbrtowc(3),  mbsinit(3),  mbsrtowcs(3),  wcrtomb(3),  wcsr‐
+       tombs(3)
+
+Linux man-pages 6.9.1             2024-05-03                  mbstate_t(3type)
+</pre></body></html>

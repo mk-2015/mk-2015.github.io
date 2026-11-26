@@ -1,0 +1,144 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>EVP_MAC-KMAC256(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>EVP_MAC-KMAC(7SSL)                  OpenSSL                 EVP_MAC-KMAC(7SSL)
+
+NAME
+       EVP_MAC-KMAC, EVP_MAC-KMAC128, EVP_MAC-KMAC256 - The KMAC EVP_MAC
+       implementations
+
+DESCRIPTION
+       Support for computing KMAC MACs through the EVP_MAC API.
+
+   Identity
+       These implementations are identified with one of these names and
+       properties, to be used with EVP_MAC_fetch():
+
+       &quot;KMAC-128&quot;, &quot;provider=default&quot; or &quot;provider=fips&quot;
+       &quot;KMAC-256&quot;, &quot;provider=default&quot; or &quot;provider=fips&quot;
+
+   Supported parameters
+       The   general   description   of  these  parameters  can  be  found  in
+       &quot;PARAMETERS&quot; in EVP_MAC(3).
+
+       All  these  parameters  (except  for  &quot;block-size&quot;)  can  be  set  with
+       EVP_MAC_CTX_set_params().   Furthermore,  the  &quot;size&quot;  parameter can be
+       retrieved      with       EVP_MAC_CTX_get_params(),       or       with
+       EVP_MAC_CTX_get_mac_size().   The length of the &quot;size&quot; parameter should
+       not exceed that of a size_t.  Likewise, the &quot;block-size&quot; parameter  can
+       be     retrieved     with     EVP_MAC_CTX_get_params(),     or     with
+       EVP_MAC_CTX_get_block_size().
+
+       &quot;key&quot; (OSSL_MAC_PARAM_KEY) &lt;octet string&gt;
+           Sets the MAC key.  Setting this parameter is identical to passing a
+           key to EVP_MAC_init(3).  The length of the key (in bytes)  must  be
+           in the range 4...512.
+
+       &quot;custom&quot; (OSSL_MAC_PARAM_CUSTOM) &lt;octet string&gt;
+           Sets  the  customization  string.   It  is an optional value with a
+           length of at most 512 bytes, and is empty by default.
+
+       &quot;size&quot; (OSSL_MAC_PARAM_SIZE) &lt;unsigned integer&gt;
+           Sets the MAC size.  By default, it is 32 for &quot;KMAC-128&quot; and 64  for
+           &quot;KMAC-256&quot;.
+
+       &quot;block-size&quot; (OSSL_MAC_PARAM_BLOCK_SIZE) &lt;unsigned integer&gt;
+           Gets  the  MAC  block  size.   It is 168 for &quot;KMAC-128&quot; and 136 for
+           &quot;KMAC-256&quot;.
+
+       &quot;xof&quot; (OSSL_MAC_PARAM_XOF) &lt;integer&gt;
+           The &quot;xof&quot; parameter value is expected to be 1 or 0. Use 1 to enable
+           XOF mode.  The default value is 0.
+
+       &quot;fips-indicator&quot; (OSSL_MAC_PARAM_FIPS_APPROVED_INDICATOR) &lt;int&gt;
+           This settable parameter is described in provider-mac(7).
+
+       &quot;no-short-mac&quot; (OSSL_MAC_PARAM_FIPS_NO_SHORT_MAC) &lt;integer&gt;
+           This settable parameter is described  in  provider-mac(7).   It  is
+           used by the OpenSSL FIPS provider and the minimum length output for
+           KMAC is defined by NIST&#x27;s SP 800-185 8.4.2.
+
+       &quot;key-check&quot; (OSSL_MAC_PARAM_FIPS_KEY_CHECK) &lt;integer&gt;
+           This settable parameter is described in provider-mac(7).
+
+       The  &quot;custom&quot;  and  &quot;no-short-mac&quot; parameters must be set as part of or
+       before the EVP_MAC_init() call.  The &quot;xof&quot; and &quot;size&quot; parameters can be
+       set at any time before EVP_MAC_final().  The &quot;key&quot; parameter is set  as
+       part of the EVP_MAC_init() call, but can be set before it instead.
+
+EXAMPLES
+         #include &lt;openssl/evp.h&gt;
+         #include &lt;openssl/params.h&gt;
+
+         static int do_kmac(const unsigned char *in, size_t in_len,
+                            const unsigned char *key, size_t key_len,
+                            const unsigned char *custom, size_t custom_len,
+                            int xof_enabled, unsigned char *out, int out_len)
+         {
+             EVP_MAC_CTX *ctx = NULL;
+             EVP_MAC *mac = NULL;
+             OSSL_PARAM params[4], *p;
+             int ret = 0;
+             size_t l = 0;
+
+             mac = EVP_MAC_fetch(NULL, &quot;KMAC-128&quot;, NULL);
+             if (mac == NULL)
+                 goto err;
+             ctx = EVP_MAC_CTX_new(mac);
+             /* The mac can be freed after it is used by EVP_MAC_CTX_new */
+             EVP_MAC_free(mac);
+             if (ctx == NULL)
+                 goto err;
+
+             /*
+              * Setup parameters required before calling EVP_MAC_init()
+              * The parameters OSSL_MAC_PARAM_XOF and OSSL_MAC_PARAM_SIZE may also be
+              * used at this point.
+              */
+             p = params;
+             *p++ = OSSL_PARAM_construct_octet_string(OSSL_MAC_PARAM_KEY,
+                                                      (void *)key, key_len);
+             if (custom != NULL &amp;&amp; custom_len != 0)
+               *p++ = OSSL_PARAM_construct_octet_string(OSSL_MAC_PARAM_CUSTOM,
+                                                        (void *)custom, custom_len);
+             *p = OSSL_PARAM_construct_end();
+             if (!EVP_MAC_CTX_set_params(ctx, params))
+                 goto err;
+
+             if (!EVP_MAC_init(ctx))
+                 goto err;
+
+             /*
+              * Note: the following optional parameters can be set any time
+              * before EVP_MAC_final().
+              */
+             p = params;
+             *p++ = OSSL_PARAM_construct_int(OSSL_MAC_PARAM_XOF, &amp;xof_enabled);
+             *p++ = OSSL_PARAM_construct_int(OSSL_MAC_PARAM_SIZE, &amp;out_len);
+             *p = OSSL_PARAM_construct_end();
+             if (!EVP_MAC_CTX_set_params(ctx, params))
+                 goto err;
+
+             /* The update may be called multiple times here for streamed input */
+             if (!EVP_MAC_update(ctx, in, in_len))
+                 goto err;
+             if (!EVP_MAC_final(ctx, out, &amp;l, out_len))
+                 goto err;
+             ret = 1;
+         err:
+             EVP_MAC_CTX_free(ctx);
+             return ret;
+         }
+
+SEE ALSO
+       EVP_MAC_CTX_get_params(3),  EVP_MAC_CTX_set_params(3),  &quot;PARAMETERS&quot; in
+       EVP_MAC(3),        OSSL_PARAM(3),        SP        800-185        8.4.2
+       &lt;https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-185.pdf&gt;
+
+COPYRIGHT
+       Copyright 2018-2024 The OpenSSL Project Authors. All Rights Reserved.
+
+       Licensed under the Apache License 2.0 (the &quot;License&quot;).  You may not use
+       this file except in compliance with the License.  You can obtain a copy
+       in    the   file   LICENSE   in   the   source   distribution   or   at
+       &lt;https://www.openssl.org/source/license.html&gt;.
+
+3.5.7                             2026-06-09                EVP_MAC-KMAC(7SSL)
+</pre></body></html>

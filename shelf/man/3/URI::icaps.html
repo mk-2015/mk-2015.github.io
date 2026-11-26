@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>URI::icaps(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>URI::icaps(3pm)       User Contributed Perl Documentation      URI::icaps(3pm)
+
+NAME
+       URI::icaps - URI scheme for ICAPS Identifiers
+
+VERSION
+       Version 5.20
+
+SYNOPSIS
+           use URI::icaps;
+
+           my $uri = URI-&gt;new(&#x27;icaps://icap-proxy.example.com/&#x27;);
+
+DESCRIPTION
+       This module implements the &quot;icaps:&quot; URI scheme defined in RFC 3507
+       &lt;http://tools.ietf.org/html/rfc3507&gt;, for the Internet Content
+       Adaptation Protocol
+       &lt;https://en.wikipedia.org/wiki/Internet_Content_Adaptation_Protocol&gt;.
+
+SUBROUTINES/METHODS
+       This module inherits the behaviour of URI::icap and overrides the
+       securesecure&gt; method.
+
+   secure
+       returns 1 as icaps is a secure protocol
+
+DIAGNOSTICS
+       See URI::icap
+
+CONFIGURATION AND ENVIRONMENT
+       See URI::icap
+
+DEPENDENCIES
+       None
+
+INCOMPATIBILITIES
+       None reported
+
+BUGS AND LIMITATIONS
+       See URI::icap
+
+SEE ALSO
+       RFC 3507 &lt;http://tools.ietf.org/html/rfc3507&gt;
+
+AUTHOR
+       David Dick, &quot;&lt;ddick at cpan.org&gt;&quot;
+
+LICENSE AND COPYRIGHT
+       Copyright 2016 David Dick.
+
+       This program is free software; you can redistribute it and/or modify it
+       under the terms of either: the GNU General Public License as published
+       by the Free Software Foundation; or the Artistic License.
+
+       See &lt;http://dev.perl.org/licenses/&gt; for more information.
+
+perl v5.38.2                      2024-10-09                   URI::icaps(3pm)
+</pre></body></html>

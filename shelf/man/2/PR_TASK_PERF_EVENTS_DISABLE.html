@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_TASK_PERF_EVENTS_DISABLE(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_TASK_PER...ENTS_DISABLE(2) System Calls ManualPR_TASK_PER...ENTS_DISABLE(2)
+
+NAME
+       PR_TASK_PERF_EVENTS_DISABLE,  PR_TASK_PERF_EVENTS_ENABLE  -  disable or
+       enable performance counters attached to the calling process
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_TASK_PERF_EVENTS_DISABLE);
+       int prctl(PR_TASK_PERF_EVENTS_ENABLE);
+
+DESCRIPTION
+       PR_TASK_PERF_EVENTS_DISABLE
+              Disable  all  performance  counters  attached  to  the   calling
+              process, regardless of whether the counters were created by this
+              process or another process.  Performance counters created by the
+              calling process for other processes are unaffected.
+
+       PR_TASK_PERF_EVENTS_ENABLE
+              The  converse of PR_TASK_PERF_EVENTS_DISABLE; enable performance
+              counters attached to the calling process.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 2.6.31.
+
+       Originally  called PR_TASK_PERF_COUNTERS_DISABLE and PR_TASK_PERF_COUN‐
+       TERS_ENABLE; renamed (retaining the  same  numerical  value)  in  Linux
+       2.6.32.
+
+SEE ALSO
+       prctl(2)
+
+       For  more  information  on  performance  counters, see the Linux kernel
+       source file tools/perf/design.txt.
+
+Linux man-pages 6.9.1             2024-06-02     PR_TASK_PER...ENTS_DISABLE(2)
+</pre></body></html>

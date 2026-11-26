@@ -1,0 +1,142 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HTML::Formatter(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>HTML::Formatter(3pm)  User Contributed Perl Documentation HTML::Formatter(3pm)
+
+NAME
+       HTML::Formatter - Base class for HTML formatters
+
+VERSION
+       version 2.16
+
+SYNOPSIS
+         use HTML::FormatSomething;
+         my $infile  = &quot;whatever.html&quot;;
+         my $outfile = &quot;whatever.file&quot;;
+         open OUT, &quot;&gt;$outfile&quot;
+          or die &quot;Can&#x27;t write-open $outfile: $!\n&quot;;
+
+         print OUT HTML::FormatSomething-&gt;format_file(
+           $infile,
+             &#x27;option1&#x27; =&gt; &#x27;value1&#x27;,
+             &#x27;option2&#x27; =&gt; &#x27;value2&#x27;,
+             ...
+         );
+         close(OUT);
+
+DESCRIPTION
+       HTML::Formatter is a base class for classes that take HTML and format
+       it to some output format.  When you take an object of such a base class
+       and call &quot;$formatter-&quot;format( $tree )&gt; with an HTML::TreeBuilder (or
+       HTML::Element) object, they return the appropriately formatted string
+       for the input HTML.
+
+       HTML formatters are able to format a HTML syntax tree into various
+       printable formats.  Different formatters produce output for different
+       output media.  Common for all formatters are that they will return the
+       formatted output when the format() method is called.  The format()
+       method takes a HTML::Element object (usually the HTML::TreeBuilder root
+       object) as parameter.
+
+       The distribution name has been changed to &quot;HTML-Formatter&quot; as detailed
+       in &quot;DISTRIBUTION NAME&quot;
+
+METHODS
+   new
+           my $formatter = FormatterClass-&gt;new(
+               option1 =&gt; value1, option2 =&gt; value2, ...
+           );
+
+       This creates a new formatter object with the given options.
+
+   format_file
+   format_from_file
+           $string = FormatterClass-&gt;format_file(
+               $html_source,
+               option1 =&gt; value1, option2 =&gt; value2, ...
+               );
+
+       Return a string consisting of the result of using the given class to
+       format the given HTML file according to the given (optional) options.
+       Internally it calls &quot;SomeClass-&gt;new( ... )-&gt;format( ... )&quot; on a new
+       HTML::TreeBuilder object based on the given HTML file.
+
+   format_string
+   format_from_string
+           $string = FormatterClass-&gt;format_string(
+               $html_source,
+               option1 =&gt; value1, option2 =&gt; value2, ...
+               );
+
+       Return a string consisting of the result of using the given class to
+       format the given HTML source according to the given (optional) options.
+       Internally it calls &quot;SomeClass-&gt;new( ... )-&gt;format( ... )&quot; on a new
+       HTML::TreeBuilder object based on the given source.
+
+   format
+           my $render_string = $formatter-&gt;format( $html_tree_object );
+
+       This renders the given HTML object according to the options set for
+       $formatter.
+
+       After you&#x27;ve used a particular formatter object to format a particular
+       HTML tree object, you probably should not use either again.
+
+DISTRIBUTION NAME
+       This module was originally named &quot;HTML-Format&quot; despite not containing a
+       &quot;HTML::Format&quot; module within it.  As rules on naming have been taken
+       more seriously, and the PAUSE &lt;https://pause.perl.org/&gt; toolchain
+       adapted so that getting the distribution indexed was more difficult, it
+       became obvious that I should rename the distribution to
+       &quot;HTML-Formatter&quot; matching the base HTML::Formatter module.
+
+       As of release 2.13 this is released as the &quot;HTML-Formatter&quot;
+       distribution with corresponding changes to the git repository name and
+       associated items.
+
+       Due to the way that the module is put together this should have no
+       effect on code using the module.  The only issues will be where the
+       distribution name was used within dependancies.
+
+SEE ALSO
+       The three specific formatters:-
+
+       HTML::FormatText
+           Format HTML into plain text
+
+       HTML::FormatPS
+           Format HTML into postscript
+
+       HTML::FormatRTF
+           Format HTML into Rich Text Format
+
+       Also   the   HTML  manipulation  libraries  used  -  HTML::TreeBuilder,
+       HTML::Element and HTML::Tree
+
+SUPPORT
+   Bugs / Feature Requests
+       Please report any bugs or feature requests through the issue tracker at
+       &lt;http://rt.cpan.org/Public/Dist/Display.html?Name=HTML-Formatter&gt;.  You
+       will be notified automatically of any progress on your issue.
+
+   Source Code
+       This is open source software.  The code  repository  is  available  for
+       public review and contribution under the terms of the license.
+
+       &lt;https://github.com/nigelm/html-formatter&gt;
+
+         git clone https://github.com/nigelm/html-formatter.git
+
+AUTHORS
+       •   Nigel Metheringham &lt;nigelm@cpan.org&gt;
+
+       •   Sean M Burke &lt;sburke@cpan.org&gt;
+
+       •   Gisle Aas &lt;gisle@ActiveState.com&gt;
+
+COPYRIGHT AND LICENSE
+       This  software  is  copyright (c) 2016 by Nigel Metheringham, 2002-2005
+       Sean M Burke, 1999-2002 Gisle Aas.
+
+       This is free software; you can redistribute it and/or modify  it  under
+       the same terms as the Perl 5 programming language system itself.
+
+perl v5.36.0                      2022-11-19              HTML::Formatter(3pm)
+</pre></body></html>

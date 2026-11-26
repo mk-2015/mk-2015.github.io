@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>fmaxl(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>fmax(3)                    Library Functions Manual                    fmax(3)
+
+NAME
+       fmax, fmaxf, fmaxl - determine maximum of two floating-point numbers
+
+LIBRARY
+       Math library (libm, -lm)
+
+SYNOPSIS
+       #include &lt;math.h&gt;
+
+       double fmax(double x, double y);
+       float fmaxf(float x, float y);
+       long double fmaxl(long double x, long double y);
+
+   Feature Test Macro Requirements for glibc (see feature_test_macros(7)):
+
+       fmax(), fmaxf(), fmaxl():
+           _ISOC99_SOURCE || _POSIX_C_SOURCE &gt;= 200112L
+
+DESCRIPTION
+       These functions return the larger value of x and y.
+
+RETURN VALUE
+       These functions return the maximum of x and y.
+
+       If one argument is a NaN, the other argument is returned.
+
+       If both arguments are NaN, a NaN is returned.
+
+ERRORS
+       No errors occur.
+
+ATTRIBUTES
+       For  an  explanation  of  the  terms  used in this section, see attrib‐
+       utes(7).  allbox; lbx lb lb l l l.  Interface Attribute Value T{
+       fmax(), fmaxf(), fmaxl() T}   Thread safety  MT-Safe
+
+STANDARDS
+       C11, POSIX.1-2008.
+
+HISTORY
+       glibc 2.1.  C99, POSIX.1-2001.
+
+SEE ALSO
+       fdim(3), fmin(3)
+
+Linux man-pages 6.9.1             2024-05-02                           fmax(3)
+</pre></body></html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dpkg::BuildDriver::DebianRules(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>Dpkg::Build...DebianRules(3perl) libdpkg-perl Dpkg::Build...DebianRules(3perl)
+
+NAME
+       Dpkg::BuildDriver::DebianRules - build a Debian package using
+       debian/rules
+
+DESCRIPTION
+       This class is used by dpkg-buildpackage to drive the build of a Debian
+       package, using debian/rules.
+
+       Note: This is a private module, its API can change at any time.
+
+METHODS
+       $bd = Dpkg::BuildDriver::DebianRules-&gt;new(%opts)
+           Create a new Dpkg::BuildDriver::DebianRules object.
+
+           Supports or requires the same Dpkg::BuildDriver-&gt;new() options.
+
+       $bd-&gt;pre_check()
+           Perform build driver specific checks, before anything else.
+
+           This checks whether the debian/rules file is executable, and if not
+           then make it so.
+
+       $bool = $bd-&gt;need_build_task($build_task, $binary_task)
+           Returns whether we need to use the build task.
+
+           Note: This method is needed as long as we support building as root-
+           like.  Once that is not needed this method will be deprecated.
+
+       $bd-&gt;run_build_task($build_task, $binary_task)
+           Executes the build task for the build.
+
+           Note: This method is needed as long as we support building as root-
+           like.  Once that is not needed this method will be deprecated.
+
+       $bd-&gt;run_task($task)
+           Executes the given task for the build.
+
+CHANGES
+   Version 0.xx
+       This is a private module.
+
+1.22.22                           2026-03-06  Dpkg::Build...DebianRules(3perl)
+</pre></body></html>

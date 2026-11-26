@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIFFPrintDirectory(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>TIFFPRINTDIRECTORY(3tiff)           LibTIFF          TIFFPRINTDIRECTORY(3tiff)
+
+NAME
+       TIFFPrintDirectory - print a description of a TIFF directory
+
+SYNOPSIS
+          #include &lt;tiffio.h&gt;
+
+       void TIFFPrintDirectory(TIFF *tif, FILE *fd, long flags)
+
+DESCRIPTION
+       TIFFPrintDirectory()  prints  a description of the current directory in
+       the specified TIFF file to the standard  I/O  output  stream  fd.   The
+       flags parameter is used to control the &quot;level of detail&quot; of the printed
+       information;  it  is a bitwise-or of the flags defined in tiffio.h: box
+       center; l|l|l.  T{ Name T}   T{ Value T}   T{ Description T} _ T{ TIFF‐
+       PRINT_NONE T}   T{ 0x0 T}   T{ no extra info T} _  T{  TIFFPRINT_STRIPS
+       T}   T{  0x1 T}   T{ strips/tiles info T} _ T{ TIFFPRINT_CURVES T}   T{
+       0x2 T}   T{ color/gray  response  curves  T}  _  T{  TIFFPRINT_COLORMAP
+       T}   T{  0x4  T}   T{  colormap  T}  _ T{ TIFFPRINT_JPEGQTABLES T}   T{
+       0x100 T}   T{ JPEG Q matrices T} _  T{  TIFFPRINT_JPEGACTABLES  T}   T{
+       0x200  T}   T{  JPEG  AC  tables T} _ T{ TIFFPRINT_JPEGDCTABLES T}   T{
+       0x200 T}   T{ JPEG DC tables T}
+
+NOTES
+       In C++ the flags parameter defaults to 0.
+
+RETURN VALUES
+       None.
+
+DIAGNOSTICS
+       None.
+
+SEE ALSO
+       libtiff   (3tiff),   TIFFOpen   (3tiff),   TIFFReadDirectory   (3tiff),
+       TIFFSetDirectory (3tiff)
+
+AUTHOR
+       LibTIFF contributors
+
+COPYRIGHT
+       1988-2022, LibTIFF contributors
+
+4.7                              Jul 10, 2026        TIFFPRINTDIRECTORY(3tiff)
+</pre></body></html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TIOCGSOFTCAR(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>TIOCSSOFTCAR(2const)                                      TIOCSSOFTCAR(2const)
+
+NAME
+       TIOCGSOFTCAR, TIOCSSOFTCAR - marking a line as local
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;asm/termbits.h&gt;  /* Definition of TIOC*SOFTCAR constants */
+       #include &lt;sys/ioctl.h&gt;
+
+       int ioctl(int fd, TIOCGSOFTCAR, int *argp);
+       int ioctl(int fd, TIOCSSOFTCAR, const int *argp);
+
+DESCRIPTION
+       TIOCGSOFTCAR
+              (&quot;Get  software carrier flag&quot;) Get the status of the CLOCAL flag
+              in the c_cflag field of the termios structure.
+
+       TIOCSSOFTCAR
+              (&quot;Set software carrier flag&quot;) Set the CLOCAL flag in the termios
+              structure when *argp is nonzero, and clear it otherwise.
+
+       If the CLOCAL flag for a line is off, the hardware carrier detect (DCD)
+       signal is significant, and an open(2)  of  the  corresponding  terminal
+       will  block until DCD is asserted, unless the O_NONBLOCK flag is given.
+       If CLOCAL is set, the line behaves as if DCD is always  asserted.   The
+       software  carrier  flag  is usually turned on for local devices, and is
+       off for lines with modems.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+SEE ALSO
+       ioctl(2), ioctl_tty(2)
+
+Linux man-pages 6.9.1             2024-06-13              TIOCSSOFTCAR(2const)
+</pre></body></html>

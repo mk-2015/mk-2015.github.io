@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>libpipewire-module-example-filter(7)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/7/">man(7)</a></p><hr><pre>libpipe...e-filter(7)  Miscellaneous Information Manual  libpipe...e-filter(7)
+
+NAME
+       libpipewire-module-example-filter - Example Filter
+
+DESCRIPTION
+       The example filter is a good starting point for writing a custom
+       filter.
+
+       We refer to the source code for more information.
+
+MODULE NAME
+       libpipewire-module-example-filter
+
+MODULE OPTIONS
+       • node.description: a human readable name for the filter streams
+
+       • capture.props = {}: properties to be passed to the input stream
+
+       • playback.props = {}: properties to be passed to the output stream
+
+GENERAL OPTIONS
+       Options  with  well-known  behavior.  Most  options can be added to the
+       global configuration or the individual streams:
+
+       • remote.name
+
+       • audio.rate
+
+       • audio.channels
+
+       • audio.position
+
+       • media.name
+
+       • node.latency
+
+       • node.description
+
+       • node.group
+
+       • node.link.group
+
+       • node.virtual
+
+       • node.name : See notes below. If not specified, defaults  to  &#x27;filter-
+         PID-MODULEID&#x27;.
+
+       Stream only properties:
+
+       • media.class
+
+       • node.name  :  if  not  given per stream, the global node.name will be
+         prefixed with &#x27;input.&#x27;  and  &#x27;output.&#x27;  to  generate  a  capture  and
+         playback stream node.name respectively.
+
+EXAMPLE CONFIGURATION OF A VIRTUAL SOURCE
+       # ~/.config/pipewire/pipewire.conf.d/my-example-filter.conf
+
+       context.modules = [
+       {   name = libpipewire-module-example-filter
+           args = {
+             node.description = &quot;Example Filter&quot;
+             capture.props = {
+                 audio.position = [ FL FR ]
+                 node.passive = true
+             }
+             playback.props = {
+                 node.name = &quot;Example Filter&quot;
+                 media.class = &quot;Audio/Source&quot;
+                 audio.position = [ FL FR ]
+             }
+           }
+       }
+       ]
+
+       pw-cli -m lm libpipewire-module-example-filter &#x27;{ audio.position=[FL FR] }&#x27;
+
+PipeWire                             1.4.2               libpipe...e-filter(7)
+</pre></body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PR_SET_SPECULATION_CTRL(2)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/2/">man(2)</a></p><hr><pre>PR_SET_SPECULATION_CTRL(2const)                PR_SET_SPECULATION_CTRL(2const)
+
+NAME
+       PR_SET_SPECULATION_CTRL - set the state of a speculation misfeature for
+       the calling thread
+
+LIBRARY
+       Standard C library (libc, -lc)
+
+SYNOPSIS
+       #include &lt;linux/prctl.h&gt;  /* Definition of PR_* constants */
+       #include &lt;sys/prctl.h&gt;
+
+       int prctl(PR_SET_SPECULATION_CTRL, long misfeature, long val, 0L, 0L);
+
+DESCRIPTION
+       Sets  the  state of the speculation misfeature specified in misfeature.
+       The speculation-misfeature settings are per-thread attributes.
+
+       Currently, misfeature must be one of:
+
+       PR_SPEC_STORE_BYPASS
+              Set the state of the speculative store bypass misfeature.
+
+       PR_SPEC_INDIRECT_BRANCH (since Linux 4.20)
+              Set the state of the indirect branch speculation misfeature.
+
+       The val argument is used to hand in the control value, which is one  of
+       the following:
+
+       PR_SPEC_ENABLE
+              The speculation feature is enabled, mitigation is disabled.
+
+       PR_SPEC_DISABLE
+              The speculation feature is disabled, mitigation is enabled.
+
+       PR_SPEC_FORCE_DISABLE
+              Same as PR_SPEC_DISABLE, but cannot be undone.
+
+       PR_SPEC_DISABLE_NOEXEC (since Linux 5.1)
+              Same  as  PR_SPEC_DISABLE,  but the state will be cleared on ex‐
+              ecve(2).  Currently only supported for PR_SPEC_STORE_BYPASS.
+
+       The speculation feature can also be controlled  by  the  spec_store_by‐
+       pass_disable  boot  parameter.   This parameter may enforce a read-only
+       policy which will result in the prctl() call  failing  with  the  error
+       ENXIO.   For further details, see the kernel source file Documentation/
+       admin-guide/kernel-parameters.txt.
+
+RETURN VALUE
+       On success, 0 is returned.  On error, -1 is returned, and errno is  set
+       to indicate the error.
+
+ERRORS
+       ENODEV The  kernel  or  CPU  does not support the requested speculation
+              misfeature.
+
+       ENXIO  The control of the selected speculation misfeature is not possi‐
+              ble.  See PR_GET_SPECULATION_CTRL for the bit fields  to  deter‐
+              mine which option is available.
+
+       EPERM  The  speculation  was  disabled  with  PR_SPEC_FORCE_DISABLE and
+              caller tried to enable it again.
+
+       ERANGE misfeature is not a valid value.
+
+STANDARDS
+       Linux.
+
+HISTORY
+       Linux 4.17.
+
+SEE ALSO
+       prctl(2), PR_GET_SPECULATION_CTRL(2const)
+
+Linux man-pages 6.9.1             2024-06-01   PR_SET_SPECULATION_CTRL(2const)
+</pre></body></html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>XScreenSaverUnregister(3)</title></head><body><p><a href="/">Home</a> | <a href="/shelf/man/3/">man(3)</a></p><hr><pre>XScreenSaver(3)            Library Functions Manual            XScreenSaver(3)
+
+NAME
+       XScreenSaver - X11 Screen Saver extension client library
+
+SYNOPSIS
+       #include &lt;X11/extensions/scrnsaver.h&gt;
+
+       typedef struct {
+           Window window;                /∗ screen saver window */
+           int state;                    /∗ ScreenSaver{Off,On,Disabled} */
+           int kind;                     /∗ ScreenSaver{Blanked,Internal,External} */
+           unsigned long til_or_since;   /∗ milliseconds */
+           unsigned long idle;           /∗ milliseconds */
+           unsigned long eventMask;      /∗ events */
+       } XScreenSaverInfo;
+
+       typedef struct {
+           int type;               /∗ of event */
+           unsigned long serial;   /∗ # of last request processed by server */
+           Bool send_event;        /∗ true if this came frome a SendEvent request */
+           Display *display;       /∗ Display the event was read from */
+           Window window;          /∗ screen saver window */
+           Window root;            /∗ root window of event screen */
+           int state;              /∗ ScreenSaver{Off,On,Cycle} */
+           int kind;               /∗ ScreenSaver{Blanked,Internal,External} */
+           Bool forced;            /∗ extents of new region */
+           Time time;              /∗ event timestamp */
+       } XScreenSaverNotifyEvent;
+
+
+       Bool  XScreenSaverQueryExtension(Display  *dpy, int *event_base_return,
+              int *error_base_return);
+
+       Status XScreenSaverQueryVersion(Display  *dpy,  int  *major_version_re‐
+              turn, int *minor_version_return);
+
+       XScreenSaverInfo *XScreenSaverAllocInfo(void);
+
+       Status  XScreenSaverQueryInfo(Display *dpy, Drawable drawable, XScreen‐
+              SaverInfo *saver_info);
+
+       void XScreenSaverSelectInput(Display *dpy, Drawable drawable,  unsigned
+              long mask);
+
+       void  XScreenSaverSetAttributes(Display *dpy, Drawable drawable, int x,
+              int y, unsigned int width, unsigned  int  height,  unsigned  int
+              border_width, int depth, unsigned int class, Visual *visual, un‐
+              signed long valuemask, XSetWindowAttributes *attributes);
+
+       void XScreenSaverUnsetAttributes(Display *dpy, Drawable drawable);
+
+       void  XScreenSaverRegister(Display  *dpy,  int  screen,  XID  xid, Atom
+              type);
+
+       Status XScreenSaverUnregister(Display *dpy, int screen);
+
+       Status XScreenSaverGetRegistered(Display *dpy, int  screen,  XID  *xid,
+              Atom *type);
+
+       void XScreenSaverSuspend(Display *dpy, Bool suspend);
+
+DESCRIPTION
+       The  X  Window System provides support for changing the image on a dis‐
+       play screen after a user-settable period of inactivity to avoid burning
+       the cathode ray tube phosphors.  However, no  interfaces  are  provided
+       for the user to control the image that is drawn.  This extension allows
+       an  external ``screen saver&#x27;&#x27; client to detect when the alternate image
+       is to be displayed and to provide the graphics.
+
+       Current X server implementations typically provide at least one form of
+       ``screen saver&#x27;&#x27; image.  Historically, this has been a copy  of  the  X
+       logo  drawn  against  the root background pattern.  However, many users
+       have asked for the mechanism to allow them to write screen  saver  pro‐
+       grams that provide capabilities similar to those provided by other win‐
+       dow  systems.   In particular, such users often wish to be able to dis‐
+       play corporate logos, instructions on how to reactivate the screen, and
+       automatic screen-locking utilities.  This extension  provides  a  means
+       for writing such clients.
+
+   Assumptions
+       This extension exports the notion of a special screen saver window that
+       is  mapped  above  all other windows on a display.  This window has the
+       override-redirect attribute set so that it is not subject to  manipula‐
+       tion by the window manager.  Furthermore, the X identifier for the win‐
+       dow  is  never returned by QueryTree requests on the root window, so it
+       is typically not visible to other clients.
+
+       XScreenSaverQueryExtension returns True if the  XScreenSaver  extension
+       is  available  on  the given display.  A client must call XScreenSaver‐
+       QueryExtension before calling any other XScreenSaver function in  order
+       to  negotiate  a compatible protocol version; otherwise the client will
+       get undefined behavior (XScreenSaver may or may not work).
+
+       If the extension is supported, the event number  for  ScreenSaverNotify
+       events is returned in the value pointed to by event_base.  Since no ad‐
+       ditional  errors  are  defined  by  this  extension, the results of er‐
+       ror_base are not defined.
+
+       XScreenSaverQueryVersion returns True if  the  request  succeeded;  the
+       values of the major and minor protocol versions supported by the server
+       are returned in major_version_return and minor_version_return .
+
+       XScreenSaverAllocInfo  allocates and returns an XScreenSaverInfo struc‐
+       ture for use in calls to  XScreenSaverQueryInfo.   All  fields  in  the
+       structure  are  initialized  to zero.  If insufficient memory is avail‐
+       able, NULL is returned.  The results of this routine  can  be  released
+       using XFree.
+
+       XScreenSaverQueryInfo  returns  information  about the current state of
+       the screen server in saver_info and a non-zero value is  returned.   If
+       the  extension is not supported, saver_info is not changed and 0 is re‐
+       turned.
+
+       The state field specifies whether or not the screen saver is  currently
+       active and how the til-or-since value should be interpreted:
+
+       Off The screen is not currently being saved; til-or-since specifies the
+           number  of milliseconds until the screen saver is expected to acti‐
+           vate.
+
+       On  The screen is currently being  saved;  til-or-since  specifies  the
+           number of milliseconds since the screen saver activated.
+
+       Disabled
+           The screen saver is currently disabled; til-or-since is zero.
+
+       The  kind  field specifies the mechanism that either is currently being
+       used or would have been were the screen being saved:
+
+       Blanked
+           The video signal to the display monitor was disabled.
+
+       Internal
+           A server-dependent, built-in screen saver image was displayed;  ei‐
+           ther no client had set the screen saver window attributes or a dif‐
+           ferent  client  had  the server grabbed when the screen saver acti‐
+           vated.
+
+       External
+           The screen saver window was mapped with attributes set by a  client
+           using the ScreenSaverSetAttributes request.
+
+       The  idle field specifies the number of milliseconds since the last in‐
+       put was received from the user on any of the input devices.
+       The event-mask field specifies which, if any, screen saver events  this
+       client has requested using ScreenSaverSelectInput.
+
+       XScreenSaverSelectInput asks that events related to the screen saver be
+       generated  for  this client.  If no bits are set in event-mask, then no
+       events will be generated.  Otherwise, any combination of the  following
+       bits may be set:
+
+       ScreenSaverNotify
+               If  this  bit  is  set,  ScreenSaverNotify events are generated
+               whenever the screen saver is activated or deactivated.
+
+       ScreenSaverCycle
+               If this bit is  set,  ScreenSaverNotify  events  are  generated
+               whenever the screen saver cycle interval passes.
+
+       XScreenSaverSetAttributes  sets the attributes to be used the next time
+       the external screen saver is activated.  If  another  client  currently
+       has  the attributes set, a BadAccess error is generated and the request
+       is ignored.
+       Otherwise, the specified window attributes are checked as if they  were
+       used  in  a  core  CreateWindow  request whose parent is the root.  The
+       override-redirect field is ignored as it is implicitly set to True.  If
+       the window attributes result in an error according  to  the  rules  for
+       CreateWindow, the request is ignored.
+       Otherwise,  the  attributes are stored and will take effect on the next
+       activation that occurs when  the  server  is  not  grabbed  by  another
+       client.   Any  resources  specified for the background-pixmap or cursor
+       attributes may be freed immediately.  The server is free  to  copy  the
+       background-pixmap  or  cursor resources or to use them in place; there‐
+       fore, the effect of changing the contents of those resources  is  unde‐
+       fined.   If  the  specified  colormap  no longer exists when the screen
+       saver activates, the parent&#x27;s colormap is used instead.  If  no  errors
+       are generated by this request, any previous screen saver window attrib‐
+       utes set by this client are released.
+       When  the  screen saver next activates and the server is not grabbed by
+       another client, the screen saver window is created, if  necessary,  and
+       set to the specified attributes and events are generated as usual.  The
+       colormap  associated  with  the  screen saver window is installed.  Fi‐
+       nally, the screen saver window is mapped.
+       The window remains mapped and at the top of the  stacking  order  until
+       the  screen  saver is deactivated in response to activity on any of the
+       user input devices, a ForceScreenSaver request with a value  of  Reset,
+       or any request that would cause the window to be unmapped.
+       If  the  screen  saver activates while the server is grabbed by another
+       client, the internal saver mechanism is used.  The ForceScreenSaver re‐
+       quest may be used with a value of Active  to  deactivate  the  internal
+       saver and activate the external saver.
+       If  the  screen saver client&#x27;s connection to the server is broken while
+       the screen saver is activated and the client&#x27;s close down mode has  not
+       been  RetainPermanent  or  RetainTemporary, the current screen saver is
+       deactivated and the internal screen saver is immediately activated.
+       When the screen saver deactivates, the screen saver  window&#x27;s  colormap
+       is  uninstalled and the window is unmapped (except as described below).
+       The screen saver XID is disassociated with the window  and  the  server
+       may,  but  is  not required to, destroy the window along with any chil‐
+       dren.
+       When the screen saver is being deactivated and then immediately reacti‐
+       vated (such as when switching screen savers), the server may leave  the
+       screen saver window mapped (typically to avoid generating exposures).
+
+       XScreenSaverUnsetAttributes  instructs the server to discard any previ‐
+       ous screen saver window attributes set by this client.
+
+       XScreenSaverRegister stores the given XID in the _SCREEN_SAVER_ID prop‐
+       erty (of the given type) on the root window of  the  specified  screen.
+       It  returns  zero  if  an  error is encountered and the property is not
+       changed, otherwise it returns non-zero.
+
+       XScreenSaverUnregister removes any _SCREEN_SAVER_ID from the root  win‐
+       dow  of  the  specified screen.  It returns zero if an error is encoun‐
+       tered and the property is changed, otherwise it returns non-zero.
+
+       XScreenSaverGetRegistered returns  the  XID  and  type  stored  in  the
+       _SCREEN_SAVER_ID  property  on the root window of the specified screen.
+       It returns zero if an error is encountered or if the property does  not
+       exist or is not of the correct format; otherwise it returns non-zero.
+
+       XScreenSaverSuspend temporarily suspends the screensaver and DPMS timer
+       if suspend is &#x27;True&#x27;, and restarts the timer if suspend is &#x27;False&#x27;.
+       This  function  should  be  used  by  applications  that don&#x27;t want the
+       screensaver or DPMS to become activated while they&#x27;re  for  example  in
+       the  process of playing a media sequence, or are otherwise continuously
+       presenting visual information to the user while  in  a  non-interactive
+       state.  This  function  is  not  intended  to  be called by an external
+       screensaver application.
+       If XScreenSaverSuspend is called multiple times  with  suspend  set  to
+       &#x27;True&#x27;,  it must be called an equal number of times with suspend set to
+       &#x27;False&#x27; in order for the screensaver timer to be  restarted.  This  re‐
+       quest has no affect if a client tries to resume the screensaver without
+       first having suspended it.  XScreenSaverSuspend can thus not be used by
+       one  client to resume the screensaver if it&#x27;s been suspended by another
+       client.
+       If a client that has suspended  the  screensaver  becomes  disconnected
+       from  the  X  server,  the  screensaver  timer  will  automatically  be
+       restarted, unless it&#x27;s still suspended by  another  client.  Suspending
+       the screensaver timer doesn&#x27;t prevent the screensaver from being force‐
+       ably  activated  with the ForceScreenSaver request, or a DPMS mode from
+       being set with the DPMSForceLevel request.
+       XScreenSaverSuspend also doesn&#x27;t deactivate the screensaver or DPMS  if
+       either is active at the time the request to suspend them is received by
+       the  X  server. But once they&#x27;ve been deactivated, they won&#x27;t automati‐
+       cally be activated again, until the client has canceled the suspension.
+
+ERRORS
+       XScreenSaverSelectInput, XScreenSaverQueryInfo,  XScreenSaverSetAttrib‐
+       utes  and XScreenSaverUnsetAttributes will generate a BadDrawable error
+       if drawable is not a valid drawable identifier.  If any undefined  bits
+       are set in event-mask, a BadValue error is generated by XScreenSaverSe‐
+       lectInput .
+
+AVAILABILITY
+       XScreenSaverSuspend  is  available in version 1.1 and later versions of
+       the X Screen Saver Extension.  Version  1.1  was  first  released  with
+       X11R7.1.
+
+SEE ALSO
+       X(7)
+
+AUTHORS
+       Jim Fulton and Keith Packard.
+
+STABILITY
+       This API is considered as experimental.  The Xss library major revision
+       may  be  incremented  whenever incompatible changes are done to the API
+       without notice.  Use with care.
+
+X Version 11                  libXScrnSaver 1.2.3              XScreenSaver(3)
+</pre></body></html>
