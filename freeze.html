@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Freeze - inetdotlib.ftp.sh</title>
 </head>
 <body>
@@ -16,7 +17,7 @@
     </p>
     <p>
       <label for="message"><b>Message</b> (<span id="count">0</span>/250 chars):</label><br>
-      <textarea id="message" rows="4" cols="50" maxlength="250" required></textarea>
+      <textarea id="message" rows="4" cols="50" style="max-width: 100%;" maxlength="250" required></textarea>
     </p>
     <p>
       <button type="submit" id="submit-btn">Freeze Message</button>
@@ -25,7 +26,10 @@
   </form>
 
   <hr>
-  <h2>Freezes <small id="total-count"></small></h2>
+  <h2>
+    Freezes <small id="total-count"></small>
+    <button type="button" id="refresh-btn">Refresh</button>
+  </h2>
   <div id="feed">Loading freezes...</div>
   <p><button type="button" id="show-more-btn" hidden>Show More</button></p>
 
@@ -39,6 +43,7 @@
     const countEl = document.getElementById("count");
     const statusEl = document.getElementById("status");
     const submitBtn = document.getElementById("submit-btn");
+    const refreshBtn = document.getElementById("refresh-btn");
     const feedEl = document.getElementById("feed");
     const totalCountEl = document.getElementById("total-count");
     const showMoreBtn = document.getElementById("show-more-btn");
@@ -63,15 +68,19 @@
         .replace(/"/g, "&quot;");
     }
 
-    function renderBatch(entries, append) {
-      const html = entries.map(item => `
-        <p>
-          <b>[${escapeHtml(item.name)}]</b>
-          <small>(${escapeHtml(item.date || "")})</small><br>
-          ${escapeHtml(item.message)}
-        </p>
-        <hr>
-      `).join("");
+    function renderBatch(entries, append, total) {
+      const html = entries.map((item, idx) => {
+        const entryNum = String(Math.max(1, total - begin - idx)).padStart(4, "0");
+        const formattedMsg = escapeHtml(item.message).replace(/\n/g, "<br>");
+        return `
+          <p>
+            <b>[#${entryNum}] [${escapeHtml(item.name)}]</b>
+            <small>(${escapeHtml(item.date || "")})</small><br>
+            ${formattedMsg}
+          </p>
+          <hr>
+        `;
+      }).join("");
 
       if (append) {
         feedEl.insertAdjacentHTML("beforeend", html);
@@ -82,16 +91,19 @@
 
     async function fetchRange(append = false) {
       showMoreBtn.disabled = true;
+      refreshBtn.disabled = true;
       try {
         const res = await fetch(`${WORKER_URL}/?begin=${begin}&end=${end}&t=${Date.now()}`);
         if (!res.ok) throw new Error("Worker GET failed");
         const data = await res.json();
         const batch = Array.isArray(data.entries) ? data.entries : [];
 
-        renderBatch(batch, append);
-        loadedCount = append ? loadedCount + batch.length : batch.length;
+        const nextLoaded = append ? loadedCount + batch.length : batch.length;
+        const total = Number.isFinite(data.total) ? data.total : nextLoaded;
 
-        const total = Number.isFinite(data.total) ? data.total : loadedCount;
+        renderBatch(batch, append, total);
+        loadedCount = nextLoaded;
+
         totalCountEl.textContent = total > 0 ? `(showing ${loadedCount} of ${total})` : "";
 
         if (data.hasMore) {
@@ -106,8 +118,15 @@
         showMoreBtn.hidden = true;
       } finally {
         showMoreBtn.disabled = false;
+        refreshBtn.disabled = false;
       }
     }
+
+    refreshBtn.addEventListener("click", () => {
+      begin = 0;
+      end = PAGE_SIZE;
+      fetchRange(false);
+    });
 
     showMoreBtn.addEventListener("click", () => {
       begin = end;
@@ -147,7 +166,6 @@
           countEl.textContent = "0";
           begin = 0;
           end = PAGE_SIZE;
-          loadedCount = 0;
           fetchRange(false);
         }
       } catch {
