@@ -25,7 +25,7 @@
   </form>
 
   <hr>
-  <h2>Freezes <small id="   -count"></small></h2>
+  <h2>Freezes <small id="total-count"></small></h2>
   <div id="feed">Loading freezes...</div>
   <p><button type="button" id="show-more-btn" hidden>Show More</button></p>
 
@@ -89,13 +89,13 @@
         const batch = Array.isArray(data.entries) ? data.entries : [];
 
         renderBatch(batch, append);
-        loadedCount += batch.length;
+        loadedCount = append ? loadedCount + batch.length : batch.length;
 
         const total = Number.isFinite(data.total) ? data.total : loadedCount;
         totalCountEl.textContent = total > 0 ? `(showing ${loadedCount} of ${total})` : "";
 
         if (data.hasMore) {
-          const remaining = total - loadedCount;
+          const remaining = Math.max(0, total - loadedCount);
           showMoreBtn.textContent = `Show More (${remaining} remaining)`;
           showMoreBtn.hidden = false;
         } else {
@@ -135,7 +135,7 @@
       try {
         const res = await fetch(WORKER_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
           body: JSON.stringify({ name, message })
         });
         const data = await res.json();
