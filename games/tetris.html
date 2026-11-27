@@ -6,8 +6,7 @@
   <title>TETRIS - inetdotlib.ftp.sh</title>
 </head>
 <body>
-  <h1>TETRIS // OVERRIDE</h1>
-  <p>Custom ruleset for <tt>inetdotlib.ftp.sh</tt>.</p>
+  <h1>TETRIS</h1>
   <hr>
 
   <table border="1" cellpadding="8" cellspacing="0">
@@ -36,11 +35,31 @@
           <button type="button" id="restart-btn">New Game</button>
           <span id="game-msg"></span>
         </p>
+        <hr>
+        <p><b>SUBMIT SCORE:</b></p>
+        <form id="score-form">
+          <p>
+            <label for="player-name">Name (ALL CAPS):</label><br>
+            <input type="text" id="player-name" maxlength="20" required placeholder="PLAYER1">
+          </p>
+          <p>
+            <button type="submit" id="submit-score-btn">Post Score</button>
+            <span id="score-status"></span>
+          </p>
+        </form>
+      </td>
+      <td valign="top">
+        <p>
+          <b>LEADERBOARD</b>
+          <button type="button" id="refresh-board-btn">Refresh</button>
+        </p>
+        <div id="leaderboard">Loading scores...</div>
       </td>
     </tr>
   </table>
 
   <script>
+    const SCOREBOARD_URL = "https://tetris-score-board.sxcyber17.workers.dev";
     const COLS = 10;
     const ROWS = 20;
     const BLOCK = 24;
@@ -55,6 +74,13 @@
     const eStatusEl = document.getElementById("e-status");
     const gameMsgEl = document.getElementById("game-msg");
     const restartBtn = document.getElementById("restart-btn");
+
+    const scoreForm = document.getElementById("score-form");
+    const nameInput = document.getElementById("player-name");
+    const submitScoreBtn = document.getElementById("submit-score-btn");
+    const scoreStatusEl = document.getElementById("score-status");
+    const refreshBoardBtn = document.getElementById("refresh-board-btn");
+    const leaderboardEl = document.getElementById("leaderboard");
 
     const COLORS = [
       null,
@@ -87,6 +113,105 @@
     let gameOver;
     let dropCounter;
     let lastTime;
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatNum(n) {
+      const num = Number(n);
+      return Number.isFinite(num) ? num.toLocaleString("en-US") : "0";
+    }
+
+    function renderLeaderboard(entries) {
+      if (!Array.isArray(entries) || entries.length === 0) {
+        leaderboardEl.innerHTML = "<p>No scores yet.</p>";
+        return;
+      }
+
+      const rows = entries.map((item, idx) => {
+        const rankLabel = item.Unbeatable ? `#${idx + 1}` : `#${idx + 1}`;
+        return `
+          <tr>
+            <td><tt>${escapeHtml(rankLabel)}</tt></td>
+            <td><b>${escapeHtml(item.Name || "UNKNOWN")}</b></td>
+            <td align="right"><tt>${formatNum(item.Score)}</tt></td>
+            <td align="right"><tt>${formatNum(item.Lines)}</tt></td>
+          </tr>
+        `;
+      }).join("");
+
+      leaderboardEl.innerHTML = `
+        <table border="1" cellpadding="4" cellspacing="0">
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Lines</th>
+          </tr>
+          ${rows}
+        </table>
+      `;
+    }
+
+    async function loadLeaderboard() {
+      refreshBoardBtn.disabled = true;
+      try {
+        const res = await fetch(`${SCOREBOARD_URL}/?begin=0&end=15&t=${Date.now()}`);
+        if (!res.ok) throw new Error("Failed to load leaderboard");
+        const data = await res.json();
+        renderLeaderboard(data.entries || []);
+      } catch {
+        leaderboardEl.innerHTML = "<p>Failed to load leaderboard.</p>";
+      } finally {
+        refreshBoardBtn.disabled = false;
+      }
+    }
+
+    nameInput.addEventListener("input", () => {
+      nameInput.value = nameInput.value.toUpperCase().replace(/[^A-Z0-9 ]/g, "");
+    });
+
+    scoreForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      if (!/^[A-Z0-9 ]{1,20}$/.test(name) || !name) {
+        scoreStatusEl.textContent = " Name must be 1-20 ALL CAPS chars.";
+        return;
+      }
+
+      submitScoreBtn.disabled = true;
+      scoreStatusEl.textContent = " Submitting...";
+
+      try {
+        const res = await fetch(SCOREBOARD_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
+          body: JSON.stringify({
+            Name: name,
+            Score: score,
+            Lines: lines
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          scoreStatusEl.textContent = " " + (data.error || "Rejected.");
+        } else {
+          scoreStatusEl.textContent = " Posted!";
+          loadLeaderboard();
+        }
+      } catch {
+        scoreStatusEl.textContent = " Network error.";
+      } finally {
+        submitScoreBtn.disabled = false;
+      }
+    });
+
+    refreshBoardBtn.addEventListener("click", loadLeaderboard);
 
     function createMatrix(w, h) {
       return Array.from({ length: h }, () => new Array(w).fill(0));
@@ -149,7 +274,6 @@
       const oldX = player.pos.x;
       player.matrix = rotateMatrix(player.matrix, dir);
 
-      // Basic wall kick
       let offset = 1;
       while (collide(arena, player)) {
         player.pos.x += offset;
@@ -235,13 +359,11 @@
     function triggerEmergencyClear() {
       if (gameOver || health <= 0) return;
 
-      // Clear entire arena
       arena = createMatrix(COLS, ROWS);
       score += 100;
       health -= 1;
       level += 1;
 
-      // Reset active piece cleanly to top so it doesn't sit floating mid-air
       player.pos.y = 0;
       player.pos.x = Math.floor(COLS / 2) - Math.floor(player.matrix[0].length / 2);
       dropCounter = 0;
@@ -250,7 +372,6 @@
     }
 
     function getDropInterval() {
-      // Faster fall as level increases (min 70ms)
       return Math.max(70, 800 - (level - 1) * 75);
     }
 
@@ -298,7 +419,6 @@
       ctx.fillStyle = "#111";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Subtle grid lines
       ctx.strokeStyle = "#1e1e1e";
       for (let x = 0; x <= COLS; x++) {
         ctx.beginPath();
@@ -313,14 +433,12 @@
         ctx.stroke();
       }
 
-      // Locked blocks
       arena.forEach((row, y) => {
         row.forEach((val, x) => {
           if (val !== 0) drawCell(x, y, val);
         });
       });
 
-      // Landing ghost + active piece
       drawGhost();
       player.matrix.forEach((row, y) => {
         row.forEach((val, x) => {
@@ -355,11 +473,15 @@
       dropCounter = 0;
       lastTime = 0;
       gameMsgEl.textContent = "";
+      scoreStatusEl.textContent = "";
       playerReset();
       updateHud();
     }
 
     document.addEventListener("keydown", (e) => {
+      const activeTag = document.activeElement && document.activeElement.tagName;
+      if (activeTag === "INPUT" || activeTag === "TEXTAREA") return;
+
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(e.code)) {
         e.preventDefault();
       }
@@ -369,19 +491,16 @@
       } else if (e.code === "ArrowRight") {
         playerMove(1, 0);
       } else if (e.code === "ArrowUp") {
-        // Custom rule: Up arrow moves the piece UP
         playerMove(0, -1);
       } else if (e.code === "ArrowDown") {
         playerDrop();
       } else if (e.code === "Space") {
-        // Custom rule: Spacebar instantly drops and locks
         playerHardDrop();
       } else if (e.code === "KeyZ") {
         playerRotate(-1);
       } else if (e.code === "KeyX" || e.code === "KeyC") {
         playerRotate(1);
       } else if (e.code === "KeyE") {
-        // Custom rule: E clears board, +100 score, -1 health (3->0), +1 level
         triggerEmergencyClear();
       }
     });
@@ -389,6 +508,7 @@
     restartBtn.addEventListener("click", initGame);
 
     initGame();
+    loadLeaderboard();
     requestAnimationFrame(update);
   </script>
 </body>
