@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TETRIS - inetdotlib.ftp.sh</title>
+</head>
+<body>
+  <h1>TETRIS // OVERRIDE</h1>
+  <p>Custom ruleset for <tt>inetdotlib.ftp.sh</tt>.</p>
+  <hr>
+
+  <table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+      <td valign="top">
+        <canvas id="board" width="240" height="480" style="border: 2px solid #000; background: #111;"></canvas>
+      </td>
+      <td valign="top">
+        <p><b>SCORE:</b> <span id="score">0</span></p>
+        <p><b>LEVEL:</b> <span id="level">1</span></p>
+        <p><b>LINES:</b> <span id="lines">0</span></p>
+        <p><b>HEALTH:</b> <span id="health">3 / 3</span></p>
+        <p id="e-status"><tt>[E] READY (+100 PTS, -1 HP, +1 LVL)</tt></p>
+        <hr>
+        <p><b>CONTROLS:</b></p>
+        <ul>
+          <li><tt>&larr; / &rarr;</tt> : Move Left / Right</li>
+          <li><tt>&uarr;</tt> : Move Piece UP</li>
+          <li><tt>&darr;</tt> : Soft Drop</li>
+          <li><tt>SPACE</tt> : Instant Hard Drop</li>
+          <li><tt>Z / X</tt> : Rotate CCW / CW</li>
+          <li><tt>E</tt> : Emergency Board Clear</li>
+        </ul>
+        <hr>
+        <p>
+          <button type="button" id="restart-btn">New Game</button>
+          <span id="game-msg"></span>
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <script>
+    const COLS = 10;
+    const ROWS = 20;
+    const BLOCK = 24;
+
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+
+    const scoreEl = document.getElementById("score");
+    const levelEl = document.getElementById("level");
+    const linesEl = document.getElementById("lines");
+    const healthEl = document.getElementById("health");
+    const eStatusEl = document.getElementById("e-status");
+    const gameMsgEl = document.getElementById("game-msg");
+    const restartBtn = document.getElementById("restart-btn");
+
+    const COLORS = [
+      null,
+      "#00f0f0", // I
+      "#0000f0", // J
+      "#f0a000", // L
+      "#f0f000", // O
+      "#00f000", // S
+      "#a000f0", // T
+      "#f00000"  // Z
+    ];
+
+    const SHAPES = [
+      null,
+      [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], // I
+      [[2, 0, 0], [2, 2, 2], [0, 0, 0]],                         // J
+      [[0, 0, 3], [3, 3, 3], [0, 0, 0]],                         // L
+      [[4, 4], [4, 4]],                                           // O
+      [[0, 5, 5], [5, 5, 0], [0, 0, 0]],                         // S
+      [[0, 6, 0], [6, 6, 6], [0, 0, 0]],                         // T
+      [[7, 7, 0], [0, 7, 7], [0, 0, 0]]                          // Z
+    ];
+
+    let arena;
+    let player;
+    let score;
+    let level;
+    let lines;
+    let health;
+    let gameOver;
+    let dropCounter;
+    let lastTime;
+
+    function createMatrix(w, h) {
+      return Array.from({ length: h }, () => new Array(w).fill(0));
+    }
+
+    function cloneMatrix(m) {
+      return m.map(row => row.slice());
+    }
+
+    function randomPiece() {
+      const id = Math.floor(Math.random() * 7) + 1;
+      return cloneMatrix(SHAPES[id]);
+    }
+
+    function collide(arena, player) {
+      const m = player.matrix;
+      const o = player.pos;
+      for (let y = 0; y < m.length; y++) {
+        for (let x = 0; x < m[y].length; x++) {
+          if (m[y][x] !== 0) {
+            const ny = y + o.y;
+            const nx = x + o.x;
+            if (ny < 0 || ny >= ROWS || nx < 0 || nx >= COLS || arena[ny][nx] !== 0) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    function merge(arena, player) {
+      player.matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            arena[y + player.pos.y][x + player.pos.x] = value;
+          }
+        });
+      });
+    }
+
+    function rotateMatrix(matrix, dir) {
+      const N = matrix.length;
+      const res = createMatrix(N, N);
+      for (let y = 0; y < N; y++) {
+        for (let x = 0; x < N; x++) {
+          if (dir > 0) {
+            res[x][N - 1 - y] = matrix[y][x];
+          } else {
+            res[N - 1 - x][y] = matrix[y][x];
+          }
+        }
+      }
+      return res;
+    }
+
+    function playerRotate(dir) {
+      if (gameOver) return;
+      const oldMatrix = player.matrix;
+      const oldX = player.pos.x;
+      player.matrix = rotateMatrix(player.matrix, dir);
+
+      // Basic wall kick
+      let offset = 1;
+      while (collide(arena, player)) {
+        player.pos.x += offset;
+        offset = -(offset + (offset > 0 ? 1 : -1));
+        if (Math.abs(offset) > player.matrix[0].length + 1) {
+          player.matrix = oldMatrix;
+          player.pos.x = oldX;
+          return;
+        }
+      }
+    }
+
+    function playerMove(dx, dy) {
+      if (gameOver) return false;
+      player.pos.x += dx;
+      player.pos.y += dy;
+      if (collide(arena, player)) {
+        player.pos.x -= dx;
+        player.pos.y -= dy;
+        return false;
+      }
+      return true;
+    }
+
+    function sweepLines() {
+      let cleared = 0;
+      outer: for (let y = ROWS - 1; y >= 0; y--) {
+        for (let x = 0; x < COLS; x++) {
+          if (arena[y][x] === 0) {
+            continue outer;
+          }
+        }
+        const row = arena.splice(y, 1)[0].fill(0);
+        arena.unshift(row);
+        y++;
+        cleared++;
+      }
+
+      if (cleared > 0) {
+        const linePoints = [0, 100, 300, 500, 800];
+        score += (linePoints[cleared] || cleared * 200) * level;
+        lines += cleared;
+        level = Math.max(level, Math.floor(lines / 10) + 1);
+        updateHud();
+      }
+    }
+
+    function playerReset() {
+      player.matrix = randomPiece();
+      player.pos.y = 0;
+      player.pos.x = Math.floor(COLS / 2) - Math.floor(player.matrix[0].length / 2);
+
+      if (collide(arena, player)) {
+        gameOver = true;
+        gameMsgEl.innerHTML = " <b>GAME OVER!</b>";
+      }
+    }
+
+    function playerDrop() {
+      if (gameOver) return;
+      player.pos.y++;
+      if (collide(arena, player)) {
+        player.pos.y--;
+        merge(arena, player);
+        sweepLines();
+        playerReset();
+      }
+      dropCounter = 0;
+    }
+
+    function playerHardDrop() {
+      if (gameOver) return;
+      while (!collide(arena, player)) {
+        player.pos.y++;
+      }
+      player.pos.y--;
+      merge(arena, player);
+      sweepLines();
+      playerReset();
+      dropCounter = 0;
+    }
+
+    function triggerEmergencyClear() {
+      if (gameOver || health <= 0) return;
+
+      // Clear entire arena
+      arena = createMatrix(COLS, ROWS);
+      score += 100;
+      health -= 1;
+      level += 1;
+
+      // Reset active piece cleanly to top so it doesn't sit floating mid-air
+      player.pos.y = 0;
+      player.pos.x = Math.floor(COLS / 2) - Math.floor(player.matrix[0].length / 2);
+      dropCounter = 0;
+
+      updateHud();
+    }
+
+    function getDropInterval() {
+      // Faster fall as level increases (min 70ms)
+      return Math.max(70, 800 - (level - 1) * 75);
+    }
+
+    function updateHud() {
+      scoreEl.textContent = score;
+      levelEl.textContent = level;
+      linesEl.textContent = lines;
+      healthEl.textContent = `${health} / 3`;
+
+      if (health > 0) {
+        eStatusEl.innerHTML = `<tt>[E] READY (${health} left: +100 PTS, -1 HP, +1 LVL)</tt>`;
+      } else {
+        eStatusEl.innerHTML = `<tt>[E] DEPLETED (0 HEALTH - DISABLED)</tt>`;
+      }
+    }
+
+    function drawCell(x, y, value, alpha = 1) {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = COLORS[value];
+      ctx.fillRect(x * BLOCK, y * BLOCK, BLOCK - 1, BLOCK - 1);
+      ctx.globalAlpha = 1;
+    }
+
+    function drawGhost() {
+      if (gameOver) return;
+      let ghostY = player.pos.y;
+      while (true) {
+        ghostY++;
+        const test = { matrix: player.matrix, pos: { x: player.pos.x, y: ghostY } };
+        if (collide(arena, test)) {
+          ghostY--;
+          break;
+        }
+      }
+      player.matrix.forEach((row, y) => {
+        row.forEach((val, x) => {
+          if (val !== 0) {
+            drawCell(x + player.pos.x, y + ghostY, val, 0.22);
+          }
+        });
+      });
+    }
+
+    function draw() {
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle grid lines
+      ctx.strokeStyle = "#1e1e1e";
+      for (let x = 0; x <= COLS; x++) {
+        ctx.beginPath();
+        ctx.moveTo(x * BLOCK, 0);
+        ctx.lineTo(x * BLOCK, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= ROWS; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, y * BLOCK);
+        ctx.lineTo(canvas.width, y * BLOCK);
+        ctx.stroke();
+      }
+
+      // Locked blocks
+      arena.forEach((row, y) => {
+        row.forEach((val, x) => {
+          if (val !== 0) drawCell(x, y, val);
+        });
+      });
+
+      // Landing ghost + active piece
+      drawGhost();
+      player.matrix.forEach((row, y) => {
+        row.forEach((val, x) => {
+          if (val !== 0) drawCell(x + player.pos.x, y + player.pos.y, val);
+        });
+      });
+    }
+
+    function update(time = 0) {
+      const delta = time - lastTime;
+      lastTime = time;
+
+      if (!gameOver) {
+        dropCounter += delta;
+        if (dropCounter > getDropInterval()) {
+          playerDrop();
+        }
+      }
+
+      draw();
+      requestAnimationFrame(update);
+    }
+
+    function initGame() {
+      arena = createMatrix(COLS, ROWS);
+      player = { pos: { x: 0, y: 0 }, matrix: null };
+      score = 0;
+      level = 1;
+      lines = 0;
+      health = 3;
+      gameOver = false;
+      dropCounter = 0;
+      lastTime = 0;
+      gameMsgEl.textContent = "";
+      playerReset();
+      updateHud();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(e.code)) {
+        e.preventDefault();
+      }
+
+      if (e.code === "ArrowLeft") {
+        playerMove(-1, 0);
+      } else if (e.code === "ArrowRight") {
+        playerMove(1, 0);
+      } else if (e.code === "ArrowUp") {
+        // Custom rule: Up arrow moves the piece UP
+        playerMove(0, -1);
+      } else if (e.code === "ArrowDown") {
+        playerDrop();
+      } else if (e.code === "Space") {
+        // Custom rule: Spacebar instantly drops and locks
+        playerHardDrop();
+      } else if (e.code === "KeyZ") {
+        playerRotate(-1);
+      } else if (e.code === "KeyX" || e.code === "KeyC") {
+        playerRotate(1);
+      } else if (e.code === "KeyE") {
+        // Custom rule: E clears board, +100 score, -1 health (3->0), +1 level
+        triggerEmergencyClear();
+      }
+    });
+
+    restartBtn.addEventListener("click", initGame);
+
+    initGame();
+    requestAnimationFrame(update);
+  </script>
+</body>
+</html>
