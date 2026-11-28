@@ -127,9 +127,9 @@ int main(void) {
     <label for="cc-output"><strong>Formatted Output</strong></label>
     <textarea id="cc-output" class="tool-box" rows="12" readonly spellcheck="false" placeholder="Formatted code appears here..."></textarea>
 
-    <script type="module">
-        import initClangFormat, { format } from "https://cdn.jsdelivr.net/npm/@wasm-fmt/clang-format/+esm";
-        import TreeSitter from "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/+esm";
+<script type="module">
+        import * as ClangMod from "https://cdn.jsdelivr.net/npm/@wasm-fmt/clang-format/web/+esm";
+        import * as TSMod from "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/+esm";
 
         const TS_WASM_URL = "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/tree-sitter.wasm";
         const TS_C_WASM_URL = "https://cdn.jsdelivr.net/npm/tree-sitter-c@0.21.4/tree-sitter-c.wasm";
@@ -150,6 +150,8 @@ int main(void) {
         const btnClear = document.getElementById("btn-clear");
 
         let parser = null;
+        let TSParser = null;
+        let clangFormatFn = null;
         let clangReady = false;
         let tsReady = false;
 
@@ -237,13 +239,13 @@ int main(void) {
                 errorCount = renderDiagnostics(src, true);
             }
 
-            if (!clangReady) {
+            if (!clangReady || typeof clangFormatFn !== "function") {
                 setStatus("clang-format WASM is not loaded yet.", "err");
                 return;
             }
 
             try {
-                const formatted = format(src, filenameEl.value, styleEl.value);
+                const formatted = clangFormatFn(src, filenameEl.value, styleEl.value);
                 outputEl.value = formatted;
 
                 if (errorCount > 0) {
@@ -318,7 +320,6 @@ int main(void) {
             setStatus("", "ok");
         });
 
-        // Support Tab key indentation inside source textarea
         inputEl.addEventListener("keydown", e => {
             if (e.key === "Tab") {
                 e.preventDefault();
@@ -329,41 +330,63 @@ int main(void) {
             }
         });
 
+        async function initClang() {
+            const initFn = ClangMod.default || ClangMod.init;
+            clangFormatFn = ClangMod.format || (ClangMod.default && ClangMod.default.format);
+            if (typeof initFn === "function") {
+                await initFn();
+            }
+            if (typeof clangFormatFn !== "function") {
+                throw new Error("clang-format export not found on module");
+            }
+            clangReady = true;
+            btnFormat.disabled = false;
+        }
+
+        async function initTS() {
+            TSParser = TSMod.default || TSMod.Parser || TSMod;
+            if (!TSParser || typeof TSParser.init !== "function") {
+                throw new Error("web-tree-sitter Parser.init not found");
+            }
+            await TSParser.init({
+                locateFile(scriptName) {
+                    if (scriptName.endsWith(".wasm")) return TS_WASM_URL;
+                    return scriptName;
+                }
+            });
+            const Lang = TSParser.Language || TSMod.Language;
+            const CLang = await Lang.load(TS_C_WASM_URL);
+            parser = new TSParser();
+            parser.setLanguage(CLang);
+            tsReady = true;
+            btnCheck.disabled = false;
+            btnAst.disabled = false;
+            diagsEl.innerHTML = '<li class="note">Ready. Paste C/C++ code and click Format + Check or Check Syntax Only.</li>';
+        }
+
         async function bootstrap() {
-            const tasks = [
-                initClangFormat().then(() => {
-                    clangReady = true;
-                }),
-                TreeSitter.init({
-                    locateFile() {
-                        return TS_WASM_URL;
-                    }
-                }).then(async () => {
-                    const CLang = await TreeSitter.Language.load(TS_C_WASM_URL);
-                    parser = new TreeSitter();
-                    parser.setLanguage(CLang);
-                    tsReady = true;
-                })
-            ];
+            const errors = [];
 
-            const results = await Promise.allSettled(tasks);
-            const failed = results.filter(r => r.status === "rejected");
-
-            if (clangReady) btnFormat.disabled = false;
-            if (tsReady) {
-                btnCheck.disabled = false;
-                btnAst.disabled = false;
-                diagsEl.innerHTML = '<li class="note">Ready. Paste C/C++ code and click Format + Check or Check Syntax Only.</li>';
+            try {
+                await initClang();
+            } catch (err) {
+                errors.push("clang-format: " + (err && err.message ? err.message : String(err)));
             }
 
-            if (failed.length === 0) {
+            try {
+                await initTS();
+            } catch (err) {
+                const msg = err && err.message ? err.message : String(err);
+                errors.push("tree-sitter: " + msg);
+                diagsEl.innerHTML = `<li class="diag-err">${msg}</li>`;
+            }
+
+            if (clangReady && tsReady) {
                 setStatus("Ready (clang-format + tree-sitter-c loaded).", "ok");
             } else if (clangReady || tsReady) {
-                const reason = failed[0].reason?.message || String(failed[0].reason);
-                setStatus("Partial load (" + reason + "). Available tools enabled.", "warn");
+                setStatus("Partial load: " + errors.join(" | "), "warn");
             } else {
-                const reason = failed[0].reason?.message || String(failed[0].reason);
-                setStatus("Failed to load WASM modules: " + reason, "err");
+                setStatus("Failed to load WASM modules: " + errors.join(" | "), "err");
             }
         }
 
