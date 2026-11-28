@@ -1,0 +1,83 @@
+body {
+    font-family: monospace;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    background: #111;
+    color: #eee;
+    line-height: 1.6;
+}
+
+h1 {
+    font-size: 1.25rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    color: #4ea1f3;
+}
+
+h3, h4, h5, h6 {
+    color: #4ea1f3;
+}
+
+a {
+    color: #4ea1f3;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 1.5rem 0;
+}
+
+pre, code {
+    font-family: monospace;
+    background: #181818;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid #333;
+}
+
+pre {
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+input, button, select, textarea {
+    font-family: monospace;
+    background: #222;
+    color: #eee;
+    border: 1px solid #444;
+    padding: 0.5rem 1rem;
+}
+
+button:hover:not(:disabled), input[type="button"]:hover:not(:disabled), input[type="submit"]:hover:not(:disabled) {
+    background: #333;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+ul, ol {
+    padding-left: 1.5rem;
+}
+
+li {
+    margin: 0.4rem 0;
+}
+
+.note {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.hidden-link {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #555;
+}

@@ -61,7 +61,8 @@ def job(item):
     return None
 
   dest.write_text(
-      f'<!DOCTYPE html><html><head><meta charset="UTF-8"><title>{html.escape(name)}({s})</title></head>'
+      f'<!DOCTYPE html><html><head><meta charset="UTF-8"><title>{html.escape(name)}({s})</title>'
+      f'<link rel="stylesheet" href="/static/global.css"></head>'
       f'<body><p><a href="/">Home</a> | <a href="/shelf/man/{s}/">man({s})</a></p><hr>'
       f'<pre>{html.escape(text)}</pre></body></html>\n',
       encoding="utf-8",
@@ -104,7 +105,8 @@ for s in secs:
       for n, f in items
   )
   (out / s / "index.html").write_text(
-      f'<!DOCTYPE html><html><head><meta charset="UTF-8"><title>man({s})</title></head>'
+      f'<!DOCTYPE html><html><head><meta charset="UTF-8"><title>man({s})</title>'
+      f'<link rel="stylesheet" href="/static/global.css"></head>'
       f'<body><p><a href="/">Home</a> | <a href="/shelf/man/">All sections</a></p>'
       f'<h1>man({s})</h1><hr><ul>{lis}</ul></body></html>\n',
       encoding="utf-8",
@@ -120,7 +122,8 @@ search_data = json.dumps([[s, n, f] for s, n, f in all_entries])
 (out / "index.html").write_text(
     f"""<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>man(1-8)</title></head>
+<head><meta charset="UTF-8"><title>man(1-8)</title>
+<link rel="stylesheet" href="/static/global.css"></head>
 <body>
 <p><a href="/">Home</a> | <a href="/shelf/">Shelf</a></p>
 <h1>Manual Pages</h1>
