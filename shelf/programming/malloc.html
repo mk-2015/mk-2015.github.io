@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malloc Under the Hood - The Internet Library</title>
+</head>
+<body>
+    <p><a href="../">Home</a> | <a href="./">Programming</a></p>
+    <h1>Malloc Under the Hood</h1>
+    <p><tt>Heap management, kernel memory syscalls, chunk layouts, free lists, splitting/coalescing, and a working C allocator.</tt></p>
+    <hr>
+
+    <ul>
+        <li><a href="#virtual-memory">1. Virtual Memory vs. Heap Syscalls</a></li>
+        <li><a href="#chunk-layout">2. Chunk Layout, Headers, and Alignment</a></li>
+        <li><a href="#allocation-free">3. Allocation Strategies, Splitting, and Coalescing</a></li>
+        <li><a href="#real-world">4. Arenas, Tcaches, and Fragmentation</a></li>
+        <li><a href="#implementation">5. Complete C Allocator Implementation</a></li>
+        <li><a href="#pitfalls">6. Common Heap Bugs</a></li>
+    </ul>
+    <hr>
+
+    <h2 id="virtual-memory">1. Virtual Memory vs. Heap Syscalls</h2>
+    <p>A C program does not get raw physical RAM addresses from <tt>malloc(3)</tt>. It receives virtual addresses mapped in its own process page tables by the operating system kernel.</p>
+    <p>User-space allocators (such as <tt>glibc</tt> <tt>ptmalloc2</tt>, <tt>jemalloc</tt>, <tt>mimalloc</tt>, or <tt>musl</tt>) sit between your application and the kernel. They request larger memory regions from the OS and carve them into smaller blocks so calls to <tt>malloc()</tt> and <tt>free()</tt> rarely need a system call.</p>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Mechanism</th>
+                <th>Syscall / Interface</th>
+                <th>How It Behaves</th>
+                <th>Typical Use Case</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Program Break</b></td>
+                <td><tt>brk(2)</tt> / <tt>sbrk(2)</tt></td>
+                <td>Moves the contiguous end of the data/heap segment up or down in one linear region.</td>
+                <td>Small and medium allocations in traditional UNIX heaps (can pin memory if top chunk stays high).</td>
+            </tr>
+            <tr>
+                <td><b>Anonymous Mapping</b></td>
+                <td><tt>mmap(2)</tt> / <tt>munmap(2)</tt></td>
+                <td>Maps independent page-aligned virtual memory regions (usually multiples of 4096 bytes) anywhere in address space.</td>
+                <td>Large allocations above a threshold, thread arenas, and returning pages back to the OS cleanly.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="chunk-layout">2. Chunk Layout, Headers, and Alignment</h2>
+    <p>When you ask for <tt>malloc(n)</tt>, the allocator usually allocates slightly more than <tt>n</tt> bytes. Immediately before the pointer returned to your code is a metadata header storing the chunk size and state flags.</p>
+    <p>Most architectures require returned pointers to be aligned (commonly 8 bytes on 32-bit and 16 bytes on 64-bit) so types like <tt>long double</tt>, SIMD vectors, or structs with strict alignment faults do not trigger alignment traps or unaligned-access penalties.</p>
+
+    <pre><code>Allocated chunk in memory:
+
+  +-----------------------------------+  &lt;-- chunk base (aligned)
+  | size_and_flags (e.g. size | PREV_INUSE) |
+  +-----------------------------------+  &lt;-- user pointer returned by malloc()
+  |                                   |
+  |        Payload (user bytes)       |
+  |                                   |
+  +-----------------------------------+  &lt;-- next chunk starts here
+
+Free chunk (when not adjacent to an in-use chunk, may also store links):
+
+  +-----------------------------------+
+  | size_and_flags                    |
+  +-----------------------------------+
+  | next_free *                       |
+  +-----------------------------------+
+  | prev_free *                       |
+  +-----------------------------------+
+  | unused free space ...             |
+  +-----------------------------------+</code></pre>
+
+    <p>Because valid chunk sizes on a 16-byte-aligned allocator are multiples of 16, the lowest bits (such as bit 0, bit 1, bit 2) are always zero in an unmasked size value. Allocators pack status flags into those low bits:</p>
+    <ul>
+        <li><b><tt>PREV_INUSE` (bit 0 = 1):</b> The immediately preceding physical chunk in memory is currently allocated. Prevents coalescing backward into live data and lets the previous chunk omit its trailing footer while in use.</li>
+        <li><b><tt>IS_MMAPPED` (bit 1 = 2):</b> This block came directly from <tt>mmap(2)</tt> rather than the main heap arena, so <tt>free()</tt> unmaps it with <tt>munmap(2)</tt>.</li>
+        <li><b><tt>NON_MAIN_ARENA` (bit 2 = 4):</b> Belongs to a non-main thread arena rather than the primary heap.</li>
+    </ul>
+
+    <h2 id="allocation-free">3. Allocation Strategies, Splitting, and Coalescing</h2>
+    <p>When <tt>free(ptr)</tt> is called, memory is rarely handed straight back to the kernel. Instead, the chunk is marked free and linked into a free list (or bin) for future reuse.</p>
+
+    <h3>Finding a Free Block</h3>
+    <ul>
+        <li><b>First-fit:</b> Scans the free list and picks the first chunk large enough to satisfy the request. Fast allocation, tends to leave smaller fragments near the front of the list.</li>
+        <li><b>Best-fit:</b> Searches for the smallest free chunk that still fits the request. Reduces wasted space per allocation, but scanning a long list takes more CPU time and can leave tiny, unusable "splinter" chunks.</li>
+        <li><b>Next-fit:</b> Resumes scanning from where the previous search stopped, spreading allocations more evenly across the heap.</li>
+    </ul>
+
+    <h3>Splitting and Coalescing</h3>
+    <ul>
+        <li><b>Splitting:</b> If a free chunk is larger than the requested payload plus header overhead (and large enough to hold a valid minimum-sized free chunk), the allocator carves off the needed portion and leaves the remainder as a smaller free chunk.</li>
+        <li><b>Coalescing (merging):</b> If the physical chunk right after or right before a freed chunk is also free, the allocator merges them into one contiguous free chunk. Without coalescing, thousands of small <tt>malloc()</tt> and <tt>free()</tt> cycles leave fragmented holes that cannot satisfy a larger request even when total free bytes are plenty.</li>
+    </ul>
+
+    <h2 id="real-world">4. Arenas, Tcaches, and Fragmentation</h2>
+    <p>A single global heap protected by one mutex creates lock contention when multiple threads allocate and free memory concurrently. Production allocators solve this with layered fast paths:</p>
+    <ul>
+        <li><b>Per-thread caches (`tcache` / thread-local caches):</b> Keep small recently freed blocks per thread so common allocations happen with little or no lock contention.</li>
+        <li><b>Arenas / segregated bins:</b> Group chunks by size class (small bins, large bins, fastbins) so lookups are fast and similarly sized objects stay grouped together.</li>
+        <li><b>Internal vs. external fragmentation:</b> <em>Internal</em> fragmentation is wasted space inside an allocated block (alignment padding or rounding up to a size class). <em>External</em> fragmentation is free memory scattered across the heap in chunks that are too small or non-contiguous for a needed allocation size.</li>
+    </ul>
+
+    <h2 id="implementation">5. Complete C Allocator Implementation</h2>
+    <p>The example below is a self-contained C allocator built on <tt>sbrk(2)</tt> with 16-byte alignment, header size encoding, block splitting, and forward/backward coalescing of adjacent free blocks. It is designed to show the core mechanics clearly rather than replace a production allocator.</p>
+
+    <pre><code>#define _POSIX_C_SOURCE 200809L
+
+#include &lt;stddef.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+
+#define ALIGNMENT 16u
+#define ALIGN_UP(x) (((x) + (ALIGNMENT - 1u)) &amp; ~(size_t)(ALIGNMENT - 1u))
+
+/* Low bit of `size` stores whether the chunk is currently allocated. */
+#define FLAG_INUSE ((size_t)0x1u)
+#define SIZE_MASK  (~FLAG_INUSE)
+
+typedef struct block_hdr {
+    size_t size_flags;          /* Total chunk size (including header) | FLAG_INUSE */
+    struct block_hdr *prev_phys;  /* Immediately preceding physical chunk in heap */
+    struct block_hdr *next_free;  /* Next node in doubly linked free list */
+    struct block_hdr *prev_free;  /* Previous node in doubly linked free list */
+} block_hdr_t;
+
+#define HDR_SIZE ALIGN_UP(sizeof(block_hdr_t))
+#define MIN_SPLIT_PAYLOAD ALIGN_UP(32u)
+
+static block_hdr_t *heap_head = NULL;
+static block_hdr_t *heap_tail = NULL;
+static block_hdr_t *free_head = NULL;
+
+static size_t blk_size(const block_hdr_t *b) {
+    return b-&gt;size_flags &amp; SIZE_MASK;
+}
+
+static int blk_is_free(const block_hdr_t *b) {
+    return (b-&gt;size_flags &amp; FLAG_INUSE) == 0u;
+}
+
+static void set_blk(block_hdr_t *b, size_t total_size, int inuse) {
+    b-&gt;size_flags = (total_size &amp; SIZE_MASK) | (inuse ? FLAG_INUSE : 0u);
+}
+
+static void *blk_to_payload(block_hdr_t *b) {
+    return (void *)((uint8_t *)b + HDR_SIZE);
+}
+
+static block_hdr_t *payload_to_blk(void *ptr) {
+    return (block_hdr_t *)((uint8_t *)ptr - HDR_SIZE);
+}
+
+static block_hdr_t *next_phys_blk(block_hdr_t *b) {
+    uint8_t *cand = (uint8_t *)b + blk_size(b);
+    uint8_t *end = (uint8_t *)heap_tail + blk_size(heap_tail);
+    return (cand &lt; end) ? (block_hdr_t *)cand : NULL;
+}
+
+static void freelist_remove(block_hdr_t *b) {
+    if (b-&gt;prev_free) {
+        b-&gt;prev_free-&gt;next_free = b-&gt;next_free;
+    } else if (free_head == b) {
+        free_head = b-&gt;next_free;
+    }
+    if (b-&gt;next_free) {
+        b-&gt;next_free-&gt;prev_free = b-&gt;prev_free;
+    }
+    b-&gt;next_free = NULL;
+    b-&gt;prev_free = NULL;
+}
+
+static void freelist_insert_front(block_hdr_t *b) {
+    b-&gt;prev_free = NULL;
+    b-&gt;next_free = free_head;
+    if (free_head) {
+        free_head-&gt;prev_free = b;
+    }
+    free_head = b;
+}
+
+static block_hdr_t *request_space_from_os(size_t total_needed) {
+    size_t req = ALIGN_UP(total_needed);
+    if (req &lt; 4096u) {
+        req = 4096u;
+    }
+
+    void *raw = sbrk((intptr_t)req);
+    if (raw == (void *)-1) {
+        return NULL;
+    }
+
+    block_hdr_t *b = (block_hdr_t *)raw;
+    b-&gt;prev_phys = heap_tail;
+    b-&gt;next_free = NULL;
+    b-&gt;prev_free = NULL;
+    set_blk(b, req, 0);
+
+    if (!heap_head) {
+        heap_head = b;
+    }
+    heap_tail = b;
+
+    /* Coalesce with previous physical block if that block is already free. */
+    if (b-&gt;prev_phys &amp;&amp; blk_is_free(b-&gt;prev_phys)) {
+        block_hdr_t *prev = b-&gt;prev_phys;
+        size_t merged = blk_size(prev) + blk_size(b);
+        set_blk(prev, merged, 0);
+        heap_tail = prev;
+        b = prev;
+    } else {
+        freelist_insert_front(b);
+    }
+
+    return b;
+}
+
+static void split_block(block_hdr_t *b, size_t needed_total) {
+    size_t current = blk_size(b);
+    if (current &lt; needed_total + HDR_SIZE + MIN_SPLIT_PAYLOAD) {
+        return;
+    }
+
+    size_t rem_size = current - needed_total;
+    set_blk(b, needed_total, 1);
+
+    block_hdr_t *rem = (block_hdr_t *)((uint8_t *)b + needed_total);
+    rem-&gt;prev_phys = b;
+    rem-&gt;next_free = NULL;
+    rem-&gt;prev_free = NULL;
+    set_blk(rem, rem_size, 0);
+
+    block_hdr_t *after = next_phys_blk(rem);
+    if (after) {
+        after-&gt;prev_phys = rem;
+    } else {
+        heap_tail = rem;
+    }
+
+    freelist_insert_front(rem);
+}
+
+void *tiny_malloc(size_t size) {
+    if (size == 0) {
+        return NULL;
+    }
+
+    size_t payload = ALIGN_UP(size);
+    size_t needed_total = HDR_SIZE + payload;
+
+    block_hdr_t *curr = free_head;
+    while (curr) {
+        if (blk_size(curr) &gt;= needed_total) {
+            freelist_remove(curr);
+            split_block(curr, needed_total);
+            set_blk(curr, blk_size(curr), 1);
+            return blk_to_payload(curr);
+        }
+        curr = curr-&gt;next_free;
+    }
+
+    curr = request_space_from_os(needed_total);
+    if (!curr) {
+        return NULL;
+    }
+
+    freelist_remove(curr);
+    split_block(curr, needed_total);
+    set_blk(curr, blk_size(curr), 1);
+    return blk_to_payload(curr);
+}
+
+void tiny_free(void *ptr) {
+    if (!ptr) {
+        return;
+    }
+
+    block_hdr_t *b = payload_to_blk(ptr);
+    if (blk_is_free(b)) {
+        return;
+    }
+
+    set_blk(b, blk_size(b), 0);
+
+    /* Coalesce with next physical block if free. */
+    block_hdr_t *nxt = next_phys_blk(b);
+    if (nxt &amp;&amp; blk_is_free(nxt)) {
+        freelist_remove(nxt);
+        size_t merged = blk_size(b) + blk_size(nxt);
+        set_blk(b, merged, 0);
+
+        block_hdr_t *after_nxt = next_phys_blk(b);
+        if (after_nxt) {
+            after_nxt-&gt;prev_phys = b;
+        } else {
+            heap_tail = b;
+        }
+    }
+
+    /* Coalesce with previous physical block if free. */
+    block_hdr_t *prv = b-&gt;prev_phys;
+    if (prv &amp;&amp; blk_is_free(prv)) {
+        freelist_remove(prv);
+        size_t merged = blk_size(prv) + blk_size(b);
+        set_blk(prv, merged, 0);
+
+        block_hdr_t *after_b = next_phys_blk(b);
+        if (after_b) {
+            after_b-&gt;prev_phys = prv;
+        } else {
+            heap_tail = prv;
+        }
+        b = prv;
+    }
+
+    freelist_insert_front(b);
+}
+
+int main(void) {
+    char *a = tiny_malloc(64);
+    char *b = tiny_malloc(128);
+    char *c = tiny_malloc(64);
+
+    if (!a || !b || !c) {
+        return 1;
+    }
+
+    strcpy(a, "first block");
+    strcpy(b, "second block");
+    strcpy(c, "third block");
+
+    tiny_free(b);
+    tiny_free(a); /* Coalesces with freed `b` right after it */
+
+    char *d = tiny_malloc(160);
+    if (d) {
+        strcpy(d, "reused coalesced region");
+        printf("d = %s, c = %s\n", d, c);
+    }
+
+    tiny_free(d);
+    tiny_free(c);
+    return 0;
+}</code></pre>
+
+    <h2 id="pitfalls">6. Common Heap Bugs</h2>
+    <ul>
+        <li><b>Use-after-free (UAF):</b> Reading or writing through a pointer after <tt>free()</tt>. The memory may already be reallocated to another structure or hold allocator free-list pointers, causing silent data corruption or crashes.</li>
+        <li><b>Double free:</b> Calling <tt>free(p)</tt> twice on the same pointer without reassigning <tt>p = NULL</tt>. Corrupts free-list pointers and can let the same memory block be handed out twice.</li>
+        <li><b>Heap buffer overflow:</b> Writing past the requested byte count overwrites adjacent chunk headers or neighboring allocations, corrupting sizes, flags, or pointers.</li>
+        <li><b>Invalid / non-heap pointer passed to <tt>free()</tt>:</b> Calling <tt>free()</tt> on stack variables, static globals, string literals, or interior pointers causes undefined behavior and immediate crashes.</li>
+        <li><b>Memory leaks:</b> Retaining pointers or dropping references without calling <tt>free()</tt> grows heap usage until the process hits memory limits or the OOM killer terminates it.</li>
+    </ul>
+</body>
+</html>
