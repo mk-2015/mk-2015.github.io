@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Public-Domain Books — inetdotlib.ftp.sh</title>
+    <title>Public-Domain Books - inetdotlib.ftp.sh</title>
     <style>
         body { font-family: monospace; max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #111; color: #eee; }
         h1 { border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
@@ -31,8 +31,8 @@
         <div id="reader-header">
             <strong id="reader-title">Book Title</strong>
             <div>
-                <a id="raw-download" href="#" target="_blank" style="color:#4ea1f3; margin-right:1rem; font-size:0.85rem;">[Download Raw]</a>
-                <button onclick="closeReader()" style="margin:0;">[X] Close</button>
+                <a id="raw-download" href="#" target="_blank" rel="noopener" style="color:#4ea1f3; margin-right:1rem; font-size:0.85rem;">[Download Raw]</a>
+                <button type="button" onclick="closeReader()" style="margin:0;">[X] Close</button>
             </div>
         </div>
         <div id="txt-viewer"></div>
@@ -41,53 +41,57 @@
 
     <!-- Book Catalog -->
     <ul id="book-list"></ul>
-    <button id="show-more-btn" style="display:none;" onclick="renderNext(100)">Show More (+100)</button>
+    <button id="show-more-btn" type="button" style="display:none;" onclick="renderNext(100)">Show More (+100)</button>
 
     <script>
-        // Hardcoded Public Repo Config
         const REPO = "mk-2015/internet-books";
         const BRANCH = "main";
         const BASE_PATH = "books";
-        const CACHE_KEY = "zm2w_books_cache_v1";
+        const CACHE_KEY = "inetdotlib_books_cache_v1";
         const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
         let allBooks = [];
         let renderedCount = 0;
 
+        function buildRawUrl(path) {
+            const encoded = path.split("/").map(encodeURIComponent).join("/");
+            return `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${encoded}`;
+        }
+
         async function loadCatalog() {
             const status = document.getElementById("status");
 
             try {
-                // Check browser localStorage cache first to respect GitHub's 60 req/hr limit
                 const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-                if (cached && Date.now() - cached.time < CACHE_TTL) {
+                if (cached && Array.isArray(cached.books) && Date.now() - cached.time < CACHE_TTL) {
                     allBooks = cached.books;
                 } else {
-                    // Single API call fetches the entire folder tree recursively
-                    const res = await fetch(`https://githubusercontent.com/${REPO}/git/trees/${BRANCH}?recursive=1`);
+                    const treeUrl = `https://api.github.com/repos/${REPO}/git/trees/${encodeURIComponent(BRANCH)}?recursive=1`;
+                    const res = await fetch(treeUrl, {
+                        headers: { "Accept": "application/vnd.github+json" }
+                    });
                     if (!res.ok) throw new Error(`GitHub API ${res.status}`);
                     const data = await res.json();
 
-                    allBooks = data.tree
-                        .filter(item => item.type === "blob" && (
-                            item.path.startsWith(`${BASE_PATH}/pdf/`) ||
-                            item.path.startsWith(`${BASE_PATH}/txt/`)
-                        ))
+                    allBooks = (data.tree || [])
+                        .filter(item =>
+                            item.type === "blob" &&
+                            (item.path.startsWith(`${BASE_PATH}/pdf/`) || item.path.startsWith(`${BASE_PATH}/txt/`))
+                        )
                         .map(item => {
                             const filename = item.path.split("/").pop();
                             const type = item.path.startsWith(`${BASE_PATH}/pdf/`) ? "pdf" : "txt";
                             const title = filename.replace(/\.(pdf|txt)$/i, "").replace(/[-_]+/g, " ");
-                            return { path: item.path, title, type };
+                            return { path: item.path, title, type, size: item.size || 0 };
                         })
                         .sort((a, b) => a.title.localeCompare(b.title));
 
                     localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), books: allBooks }));
                 }
 
-                // Render first 50 books
                 renderNext(50);
             } catch (err) {
-                status.textContent = "Failed to load catalog from GitHub.";
+                status.textContent = `Failed to load catalog from GitHub (${err.message}).`;
                 console.error(err);
             }
         }
@@ -104,7 +108,11 @@
                 const link = document.createElement("a");
                 link.className = "book-link";
                 link.textContent = book.title;
-                link.onclick = () => openBook(book);
+                link.href = `#book=${encodeURIComponent(book.path)}`;
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    openBook(book);
+                };
 
                 const badge = document.createElement("span");
                 badge.className = "badge";
@@ -127,29 +135,29 @@
             const txtViewer = document.getElementById("txt-viewer");
             const pdfViewer = document.getElementById("pdf-viewer");
 
-            const rawUrl = `https://githubusercontent.com/${REPO}/${BRANCH}/${book.path.split("/").map(encodeURIComponent).join("/")}`;
+            const rawUrl = buildRawUrl(book.path);
 
             reader.style.display = "block";
             readerTitle.textContent = `Loading: ${book.title}...`;
             rawLink.href = rawUrl;
             txtViewer.style.display = "none";
             pdfViewer.style.display = "none";
+            pdfViewer.src = "";
             reader.scrollIntoView({ behavior: "smooth" });
 
             try {
-                readerTitle.textContent = book.title;
                 if (book.type === "txt") {
-                    const res = await fetch(rawUrl, { cache: "force-cache" });
-                    if (!res.ok) throw new Error("Failed to fetch TXT");
+                    const res = await fetch(rawUrl);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     txtViewer.textContent = await res.text();
                     txtViewer.style.display = "block";
                 } else {
-                    // Mozilla PDF.js renders ://githubusercontent.com PDFs cleanly in an iframe
-                    pdfViewer.src = `https://github.io{encodeURIComponent(rawUrl)}`;
+                    pdfViewer.src = rawUrl;
                     pdfViewer.style.display = "block";
                 }
+                readerTitle.textContent = book.title;
             } catch (err) {
-                readerTitle.textContent = `Error loading: ${book.title}`;
+                readerTitle.textContent = `Error loading: ${book.title} (${err.message})`;
                 console.error(err);
             }
         }
