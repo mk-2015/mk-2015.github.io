@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWX Generator - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .rw-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+            align-items: center;
+            margin: 0.75rem 0;
+        }
+        .rw-row label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            cursor: pointer;
+        }
+        .rw-row input[type="checkbox"] {
+            padding: 0;
+        }
+        .tool-box {
+            width: 100%;
+            min-height: 7rem;
+            box-sizing: border-box;
+        }
+        .tool-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        .tool-msg {
+            color: #6ee787;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>RWX &amp; Mode Rule Generator</h1>
+    <hr>
+
+    <p>Build symbolic <code>chmod</code> expressions, <code>umask</code> values, or multi-target commands.</p>
+
+    <div class="rw-row">
+        <strong>Who:</strong>
+        <label><input type="checkbox" id="who-u" checked> u (user)</label>
+        <label><input type="checkbox" id="who-g" checked> g (group)</label>
+        <label><input type="checkbox" id="who-o"> o (other)</label>
+        <label><input type="checkbox" id="who-a"> a (all / ugo)</label>
+    </div>
+
+    <div class="rw-row">
+        <label for="rw-op">
+            <strong>Operator:</strong>
+            <select id="rw-op">
+                <option value="+" selected>+ (add)</option>
+                <option value="-">- (remove)</option>
+                <option value="=">= (set exact)</option>
+            </select>
+        </label>
+        <strong>Perms:</strong>
+        <label><input type="checkbox" id="perm-r" checked> r (read)</label>
+        <label><input type="checkbox" id="perm-w"> w (write)</label>
+        <label><input type="checkbox" id="perm-x" checked> x (execute)</label>
+        <label><input type="checkbox" id="perm-X"> X (exec if dir/exec)</label>
+    </div>
+
+    <div class="rw-row">
+        <label for="rw-targets"><strong>Targets (space/comma separated):</strong></label>
+        <input id="rw-targets" type="text" value="script.sh bin/" size="32">
+        <label><input type="checkbox" id="rw-recursive"> Recursive (-R)</label>
+    </div>
+
+    <div class="tool-controls">
+        <button type="button" onclick="buildRules()">Generate</button>
+        <button type="button" onclick="copyRules()">Copy Output</button>
+    </div>
+
+    <p id="rw-status" class="tool-msg" role="status" aria-live="polite"></p>
+
+    <label for="rw-out"><strong>Generated Commands &amp; Umask</strong></label>
+    <textarea id="rw-out" class="tool-box" rows="6" readonly></textarea>
+
+    <script>
+        const whoU = document.getElementById("who-u");
+        const whoG = document.getElementById("who-g");
+        const whoO = document.getElementById("who-o");
+        const whoA = document.getElementById("who-a");
+        const opEl = document.getElementById("rw-op");
+        const permR = document.getElementById("perm-r");
+        const permW = document.getElementById("perm-w");
+        const permX = document.getElementById("perm-x");
+        const permBigX = document.getElementById("perm-X");
+        const targetsEl = document.getElementById("rw-targets");
+        const recEl = document.getElementById("rw-recursive");
+        const outEl = document.getElementById("rw-out");
+        const statusEl = document.getElementById("rw-status");
+
+        function buildRules() {
+            let who = "";
+            if (whoA.checked) {
+                who = "a";
+            } else {
+                if (whoU.checked) who += "u";
+                if (whoG.checked) who += "g";
+                if (whoO.checked) who += "o";
+            }
+
+            let perms = "";
+            if (permR.checked) perms += "r";
+            if (permW.checked) perms += "w";
+            if (permX.checked) perms += "x";
+            if (permBigX.checked) perms += "X";
+
+            const expr = `${who}${opEl.value}${perms || ""}`;
+            const flags = recEl.checked ? "-R " : "";
+            const targets = targetsEl.value
+                .split(/[\s,]+/)
+                .map(t => t.trim())
+                .filter(Boolean);
+
+            const lines = [];
+            if (targets.length === 0) {
+                lines.push(`chmod ${flags}${expr} <path>`);
+            } else {
+                for (const t of targets) {
+                    lines.push(`chmod ${flags}${expr} ${t}`);
+                }
+            }
+
+            // Helpful umask approximation for standard rwx masks
+            const uBits = (permR.checked ? 4 : 0) + (permW.checked ? 2 : 0) + (permX.checked ? 1 : 0);
+            const umaskVal = (7 - uBits).toString(8).repeat(3);
+            lines.push(`# Approx umask if applied to user bits: umask 0${umaskVal}`);
+
+            outEl.value = lines.join("\n");
+            statusEl.textContent = `Generated ${lines.length - 1} chmod command(s).`;
+        }
+
+        function copyRules() {
+            if (!outEl.value) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(outEl.value).then(() => {
+                    statusEl.textContent = "Copied to clipboard.";
+                });
+            }
+        }
+
+        document.querySelectorAll("input, select").forEach(el => {
+            if (el.id !== "rw-out") {
+                el.addEventListener("change", buildRules);
+                el.addEventListener("input", buildRules);
+            }
+        });
+
+        buildRules();
+    </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unix Epoch Converter - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .ep-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 0.75rem;
+            align-items: center;
+            margin: 0.75rem 0;
+        }
+        .ep-panel {
+            border: 1px solid #2a2a2a;
+            background: #151515;
+            padding: 0.85rem 1rem;
+            margin: 0.75rem 0;
+        }
+        .tool-msg {
+            color: #f87171;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+        .tool-msg.ok {
+            color: #6ee787;
+        }
+        .meta-line {
+            color: #9aa5b4;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>Unix Epoch Converter</h1>
+    <hr>
+
+    <p class="meta-line">Current Unix time: <strong id="ep-now-sec">-</strong>s (<span id="ep-now-ms">-</span> ms)</p>
+
+    <div class="ep-panel">
+        <strong>Epoch &rarr; Date / Time</strong>
+        <div class="ep-row">
+            <label for="ep-input">Timestamp:</label>
+            <input id="ep-input" type="text" size="22" placeholder="e.g. 1700000000 or 1700000000000">
+            <select id="ep-unit">
+                <option value="auto" selected>Auto (s / ms)</option>
+                <option value="sec">Seconds</option>
+                <option value="ms">Milliseconds</option>
+            </select>
+            <button type="button" onclick="epochToDate()">Convert</button>
+            <button type="button" onclick="useNow()">Now</button>
+        </div>
+        <p><strong>UTC:</strong> <code id="ep-utc">-</code></p>
+        <p><strong>Local:</strong> <code id="ep-local">-</code></p>
+        <p><strong>ISO 8601:</strong> <code id="ep-iso">-</code></p>
+    </div>
+
+    <div class="ep-panel">
+        <strong>Date / Time &rarr; Epoch</strong>
+        <div class="ep-row">
+            <label for="dt-input">Date string:</label>
+            <input id="dt-input" type="text" size="30" placeholder="2026-11-28T19:29:00+05:45 or 2026-11-28 13:44:00 UTC">
+            <button type="button" onclick="dateToEpoch()">To Epoch</button>
+        </div>
+        <p><strong>Seconds:</strong> <code id="dt-sec">-</code> | <strong>Milliseconds:</strong> <code id="dt-ms">-</code></p>
+    </div>
+
+    <p id="ep-status" class="tool-msg" role="status" aria-live="polite"></p>
+
+    <script>
+        const nowSecEl = document.getElementById("ep-now-sec");
+        const nowMsEl = document.getElementById("ep-now-ms");
+        const epIn = document.getElementById("ep-input");
+        const epUnit = document.getElementById("ep-unit");
+        const epUtc = document.getElementById("ep-utc");
+        const epLocal = document.getElementById("ep-local");
+        const epIso = document.getElementById("ep-iso");
+        const dtIn = document.getElementById("dt-input");
+        const dtSec = document.getElementById("dt-sec");
+        const dtMs = document.getElementById("dt-ms");
+        const statusEl = document.getElementById("ep-status");
+
+        function setEpStatus(msg, ok = false) {
+            statusEl.textContent = msg;
+            statusEl.className = ok ? "tool-msg ok" : "tool-msg";
+        }
+
+        function tickNow() {
+            const ms = Date.now();
+            nowMsEl.textContent = ms;
+            nowSecEl.textContent = Math.floor(ms / 1000);
+        }
+
+        function epochToDate() {
+            const raw = epIn.value.trim();
+            if (!/^-?\d+(\.\d+)?$/.test(raw)) {
+                setEpStatus("Enter a numeric Unix timestamp.", false);
+                return;
+            }
+            const num = Number(raw);
+            if (!Number.isFinite(num)) {
+                setEpStatus("Timestamp out of range.", false);
+                return;
+            }
+
+            let ms = num;
+            if (epUnit.value === "sec") {
+                ms = num * 1000;
+            } else if (epUnit.value === "auto") {
+                // Values with >= 12 digits are typically milliseconds
+                ms = Math.abs(num) >= 1e11 ? num : num * 1000;
+            }
+
+            const d = new Date(ms);
+            if (Number.isNaN(d.getTime())) {
+                setEpStatus("Invalid date from timestamp.", false);
+                return;
+            }
+
+            epUtc.textContent = d.toUTCString();
+            epLocal.textContent = d.toString();
+            epIso.textContent = d.toISOString();
+            setEpStatus("Converted timestamp.", true);
+        }
+
+        function dateToEpoch() {
+            const raw = dtIn.value.trim();
+            if (!raw) {
+                setEpStatus("Enter a date/time string.", false);
+                return;
+            }
+            const ms = Date.parse(raw);
+            if (Number.isNaN(ms)) {
+                setEpStatus("Could not parse date string. Try ISO format like YYYY-MM-DDTHH:mm:ssZ.", false);
+                return;
+            }
+            dtMs.textContent = String(ms);
+            dtSec.textContent = String(Math.floor(ms / 1000));
+            setEpStatus("Converted date to Unix timestamp.", true);
+        }
+
+        function useNow() {
+            epIn.value = String(Math.floor(Date.now() / 1000));
+            epUnit.value = "sec";
+            epochToDate();
+        }
+
+        tickNow();
+        setInterval(tickNow, 1000);
+        useNow();
+    </script>
+</body>
+</html>

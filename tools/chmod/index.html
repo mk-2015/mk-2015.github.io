@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chmod Calculator - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .cm-top {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+            align-items: end;
+            margin: 0.75rem 0 1rem 0;
+        }
+        .cm-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .cm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.75rem;
+            margin: 0.75rem 0;
+        }
+        .cm-box {
+            border: 1px solid #2a2a2a;
+            background: #151515;
+            padding: 0.75rem 0.9rem;
+        }
+        .cm-box strong {
+            display: block;
+            margin-bottom: 0.45rem;
+        }
+        .cm-box label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 0.25rem 0;
+            cursor: pointer;
+        }
+        .cm-box input[type="checkbox"] {
+            padding: 0;
+        }
+        .tool-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        .tool-msg {
+            color: #f87171;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+        .tool-msg.ok {
+            color: #6ee787;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>Chmod Calculator</h1>
+    <hr>
+
+    <p>Convert between octal modes, symbolic strings, and permission bits locally.</p>
+
+    <div class="cm-top">
+        <div class="cm-field">
+            <label for="cm-octal"><strong>Octal Mode</strong></label>
+            <input id="cm-octal" type="text" value="0755" maxlength="5" size="8">
+        </div>
+        <div class="cm-field">
+            <label for="cm-symbolic"><strong>Symbolic / Mode String</strong></label>
+            <input id="cm-symbolic" type="text" value="rwxr-xr-x" maxlength="12" size="14">
+        </div>
+        <div class="cm-field">
+            <label for="cm-type"><strong>Entry Type</strong></label>
+            <select id="cm-type">
+                <option value="-" selected>Regular file (-)</option>
+                <option value="d">Directory (d)</option>
+                <option value="l">Symlink (l)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="cm-grid">
+        <div class="cm-box">
+            <strong>Owner (User)</strong>
+            <label><input type="checkbox" id="u-r" checked> Read (4)</label>
+            <label><input type="checkbox" id="u-w" checked> Write (2)</label>
+            <label><input type="checkbox" id="u-x" checked> Execute (1)</label>
+        </div>
+        <div class="cm-box">
+            <strong>Group</strong>
+            <label><input type="checkbox" id="g-r" checked> Read (4)</label>
+            <label><input type="checkbox" id="g-w"> Write (2)</label>
+            <label><input type="checkbox" id="g-x" checked> Execute (1)</label>
+        </div>
+        <div class="cm-box">
+            <strong>Other (World)</strong>
+            <label><input type="checkbox" id="o-r" checked> Read (4)</label>
+            <label><input type="checkbox" id="o-w"> Write (2)</label>
+            <label><input type="checkbox" id="o-x" checked> Execute (1)</label>
+        </div>
+        <div class="cm-box">
+            <strong>Special Bits</strong>
+            <label><input type="checkbox" id="s-uid"> SetUID (4)</label>
+            <label><input type="checkbox" id="s-gid"> SetGID (2)</label>
+            <label><input type="checkbox" id="s-stk"> Sticky (1)</label>
+        </div>
+    </div>
+
+    <div class="tool-controls">
+        <button type="button" onclick="applyOctal()">From Octal</button>
+        <button type="button" onclick="applySymbolic()">From Symbolic</button>
+        <button type="button" onclick="copyCmd()">Copy chmod Command</button>
+    </div>
+
+    <p id="cm-status" class="tool-msg ok" role="status" aria-live="polite"></p>
+    <p><strong>Command:</strong> <code id="cm-cmd">chmod 0755 file</code> | <strong>Full Mode:</strong> <code id="cm-full">-rwxr-xr-x</code></p>
+
+    <script>
+        const octalEl = document.getElementById("cm-octal");
+        const symEl = document.getElementById("cm-symbolic");
+        const typeEl = document.getElementById("cm-type");
+        const statusEl = document.getElementById("cm-status");
+        const cmdEl = document.getElementById("cm-cmd");
+        const fullEl = document.getElementById("cm-full");
+
+        const boxes = {
+            ur: document.getElementById("u-r"),
+            uw: document.getElementById("u-w"),
+            ux: document.getElementById("u-x"),
+            gr: document.getElementById("g-r"),
+            gw: document.getElementById("g-w"),
+            gx: document.getElementById("g-x"),
+            or: document.getElementById("o-r"),
+            ow: document.getElementById("o-w"),
+            ox: document.getElementById("o-x"),
+            suid: document.getElementById("s-uid"),
+            sgid: document.getElementById("s-gid"),
+            sstk: document.getElementById("s-stk")
+        };
+
+        function setMsg(text, ok = true) {
+            statusEl.textContent = text;
+            statusEl.className = ok ? "tool-msg ok" : "tool-msg";
+        }
+
+        function tripleSym(r, w, x, special, execChar, noExecChar) {
+            const c0 = r ? "r" : "-";
+            const c1 = w ? "w" : "-";
+            let c2 = x ? "x" : "-";
+            if (special) {
+                c2 = x ? execChar : noExecChar;
+            }
+            return c0 + c1 + c2;
+        }
+
+        function syncFromBoxes() {
+            const sp = (boxes.suid.checked ? 4 : 0) + (boxes.sgid.checked ? 2 : 0) + (boxes.sstk.checked ? 1 : 0);
+            const u = (boxes.ur.checked ? 4 : 0) + (boxes.uw.checked ? 2 : 0) + (boxes.ux.checked ? 1 : 0);
+            const g = (boxes.gr.checked ? 4 : 0) + (boxes.gw.checked ? 2 : 0) + (boxes.gx.checked ? 1 : 0);
+            const o = (boxes.or.checked ? 4 : 0) + (boxes.ow.checked ? 2 : 0) + (boxes.ox.checked ? 1 : 0);
+
+            const octalStr = sp > 0 ? `0${sp}${u}${g}${o}` : `0${u}${g}${o}`;
+            const symStr =
+                tripleSym(boxes.ur.checked, boxes.uw.checked, boxes.ux.checked, boxes.suid.checked, "s", "S") +
+                tripleSym(boxes.gr.checked, boxes.gw.checked, boxes.gx.checked, boxes.sgid.checked, "s", "S") +
+                tripleSym(boxes.or.checked, boxes.ow.checked, boxes.ox.checked, boxes.sstk.checked, "t", "T");
+
+            octalEl.value = octalStr;
+            symEl.value = symStr;
+            fullEl.textContent = typeEl.value + symStr;
+            cmdEl.textContent = `chmod ${octalStr} file`;
+            setMsg("Updated.", true);
+        }
+
+        function applyOctal() {
+            const cleaned = octalEl.value.trim().replace(/^0o/i, "");
+            if (!/^[0-7]{3,4}$/.test(cleaned)) {
+                setMsg("Enter 3 or 4 octal digits (0-7), e.g. 0755 or 1777.", false);
+                return;
+            }
+            const padded = cleaned.length === 3 ? "0" + cleaned : cleaned;
+            const sp = parseInt(padded[0], 8);
+            const u = parseInt(padded[1], 8);
+            const g = parseInt(padded[2], 8);
+            const o = parseInt(padded[3], 8);
+
+            boxes.suid.checked = Boolean(sp & 4);
+            boxes.sgid.checked = Boolean(sp & 2);
+            boxes.sstk.checked = Boolean(sp & 1);
+            boxes.ur.checked = Boolean(u & 4);
+            boxes.uw.checked = Boolean(u & 2);
+            boxes.ux.checked = Boolean(u & 1);
+            boxes.gr.checked = Boolean(g & 4);
+            boxes.gw.checked = Boolean(g & 2);
+            boxes.gx.checked = Boolean(g & 1);
+            boxes.or.checked = Boolean(o & 4);
+            boxes.ow.checked = Boolean(o & 2);
+            boxes.ox.checked = Boolean(o & 1);
+            syncFromBoxes();
+        }
+
+        function applySymbolic() {
+            let s = symEl.value.trim();
+            if (s.length === 10 && "-dlcbps".includes(s[0])) {
+                typeEl.value = "-dl".includes(s[0]) ? s[0] : "-";
+                s = s.slice(1);
+            }
+            if (!/^[r-][w-][xsStT-][r-][w-][xsStT-][r-][w-][xsStT-]$/.test(s)) {
+                setMsg("Expected 9 symbolic chars like rwxr-xr-x or rwsr-xr-x.", false);
+                return;
+            }
+
+            boxes.ur.checked = s[0] === "r";
+            boxes.uw.checked = s[1] === "w";
+            boxes.ux.checked = s[2] === "x" || s[2] === "s";
+            boxes.suid.checked = s[2] === "s" || s[2] === "S";
+
+            boxes.gr.checked = s[3] === "r";
+            boxes.gw.checked = s[4] === "w";
+            boxes.gx.checked = s[5] === "x" || s[5] === "s";
+            boxes.sgid.checked = s[5] === "s" || s[5] === "S";
+
+            boxes.or.checked = s[6] === "r";
+            boxes.ow.checked = s[7] === "w";
+            boxes.ox.checked = s[8] === "x" || s[8] === "t";
+            boxes.sstk.checked = s[8] === "t" || s[8] === "T";
+
+            syncFromBoxes();
+        }
+
+        function copyCmd() {
+            const text = cmdEl.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => setMsg("Copied: " + text, true));
+            }
+        }
+
+        Object.values(boxes).forEach(el => el.addEventListener("change", syncFromBoxes));
+        typeEl.addEventListener("change", syncFromBoxes);
+        octalEl.addEventListener("keydown", e => { if (e.key === "Enter") applyOctal(); });
+        symEl.addEventListener("keydown", e => { if (e.key === "Enter") applySymbolic(); });
+
+        syncFromBoxes();
+    </script>
+</body>
+</html>
