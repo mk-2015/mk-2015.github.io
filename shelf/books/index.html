@@ -127,7 +127,7 @@
             const txtViewer = document.getElementById("txt-viewer");
             const pdfViewer = document.getElementById("pdf-viewer");
 
-            const rawUrl = `https://githubusercontent.com{REPO}/${BRANCH}/${book.path.split("/").map(encodeURIComponent).join("/")}`;
+            const rawUrl = `https://githubusercontent.com${REPO}/${BRANCH}/${book.path.split("/").map(encodeURIComponent).join("/")}`;
 
             reader.style.display = "block";
             readerTitle.textContent = `Loading: ${book.title}...`;
