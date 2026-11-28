@@ -10,15 +10,21 @@
         #status { color: #888; margin-bottom: 1rem; }
         ul { list-style: none; padding: 0; margin: 0; }
         li { padding: 0.6rem 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+        .book-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+        .book-sub { color: #888; font-size: 0.8rem; }
         a.book-link { color: #4ea1f3; text-decoration: none; cursor: pointer; }
         a.book-link:hover { text-decoration: underline; }
-        .badge { background: #222; border: 1px solid #333; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; color: #aaa; flex-shrink: 0; }
-        button { background: #222; color: #eee; border: 1px solid #444; padding: 0.6rem 1.2rem; cursor: pointer; font-family: monospace; margin-top: 1rem; }
-        button:hover { background: #333; }
+        .badges { display: flex; gap: 0.4rem; flex-shrink: 0; }
+        .badge { background: #222; border: 1px solid #333; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; color: #aaa; }
+        button { background: #222; color: #eee; border: 1px solid #444; padding: 0.5rem 1rem; cursor: pointer; font-family: monospace; }
+        button:hover:not(:disabled) { background: #333; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
         #reader { margin: 1.5rem 0; border: 1px solid #444; padding: 1rem; display: none; background: #181818; }
-        #reader-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 1rem; gap: 1rem; }
+        #reader-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
         #txt-viewer { white-space: pre-wrap; max-height: 75vh; overflow-y: auto; line-height: 1.6; font-size: 0.95rem; }
+        #txt-controls { display: none; margin-top: 1rem; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
         #pdf-viewer { width: 100%; height: 80vh; border: none; background: #fff; }
+        #show-more-btn { margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -31,11 +37,15 @@
         <div id="reader-header">
             <strong id="reader-title">Book Title</strong>
             <div>
-                <a id="raw-download" href="#" target="_blank" rel="noopener" style="color:#4ea1f3; margin-right:1rem; font-size:0.85rem;">[Download Raw]</a>
-                <button type="button" onclick="closeReader()" style="margin:0;">[X] Close</button>
+                <a id="raw-download" href="#" target="_blank" rel="noopener" style="color:#4ea1f3; margin-right:1rem; font-size:0.85rem;">[Open Direct / Download]</a>
+                <button type="button" onclick="closeReader()">[X] Close</button>
             </div>
         </div>
         <div id="txt-viewer"></div>
+        <div id="txt-controls">
+            <button id="chunk-more-btn" type="button">Show 10KB More</button>
+            <span id="chunk-status" style="color:#888; font-size:0.85rem;"></span>
+        </div>
         <iframe id="pdf-viewer" style="display:none;"></iframe>
     </div>
 
@@ -47,15 +57,83 @@
         const REPO = "mk-2015/internet-books";
         const BRANCH = "main";
         const BASE_PATH = "books";
-        const CACHE_KEY = "inetdotlib_books_cache_v1";
+        const CACHE_KEY = "inetdotlib_books_cache_static_v1";
         const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+        const CHUNK_SIZE = 10240; // 10 KB
 
         let allBooks = [];
         let renderedCount = 0;
 
+        let activeTxtUrl = "";
+        let txtOffset = 0;
+        let txtTotalSize = null;
+        let txtHasMore = false;
+        let txtDecoder = null;
+
         function buildRawUrl(path) {
             const encoded = path.split("/").map(encodeURIComponent).join("/");
             return `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${encoded}`;
+        }
+
+        function normalizeManifestEntries(rawData) {
+            const list = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.books) ? rawData.books : []);
+            const entries = [];
+
+            for (const item of list) {
+                const slug = item.slug || "";
+                const title = item.title || slug.replace(/[-_]+/g, " ");
+                const author = item.author || "";
+                const jurisdiction = item.jurisdiction || "";
+                const formats = item.formats && typeof item.formats === "object" ? item.formats : {};
+
+                for (const fmt of ["txt", "pdf"]) {
+                    const info = formats[fmt];
+                    if (info && info.path) {
+                        entries.push({
+                            slug,
+                            title,
+                            author,
+                            jurisdiction,
+                            type: fmt,
+                            path: info.path,
+                            size: Number.isFinite(info.bytes) ? info.bytes : 0,
+                        });
+                    }
+                }
+            }
+
+            return entries.sort((a, b) => a.title.localeCompare(b.title) || a.type.localeCompare(b.type));
+        }
+
+        async function loadCatalogFromTreeFallback() {
+            const treeUrl = `https://api.github.com/repos/${REPO}/git/trees/${encodeURIComponent(BRANCH)}?recursive=1`;
+            const res = await fetch(treeUrl, {
+                headers: { "Accept": "application/vnd.github+json" }
+            });
+            if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+            const data = await res.json();
+
+            return (data.tree || [])
+                .filter(item =>
+                    item.type === "blob" &&
+                    (item.path.startsWith(`${BASE_PATH}/pdf/`) || item.path.startsWith(`${BASE_PATH}/txt/`))
+                )
+                .map(item => {
+                    const filename = item.path.split("/").pop();
+                    const type = item.path.startsWith(`${BASE_PATH}/pdf/`) ? "pdf" : "txt";
+                    const slug = filename.replace(/\.(pdf|txt)$/i, "");
+                    const title = slug.replace(/[-_]+/g, " ");
+                    return {
+                        slug,
+                        title,
+                        author: "",
+                        jurisdiction: "",
+                        path: item.path,
+                        type,
+                        size: item.size || 0,
+                    };
+                })
+                .sort((a, b) => a.title.localeCompare(b.title));
         }
 
         async function loadCatalog() {
@@ -66,32 +144,21 @@
                 if (cached && Array.isArray(cached.books) && Date.now() - cached.time < CACHE_TTL) {
                     allBooks = cached.books;
                 } else {
-                    const treeUrl = `https://api.github.com/repos/${REPO}/git/trees/${encodeURIComponent(BRANCH)}?recursive=1`;
-                    const res = await fetch(treeUrl, {
-                        headers: { "Accept": "application/vnd.github+json" }
-                    });
-                    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-                    const data = await res.json();
-
-                    allBooks = (data.tree || [])
-                        .filter(item =>
-                            item.type === "blob" &&
-                            (item.path.startsWith(`${BASE_PATH}/pdf/`) || item.path.startsWith(`${BASE_PATH}/txt/`))
-                        )
-                        .map(item => {
-                            const filename = item.path.split("/").pop();
-                            const type = item.path.startsWith(`${BASE_PATH}/pdf/`) ? "pdf" : "txt";
-                            const title = filename.replace(/\.(pdf|txt)$/i, "").replace(/[-_]+/g, " ");
-                            return { path: item.path, title, type, size: item.size || 0 };
-                        })
-                        .sort((a, b) => a.title.localeCompare(b.title));
+                    const manifestUrl = buildRawUrl(`${BASE_PATH}/manifest.json`);
+                    const manifestRes = await fetch(manifestUrl);
+                    if (manifestRes.ok) {
+                        const manifestJson = await manifestRes.json();
+                        allBooks = normalizeManifestEntries(manifestJson);
+                    } else {
+                        allBooks = await loadCatalogFromTreeFallback();
+                    }
 
                     localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), books: allBooks }));
                 }
 
                 renderNext(50);
             } catch (err) {
-                status.textContent = `Failed to load catalog from GitHub (${err.message}).`;
+                status.textContent = `Failed to load catalog (${err.message}).`;
                 console.error(err);
             }
         }
@@ -105,6 +172,9 @@
             slice.forEach(book => {
                 const li = document.createElement("li");
 
+                const metaWrap = document.createElement("div");
+                metaWrap.className = "book-meta";
+
                 const link = document.createElement("a");
                 link.className = "book-link";
                 link.textContent = book.title;
@@ -114,12 +184,33 @@
                     openBook(book);
                 };
 
+                metaWrap.appendChild(link);
+
+                if (book.author || book.size) {
+                    const sub = document.createElement("span");
+                    sub.className = "book-sub";
+                    const sizeKb = book.size ? `${Math.max(1, Math.round(book.size / 1024))} KB` : "";
+                    sub.textContent = [book.author, sizeKb].filter(Boolean).join(" · ");
+                    metaWrap.appendChild(sub);
+                }
+
+                const badges = document.createElement("div");
+                badges.className = "badges";
+
+                if (book.jurisdiction) {
+                    const jBadge = document.createElement("span");
+                    jBadge.className = "badge";
+                    jBadge.textContent = book.jurisdiction;
+                    badges.appendChild(jBadge);
+                }
+
                 const badge = document.createElement("span");
                 badge.className = "badge";
                 badge.textContent = book.type.toUpperCase();
+                badges.appendChild(badge);
 
-                li.appendChild(link);
-                li.appendChild(badge);
+                li.appendChild(metaWrap);
+                li.appendChild(badges);
                 list.appendChild(li);
             });
 
@@ -128,37 +219,111 @@
             btn.style.display = renderedCount < allBooks.length ? "inline-block" : "none";
         }
 
+        async function loadNextTxtChunk() {
+            const txtViewer = document.getElementById("txt-viewer");
+            const moreBtn = document.getElementById("chunk-more-btn");
+            const chunkStatus = document.getElementById("chunk-status");
+
+            moreBtn.disabled = true;
+            const end = txtOffset + CHUNK_SIZE - 1;
+            chunkStatus.textContent = `Fetching bytes ${txtOffset}-${end}...`;
+
+            try {
+                const res = await fetch(activeTxtUrl, {
+                    headers: { "Range": `bytes=${txtOffset}-${end}` }
+                });
+
+                if (res.status === 416) {
+                    txtHasMore = false;
+                    moreBtn.textContent = "End of Book";
+                    moreBtn.disabled = true;
+                    chunkStatus.textContent = `Loaded ${txtOffset} bytes (complete)`;
+                    return;
+                }
+
+                if (!res.ok && res.status !== 206) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const contentRange = res.headers.get("Content-Range");
+                if (contentRange) {
+                    const slashIdx = contentRange.lastIndexOf("/");
+                    if (slashIdx !== -1) {
+                        const totalStr = contentRange.slice(slashIdx + 1).trim();
+                        if (totalStr && totalStr !== "*") {
+                            txtTotalSize = Number.parseInt(totalStr, 10);
+                        }
+                    }
+                }
+
+                const buf = new Uint8Array(await res.arrayBuffer());
+                const decoded = txtDecoder.decode(buf, { stream: true });
+                txtViewer.textContent += decoded;
+
+                txtOffset += buf.byteLength;
+
+                if (res.status === 200 && txtTotalSize === null) {
+                    txtTotalSize = buf.byteLength;
+                    txtHasMore = false;
+                } else if (txtTotalSize !== null) {
+                    txtHasMore = txtOffset < txtTotalSize;
+                } else {
+                    txtHasMore = buf.byteLength === CHUNK_SIZE;
+                }
+
+                if (!txtHasMore) {
+                    txtViewer.textContent += txtDecoder.decode();
+                    moreBtn.textContent = "End of Book";
+                    moreBtn.disabled = true;
+                    chunkStatus.textContent = `Loaded ${txtOffset} bytes (complete)`;
+                } else {
+                    moreBtn.textContent = "Show 10KB More";
+                    moreBtn.disabled = false;
+                    const totalLabel = txtTotalSize !== null ? ` / ${txtTotalSize} bytes` : "";
+                    chunkStatus.textContent = `Loaded ${txtOffset}${totalLabel}`;
+                }
+            } catch (err) {
+                chunkStatus.textContent = `Error: ${err.message}`;
+                moreBtn.disabled = false;
+            }
+        }
+
         async function openBook(book) {
             const reader = document.getElementById("reader");
             const readerTitle = document.getElementById("reader-title");
             const rawLink = document.getElementById("raw-download");
             const txtViewer = document.getElementById("txt-viewer");
+            const txtControls = document.getElementById("txt-controls");
+            const moreBtn = document.getElementById("chunk-more-btn");
             const pdfViewer = document.getElementById("pdf-viewer");
 
             const rawUrl = buildRawUrl(book.path);
 
             reader.style.display = "block";
-            readerTitle.textContent = `Loading: ${book.title}...`;
+            readerTitle.textContent = book.title;
             rawLink.href = rawUrl;
+            txtViewer.textContent = "";
             txtViewer.style.display = "none";
+            txtControls.style.display = "none";
             pdfViewer.style.display = "none";
             pdfViewer.src = "";
             reader.scrollIntoView({ behavior: "smooth" });
 
-            try {
-                if (book.type === "txt") {
-                    const res = await fetch(rawUrl);
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    txtViewer.textContent = await res.text();
-                    txtViewer.style.display = "block";
-                } else {
-                    pdfViewer.src = rawUrl;
-                    pdfViewer.style.display = "block";
-                }
-                readerTitle.textContent = book.title;
-            } catch (err) {
-                readerTitle.textContent = `Error loading: ${book.title} (${err.message})`;
-                console.error(err);
+            if (book.type === "txt") {
+                activeTxtUrl = rawUrl;
+                txtOffset = 0;
+                txtTotalSize = book.size || null;
+                txtHasMore = true;
+                txtDecoder = new TextDecoder("utf-8", { fatal: false });
+                moreBtn.textContent = "Show 10KB More";
+                moreBtn.disabled = true;
+
+                txtViewer.style.display = "block";
+                txtControls.style.display = "flex";
+                await loadNextTxtChunk();
+            } else {
+                pdfViewer.src = rawUrl;
+                pdfViewer.style.display = "block";
             }
         }
 
@@ -166,8 +331,15 @@
             document.getElementById("reader").style.display = "none";
             document.getElementById("pdf-viewer").src = "";
             document.getElementById("txt-viewer").textContent = "";
+            document.getElementById("txt-controls").style.display = "none";
+            activeTxtUrl = "";
+            txtOffset = 0;
+            txtTotalSize = null;
+            txtHasMore = false;
+            txtDecoder = null;
         }
 
+        document.getElementById("chunk-more-btn").addEventListener("click", loadNextTxtChunk);
         loadCatalog();
     </script>
 </body>
