@@ -128,15 +128,15 @@ int main(void) {
     <textarea id="cc-output" class="tool-box" rows="12" readonly spellcheck="false" placeholder="Formatted code appears here..."></textarea>
 
     <script type="module">
-        import initClangFormat, { format } from "https://cdn.jsdelivr.net/npm/@wasm-fmt/clang-format@23.1.1/web/+esm";
-        import TreeSitter from "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/+esm";
+        import * as ClangMod from "https://cdn.jsdelivr.net/npm/@wasm-fmt/clang-format/web/+esm";
+        import * as TSMod from "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/+esm";
 
         const TS_WASM_URL = "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/tree-sitter.wasm";
         const TS_C_WASM_URLS = [
-            "https://cdn.jsdelivr.net/npm/tree-sitter-wasms@0.1.13/out/tree-sitter-c.wasm",
-            "https://unpkg.com/tree-sitter-wasms@0.1.13/out/tree-sitter-c.wasm"
+            "https://cdn.jsdelivr.net/npm/@sourcegraph/tree-sitter-wasms@0.1.9/out/tree-sitter-c.wasm", //
+            "https://cdn.jsdelivr.net/npm/tree-sitter-wasms@0.1.13/out/tree-sitter-c.wasm"
         ];
-
+        
         const inputEl = document.getElementById("cc-input");
         const outputEl = document.getElementById("cc-output");
         const filenameEl = document.getElementById("cc-filename");
@@ -333,9 +333,15 @@ int main(void) {
             }
         });
 
-        async function initClang() {
-            await initClangFormat();
-            clangFormatFn = format;
+async function initClang() {
+            const initFn = ClangMod.default || ClangMod.init;
+            clangFormatFn = ClangMod.format || (ClangMod.default && ClangMod.default.format);
+            if (typeof initFn === "function") {
+                await initFn();
+            }
+            if (typeof clangFormatFn !== "function") {
+                throw new Error("clang-format export not found on module");
+            }
             clangReady = true;
             btnFormat.disabled = false;
         }
@@ -354,6 +360,9 @@ int main(void) {
 
         async function initTS() {
             TSParser = TSMod.default || TSMod.Parser || TSMod;
+            if (!TSParser || typeof TSParser.init !== "function") {
+                throw new Error("web-tree-sitter Parser.init not found");
+            }
             await TSParser.init({
                 locateFile(scriptName) {
                     if (scriptName.endsWith(".wasm")) return TS_WASM_URL;
