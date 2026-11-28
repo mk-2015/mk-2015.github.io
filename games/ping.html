@@ -1,48 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ping Pong (2-Player)</title>
+  <link rel="stylesheet" href="/static/global.css">
   <style>
-    body {
-      background: #c0c0c0;
-      color: #000000;
-      font-family: "Times New Roman", Times, serif;
-      max-width: 560px;
-      margin: 20px auto;
-      padding: 0 10px;
-    }
-    a { color: #0000ee; }
-    a:visited { color: #551a8b; }
     fieldset {
-      border: 2px groove #ffffff;
-      padding: 10px 14px;
-      background: #d4d0c8;
+      border: 1px solid #333;
+      background: #161a22;
+      padding: 0.9rem 1.1rem;
+      margin: 1rem 0;
     }
     legend {
+      padding: 0 0.5rem;
       font-weight: bold;
-      padding: 0 6px;
     }
-    canvas {
+    canvas#court {
       background: #0b1911;
-      border: 2px inset #808080;
+      border: 1px solid #333;
       display: block;
-      margin: 8px 0 4px 0;
+      max-width: 100%;
+      height: auto;
+      margin: 0.75rem 0 0.25rem 0;
     }
-    button {
-      background: #c0c0c0;
-      color: #000000;
-      border: 2px outset #ffffff;
-      font-family: "Times New Roman", Times, serif;
-      font-size: 14px;
-      padding: 4px 10px;
+    .game-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .game-controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       cursor: pointer;
     }
-    button:active {
-      border-style: inset;
+    .game-controls input[type="checkbox"] {
+      padding: 0;
     }
   </style>
-  <link rel="stylesheet" href="/static/global.css">
 </head>
 <body>
   <p><a href="/">Home</a> | <a href="/games/">Games</a></p>
@@ -59,7 +57,7 @@
     <canvas id="court" width="500" height="300"></canvas>
   </fieldset>
 
-  <p>
+  <p class="game-controls">
     <button type="button" onclick="startMatch()">New Match</button>
     <label><input type="checkbox" id="cpu"> P2 = CPU Bot</label>
   </p>
