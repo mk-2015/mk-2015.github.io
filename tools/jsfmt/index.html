@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .fmt-options {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem 1.25rem;
+            margin: 0.75rem 0;
+        }
+        .fmt-options label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+        }
+        .fmt-options input[type="checkbox"] {
+            padding: 0;
+        }
+        .tool-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        .tool-box {
+            width: 100%;
+            min-height: 9rem;
+            box-sizing: border-box;
+        }
+        .tool-msg {
+            color: #f87171;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+        .tool-msg.ok {
+            color: #6ee787;
+        }
+        .meta-line {
+            color: #9aa5b4;
+            font-size: 0.9rem;
+            margin: 0.4rem 0;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>JSON Formatter</h1>
+    <hr>
+
+    <p>Validate, format, or minify JSON locally in your browser without sending data to a server.</p>
+
+    <label for="jf-input"><strong>JSON Input</strong></label>
+    <textarea id="jf-input" class="tool-box" rows="8" placeholder='{"name":"inetdotlib","static":true,"jurisdictions":["US","NP"]}'></textarea>
+
+    <div class="fmt-options">
+        <label for="jf-indent">
+            <strong>Indent:</strong>
+            <select id="jf-indent">
+                <option value="2" selected>2 spaces</option>
+                <option value="4">4 spaces</option>
+                <option value="tab">Tab</option>
+            </select>
+        </label>
+        <label><input type="checkbox" id="jf-sort"> Sort object keys</label>
+    </div>
+
+    <div class="tool-controls">
+        <button type="button" onclick="formatJson()">Format / Pretty</button>
+        <button type="button" onclick="minifyJson()">Minify</button>
+        <button type="button" onclick="validateOnly()">Validate</button>
+        <button type="button" onclick="copyJsonOutput()">Copy Output</button>
+        <button type="button" onclick="clearJsonTool()">Clear</button>
+    </div>
+
+    <p id="jf-status" class="tool-msg" role="status" aria-live="polite"></p>
+    <p id="jf-stats" class="meta-line"></p>
+
+    <label for="jf-output"><strong>JSON Output</strong></label>
+    <textarea id="jf-output" class="tool-box" rows="8" readonly placeholder="Formatted or minified JSON appears here..."></textarea>
+
+    <script>
+        const jfIn = document.getElementById("jf-input");
+        const jfOut = document.getElementById("jf-output");
+        const jfIndent = document.getElementById("jf-indent");
+        const jfSort = document.getElementById("jf-sort");
+        const jfStatus = document.getElementById("jf-status");
+        const jfStats = document.getElementById("jf-stats");
+
+        function setJfStatus(msg, ok = false) {
+            jfStatus.textContent = msg;
+            jfStatus.className = ok ? "tool-msg ok" : "tool-msg";
+        }
+
+        function sortKeysDeep(value) {
+            if (Array.isArray(value)) {
+                return value.map(sortKeysDeep);
+            }
+            if (value !== null && typeof value === "object") {
+                const sorted = {};
+                Object.keys(value).sort().forEach(key => {
+                    sorted[key] = sortKeysDeep(value[key]);
+                });
+                return sorted;
+            }
+            return value;
+        }
+
+        function getIndentValue() {
+            if (jfIndent.value === "tab") return "\t";
+            return parseInt(jfIndent.value, 10);
+        }
+
+        function updateStats(text) {
+            const bytes = new TextEncoder().encode(text).length;
+            const lines = text ? text.split("\n").length : 0;
+            jfStats.textContent = `${bytes} bytes | ${lines} line(s)`;
+        }
+
+        function parseInput() {
+            const raw = jfIn.value.trim();
+            if (!raw) {
+                throw new Error("Input is empty.");
+            }
+            const parsed = JSON.parse(raw);
+            return jfSort.checked ? sortKeysDeep(parsed) : parsed;
+        }
+
+        function formatJson() {
+            try {
+                const data = parseInput();
+                const formatted = JSON.stringify(data, null, getIndentValue());
+                jfOut.value = formatted;
+                updateStats(formatted);
+                setJfStatus("Valid JSON formatted.", true);
+            } catch (err) {
+                jfOut.value = "";
+                jfStats.textContent = "";
+                setJfStatus("Invalid JSON: " + err.message, false);
+            }
+        }
+
+        function minifyJson() {
+            try {
+                const data = parseInput();
+                const minified = JSON.stringify(data);
+                jfOut.value = minified;
+                updateStats(minified);
+                setJfStatus("Valid JSON minified.", true);
+            } catch (err) {
+                jfOut.value = "";
+                jfStats.textContent = "";
+                setJfStatus("Invalid JSON: " + err.message, false);
+            }
+        }
+
+        function validateOnly() {
+            try {
+                parseInput();
+                setJfStatus("Valid JSON.", true);
+            } catch (err) {
+                setJfStatus("Invalid JSON: " + err.message, false);
+            }
+        }
+
+        function copyJsonOutput() {
+            if (!jfOut.value) {
+                setJfStatus("Nothing to copy.", false);
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jfOut.value).then(
+                    () => setJfStatus("Copied JSON output to clipboard.", true),
+                    () => fallbackCopyJf()
+                );
+            } else {
+                fallbackCopyJf();
+            }
+        }
+
+        function fallbackCopyJf() {
+            jfOut.select();
+            document.execCommand("copy");
+            setJfStatus("Copied JSON output.", true);
+        }
+
+        function clearJsonTool() {
+            jfIn.value = "";
+            jfOut.value = "";
+            jfStats.textContent = "";
+            setJfStatus("", false);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .gen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem 1.25rem;
+            margin: 0.75rem 0 1rem 0;
+        }
+        .gen-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .gen-checks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+            margin: 0.5rem 0 1rem 0;
+        }
+        .gen-checks label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+        }
+        .gen-checks input[type="checkbox"] {
+            padding: 0;
+        }
+        .tool-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        .tool-output {
+            width: 100%;
+            min-height: 7rem;
+            box-sizing: border-box;
+        }
+        .tool-msg {
+            color: #f87171;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+        .tool-msg.ok {
+            color: #6ee787;
+        }
+        .meta-line {
+            color: #9aa5b4;
+            font-size: 0.9rem;
+            margin: 0.4rem 0;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>Password &amp; Token Generator</h1>
+    <hr>
+
+    <p>Generate passwords or hex/base64 tokens locally in your browser using <code>crypto.getRandomValues</code>.</p>
+
+    <div class="gen-grid">
+        <div class="gen-field">
+            <label for="pg-length"><strong>Length (4 - 128)</strong></label>
+            <input id="pg-length" type="number" min="4" max="128" value="24">
+        </div>
+        <div class="gen-field">
+            <label for="pg-count"><strong>Count (1 - 50)</strong></label>
+            <input id="pg-count" type="number" min="1" max="50" value="5">
+        </div>
+        <div class="gen-field">
+            <label for="pg-mode"><strong>Format</strong></label>
+            <select id="pg-mode">
+                <option value="charset" selected>Character Set</option>
+                <option value="hex">Hexadecimal (0-9, a-f)</option>
+                <option value="base64url">URL-Safe Token (A-Z, a-z, 0-9, -, _)</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="charset-options" class="gen-checks">
+        <label><input type="checkbox" id="opt-upper" checked> Uppercase (A-Z)</label>
+        <label><input type="checkbox" id="opt-lower" checked> Lowercase (a-z)</label>
+        <label><input type="checkbox" id="opt-digits" checked> Digits (0-9)</label>
+        <label><input type="checkbox" id="opt-symbols" checked> Symbols (!@#$%^*_-+=?)</label>
+        <label><input type="checkbox" id="opt-ambiguous"> Exclude Ambiguous (0, O, I, l, 1)</label>
+    </div>
+
+    <div class="tool-controls">
+        <button type="button" onclick="generatePasswords()">Generate</button>
+        <button type="button" onclick="copyOutput()">Copy All</button>
+        <button type="button" onclick="clearOutput()">Clear</button>
+    </div>
+
+    <p id="pg-status" class="tool-msg" role="status" aria-live="polite"></p>
+    <p id="pg-entropy" class="meta-line"></p>
+
+    <label for="pg-output"><strong>Generated Output</strong></label>
+    <textarea id="pg-output" class="tool-output" rows="6" readonly placeholder="Click Generate to create values..."></textarea>
+
+    <script>
+        const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const LOWER = "abcdefghijklmnopqrstuvwxyz";
+        const DIGITS = "0123456789";
+        const SYMBOLS = "!@#$%^*_-+=?";
+        const HEX_CHARS = "0123456789abcdef";
+        const B64URL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        const AMBIGUOUS = new Set(["0", "O", "I", "l", "1"]);
+
+        const lengthEl = document.getElementById("pg-length");
+        const countEl = document.getElementById("pg-count");
+        const modeEl = document.getElementById("pg-mode");
+        const charsetBox = document.getElementById("charset-options");
+        const upperEl = document.getElementById("opt-upper");
+        const lowerEl = document.getElementById("opt-lower");
+        const digitsEl = document.getElementById("opt-digits");
+        const symbolsEl = document.getElementById("opt-symbols");
+        const ambiguousEl = document.getElementById("opt-ambiguous");
+        const statusEl = document.getElementById("pg-status");
+        const entropyEl = document.getElementById("pg-entropy");
+        const outputEl = document.getElementById("pg-output");
+
+        function setStatus(msg, ok = false) {
+            statusEl.textContent = msg;
+            statusEl.className = ok ? "tool-msg ok" : "tool-msg";
+        }
+
+        function stripAmbiguous(str) {
+            return Array.from(str).filter(ch => !AMBIGUOUS.has(ch)).join("");
+        }
+
+        // Unbiased uniform integer in [0, maxExclusive) using rejection sampling
+        function randomInt(maxExclusive) {
+            if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) {
+                throw new Error("Invalid alphabet size");
+            }
+            const maxUint32 = 0x100000000;
+            const limit = maxUint32 - (maxUint32 % maxExclusive);
+            const buf = new Uint32Array(1);
+            while (true) {
+                crypto.getRandomValues(buf);
+                if (buf[0] < limit) {
+                    return buf[0] % maxExclusive;
+                }
+            }
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = randomInt(i + 1);
+                const tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+            return arr;
+        }
+
+        function buildAlphabet() {
+            const mode = modeEl.value;
+            if (mode === "hex") {
+                return { pools: [HEX_CHARS], combined: HEX_CHARS };
+            }
+            if (mode === "base64url") {
+                return { pools: [B64URL_CHARS], combined: B64URL_CHARS };
+            }
+
+            const rawPools = [];
+            if (upperEl.checked) rawPools.push(UPPER);
+            if (lowerEl.checked) rawPools.push(LOWER);
+            if (digitsEl.checked) rawPools.push(DIGITS);
+            if (symbolsEl.checked) rawPools.push(SYMBOLS);
+
+            const pools = rawPools
+                .map(p => (ambiguousEl.checked ? stripAmbiguous(p) : p))
+                .filter(p => p.length > 0);
+
+            const combined = Array.from(new Set(Array.from(pools.join("")))).join("");
+            return { pools, combined };
+        }
+
+        function generateSingle(length, pools, combined) {
+            const chars = [];
+            if (modeEl.value === "charset") {
+                for (let i = 0; i < pools.length && chars.length < length; i++) {
+                    const pool = pools[i];
+                    chars.push(pool[randomInt(pool.length)]);
+                }
+            }
+            while (chars.length < length) {
+                chars.push(combined[randomInt(combined.length)]);
+            }
+            return shuffleArray(chars).join("");
+        }
+
+        function generatePasswords() {
+            const length = parseInt(lengthEl.value, 10);
+            const count = parseInt(countEl.value, 10);
+
+            if (!Number.isInteger(length) || length < 4 || length > 128) {
+                setStatus("Length must be between 4 and 128.", false);
+                return;
+            }
+            if (!Number.isInteger(count) || count < 1 || count > 50) {
+                setStatus("Count must be between 1 and 50.", false);
+                return;
+            }
+
+            const { pools, combined } = buildAlphabet();
+            if (!combined.length) {
+                setStatus("Select at least one character set with available characters.", false);
+                return;
+            }
+
+            const list = [];
+            for (let i = 0; i < count; i++) {
+                list.push(generateSingle(length, pools, combined));
+            }
+
+            outputEl.value = list.join("\n");
+            const bitsPerChar = Math.log2(combined.length);
+            const totalBits = (bitsPerChar * length).toFixed(1);
+            entropyEl.textContent = `Alphabet size: ${combined.length} chars | ~${totalBits} bits entropy per item`;
+            setStatus(`Generated ${count} item(s).`, true);
+        }
+
+        function copyOutput() {
+            if (!outputEl.value) {
+                setStatus("Nothing to copy.", false);
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(outputEl.value).then(
+                    () => setStatus("Copied generated output to clipboard.", true),
+                    () => fallbackCopy()
+                );
+            } else {
+                fallbackCopy();
+            }
+        }
+
+        function fallbackCopy() {
+            outputEl.select();
+            document.execCommand("copy");
+            setStatus("Copied output.", true);
+        }
+
+        function clearOutput() {
+            outputEl.value = "";
+            entropyEl.textContent = "";
+            setStatus("", false);
+        }
+
+        modeEl.addEventListener("change", () => {
+            charsetBox.style.display = modeEl.value === "charset" ? "flex" : "none";
+        });
+
+        generatePasswords();
+    </script>
+</body>
+</html>

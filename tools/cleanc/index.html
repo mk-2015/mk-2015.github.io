@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CleanC - C/C++ Formatter &amp; AST Checker - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .cc-options {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem 1.25rem;
+            margin: 0.75rem 0;
+        }
+        .cc-options label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .tool-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        .tool-box {
+            width: 100%;
+            min-height: 12rem;
+            box-sizing: border-box;
+            tab-size: 4;
+        }
+        .tool-msg {
+            color: #f87171;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+        .tool-msg.ok {
+            color: #6ee787;
+        }
+        .tool-msg.warn {
+            color: #fbbf24;
+        }
+        .diag-panel {
+            background: #141414;
+            border: 1px solid #333;
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+        }
+        .diag-list {
+            margin: 0.4rem 0 0 0;
+            padding-left: 1.25rem;
+        }
+        .diag-list li {
+            margin: 0.3rem 0;
+        }
+        .diag-err {
+            color: #f87171;
+        }
+        .diag-ok {
+            color: #6ee787;
+        }
+        .ast-preview {
+            max-height: 14rem;
+            overflow: auto;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>CleanC (C/C++ Formatter &amp; Tree-sitter Check)</h1>
+    <hr>
+
+    <p>Format C/C++ source with <code>@wasm-fmt/clang-format</code> and inspect syntax errors or AST structure via <code>tree-sitter-c</code> directly in your browser.</p>
+
+    <label for="cc-input"><strong>C / C++ Source Input</strong></label>
+    <textarea id="cc-input" class="tool-box" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    printf(&quot;hello, inetdotlib\n&quot;);
+    return 0;
+}"></textarea>
+
+    <div class="cc-options">
+        <label for="cc-filename">
+            <strong>Filename:</strong>
+            <select id="cc-filename">
+                <option value="main.c" selected>main.c (C)</option>
+                <option value="main.cpp">main.cpp (C++)</option>
+                <option value="header.h">header.h (Header)</option>
+            </select>
+        </label>
+        <label for="cc-style">
+            <strong>Style:</strong>
+            <select id="cc-style">
+                <option value="LLVM" selected>LLVM</option>
+                <option value="GNU">GNU</option>
+                <option value="Google">Google</option>
+                <option value="Chromium">Chromium</option>
+                <option value="Mozilla">Mozilla</option>
+                <option value="WebKit">WebKit</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="tool-controls">
+        <button type="button" id="btn-format" disabled>Format + Check</button>
+        <button type="button" id="btn-check" disabled>Check Syntax Only</button>
+        <button type="button" id="btn-ast" disabled>Toggle S-Expression AST</button>
+        <button type="button" id="btn-apply">Replace Input with Formatted</button>
+        <button type="button" id="btn-copy">Copy Output</button>
+        <button type="button" id="btn-clear">Clear</button>
+    </div>
+
+    <p id="cc-status" class="tool-msg warn" role="status" aria-live="polite">Loading WASM modules (clang-format &amp; tree-sitter-c)...</p>
+
+    <div class="diag-panel">
+        <strong>Tree-sitter Diagnostics (C Grammar)</strong>
+        <ul id="cc-diags" class="diag-list">
+            <li class="note">Waiting for WASM initialization...</li>
+        </ul>
+        <pre id="cc-ast" class="ast-preview" hidden></pre>
+    </div>
+
+    <label for="cc-output"><strong>Formatted Output</strong></label>
+    <textarea id="cc-output" class="tool-box" rows="12" readonly spellcheck="false" placeholder="Formatted code appears here..."></textarea>
+
+    <script type="module">
+        import initClangFormat, { format } from "https://cdn.jsdelivr.net/npm/@wasm-fmt/clang-format@0.1.3/+esm";
+        import TreeSitter from "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/+esm";
+
+        const TS_WASM_URL = "https://cdn.jsdelivr.net/npm/web-tree-sitter@0.22.6/tree-sitter.wasm";
+        const TS_C_WASM_URL = "https://cdn.jsdelivr.net/npm/tree-sitter-c@0.21.4/tree-sitter-c.wasm";
+
+        const inputEl = document.getElementById("cc-input");
+        const outputEl = document.getElementById("cc-output");
+        const filenameEl = document.getElementById("cc-filename");
+        const styleEl = document.getElementById("cc-style");
+        const statusEl = document.getElementById("cc-status");
+        const diagsEl = document.getElementById("cc-diags");
+        const astEl = document.getElementById("cc-ast");
+
+        const btnFormat = document.getElementById("btn-format");
+        const btnCheck = document.getElementById("btn-check");
+        const btnAst = document.getElementById("btn-ast");
+        const btnApply = document.getElementById("btn-apply");
+        const btnCopy = document.getElementById("btn-copy");
+        const btnClear = document.getElementById("btn-clear");
+
+        let parser = null;
+        let clangReady = false;
+        let tsReady = false;
+
+        function setStatus(text, state = "err") {
+            statusEl.textContent = text;
+            statusEl.className = state === "ok"
+                ? "tool-msg ok"
+                : state === "warn"
+                    ? "tool-msg warn"
+                    : "tool-msg";
+        }
+
+        function collectSyntaxIssues(rootNode, sourceText) {
+            const issues = [];
+            const lines = sourceText.split("\n");
+
+            function walk(node) {
+                if (node.type === "ERROR" || node.isMissing) {
+                    const start = node.startPosition;
+                    const lineNum = start.row + 1;
+                    const colNum = start.column + 1;
+                    const rawLine = (lines[start.row] || "").trim();
+                    const snippet = rawLine.length > 60 ? rawLine.slice(0, 60) + "..." : rawLine;
+
+                    if (node.isMissing) {
+                        issues.push(`Line ${lineNum}, Col ${colNum}: Missing expected token (${node.type}) near "${snippet}"`);
+                    } else {
+                        issues.push(`Line ${lineNum}, Col ${colNum}: Syntax error near "${snippet}"`);
+                    }
+                }
+                for (let i = 0; i < node.childCount; i++) {
+                    walk(node.child(i));
+                }
+            }
+
+            walk(rootNode);
+            return issues;
+        }
+
+        function renderDiagnostics(code, updateAst = true) {
+            diagsEl.innerHTML = "";
+
+            if (!tsReady || !parser) {
+                const li = document.createElement("li");
+                li.className = "note";
+                li.textContent = "Tree-sitter parser unavailable.";
+                diagsEl.appendChild(li);
+                return 0;
+            }
+
+            const tree = parser.parse(code);
+            const issues = collectSyntaxIssues(tree.rootNode, code);
+
+            if (issues.length === 0) {
+                const li = document.createElement("li");
+                li.className = "diag-ok";
+                li.textContent = "No syntax errors detected in C parse tree.";
+                diagsEl.appendChild(li);
+            } else {
+                for (const msg of issues) {
+                    const li = document.createElement("li");
+                    li.className = "diag-err";
+                    li.textContent = msg;
+                    diagsEl.appendChild(li);
+                }
+            }
+
+            if (updateAst) {
+                astEl.textContent = tree.rootNode.toString();
+            }
+
+            tree.delete();
+            return issues.length;
+        }
+
+        function runFormatAndCheck() {
+            const src = inputEl.value;
+            if (!src.trim()) {
+                setStatus("Input is empty.", "err");
+                return;
+            }
+
+            let errorCount = 0;
+            if (tsReady) {
+                errorCount = renderDiagnostics(src, true);
+            }
+
+            if (!clangReady) {
+                setStatus("clang-format WASM is not loaded yet.", "err");
+                return;
+            }
+
+            try {
+                const formatted = format(src, filenameEl.value, styleEl.value);
+                outputEl.value = formatted;
+
+                if (errorCount > 0) {
+                    setStatus(`Formatted, but tree-sitter found ${errorCount} syntax issue(s).`, "warn");
+                } else {
+                    setStatus("Formatted cleanly with 0 syntax errors.", "ok");
+                }
+            } catch (err) {
+                setStatus("clang-format error: " + (err && err.message ? err.message : String(err)), "err");
+            }
+        }
+
+        function runSyntaxCheckOnly() {
+            const src = inputEl.value;
+            if (!src.trim()) {
+                setStatus("Input is empty.", "err");
+                return;
+            }
+            const errorCount = renderDiagnostics(src, true);
+            if (errorCount > 0) {
+                setStatus(`Tree-sitter found ${errorCount} syntax issue(s).`, "warn");
+            } else {
+                setStatus("Tree-sitter parse succeeded with 0 syntax errors.", "ok");
+            }
+        }
+
+        btnFormat.addEventListener("click", runFormatAndCheck);
+        btnCheck.addEventListener("click", runSyntaxCheckOnly);
+
+        btnAst.addEventListener("click", () => {
+            astEl.hidden = !astEl.hidden;
+            if (!astEl.hidden && tsReady && inputEl.value.trim()) {
+                renderDiagnostics(inputEl.value, true);
+            }
+        });
+
+        btnApply.addEventListener("click", () => {
+            if (!outputEl.value) {
+                setStatus("No formatted output to apply.", "err");
+                return;
+            }
+            inputEl.value = outputEl.value;
+            setStatus("Replaced input with formatted output.", "ok");
+        });
+
+        btnCopy.addEventListener("click", () => {
+            if (!outputEl.value) {
+                setStatus("Nothing to copy.", "err");
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(outputEl.value).then(
+                    () => setStatus("Copied formatted output.", "ok"),
+                    () => {
+                        outputEl.select();
+                        document.execCommand("copy");
+                        setStatus("Copied formatted output.", "ok");
+                    }
+                );
+            } else {
+                outputEl.select();
+                document.execCommand("copy");
+                setStatus("Copied formatted output.", "ok");
+            }
+        });
+
+        btnClear.addEventListener("click", () => {
+            inputEl.value = "";
+            outputEl.value = "";
+            astEl.textContent = "";
+            diagsEl.innerHTML = '<li class="note">Cleared.</li>';
+            setStatus("", "ok");
+        });
+
+        // Support Tab key indentation inside source textarea
+        inputEl.addEventListener("keydown", e => {
+            if (e.key === "Tab") {
+                e.preventDefault();
+                const start = inputEl.selectionStart;
+                const end = inputEl.selectionEnd;
+                inputEl.value = inputEl.value.substring(0, start) + "    " + inputEl.value.substring(end);
+                inputEl.selectionStart = inputEl.selectionEnd = start + 4;
+            }
+        });
+
+        async function bootstrap() {
+            const tasks = [
+                initClangFormat().then(() => {
+                    clangReady = true;
+                }),
+                TreeSitter.init({
+                    locateFile() {
+                        return TS_WASM_URL;
+                    }
+                }).then(async () => {
+                    const CLang = await TreeSitter.Language.load(TS_C_WASM_URL);
+                    parser = new TreeSitter();
+                    parser.setLanguage(CLang);
+                    tsReady = true;
+                })
+            ];
+
+            const results = await Promise.allSettled(tasks);
+            const failed = results.filter(r => r.status === "rejected");
+
+            if (clangReady) btnFormat.disabled = false;
+            if (tsReady) {
+                btnCheck.disabled = false;
+                btnAst.disabled = false;
+                diagsEl.innerHTML = '<li class="note">Ready. Paste C/C++ code and click Format + Check or Check Syntax Only.</li>';
+            }
+
+            if (failed.length === 0) {
+                setStatus("Ready (clang-format + tree-sitter-c loaded).", "ok");
+            } else if (clangReady || tsReady) {
+                const reason = failed[0].reason?.message || String(failed[0].reason);
+                setStatus("Partial load (" + reason + "). Available tools enabled.", "warn");
+            } else {
+                const reason = failed[0].reason?.message || String(failed[0].reason);
+                setStatus("Failed to load WASM modules: " + reason, "err");
+            }
+        }
+
+        bootstrap();
+    </script>
+</body>
+</html>

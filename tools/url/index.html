@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encode / Decode - The internet library</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <style>
+        .tool-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+        .tool-output {
+            width: 100%;
+            min-height: 6rem;
+            box-sizing: border-box;
+        }
+        .tool-error {
+            color: #f87171;
+            min-height: 1.4rem;
+            margin: 0.4rem 0;
+        }
+        .tool-ok {
+            color: #6ee787;
+        }
+    </style>
+</head>
+<body>
+    <p><a href="/">Home</a> | <a href="/tools/">Tools</a></p>
+    <h1>URL Encode / Decode</h1>
+    <hr>
+
+    <p>Encode or decode URL components and full URLs directly in your browser.</p>
+
+    <label for="url-input"><strong>Input</strong></label>
+    <textarea id="url-input" class="tool-output" rows="4" placeholder="Enter text, query string, or full URL..."></textarea>
+
+    <div class="tool-controls">
+        <button type="button" onclick="runUrlAction('encodeComponent')">Encode Component</button>
+        <button type="button" onclick="runUrlAction('decodeComponent')">Decode Component</button>
+        <button type="button" onclick="runUrlAction('encodeUri')">Encode Full URI</button>
+        <button type="button" onclick="runUrlAction('decodeUri')">Decode Full URI</button>
+        <button type="button" onclick="swapUrlIO()">Swap Input / Output</button>
+        <button type="button" onclick="copyUrlOutput()">Copy Output</button>
+        <button type="button" onclick="clearUrlTool()">Clear</button>
+    </div>
+
+    <p id="url-status" class="tool-error" role="status" aria-live="polite"></p>
+
+    <label for="url-output"><strong>Output</strong></label>
+    <textarea id="url-output" class="tool-output" rows="4" readonly placeholder="Result appears here..."></textarea>
+
+    <script>
+        const urlIn = document.getElementById("url-input");
+        const urlOut = document.getElementById("url-output");
+        const urlStatus = document.getElementById("url-status");
+
+        function setStatus(msg, isOk = false) {
+            urlStatus.textContent = msg;
+            urlStatus.className = isOk ? "tool-error tool-ok" : "tool-error";
+        }
+
+        function runUrlAction(mode) {
+            const raw = urlIn.value;
+            try {
+                let result = "";
+                if (mode === "encodeComponent") {
+                    result = encodeURIComponent(raw);
+                } else if (mode === "decodeComponent") {
+                    result = decodeURIComponent(raw);
+                } else if (mode === "encodeUri") {
+                    result = encodeURI(raw);
+                } else if (mode === "decodeUri") {
+                    result = decodeURI(raw);
+                }
+                urlOut.value = result;
+                setStatus("Done.", true);
+            } catch (err) {
+                setStatus("Invalid percent-encoding or URI sequence: " + err.message, false);
+            }
+        }
+
+        function swapUrlIO() {
+            const temp = urlIn.value;
+            urlIn.value = urlOut.value;
+            urlOut.value = temp;
+            setStatus("Swapped input and output.", true);
+        }
+
+        function copyUrlOutput() {
+            if (!urlOut.value) {
+                setStatus("Nothing to copy.", false);
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(urlOut.value).then(
+                    () => setStatus("Copied output to clipboard.", true),
+                    () => fallbackCopy()
+                );
+            } else {
+                fallbackCopy();
+            }
+        }
+
+        function fallbackCopy() {
+            urlOut.select();
+            document.execCommand("copy");
+            setStatus("Copied output.", true);
+        }
+
+        function clearUrlTool() {
+            urlIn.value = "";
+            urlOut.value = "";
+            setStatus("", false);
+        }
+    </script>
+</body>
+</html>
