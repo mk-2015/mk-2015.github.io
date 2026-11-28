@@ -64,7 +64,7 @@
                     allBooks = cached.books;
                 } else {
                     // Single API call fetches the entire folder tree recursively
-                    const res = await fetch(`https://github.com/${REPO}/git/trees/${BRANCH}?recursive=1`);
+                    const res = await fetch(`https://githubusercontent.com/${REPO}/git/trees/${BRANCH}?recursive=1`);
                     if (!res.ok) throw new Error(`GitHub API ${res.status}`);
                     const data = await res.json();
 
